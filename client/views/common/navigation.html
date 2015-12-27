@@ -1,0 +1,54 @@
+<template name="navigation">
+    <nav class="navbar-default navbar-static-side " role="navigation">
+        <div class="sidebar-collapse">
+            <ul class="nav" id="side-menu">
+                <li class="nav-header">
+                    <div class="dropdown profile-element">
+                        <a data-toggle="dropdown" class="dropdown-toggle" href="#">
+                            <span class="clear">
+                                {{#if collectionNames}}
+                                    <span class="block m-t-xs"> <strong
+                                            class="font-bold">{{connection.name}}</strong>
+                                </span>
+                                <span class="block m-t-xs">
+                                    {{connection.host}} : {{connection.port}}
+                                </span>
+                                    <span class="text-muted text-xs block">{{connection.databaseName}} <b
+                                            class="caret"></b>
+                                    </span>
+                                {{else}}
+                                    <span class="block mt-xs">Not Connected !</span>
+                                {{/if}}
+                            </span>
+                        </a>
+                        {{#if collectionNames}}
+                            <ul class="dropdown-menu animated fadeInRight m-t-xs">
+                                <li><a href="#">Drop database</a></li>
+                                <!--<li><a href="#">Item</a></li>
+                                <li class="divider"></li>
+                                <li><a href="#">Item</a></li>-->
+                            </ul>
+                        {{/if}}
+                    </div>
+                    <div class="logo-element">
+                        MC+
+                    </div>
+                </li>
+                <li class="{{isActiveRoute regex='browseDB'}}">
+                    <a href="{{pathFor route='browseDB'}}"><i class="fa fa-dashboard"></i> <span class="nav-label">Browse</span>
+                    </a>
+                </li>
+                {{#if collectionNames}}
+                    <ul class="nav nav-second-level collapse in">
+                        {{#each collectionNames}}
+                            <li class="TODO">
+                                <a href="#"><i class="fa fa-book"></i> <span class="nav-label">{{name}}</span>
+                                </a>
+                            </li>
+                        {{/each}}
+                    </ul>
+                {{/if}}
+            </ul>
+        </div>
+    </nav>
+</template>

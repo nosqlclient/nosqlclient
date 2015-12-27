@@ -1,0 +1,11 @@
+.hide_column {
+    display: none;
+}
+
+tr.selected {
+    background-color: #E6E4E4 !important;
+}
+
+.modal-dialog {
+    width: 1000px !important;
+}

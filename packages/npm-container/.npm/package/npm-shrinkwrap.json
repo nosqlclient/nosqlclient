@@ -1,0 +1,45 @@
+{
+  "dependencies": {
+    "mongodb": {
+      "version": "2.1.2",
+      "dependencies": {
+        "mongodb-core": {
+          "version": "1.2.30",
+          "dependencies": {
+            "bson": {
+              "version": "0.4.20"
+            }
+          }
+        },
+        "readable-stream": {
+          "version": "1.0.31",
+          "dependencies": {
+            "core-util-is": {
+              "version": "1.0.2"
+            },
+            "isarray": {
+              "version": "0.0.1"
+            },
+            "string_decoder": {
+              "version": "0.10.31"
+            },
+            "inherits": {
+              "version": "2.0.1"
+            }
+          }
+        },
+        "es6-promise": {
+          "version": "3.0.2"
+        },
+        "kerberos": {
+          "version": "0.0.17",
+          "dependencies": {
+            "nan": {
+              "version": "2.0.9"
+            }
+          }
+        }
+      }
+    }
+  }
+}

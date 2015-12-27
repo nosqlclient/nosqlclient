@@ -1,0 +1,191 @@
+<template name="topNavbar">
+    <div class="row border-bottom">
+        <nav class="navbar navbar-static-top" role="navigation" style="margin-bottom: 0">
+            <div class="navbar-header">
+                <a id="navbar-minimalize" class="minimalize-styl-2 btn btn-primary " href="#"><i class="fa fa-bars"></i>
+                </a>
+                <form role="search" class="navbar-form-custom" action="search_results">
+                    <div class="form-group">
+                        <input type="text" placeholder="Search for something..." class="form-control" name="top-search"
+                               id="top-search">
+                    </div>
+                </form>
+            </div>
+            <ul class="nav navbar-top-links navbar-right">
+                <li>
+                    {{#if collectionNames}}
+                        <a id="btnDisconnect" href="#">
+                            <i class="fa fa-sign-out"></i> Disconnect
+                        </a>
+                    {{else}}
+                        <a href="#" data-toggle="modal" data-target="#connectionModal">
+                            <i class="fa fa-sign-in"></i> Connect
+                        </a>
+                    {{/if}}
+                </li>
+            </ul>
+        </nav>
+    </div>
+
+    <!-- MODAL Connect-->
+    <div class="modal inmodal" id="connectionModal" tabindex="-1" role="dialog" aria-hidden="true"
+         style="display: none;">
+        <div class="modal-dialog">
+            <div class="modal-content animated bounceInRight">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span><span
+                            class="sr-only">Close</span></button>
+                    <i class="fa fa-laptop modal-icon"></i>
+                    <h4 class="modal-title">Connections</h4>
+                    <small class="font-bold">You can either connect an existing connection or create a new one.
+                    </small>
+                </div>
+                <div class="modal-body">
+                    {{> ReactiveDatatable tableData=reactiveDataFunction options=optionsObject }}
+                    <button type="button" class="btn btn-block btn-outline btn-primary" data-toggle="modal"
+                            data-target="#connectionCreateModal">Create New
+                    </button>
+                </div>
+                <div class="modal-footer">
+                    <div class="pull-left">
+                        <button type="button" class="btn btn-white" data-dismiss="modal">Close</button>
+                    </div>
+                    <button id="btnConnect" title="Select a connection" type="button" disabled="true"
+                            class="btn btn-primary">Connect Now
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- MODAL CreateConnection-->
+    <div class="modal inmodal" id="connectionCreateModal" tabindex="-1" role="dialog" aria-hidden="true"
+         style="display: none;">
+        <div class="modal-dialog">
+            <div class="modal-content animated flipInY">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span><span
+                            class="sr-only">Close</span></button>
+                    <h4 class="modal-title">New Connection</h4>
+                    <small class="font-bold">Create a new connection
+                    </small>
+                </div>
+                <div class="modal-body">
+                    <form id="formCreateConnection" class="form-horizontal">
+                        <div class="form-group"><label class="col-lg-2 control-label">Connection Name</label>
+                            <div class="col-lg-10"><input id="inputConnectionName" required="true" type="text"
+                                                          placeholder="Connection Name" class="form-control">
+                            </div>
+                        </div>
+                        <div class="form-group"><label class="col-lg-2 control-label">Hostname</label>
+                            <div class="col-lg-10"><input id="inputHost" required="true" type="text"
+                                                          placeholder="Hostname"
+                                                          class="form-control">
+                            </div>
+                        </div>
+                        <div class="form-group"><label class="col-lg-2 control-label">Port</label>
+                            <div class="col-lg-10"><input id="inputPort" value="27017" required="true" type="number"
+                                                          placeholder="Port"
+                                                          class="form-control">
+                            </div>
+                        </div>
+                        <div class="form-group"><label class="col-lg-2 control-label">DB Name</label>
+                            <div class="col-lg-10"><input id="inputDatabaseName" required="true" type="text"
+                                                          placeholder="Database Name"
+                                                          class="form-control">
+                            </div>
+                        </div>
+                        <div class="form-group"><label class="col-lg-2 control-label">User</label>
+                            <div class="col-lg-10"><input id="inputUser" type="text" placeholder="User"
+                                                          class="form-control">
+                            </div>
+                        </div>
+                        <div class="form-group"><label class="col-lg-2 control-label">Password</label>
+                            <div class="col-lg-10"><input id="inputPassword" type="password" placeholder="Password"
+                                                          class="form-control">
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <div class="pull-left">
+                        <button type="button" class="btn btn-white" data-dismiss="modal">Close</button>
+                    </div>
+                    <button id="btnSaveConnection" type="button" class="btn btn-primary">Save changes</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- MODAL EditConnection-->
+    <div class="modal inmodal" id="connectionEditModal" tabindex="-1" role="dialog" aria-hidden="true"
+         style="display: none;">
+        <div class="modal-dialog">
+            <div class="modal-content animated flipInY">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span><span
+                            class="sr-only">Close</span></button>
+                    <h4 class="modal-title">Edit Connection</h4>
+                    <small class="font-bold">{{connection.name}}
+                    </small>
+                </div>
+                <div class="modal-body">
+                    <form id="formCreateConnection" class="form-horizontal">
+                        <div class="form-group"><label class="col-lg-2 control-label">Connection Name</label>
+                            <div class="col-lg-10">
+                                <input id="inputEditConnectionName" value="{{connection.name}}" required="true"
+                                       type="text"
+                                       placeholder="Connection Name" class="form-control">
+                            </div>
+                        </div>
+                        <div class="form-group"><label class="col-lg-2 control-label">Hostname</label>
+                            <div class="col-lg-10">
+                                <input id="inputEditHost" required="true" type="text"
+                                       value="{{connection.host}}"
+                                       placeholder="Hostname"
+                                       class="form-control">
+                            </div>
+                        </div>
+                        <div class="form-group"><label class="col-lg-2 control-label">Port</label>
+                            <div class="col-lg-10">
+                                <input id="inputEditPort" required="true" type="number"
+                                       value="{{connection.port}}"
+                                       placeholder="Port"
+                                       class="form-control">
+                            </div>
+                        </div>
+                        <div class="form-group"><label class="col-lg-2 control-label">DB Name</label>
+                            <div class="col-lg-10">
+                                <input id="inputEditDatabaseName" required="true" type="text"
+                                       value="{{connection.databaseName}}"
+                                       placeholder="Database Name"
+                                       class="form-control">
+                            </div>
+                        </div>
+                        <div class="form-group"><label class="col-lg-2 control-label">User</label>
+                            <div class="col-lg-10">
+                                <input id="inputEditUser" type="text" placeholder="User"
+                                       value="{{connection.user}}"
+                                       class="form-control">
+                            </div>
+                        </div>
+                        <div class="form-group"><label class="col-lg-2 control-label">Password</label>
+                            <div class="col-lg-10">
+                                <input id="inputEditPassword" type="password" placeholder="Password"
+                                       value="{{connection.password}}"
+                                       class="form-control">
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <div class="pull-left">
+                        <button type="button" class="btn btn-white" data-dismiss="modal">Close</button>
+                    </div>
+                    <button id="btnEditConnection" type="button" class="btn btn-primary">Save changes</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</template>
