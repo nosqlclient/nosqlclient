@@ -39,10 +39,11 @@
                     </a>
                 </li>
                 {{#if collectionNames}}
-                    <ul class="nav nav-second-level collapse in">
+                    <ul id="listCollectionNames" class="nav nav-second-level collapse in">
                         {{#each collectionNames}}
-                            <li class="TODO">
-                                <a href="#"><i class="fa fa-book"></i> <span class="nav-label">{{name}}</span>
+                            <li>
+                                <a class="navCollection" href="#"><i class="fa fa-book"></i> <span
+                                        class="nav-label">{{name}}</span>
                                 </a>
                             </li>
                         {{/each}}

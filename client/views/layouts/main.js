@@ -1,5 +1,13 @@
 Template.mainLayout.rendered = function () {
 
+    $(document).idleTimer(30000);
+    $(document).on("idle.idleTimer", function (event, elem, obj) {
+        toastr.info('You are idle for at least 30 seconds...', 'Idle');
+    });
+    $(document).on("active.idleTimer", function (event, elem, obj, triggerevent) {
+        toastr.success('Welcome back !', 'You are back');
+    });
+
     // Minimalize menu when screen is less than 768px
     $(window).bind("resize load", function () {
         if ($(this).width() < 769) {

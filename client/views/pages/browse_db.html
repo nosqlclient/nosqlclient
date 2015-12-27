@@ -1,19 +1,24 @@
 <template name="browseDB">
 
-    {{> pageHeading title='Browse' }}
+    {{#if selectedCollection}}
+        {{> pageHeading title=selectedCollection }}
 
-    <div class="wrapper wrapper-content animated fadeInRight">
-        <div class="row">
-            <div class="col-lg-12">
-                <div class="text-center m-t-lg">
-                    <h1>
-                        Welcome to Featured Mongo Client
-                    </h1>
-                    <small>
-                        You can connect a new database by pressing <strong>Connect</strong> button.
-                    </small>
+
+    {{else}}
+        {{> pageHeading title='Browse' }}
+        <div class="wrapper wrapper-content animated fadeInRight">
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="text-center m-t-lg">
+                        <h1>
+                            Welcome to Featured Mongo Client
+                        </h1>
+                        <small>
+                            You can connect a new database by pressing <strong>Connect</strong> button.
+                        </small>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
+    {{/if}}
 </template>

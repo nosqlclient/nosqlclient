@@ -3,6 +3,13 @@
  */
 strSessionConnection = 'connection';
 strSessionCollectionNames = 'collectionNames';
+strSessionSelectedCollection = 'selectedCollection';
+
+clearSessions = function () {
+    Session.set(strSessionCollectionNames, undefined);
+    Session.set(strSessionConnection, undefined);
+    Session.set(strSessionSelectedCollection, undefined);
+};
 
 Template.registerHelper(strSessionConnection, function () {
     if (Session.get(strSessionConnection)) {
@@ -12,4 +19,8 @@ Template.registerHelper(strSessionConnection, function () {
 
 Template.registerHelper(strSessionCollectionNames, function () {
     return Session.get(strSessionCollectionNames);
+});
+
+Template.registerHelper(strSessionSelectedCollection, function () {
+    return Session.get(strSessionSelectedCollection);
 });

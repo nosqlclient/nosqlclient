@@ -75,9 +75,16 @@ Template.topNavbar.helpers({
             }
         ]
     }
-})
+});
 
 Template.topNavbar.events({
+    'click #btnConnectionList': function (e) {
+        if (!Session.get(strSessionConnection)) {
+            $('#DataTables_Table_0').DataTable().$('tr.selected').removeClass('selected');
+            $('#btnConnect').prop('disabled', true);
+        }
+    },
+
     'click .editor_remove': function (e) {
         e.preventDefault();
         // set rows not selected
@@ -87,7 +94,8 @@ Template.topNavbar.events({
         // remove connection
         Meteor.call('removeConnection', Session.get(strSessionConnection));
         // clear session
-        Session.set(strSessionConnection, undefined);
+        clearSessions();
+
     },
 
     'click .editor_edit': function (e) {
@@ -101,27 +109,28 @@ Template.topNavbar.events({
 
         event.preventDefault();
 
+        var body = $('body');
+        var sideMenu = $('#side-menu');
         // Toggle special class
-        $("body").toggleClass("mini-navbar");
+        body.toggleClass("mini-navbar");
 
         // Enable smoothly hide/show menu
-        if (!$('body').hasClass('mini-navbar') || $('body').hasClass('body-small')) {
+        if (!body.hasClass('mini-navbar') || body.hasClass('body-small')) {
             // Hide menu in order to smoothly turn on when maximize menu
-            $('#side-menu').hide();
+            sideMenu.hide();
             // For smoothly turn on menu
+            setTimeout(function () {
+                sideMenu.fadeIn(400);
+            }, 200);
+        } else if (body.hasClass('fixed-sidebar')) {
+            sideMenu.hide();
             setTimeout(
                 function () {
-                    $('#side-menu').fadeIn(400);
-                }, 200);
-        } else if ($('body').hasClass('fixed-sidebar')) {
-            $('#side-menu').hide();
-            setTimeout(
-                function () {
-                    $('#side-menu').fadeIn(400);
+                    sideMenu.fadeIn(400);
                 }, 100);
         } else {
             // Remove all inline style from jquery fadeIn function to reset menu state
-            $('#side-menu').removeAttr('style');
+            sideMenu.removeAttr('style');
         }
     },
 
@@ -172,15 +181,26 @@ Template.topNavbar.events({
                 return;
             }
             Session.set(strSessionCollectionNames, result.result);
-            toastr.success('Successfuly connected to: ' + connection.name);
+
             $('#connectionModal').modal('hide');
+
+            swal({
+                title: "Connected!",
+                text: "Successfuly connected to " + connection.name,
+                type: "success"
+            });
         });
     },
 
     'click #btnDisconnect': function (e) {
         e.preventDefault();
-        Session.set(strSessionCollectionNames, undefined);
-        Session.set(strSessionConnection, undefined);
+        clearSessions();
+
+        swal({
+            title: "Disconnected!",
+            text: "Successfuly disconnected",
+            type: "success"
+        });
     }
 });
 
