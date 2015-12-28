@@ -29,10 +29,19 @@ Meteor.methods({
                 if (query.endsWith(';')) {
                     query = query.substring(0, query.length - 1);
                 }
-                db.eval('function(){ return ' + query + '.toArray(); }', function (err, result) {
-                    done(err, result);
-                    db.close();
-                });
+
+                if (query.indexOf('find(') != -1) {
+                    db.eval('function(){ return ' + query + '.toArray(); }', function (err, result) {
+                        done(err, result);
+                        db.close();
+                    });
+                } else {
+                    db.eval('function(){ return ' + query + '}', function (err, result) {
+                        done(err, result);
+                        db.close();
+                    });
+                }
+
             });
         });
 
