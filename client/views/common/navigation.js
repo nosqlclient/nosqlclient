@@ -17,5 +17,7 @@ Template.navigation.events({
         });
 
         Session.set(strSessionSelectedCollection, name);
+        $('#divJsonEditor').hide();
+        $('#divAceEditor').hide();
     }
 });

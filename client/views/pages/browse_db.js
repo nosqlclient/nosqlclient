@@ -49,6 +49,10 @@ Template.browseDB.events({
 });
 
 executeQuery = function () {
+    // loading button
+    var l = $('#btnExecuteQuery').ladda();
+    l.ladda('start');
+
     var connection = Connections.findOne({_id: Session.get(strSessionConnection)});
     var selectedCollection = Session.get(strSessionSelectedCollection);
     var query = 'db.' + selectedCollection + '.' + $('#inputQuery').val();
@@ -56,21 +60,30 @@ executeQuery = function () {
     Meteor.call('executeQuery', connection, query, function (err, result) {
         if (result.error) {
             toastr.error("Couldn't execute query: " + result.error.message);
+            // stop loading animation
+            l.ladda('stop');
             return;
         }
 
+        // set json editor
         getEditor().set(result.result);
 
+        // set ace editor
         AceEditor.instance("aceeditor", {
             mode: "javascript",
             theme: 'dawn'
         }, function (editor) {
             editor.$blockScrolling = Infinity;
             editor.setOptions({
-                fontSize: "12pt"
+                fontSize: "12pt",
+                showPrintMargin: false
             });
-            editor.setValue(JSON.stringify(result.result, null, '\t'));
+            editor.setValue(JSON.stringify(result.result, null, '\t'), -1);
         });
 
+        $('#divJsonEditor').show('slow');
+
+        // stop loading animation
+        l.ladda('stop');
     });
 }
