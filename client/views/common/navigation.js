@@ -4,6 +4,33 @@ Template.navigation.rendered = function () {
 };
 
 Template.navigation.events({
+    'click #btnDropDatabase': function (e) {
+        e.preventDefault();
+        swal({
+            title: "Are you sure?",
+            text: "You will not be able to recover this database!",
+            type: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#DD6B55",
+            confirmButtonText: "Yes, drop it!",
+            closeOnConfirm: false
+        }, function () {
+            var connection = Connections.findOne({_id: Session.get(strSessionConnection)});
+            Meteor.call('dropDB', connection, function (err, result) {
+                if (result.error) {
+                    toastr.error("Couldn't drop database: " + result.error.message);
+                    return;
+                }
+                clearSessions();
+                swal({
+                    title: "Dropped!",
+                    text: "Successfuly dropped database " + connection.databaseName,
+                    type: "success"
+                });
+            });
+        });
+    },
+
     'click .navCollection': function () {
         var name = this.name;
 

@@ -49,6 +49,22 @@ Meteor.methods({
         convertDatesToString(result);
 
         return result;
+    },
+
+    'dropDB': function (connection) {
+        var connectionUrl = getConnectionUrl(connection);
+        var mongodbApi = Meteor.npmRequire('mongodb').MongoClient;
+
+        var result = Async.runSync(function (done) {
+            mongodbApi.connect(connectionUrl, function (err, db) {
+                db.dropDatabase(function (err, result) {
+                    db.close();
+                    done(err, result);
+                });
+            });
+        });
+
+        return result;
     }
 });
 
