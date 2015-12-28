@@ -28,7 +28,6 @@ Template.browseDB.events({
                 return;
             }
 
-            console.log(result.result);
             getEditor().set(result.result);
         });
     }

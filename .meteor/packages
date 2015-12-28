@@ -26,3 +26,4 @@ ephemer:reactive-datatables
 meteorhacks:npm
 npm-container
 dataflows:jsoneditor
+momentjs:moment
