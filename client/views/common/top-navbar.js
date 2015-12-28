@@ -176,7 +176,6 @@ Template.topNavbar.events({
 
         Meteor.call('connect', connection, function (err, result) {
             if (result.error) {
-                console.log('error', result.error);
                 toastr.error("Couldn't connect: " + result.error.message);
                 return;
             }

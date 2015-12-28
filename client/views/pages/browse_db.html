@@ -26,13 +26,22 @@
                         <div class="ibox-content">
                             <div class="row">
                                 <div class="col-sm-12 b-r">
-                                    <div class="form-group">
+                                    <div class="form-group input-group">
+                                        <span class="input-group-addon">db.{{selectedCollection}}.</span>
                                         <input id="inputQuery" type="text" placeholder="Enter query here"
                                                class="form-control">
                                     </div>
                                     <div>
-                                        <button class="btn btn-block btn-outline btn-primary" type="button">
+                                        <button id="btnExecuteQuery" class="btn btn-block btn-outline btn-primary"
+                                                type="button">
                                             <strong>Execute</strong></button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row" style="margin-top: 50px;">
+                                <div class="col-sm-12 b-r">
+                                    <div id="jsoneditor">
+
                                     </div>
                                 </div>
                             </div>
