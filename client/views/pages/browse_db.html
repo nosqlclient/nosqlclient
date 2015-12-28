@@ -21,6 +21,10 @@
                                     <li><a href="#">SQL Queries</a>
                                     </li>
                                 </ul>
+                                <a id="btnSwitchView" class="dropdown-toggle" data-toggle="dropdown" href="#"
+                                   title="Switch Result View">
+                                    <i class="fa fa-exchange"></i>
+                                </a>
                             </div>
                         </div>
                         <div class="ibox-content">
@@ -38,11 +42,17 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="row" style="margin-top: 50px;">
+                            <div id="divJsonEditor" class="row" style="margin-top: 50px;">
                                 <div class="col-sm-12 b-r">
-                                    <div id="jsoneditor">
+                                    <div id="jsoneditor" style="width: 100%">
 
                                     </div>
+                                </div>
+                            </div>
+
+                            <div id="divAceEditor" class="row" style="margin-top: 50px;display: none">
+                                <div class="col-sm-12 b-r">
+                                    <pre id='aceeditor' style="height: 500px;"></pre>
                                 </div>
                             </div>
                         </div>
