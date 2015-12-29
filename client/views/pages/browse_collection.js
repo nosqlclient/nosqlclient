@@ -15,7 +15,19 @@ getEditor = function () {
 }
 
 Template.browseCollection.onRendered(function () {
+    if(!Session.get(strSessionSelectedCollection)){
+        Router.go('browseDB');
+        return;
+    }
 
+    var cmb = $('#cmbQueries');
+    $.each(QUERY_TYPES, function (key, value) {
+        cmb.append($("<option></option>")
+            .attr("value", key)
+            .text(value));
+    });
+
+    cmb.chosen();
 });
 
 Template.browseCollection.events({
