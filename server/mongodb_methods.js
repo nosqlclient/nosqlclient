@@ -30,7 +30,7 @@ Meteor.methods({
                     query = query.substring(0, query.length - 1);
                 }
 
-                if (query.indexOf('find(') != -1) {
+                if (query.indexOf('find(') != -1 && query.indexOf('count(') == -1) {
                     db.eval('function(){ return ' + query + '.toArray(); }', function (err, result) {
                         done(err, result);
                         db.close();

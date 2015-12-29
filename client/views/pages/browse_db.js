@@ -49,6 +49,11 @@ Template.browseDB.events({
 });
 
 executeQuery = function () {
+    // hide results
+    $('#divJsonEditor').hide();
+    $('#divAceEditor').hide();
+
+
     // loading button
     var l = $('#btnExecuteQuery').ladda();
     l.ladda('start');
