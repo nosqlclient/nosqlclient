@@ -11,16 +11,16 @@ clearSessions = function () {
     Session.set(strSessionSelectedCollection, undefined);
 };
 
-Template.registerHelper(strSessionConnection, function () {
+Template.registerHelper('getConnection', function () {
     if (Session.get(strSessionConnection)) {
         return Connections.findOne({_id: Session.get(strSessionConnection)});
     }
 });
 
-Template.registerHelper(strSessionCollectionNames, function () {
+Template.registerHelper('getCollectionNames', function () {
     return Session.get(strSessionCollectionNames);
 });
 
-Template.registerHelper(strSessionSelectedCollection, function () {
+Template.registerHelper('getSelectedCollection', function () {
     return Session.get(strSessionSelectedCollection);
 });

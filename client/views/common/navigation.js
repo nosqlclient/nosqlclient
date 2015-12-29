@@ -43,6 +43,10 @@ Template.navigation.events({
             }
         });
 
+        $('#side-menu li').each(function (index, li) {
+            $(li).removeClass('active');
+        });
+
         Session.set(strSessionSelectedCollection, name);
         $('#divJsonEditor').hide();
         $('#divAceEditor').hide();

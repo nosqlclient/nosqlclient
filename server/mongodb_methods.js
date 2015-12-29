@@ -9,10 +9,15 @@ Meteor.methods({
 
         var collectionNames = Async.runSync(function (done) {
             mongodbApi.connect(connectionUrl, function (err, db) {
-                db.listCollections().toArray(function (err, collections) {
-                    db.close();
-                    done(err, collections);
-                });
+                if (db == null || db == undefined) {
+                    console.log('could not connect, db is null');
+                    done(err, db);
+                } else {
+                    db.listCollections().toArray(function (err, collections) {
+                        db.close();
+                        done(err, collections);
+                    });
+                }
             });
         });
 

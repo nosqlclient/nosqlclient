@@ -1,84 +1,18 @@
 <template name="browseDB">
 
-    {{#if selectedCollection}}
-        {{> pageHeading title=selectedCollection }}
-
-        <div class="wrapper wrapper-content animated fadeInRight">
-            <div class="row">
-                <div class="col-lg-12">
-                    <div class="ibox float-e-margins">
-                        <div class="ibox-title">
-                            <h5>Query
-                                <small>You can either use mongodb or sql queries</small>
-                            </h5>
-                            <div class="ibox-tools">
-                                <a class="dropdown-toggle" data-toggle="dropdown" href="#">
-                                    <i class="fa fa-wrench"></i>
-                                </a>
-                                <ul class="dropdown-menu dropdown-user">
-                                    <li><a href="#"><i class="fa fa-check"></i> Mongodb Queries</a>
-                                    </li>
-                                    <li><a href="#">SQL Queries</a>
-                                    </li>
-                                </ul>
-                                <a id="btnSwitchView" href="#"
-                                   title="Switch Result View">
-                                    <i class="fa fa-exchange"></i>
-                                </a>
-                            </div>
-                        </div>
-                        <div class="ibox-content">
-                            <div class="row">
-                                <div class="col-sm-12 b-r">
-                                    <div class="form-group input-group">
-                                        <span class="input-group-addon">db.{{selectedCollection}}.</span>
-                                        <input id="inputQuery" type="text" placeholder="Enter query here"
-                                               class="form-control">
-                                    </div>
-                                    <div>
-                                        <button id="btnExecuteQuery"
-                                                class="btn btn-block btn-outline btn-primary ladda-button"
-                                                type="button"
-                                                data-style="contract">
-                                            <strong>Execute</strong></button>
-                                    </div>
-                                </div>
-                            </div>
-                            <div id="divJsonEditor" class="row" style="display:none;margin-top: 50px;">
-                                <div class="col-sm-12 b-r">
-                                    <div id="jsoneditor" style="width: 100%">
-
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div id="divAceEditor" class="row" style="margin-top: 50px;display: none">
-                                <div class="col-sm-12 b-r">
-                                    <pre id='aceeditor' style="height: 500px;width: 100%;"></pre>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+    {{> pageHeading title='Browse' }}
+    <div class="wrapper wrapper-content animated fadeInRight">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="text-center m-t-lg">
+                    <h1>
+                        Welcome to Featured Mongo Client
+                    </h1>
+                    <small>
+                        You can connect a new database by pressing <strong>Connect</strong> button.
+                    </small>
                 </div>
             </div>
         </div>
-
-    {{else}}
-        {{> pageHeading title='Browse' }}
-
-        <div class="wrapper wrapper-content animated fadeInRight">
-            <div class="row">
-                <div class="col-lg-12">
-                    <div class="text-center m-t-lg">
-                        <h1>
-                            Welcome to Featured Mongo Client
-                        </h1>
-                        <small>
-                            You can connect a new database by pressing <strong>Connect</strong> button.
-                        </small>
-                    </div>
-                </div>
-            </div>
-        </div>
-    {{/if}}
+    </div>
 </template>

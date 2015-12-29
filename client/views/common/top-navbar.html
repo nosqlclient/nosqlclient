@@ -13,7 +13,7 @@
             </div>
             <ul class="nav navbar-top-links navbar-right">
                 <li>
-                    {{#if collectionNames}}
+                    {{#if getCollectionNames}}
                         <a id="btnDisconnect" href="#">
                             <i class="fa fa-sign-out"></i> Disconnect
                         </a>
@@ -51,7 +51,7 @@
                         <button type="button" class="btn btn-white" data-dismiss="modal">Close</button>
                     </div>
                     <button id="btnConnect" title="Select a connection" type="button" disabled="true"
-                            class="btn btn-primary">Connect Now
+                            class="btn btn-primary ladda-button" data-style="contract">Connect Now
                     </button>
                 </div>
             </div>
@@ -126,14 +126,14 @@
                     <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span><span
                             class="sr-only">Close</span></button>
                     <h4 class="modal-title">Edit Connection</h4>
-                    <small class="font-bold">{{connection.name}}
+                    <small class="font-bold">{{getConnection.name}}
                     </small>
                 </div>
                 <div class="modal-body">
                     <form id="formCreateConnection" class="form-horizontal">
                         <div class="form-group"><label class="col-lg-2 control-label">Connection Name</label>
                             <div class="col-lg-10">
-                                <input id="inputEditConnectionName" value="{{connection.name}}" required="true"
+                                <input id="inputEditConnectionName" value="{{getConnection.name}}" required="true"
                                        type="text"
                                        placeholder="Connection Name" class="form-control">
                             </div>
@@ -141,7 +141,7 @@
                         <div class="form-group"><label class="col-lg-2 control-label">Hostname</label>
                             <div class="col-lg-10">
                                 <input id="inputEditHost" required="true" type="text"
-                                       value="{{connection.host}}"
+                                       value="{{getConnection.host}}"
                                        placeholder="Hostname"
                                        class="form-control">
                             </div>
@@ -149,7 +149,7 @@
                         <div class="form-group"><label class="col-lg-2 control-label">Port</label>
                             <div class="col-lg-10">
                                 <input id="inputEditPort" required="true" type="number"
-                                       value="{{connection.port}}"
+                                       value="{{getConnection.port}}"
                                        placeholder="Port"
                                        class="form-control">
                             </div>
@@ -157,7 +157,7 @@
                         <div class="form-group"><label class="col-lg-2 control-label">DB Name</label>
                             <div class="col-lg-10">
                                 <input id="inputEditDatabaseName" required="true" type="text"
-                                       value="{{connection.databaseName}}"
+                                       value="{{getConnection.databaseName}}"
                                        placeholder="Database Name"
                                        class="form-control">
                             </div>
@@ -165,14 +165,14 @@
                         <div class="form-group"><label class="col-lg-2 control-label">User</label>
                             <div class="col-lg-10">
                                 <input id="inputEditUser" type="text" placeholder="User"
-                                       value="{{connection.user}}"
+                                       value="{{getConnection.user}}"
                                        class="form-control">
                             </div>
                         </div>
                         <div class="form-group"><label class="col-lg-2 control-label">Password</label>
                             <div class="col-lg-10">
                                 <input id="inputEditPassword" type="password" placeholder="Password"
-                                       value="{{connection.password}}"
+                                       value="{{getConnection.password}}"
                                        class="form-control">
                             </div>
                         </div>

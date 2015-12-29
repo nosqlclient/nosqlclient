@@ -172,15 +172,21 @@ Template.topNavbar.events({
     },
 
     'click #btnConnect': function (e) {
-        var connection = Connections.findOne({_id: Session.get(strSessionConnection)});
+        // loading button
+        var l = $('#btnConnect').ladda();
+        l.ladda('start');
 
+        var connection = Connections.findOne({_id: Session.get(strSessionConnection)});
         Meteor.call('connect', connection, function (err, result) {
             if (result.error) {
                 toastr.error("Couldn't connect: " + result.error.message);
+                l.ladda('stop');
                 return;
             }
-            Session.set(strSessionCollectionNames, result.result);
 
+            l.ladda('stop');
+
+            Session.set(strSessionCollectionNames, result.result);
             $('#connectionModal').modal('hide');
 
             swal({
