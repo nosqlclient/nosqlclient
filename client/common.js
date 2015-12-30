@@ -4,6 +4,7 @@
 strSessionConnection = 'connection';
 strSessionCollectionNames = 'collectionNames';
 strSessionSelectedCollection = 'selectedCollection';
+strSessionSelectedQuery = 'selectedQuery';
 
 clearSessions = function () {
     Session.set(strSessionCollectionNames, undefined);
