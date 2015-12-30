@@ -24,29 +24,21 @@ Meteor.methods({
         return collectionNames;
     },
 
-    'executeQuery': function (connection, query) {
+    'executeFindQuery': function (connection, selectedCollection, selector) {
         var connectionUrl = getConnectionUrl(connection);
-        console.log('executing query ' + query + ' on: ' + connectionUrl);
+        console.log('executing find query ' + selector + ' on: ' + connectionUrl + '/' + selectedCollection);
         var mongodbApi = Meteor.npmRequire('mongodb').MongoClient;
 
         var result = Async.runSync(function (done) {
             mongodbApi.connect(connectionUrl, function (err, db) {
-                if (query.endsWith(';')) {
-                    query = query.substring(0, query.length - 1);
-                }
-
-                if (query.indexOf('find(') != -1 && query.indexOf('count(') == -1) {
-                    db.eval('function(){ return ' + query + '.toArray(); }', function (err, result) {
-                        done(err, result);
+                try {
+                    db.collection(selectedCollection).find(selector).toArray(function (err, docs) {
+                        done(err, docs);
                         db.close();
                     });
-                } else {
-                    db.eval('function(){ return ' + query + '}', function (err, result) {
-                        done(err, result);
-                        db.close();
-                    });
+                } catch (err) {
+                    done(err, null);
                 }
-
             });
         });
 
