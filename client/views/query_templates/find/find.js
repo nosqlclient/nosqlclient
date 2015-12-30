@@ -26,12 +26,12 @@ Template.find.onRendered(function () {
             );
         };
         // disable Enter Shift-Enter keys
-        editor.commands.bindKey("Enter|Shift-Enter", "null");
+        editor.commands.bindKey("Enter|Shift-Enter", executeQuery());
     });
 });
 
 Template.browseCollection.events({
-    'keypress #inputQuery': function (e) {
+    'keypress #preSelector': function (e) {
         // catch enter
         if (e.keyCode == 13) {
             executeQuery();
@@ -71,8 +71,6 @@ executeQuery = function () {
             return;
         }
     }
-
-    // TODO disconnect-reconnect den sonra find template gelmedi.
 
     Meteor.call('executeFindQuery', connection, selectedCollection, selector, function (err, result) {
         if (err || result.error) {
