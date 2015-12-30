@@ -206,6 +206,8 @@ Template.topNavbar.events({
             text: "Successfuly disconnected",
             type: "success"
         });
+
+        Router.go('browseDB');
     }
 });
 
