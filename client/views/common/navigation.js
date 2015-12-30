@@ -31,6 +31,12 @@ Template.navigation.events({
         });
     },
 
+    'click #aBrowseDB': function () {
+        $('#listCollectionNames li').each(function (index, li) {
+            $(li).removeClass('active');
+        });
+    },
+
     'click .navCollection': function () {
         var name = this.name;
 
@@ -43,9 +49,7 @@ Template.navigation.events({
             }
         });
 
-        $('#side-menu li').each(function (index, li) {
-            $(li).removeClass('active');
-        });
+        $('#liBrowseDB').removeClass('active');
 
         Session.set(strSessionSelectedCollection, name);
         $('#divJsonEditor').hide();

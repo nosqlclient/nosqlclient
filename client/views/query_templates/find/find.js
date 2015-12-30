@@ -57,12 +57,22 @@ executeQuery = function () {
     var selectedCollection = Session.get(strSessionSelectedCollection);
 
     var selector = ace.edit("preSelector").getSession().getValue();
-
     if (!selector) {
         selector = {};
     }
+    else {
+        try {
+            selector = JSON.parse(selector);
+        }
+        catch (err) {
+            toastr.error("Syntax error: " + err.message);
+            // stop loading animation
+            l.ladda('stop');
+            return;
+        }
+    }
 
-    // TODO selector object olmalı, sağ taraftan collection seçince active olmuyor, disconnect-reconnect den sonra find template gelmedi.
+    // TODO disconnect-reconnect den sonra find template gelmedi.
 
     Meteor.call('executeFindQuery', connection, selectedCollection, selector, function (err, result) {
         if (err || result.error) {

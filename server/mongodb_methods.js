@@ -26,8 +26,11 @@ Meteor.methods({
 
     'executeFindQuery': function (connection, selectedCollection, selector) {
         var connectionUrl = getConnectionUrl(connection);
-        console.log('executing find query ' + selector + ' on: ' + connectionUrl + '/' + selectedCollection);
+        console.log('executing find query on: ' + connectionUrl + '/' + selectedCollection);
         var mongodbApi = Meteor.npmRequire('mongodb').MongoClient;
+
+        convertValidObjectIds(selector);
+        convertValidDates(selector);
 
         var result = Async.runSync(function (done) {
             mongodbApi.connect(connectionUrl, function (err, db) {
@@ -36,13 +39,15 @@ Meteor.methods({
                         done(err, docs);
                         db.close();
                     });
-                } catch (err) {
-                    done(err, null);
+                } catch (ex) {
+                    console.error(ex);
+                    done(ex, null);
+                    db.close();
                 }
             });
         });
 
-        convertBSONsToString(result);
+        convertObjectIDsToString(result);
         convertDatesToString(result);
 
         return result;
@@ -64,55 +69,3 @@ Meteor.methods({
         return result;
     }
 });
-
-getConnectionUrl = function (connection) {
-    var connectionUrl = 'mongodb://';
-    if (connection.user && connection.password) {
-        connectionUrl += connection.user + ':' + connection.password + '@';
-    }
-    connectionUrl += connection.host + ':' + connection.port + '/' + connection.databaseName;
-
-    return connectionUrl;
-}
-
-convertDatesToString = function (obj) {
-    for (var property in obj) {
-        if (obj.hasOwnProperty(property) && obj[property] != null) {
-            if (obj[property].constructor == Object) {
-                convertDatesToString(obj[property]);
-            }
-            else if (obj[property].constructor == Array) {
-                for (var i = 0; i < obj[property].length; i++) {
-                    convertDatesToString(obj[property][i]);
-                }
-            }
-            else {
-                if (obj[property] instanceof Date) {
-                    obj[property] = moment(obj[property]).format('DD.MM.YYYY HH:mm:ss');
-                }
-            }
-        }
-    }
-}
-
-convertBSONsToString = function (obj) {
-    var objectID = Meteor.npmRequire('mongodb').ObjectID;
-
-    for (var property in obj) {
-        if (obj.hasOwnProperty(property) && obj[property] != null) {
-            if (obj[property].constructor == Object) {
-                convertBSONsToString(obj[property]);
-            }
-            else if (obj[property].constructor == Array) {
-                for (var i = 0; i < obj[property].length; i++) {
-                    convertBSONsToString(obj[property][i]);
-                }
-            }
-            else {
-                if (objectID.isValid(obj[property].toString())) {
-                    obj[property] = obj[property].toString();
-                }
-            }
-        }
-    }
-}
