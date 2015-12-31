@@ -15,13 +15,13 @@ Template.navigation.events({
             confirmButtonText: "Yes, drop it!",
             closeOnConfirm: false
         }, function () {
-            var connection = Connections.findOne({_id: Session.get(strSessionConnection)});
+            var connection = Connections.findOne({_id: Session.get(Template.strSessionConnection)});
             Meteor.call('dropDB', connection, function (err, result) {
                 if (result.error) {
                     toastr.error("Couldn't drop database: " + result.error.message);
                     return;
                 }
-                clearSessions();
+                Template.clearSessions();
                 swal({
                     title: "Dropped!",
                     text: "Successfuly dropped database " + connection.databaseName,
@@ -51,7 +51,7 @@ Template.navigation.events({
 
         $('#liBrowseDB').removeClass('active');
 
-        Session.set(strSessionSelectedCollection, name);
+        Session.set(Template.strSessionSelectedCollection, name);
         $('#divJsonEditor').hide();
         $('#divAceEditor').hide();
     }

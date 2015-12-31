@@ -1,16 +1,32 @@
 /**
  * Created by RSercan on 26.12.2015.
  */
-strSessionConnection = 'connection';
-strSessionCollectionNames = 'collectionNames';
-strSessionSelectedCollection = 'selectedCollection';
-strSessionSelectedQuery = 'selectedQuery';
+Template.strSessionConnection = 'connection';
+Template.strSessionCollectionNames = 'collectionNames';
+Template.strSessionSelectedCollection = 'selectedCollection';
+Template.strSessionSelectedQuery = 'selectedQuery';
+Template.strSessionSelectedOptions = "selectedCursorOptions";
 
-clearSessions = function () {
-    Session.set(strSessionCollectionNames, undefined);
-    Session.set(strSessionConnection, undefined);
-    Session.set(strSessionSelectedCollection, undefined);
+Template.clearSessions = function () {
+    Session.set(Template.strSessionCollectionNames, undefined);
+    Session.set(Template.strSessionConnection, undefined);
+    Session.set(Template.strSessionSelectedCollection, undefined);
 };
+
+Template.registerHelper('getConnection', function () {
+    if (Session.get(Template.strSessionConnection)) {
+        return Connections.findOne({_id: Session.get(Template.strSessionConnection)});
+    }
+});
+
+Template.registerHelper('getCollectionNames', function () {
+    return Session.get(Template.strSessionCollectionNames);
+});
+
+Template.registerHelper('getSelectedCollection', function () {
+    return Session.get(Template.strSessionSelectedCollection);
+});
+
 
 Array.prototype.remove = function () {
     var what, a = arguments, L = a.length, ax;
@@ -22,17 +38,3 @@ Array.prototype.remove = function () {
     }
     return this;
 };
-
-Template.registerHelper('getConnection', function () {
-    if (Session.get(strSessionConnection)) {
-        return Connections.findOne({_id: Session.get(strSessionConnection)});
-    }
-});
-
-Template.registerHelper('getCollectionNames', function () {
-    return Session.get(strSessionCollectionNames);
-});
-
-Template.registerHelper('getSelectedCollection', function () {
-    return Session.get(strSessionSelectedCollection);
-});

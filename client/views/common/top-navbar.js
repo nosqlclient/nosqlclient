@@ -14,7 +14,7 @@ Template.topNavbar.rendered = function () {
         }
 
         if (table.row(this).data()) {
-            Session.set(strSessionConnection, table.row(this).data()._id);
+            Session.set(Template.strSessionConnection, table.row(this).data()._id);
             $('#btnConnect').prop('disabled', false);
         }
     });
@@ -79,7 +79,7 @@ Template.topNavbar.helpers({
 
 Template.topNavbar.events({
     'click #btnConnectionList': function (e) {
-        if (!Session.get(strSessionConnection)) {
+        if (!Session.get(Template.strSessionConnection)) {
             $('#DataTables_Table_0').DataTable().$('tr.selected').removeClass('selected');
             $('#btnConnect').prop('disabled', true);
         }
@@ -92,9 +92,9 @@ Template.topNavbar.events({
         // disable connect button
         $('#btnConnect').prop('disabled', true);
         // remove connection
-        Meteor.call('removeConnection', Session.get(strSessionConnection));
+        Meteor.call('removeConnection', Session.get(Template.strSessionConnection));
         // clear session
-        clearSessions();
+        Template.clearSessions();
 
     },
 
@@ -145,7 +145,7 @@ Template.topNavbar.events({
             password: $('#inputPassword').val()
         };
 
-        if (!checkConnection(connection)) {
+        if (!Template.topNavbar.checkConnection(connection)) {
             return;
         }
         Meteor.call('saveConnection', connection);
@@ -161,10 +161,10 @@ Template.topNavbar.events({
             databaseName: $('#inputEditDatabaseName').val(),
             user: $('#inputEditUser').val(),
             password: $('#inputEditPassword').val(),
-            _id: Session.get(strSessionConnection)
+            _id: Session.get(Template.strSessionConnection)
         };
 
-        if (!checkConnection(connection)) {
+        if (!Template.topNavbar.checkConnection(connection)) {
             return;
         }
         Meteor.call('updateConnection', connection);
@@ -176,7 +176,7 @@ Template.topNavbar.events({
         var l = $('#btnConnect').ladda();
         l.ladda('start');
 
-        var connection = Connections.findOne({_id: Session.get(strSessionConnection)});
+        var connection = Connections.findOne({_id: Session.get(Template.strSessionConnection)});
         Meteor.call('connect', connection, function (err, result) {
             if (result.error) {
                 toastr.error("Couldn't connect: " + result.error.message);
@@ -186,7 +186,7 @@ Template.topNavbar.events({
 
             l.ladda('stop');
 
-            Session.set(strSessionCollectionNames, result.result);
+            Session.set(Template.strSessionCollectionNames, result.result);
             $('#connectionModal').modal('hide');
 
             swal({
@@ -199,7 +199,7 @@ Template.topNavbar.events({
 
     'click #btnDisconnect': function (e) {
         e.preventDefault();
-        clearSessions();
+        Template.clearSessions();
 
         swal({
             title: "Disconnected!",
@@ -212,7 +212,7 @@ Template.topNavbar.events({
 });
 
 
-checkConnection = function (connection) {
+Template.topNavbar.checkConnection = function (connection) {
     if (!connection.name) {
         toastr.error("Connection name can't be empty");
         return false;

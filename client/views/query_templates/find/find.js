@@ -1,95 +1,21 @@
 /**
  * Created by sercan on 30.12.2015.
  */
-var strSessionSelectedOptions = "selectedCursorOptions";
-
 Template.find.onRendered(function () {
     // set ace editor
-    initializeAceEditor();
-    initializeOptions();
-    initializeSessionVariable();
+    Template.find.initializeAceEditor();
+    Template.find.initializeOptions();
+    Template.find.initializeSessionVariable();
 });
 
-Template.browseCollection.events({
-    'keypress #preSelector': function (e) {
-        // catch enter
-        if (e.keyCode == 13) {
-            executeQuery();
-            return false;
-        }
-    },
-
+Template.find.events({
     'click #btnExecuteQuery': function (e) {
-        executeQuery();
+        Template.find.executeQuery();
     }
 });
 
-executeQuery = function () {
-    // hide results
-    $('#divJsonEditor').hide();
-    $('#divAceEditor').hide();
 
-    // loading button
-    var l = $('#btnExecuteQuery').ladda();
-    l.ladda('start');
-
-    var connection = Connections.findOne({_id: Session.get(strSessionConnection)});
-    var selectedCollection = Session.get(strSessionSelectedCollection);
-
-    var selector = ace.edit("preSelector").getSession().getValue();
-    if (!selector) {
-        selector = {};
-    }
-    else {
-        try {
-            selector = JSON.parse(selector);
-        }
-        catch (err) {
-            toastr.error("Syntax error: " + err.message);
-            // stop loading animation
-            l.ladda('stop');
-            return;
-        }
-    }
-
-    Meteor.call('executeFindQuery', connection, selectedCollection, selector, function (err, result) {
-        if (err || result.error) {
-            var errorMessage;
-            if (err) {
-                errorMessage = err.message;
-            } else {
-                errorMessage = result.error.message;
-            }
-            toastr.error("Couldn't execute query: " + errorMessage);
-            // stop loading animation
-            l.ladda('stop');
-            return;
-        }
-
-        // set json editor
-        getEditor().set(result.result);
-
-        // set ace editor
-        AceEditor.instance("aceeditor", {
-            mode: "javascript",
-            theme: 'dawn'
-        }, function (editor) {
-            editor.$blockScrolling = Infinity;
-            editor.setOptions({
-                fontSize: "12pt",
-                showPrintMargin: false
-            });
-            editor.setValue(JSON.stringify(result.result, null, '\t'), -1);
-        });
-
-        $('#divJsonEditor').show('slow');
-
-        // stop loading animation
-        l.ladda('stop');
-    });
-}
-
-initializeAceEditor = function () {
+Template.find.initializeAceEditor = function () {
     AceEditor.instance("preSelector", {
         mode: "javascript",
         theme: 'dawn'
@@ -113,11 +39,11 @@ initializeAceEditor = function () {
             );
         };
         // disable Enter Shift-Enter keys
-        editor.commands.bindKey("Enter|Shift-Enter", executeQuery);
+        editor.commands.bindKey("Enter|Shift-Enter", Template.find.executeQuery);
     });
 }
 
-initializeOptions = function () {
+Template.find.initializeOptions = function () {
     var cmb = $('#cmbCursorOptions');
     $.each(CURSOR_OPTIONS, function (key, value) {
         cmb.append($("<option></option>")
@@ -127,17 +53,123 @@ initializeOptions = function () {
 
     cmb.chosen();
     cmb.on('change', function (evt, params) {
-        var array = Session.get(strSessionSelectedOptions);
+        var array = Session.get(Template.strSessionSelectedOptions);
         if (params.deselected) {
             array.remove(params.deselected);
         }
         else {
             array.push(params.selected);
         }
-        Session.set(strSessionSelectedOptions, array);
+        Session.set(Template.strSessionSelectedOptions, array);
     });
 }
 
-initializeSessionVariable = function () {
-    Session.set(strSessionSelectedOptions, []);
+Template.find.initializeSessionVariable = function () {
+    Session.set(Template.strSessionSelectedOptions, []);
+}
+
+Template.find.executeQuery = function () {
+    // hide results
+    $('#divJsonEditor').hide();
+    $('#divAceEditor').hide();
+
+    // loading button
+    var l = $('#btnExecuteQuery').ladda();
+    l.ladda('start');
+
+    var connection = Connections.findOne({_id: Session.get(Template.strSessionConnection)});
+    var selectedCollection = Session.get(Template.strSessionSelectedCollection);
+    var cursorOptions = Template.find.getCursorOptions();
+    var selector = ace.edit("preSelector").getSession().getValue();
+
+    if (!selector) {
+        selector = {};
+    }
+    else {
+        try {
+            selector = JSON.parse(selector);
+        }
+        catch (err) {
+            toastr.error("Syntax error on selector: " + err.message);
+            l.ladda('stop');
+            return;
+        }
+    }
+
+    if (cursorOptions["ERROR"]) {
+        toastr.error(cursorOptions["ERROR"]);
+        l.ladda('stop');
+        return;
+    }
+
+    console.log(cursorOptions);
+
+    Meteor.call('executeFindQuery', connection, selectedCollection, selector, cursorOptions, function (err, result) {
+        if (err || result.error) {
+            var errorMessage;
+            if (err) {
+                errorMessage = err.message;
+            } else {
+                errorMessage = result.error.message;
+            }
+            toastr.error("Couldn't execute query: " + errorMessage);
+            // stop loading animation
+            l.ladda('stop');
+            return;
+        }
+
+        // set json editor
+        Template.find.getEditor().set(result.result);
+
+        // set ace editor
+        AceEditor.instance("aceeditor", {
+            mode: "javascript",
+            theme: 'dawn'
+        }, function (editor) {
+            editor.$blockScrolling = Infinity;
+            editor.setOptions({
+                fontSize: "12pt",
+                showPrintMargin: false
+            });
+            editor.setValue(JSON.stringify(result.result, null, '\t'), -1);
+        });
+
+        $('#divJsonEditor').show('slow');
+
+        // stop loading animation
+        l.ladda('stop');
+    });
+}
+
+Template.find.getCursorOptions = function () {
+    var result = {};
+    if (!$.inArray("PROJECT", Session.get(Template.strSessionSelectedOptions))) {
+        var selector = ace.edit("aceProject").getSession().getValue();
+        if (!selector) {
+            selector = {};
+        }
+        else {
+            try {
+                selector = JSON.parse(selector);
+            }
+            catch (err) {
+                result["ERROR"] = "Syntax Error on $project: " + err.message;
+                return result;
+            }
+        }
+        result[CURSOR_OPTIONS.PROJECT] = selector;
+    }
+
+    return result;
+}
+
+var jsonEditor;
+Template.find.getEditor = function () {
+    if ($('.jsoneditor').length == 0) {
+        jsonEditor = new JSONEditor(document.getElementById("jsoneditor"), {
+            mode: "tree",
+            search: true
+        });
+    }
+    return jsonEditor;
 }

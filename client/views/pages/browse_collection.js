@@ -1,32 +1,8 @@
 /**
  * Created by RSercan on 29.12.2015.
  */
-var jsonEditor;
-var jsonEditorOptions = {
-    mode: "tree",
-    search: true
-};
-
-getEditor = function () {
-    if ($('.jsoneditor').length == 0) {
-        jsonEditor = new JSONEditor(document.getElementById("jsoneditor"), jsonEditorOptions);
-    }
-    return jsonEditor;
-}
-
-Template.browseCollection.helpers({
-    'getQueryTemplate': function () {
-        if (!Session.get(strSessionSelectedQuery)) {
-            Session.set(strSessionSelectedQuery, 'find')
-        }
-
-        return Session.get(strSessionSelectedQuery);
-    }
-});
-
-
 Template.browseCollection.onRendered(function () {
-    if (!Session.get(strSessionSelectedCollection)) {
+    if (!Session.get(Template.strSessionSelectedCollection)) {
         Router.go('browseDB');
         return;
     }
@@ -45,7 +21,7 @@ Template.browseCollection.events({
     'change #cmbQueries': function (e) {
         var value = $('#cmbQueries').find(":selected").text();
         if (value) {
-            Session.set(strSessionSelectedQuery, value);
+            Session.set(Template.strSessionSelectedQuery, value);
         }
     },
 
@@ -61,5 +37,15 @@ Template.browseCollection.events({
             aceView.show('slow');
         }
 
+    }
+});
+
+Template.browseCollection.helpers({
+    'getQueryTemplate': function () {
+        if (!Session.get(Template.strSessionSelectedQuery)) {
+            Session.set(Template.strSessionSelectedQuery, 'find')
+        }
+
+        return Session.get(Template.strSessionSelectedQuery);
     }
 });

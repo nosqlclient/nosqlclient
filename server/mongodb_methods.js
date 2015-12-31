@@ -24,7 +24,7 @@ Meteor.methods({
         return collectionNames;
     },
 
-    'executeFindQuery': function (connection, selectedCollection, selector) {
+    'executeFindQuery': function (connection, selectedCollection, selector, cursorOptions) {
         var connectionUrl = getConnectionUrl(connection);
         console.log('executing find query on: ' + connectionUrl + '/' + selectedCollection);
         var mongodbApi = Meteor.npmRequire('mongodb').MongoClient;
@@ -35,11 +35,20 @@ Meteor.methods({
         var result = Async.runSync(function (done) {
             mongodbApi.connect(connectionUrl, function (err, db) {
                 try {
-                    db.collection(selectedCollection).find(selector).toArray(function (err, docs) {
+                    var cursor = db.collection(selectedCollection).find(selector);
+
+                    for (var key in cursorOptions) {
+                        if (cursorOptions.hasOwnProperty(key) && cursorOptions[key]) {
+                            cursor = cursor[key](cursorOptions[key]);
+                        }
+                    }
+
+                    cursor.toArray(function (err, docs) {
                         done(err, docs);
                         db.close();
                     });
-                } catch (ex) {
+                }
+                catch (ex) {
                     console.error(ex);
                     done(ex, null);
                     db.close();
