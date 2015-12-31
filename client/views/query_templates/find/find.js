@@ -26,7 +26,7 @@ Template.find.onRendered(function () {
             );
         };
         // disable Enter Shift-Enter keys
-        editor.commands.bindKey("Enter|Shift-Enter", executeQuery());
+        editor.commands.bindKey("Enter|Shift-Enter", executeQuery);
     });
 });
 
