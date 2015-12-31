@@ -1,33 +1,13 @@
 /**
  * Created by sercan on 30.12.2015.
  */
+var strSessionSelectedOptions = "selectedCursorOptions";
+
 Template.find.onRendered(function () {
     // set ace editor
-    AceEditor.instance("preSelector", {
-        mode: "javascript",
-        theme: 'dawn'
-    }, function (editor) {
-        editor.$blockScrolling = Infinity;
-        editor.setOptions({
-            fontSize: "11pt",
-            showPrintMargin: false,
-        });
-
-        // remove newlines in pasted text
-        editor.on("paste", function (e) {
-            e.text = e.text.replace(/[\r\n]+/g, " ");
-        });
-        // make mouse position clipping nicer
-        editor.renderer.screenToTextCoordinates = function (x, y) {
-            var pos = this.pixelToScreenCoordinates(x, y);
-            return this.session.screenToDocumentPosition(
-                Math.min(this.session.getScreenLength() - 1, Math.max(pos.row, 0)),
-                Math.max(pos.column, 0)
-            );
-        };
-        // disable Enter Shift-Enter keys
-        editor.commands.bindKey("Enter|Shift-Enter", executeQuery);
-    });
+    initializeAceEditor();
+    initializeOptions();
+    initializeSessionVariable();
 });
 
 Template.browseCollection.events({
@@ -107,4 +87,57 @@ executeQuery = function () {
         // stop loading animation
         l.ladda('stop');
     });
+}
+
+initializeAceEditor = function () {
+    AceEditor.instance("preSelector", {
+        mode: "javascript",
+        theme: 'dawn'
+    }, function (editor) {
+        editor.$blockScrolling = Infinity;
+        editor.setOptions({
+            fontSize: "11pt",
+            showPrintMargin: false,
+        });
+
+        // remove newlines in pasted text
+        editor.on("paste", function (e) {
+            e.text = e.text.replace(/[\r\n]+/g, " ");
+        });
+        // make mouse position clipping nicer
+        editor.renderer.screenToTextCoordinates = function (x, y) {
+            var pos = this.pixelToScreenCoordinates(x, y);
+            return this.session.screenToDocumentPosition(
+                Math.min(this.session.getScreenLength() - 1, Math.max(pos.row, 0)),
+                Math.max(pos.column, 0)
+            );
+        };
+        // disable Enter Shift-Enter keys
+        editor.commands.bindKey("Enter|Shift-Enter", executeQuery);
+    });
+}
+
+initializeOptions = function () {
+    var cmb = $('#cmbCursorOptions');
+    $.each(CURSOR_OPTIONS, function (key, value) {
+        cmb.append($("<option></option>")
+            .attr("value", key)
+            .text(value));
+    });
+
+    cmb.chosen();
+    cmb.on('change', function (evt, params) {
+        var array = Session.get(strSessionSelectedOptions);
+        if (params.deselected) {
+            array.remove(params.deselected);
+        }
+        else {
+            array.push(params.selected);
+        }
+        Session.set(strSessionSelectedOptions, array);
+    });
+}
+
+initializeSessionVariable = function () {
+    Session.set(strSessionSelectedOptions, []);
 }

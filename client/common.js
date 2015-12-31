@@ -12,6 +12,17 @@ clearSessions = function () {
     Session.set(strSessionSelectedCollection, undefined);
 };
 
+Array.prototype.remove = function () {
+    var what, a = arguments, L = a.length, ax;
+    while (L && this.length) {
+        what = a[--L];
+        while ((ax = this.indexOf(what)) !== -1) {
+            this.splice(ax, 1);
+        }
+    }
+    return this;
+};
+
 Template.registerHelper('getConnection', function () {
     if (Session.get(strSessionConnection)) {
         return Connections.findOne({_id: Session.get(strSessionConnection)});
