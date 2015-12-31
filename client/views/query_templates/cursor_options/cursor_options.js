@@ -3,20 +3,31 @@
  */
 Template.cursorOptions.helpers({
     'isSelected': function (option) {
-        if (!$.inArray(option, Session.get(Template.strSessionSelectedOptions))) {
+        if ($.inArray(option, Session.get(Template.strSessionSelectedOptions)) != -1) {
             return true;
         }
         return false;
     }
 });
 
-/* PROJECT TEMPLATE */
 Template.project.onRendered(function () {
-    Template.project.initializeAceEditor();
+    Template.cursorOptions.initializeAceEditor('aceProject');
 });
 
-Template.project.initializeAceEditor = function () {
-    AceEditor.instance("aceProject", {
+Template.sort.onRendered(function () {
+    Template.cursorOptions.initializeAceEditor('aceSort');
+});
+
+Template.max.onRendered(function () {
+    Template.cursorOptions.initializeAceEditor('aceMax');
+});
+
+Template.min.onRendered(function () {
+    Template.cursorOptions.initializeAceEditor('aceMin');
+});
+
+Template.cursorOptions.initializeAceEditor = function (id) {
+    AceEditor.instance(id, {
         mode: "javascript",
         theme: 'dawn'
     }, function (editor) {
@@ -42,5 +53,3 @@ Template.project.initializeAceEditor = function () {
         editor.commands.bindKey("Enter|Shift-Enter", Template.find.executeQuery);
     });
 }
-
-/* END OF PROJECT TEMPLATE */

@@ -30,7 +30,9 @@ Meteor.methods({
         var mongodbApi = Meteor.npmRequire('mongodb').MongoClient;
 
         convertValidObjectIds(selector);
+        convertValidObjectIds(cursorOptions);
         convertValidDates(selector);
+        convertValidDates(cursorOptions);
 
         var result = Async.runSync(function (done) {
             mongodbApi.connect(connectionUrl, function (err, db) {

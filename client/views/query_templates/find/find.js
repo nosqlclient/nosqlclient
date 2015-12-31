@@ -8,7 +8,8 @@ Template.find.onRendered(function () {
     Template.find.initializeSessionVariable();
 });
 
-Template.find.events({
+//TODO change this
+Template.browseCollection.events({
     'click #btnExecuteQuery': function (e) {
         Template.find.executeQuery();
     }
@@ -102,8 +103,6 @@ Template.find.executeQuery = function () {
         return;
     }
 
-    console.log(cursorOptions);
-
     Meteor.call('executeFindQuery', connection, selectedCollection, selector, cursorOptions, function (err, result) {
         if (err || result.error) {
             var errorMessage;
@@ -143,21 +142,86 @@ Template.find.executeQuery = function () {
 
 Template.find.getCursorOptions = function () {
     var result = {};
-    if (!$.inArray("PROJECT", Session.get(Template.strSessionSelectedOptions))) {
-        var selector = ace.edit("aceProject").getSession().getValue();
-        if (!selector) {
-            selector = {};
+    if ($.inArray("PROJECT", Session.get(Template.strSessionSelectedOptions)) != -1) {
+        var val = ace.edit("aceProject").getSession().getValue();
+        if (!val) {
+            val = {};
         }
         else {
             try {
-                selector = JSON.parse(selector);
+                val = JSON.parse(val);
             }
             catch (err) {
                 result["ERROR"] = "Syntax Error on $project: " + err.message;
                 return result;
             }
         }
-        result[CURSOR_OPTIONS.PROJECT] = selector;
+        result[CURSOR_OPTIONS.PROJECT] = val;
+    }
+
+    if ($.inArray("SKIP", Session.get(Template.strSessionSelectedOptions)) != -1) {
+        var val = $('#inputSkip').val();
+        if (val) {
+            result[CURSOR_OPTIONS.SKIP] = parseInt(val);
+        }
+    }
+
+    if ($.inArray("LIMIT", Session.get(Template.strSessionSelectedOptions)) != -1) {
+        var val = $('#inputLimit').val();
+        if (val) {
+            result[CURSOR_OPTIONS.LIMIT] = parseInt(val);
+        }
+    }
+
+    if ($.inArray("MAX", Session.get(Template.strSessionSelectedOptions)) != -1) {
+        var val = ace.edit("aceMax").getSession().getValue();
+        if (!val) {
+            val = {};
+        }
+        else {
+            try {
+                val = JSON.parse(val);
+            }
+            catch (err) {
+                result["ERROR"] = "Syntax Error on $max: " + err.message;
+                return result;
+            }
+        }
+        result[CURSOR_OPTIONS.MAX] = val;
+    }
+
+    if ($.inArray("MIN", Session.get(Template.strSessionSelectedOptions)) != -1) {
+        var val = ace.edit("aceMin").getSession().getValue();
+        if (!val) {
+            val = {};
+        }
+        else {
+            try {
+                val = JSON.parse(val);
+            }
+            catch (err) {
+                result["ERROR"] = "Syntax Error on $min: " + err.message;
+                return result;
+            }
+        }
+        result[CURSOR_OPTIONS.MIN] = val;
+    }
+
+    if ($.inArray("SORT", Session.get(Template.strSessionSelectedOptions)) != -1) {
+        var val = ace.edit("aceSort").getSession().getValue();
+        if (!val) {
+            val = {};
+        }
+        else {
+            try {
+                val = JSON.parse(val);
+            }
+            catch (err) {
+                result["ERROR"] = "Syntax Error on $sort: " + err.message;
+                return result;
+            }
+        }
+        result[CURSOR_OPTIONS.SORT] = val;
     }
 
     return result;

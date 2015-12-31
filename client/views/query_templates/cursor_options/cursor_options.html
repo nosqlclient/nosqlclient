@@ -2,11 +2,14 @@
     {{#if isSelected "PROJECT"}}
         {{> project}}
     {{/if}}
+    {{#if isSelected "LIMIT"}}
+        {{> limit}}
+    {{/if}}
     {{#if isSelected "SKIP"}}
         {{> skip}}
     {{/if}}
-    {{#if isSelected "LIMIT"}}
-        {{> limit}}
+    {{#if isSelected "SORT"}}
+        {{> sort}}
     {{/if}}
     {{#if isSelected "MAX"}}
         {{> max}}
@@ -14,36 +17,58 @@
     {{#if isSelected "MIN"}}
         {{> min}}
     {{/if}}
-    {{#if isSelected "SORT"}}
-        {{> sort}}
-    {{/if}}
 </template>
 
 <template name="project">
     <div class="form-group">
-        <label class="col-lg-1 control-label">$project</label>
+        <label class="col-lg-1 control-label">project</label>
         <div class="col-lg-11">
             <pre class="form-control" id='aceProject'></pre>
         </div>
     </div>
 </template>
 
-<template name="skip">
-
-</template>
-
 <template name="limit">
-
+    <div class="form-group">
+        <label class="col-lg-1 control-label">limit</label>
+        <div class="col-lg-11">
+            <input id="inputLimit" min="0" required="true" type="number" class="form-control">
+        </div>
+    </div>
 </template>
 
-<template name="max">
-
-</template>
-
-<template name="min">
-
+<template name="skip">
+    <div class="form-group">
+        <label class="col-lg-1 control-label">skip</label>
+        <div class="col-lg-11">
+            <input id="inputSkip" min="0" required="true" type="number" class="form-control">
+        </div>
+    </div>
 </template>
 
 <template name="sort">
+    <div class="form-group">
+        <label class="col-lg-1 control-label">sort</label>
+        <div class="col-lg-11">
+            <pre class="form-control" id='aceSort'></pre>
+        </div>
+    </div>
+</template>
 
+<template name="max">
+    <div class="form-group">
+        <label class="col-lg-1 control-label">max</label>
+        <div class="col-lg-11">
+            <pre class="form-control" id='aceMax'></pre>
+        </div>
+    </div>
+</template>
+
+<template name="min">
+    <div class="form-group">
+        <label class="col-lg-1 control-label">min</label>
+        <div class="col-lg-11">
+            <pre class="form-control" id='aceMin'></pre>
+        </div>
+    </div>
 </template>
