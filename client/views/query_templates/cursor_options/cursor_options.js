@@ -49,7 +49,15 @@ Template.cursorOptions.initializeAceEditor = function (id) {
                 Math.max(pos.column, 0)
             );
         };
-        // disable Enter Shift-Enter keys
-        editor.commands.bindKey("Enter|Shift-Enter", Template.find.executeQuery);
+
+        // disable Enter Shift-Enter keys and bind to executeQuery for corresponding template
+        var name = Template.instance().parentTemplate(2).view.name;
+        var cleanName = name.substring(name.indexOf('.') + 1);
+        if (cleanName == QUERY_TYPES.FIND) {
+            editor.commands.bindKey("Enter|Shift-Enter", Template.find.executeQuery);
+        }
+        else if (cleanName == QUERY_TYPES.FINDONE) {
+            editor.commands.bindKey("Enter|Shift-Enter", Template.findOne.executeQuery);
+        }
     });
 }

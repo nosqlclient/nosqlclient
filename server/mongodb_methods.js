@@ -24,44 +24,12 @@ Meteor.methods({
         return collectionNames;
     },
 
-    'executeFindQuery': function (connection, selectedCollection, selector, cursorOptions) {
-        var connectionUrl = getConnectionUrl(connection);
-        console.log('executing find query on: ' + connectionUrl + '/' + selectedCollection);
-        var mongodbApi = Meteor.npmRequire('mongodb').MongoClient;
+    'findOne': function (connection, selectedCollection, selector, cursorOptions) {
+        return proceedFindQuery(connection, selectedCollection, selector, cursorOptions, true);
+    },
 
-        convertValidObjectIds(selector);
-        convertValidObjectIds(cursorOptions);
-        convertValidDates(selector);
-        convertValidDates(cursorOptions);
-
-        var result = Async.runSync(function (done) {
-            mongodbApi.connect(connectionUrl, function (err, db) {
-                try {
-                    var cursor = db.collection(selectedCollection).find(selector);
-
-                    for (var key in cursorOptions) {
-                        if (cursorOptions.hasOwnProperty(key) && cursorOptions[key]) {
-                            cursor = cursor[key](cursorOptions[key]);
-                        }
-                    }
-
-                    cursor.toArray(function (err, docs) {
-                        done(err, docs);
-                        db.close();
-                    });
-                }
-                catch (ex) {
-                    console.error(ex);
-                    done(ex, null);
-                    db.close();
-                }
-            });
-        });
-
-        convertObjectIDsToString(result);
-        convertDatesToString(result);
-
-        return result;
+    'find': function (connection, selectedCollection, selector, cursorOptions) {
+        return proceedFindQuery(connection, selectedCollection, selector, cursorOptions);
     },
 
     'dropDB': function (connection) {
@@ -80,3 +48,47 @@ Meteor.methods({
         return result;
     }
 });
+
+var proceedFindQuery = function (connection, selectedCollection, selector, cursorOptions, one) {
+    var connectionUrl = getConnectionUrl(connection);
+    console.log('executing find ' + (one ? 'One' : '') + ' query ' + JSON.stringify(selector) + ' with cursor options: '
+        + JSON.stringify(cursorOptions) + ' on: ' + connectionUrl + '/' + selectedCollection);
+
+    var mongodbApi = Meteor.npmRequire('mongodb').MongoClient;
+
+    convertJSONtoBSON(selector);
+    convertJSONtoBSON(cursorOptions);
+
+    var result = Async.runSync(function (done) {
+        mongodbApi.connect(connectionUrl, function (err, db) {
+            try {
+                var cursor = db.collection(selectedCollection).find(selector);
+
+                for (var key in cursorOptions) {
+                    if (cursorOptions.hasOwnProperty(key) && cursorOptions[key]) {
+                        cursor = cursor[key](cursorOptions[key]);
+                    }
+                }
+                if (one) {
+                    cursor.limit(1).next(function (err, doc) {
+                        done(err, doc);
+                        db.close();
+                    });
+                } else {
+                    cursor.toArray(function (err, docs) {
+                        done(err, docs);
+                        db.close();
+                    });
+                }
+            }
+            catch (ex) {
+                console.error(ex);
+                done(ex, null);
+                db.close();
+            }
+        });
+    });
+
+    convertBSONtoJSON(result);
+    return result;
+}

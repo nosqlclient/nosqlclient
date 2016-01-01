@@ -11,7 +11,18 @@ getConnectionUrl = function (connection) {
     return connectionUrl;
 }
 
-convertDatesToString = function (obj) {
+convertBSONtoJSON = function (obj) {
+    convertObjectIDsToString(obj);
+    convertDatesToString(obj);
+}
+
+convertJSONtoBSON = function (obj) {
+    convertValidObjectIds(obj);
+    convertValidDates(obj);
+}
+
+
+var convertDatesToString = function (obj) {
     for (var property in obj) {
         if (obj.hasOwnProperty(property) && obj[property] != null) {
             if (obj[property].constructor == Object) {
@@ -31,7 +42,7 @@ convertDatesToString = function (obj) {
     }
 }
 
-convertObjectIDsToString = function (obj) {
+var convertObjectIDsToString = function (obj) {
     var objectID = Meteor.npmRequire('mongodb').ObjectID;
 
     for (var property in obj) {
@@ -53,7 +64,7 @@ convertObjectIDsToString = function (obj) {
     }
 }
 
-convertValidObjectIds = function (obj) {
+var convertValidObjectIds = function (obj) {
     var objectID = Meteor.npmRequire('mongodb').ObjectID;
 
     for (var property in obj) {
@@ -75,7 +86,7 @@ convertValidObjectIds = function (obj) {
     }
 }
 
-convertValidDates = function (obj) {
+var convertValidDates = function (obj) {
     for (var property in obj) {
         if (obj.hasOwnProperty(property) && obj[property] != null) {
             if (obj[property].constructor == Object) {

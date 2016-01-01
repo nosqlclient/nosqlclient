@@ -28,6 +28,9 @@ Template.registerHelper('getSelectedCollection', function () {
 });
 
 
+/**
+ * Adds remove by value functionality to arrays. e.x. myArray.remove('myValue');
+ * */
 Array.prototype.remove = function () {
     var what, a = arguments, L = a.length, ax;
     while (L && this.length) {
@@ -37,4 +40,23 @@ Array.prototype.remove = function () {
         }
     }
     return this;
+};
+
+/**
+ * Get the parent template instance
+ * @param {Number} [levels] How many levels to go up. Default is 1
+ * @returns {Blaze.TemplateInstance}
+ */
+
+Blaze.TemplateInstance.prototype.parentTemplate = function (levels) {
+    var view = Blaze.currentView;
+    if (typeof levels === "undefined") {
+        levels = 1;
+    }
+    while (view) {
+        if (view.name.indexOf("Template.") != -1 && !(levels--)) {
+            return view.templateInstance();
+        }
+        view = view.parentView;
+    }
 };

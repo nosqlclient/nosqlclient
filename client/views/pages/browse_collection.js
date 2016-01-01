@@ -49,3 +49,45 @@ Template.browseCollection.helpers({
         return Session.get(Template.strSessionSelectedQuery);
     }
 });
+
+Template.browseCollection.initExecuteQuery = function () {
+    // hide results
+    $('#divJsonEditor').hide();
+    $('#divAceEditor').hide();
+
+    // loading button
+    var l = $('#btnExecuteQuery').ladda();
+    l.ladda('start');
+    return l;
+}
+
+Template.browseCollection.setResult = function (result) {
+    // set json editor
+    Template.browseCollection.getEditor().set(result);
+
+    // set ace editor
+    AceEditor.instance("aceeditor", {
+        mode: "javascript",
+        theme: 'dawn'
+    }, function (editor) {
+        editor.$blockScrolling = Infinity;
+        editor.setOptions({
+            fontSize: "12pt",
+            showPrintMargin: false
+        });
+        editor.setValue(JSON.stringify(result, null, '\t'), -1);
+    });
+
+    $('#divJsonEditor').show('slow');
+};
+
+var jsonEditor;
+Template.browseCollection.getEditor = function () {
+    if ($('.jsoneditor').length == 0) {
+        jsonEditor = new JSONEditor(document.getElementById("jsoneditor"), {
+            mode: "tree",
+            search: true
+        });
+    }
+    return jsonEditor;
+}
