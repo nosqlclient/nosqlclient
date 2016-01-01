@@ -2,42 +2,13 @@
  * Created by sercan on 30.12.2015.
  */
 Template.find.onRendered(function () {
-    // set ace editor
-    Template.find.initializeAceEditor();
+    Template.initializeAceEditor('preSelector', Template.find.executeQuery);
     Template.find.initializeOptions();
-    Template.find.initializeSessionVariable();
 });
 
-Template.find.initializeAceEditor = function () {
-    AceEditor.instance("preSelector", {
-        mode: "javascript",
-        theme: 'dawn'
-    }, function (editor) {
-        editor.$blockScrolling = Infinity;
-        editor.setOptions({
-            fontSize: "11pt",
-            showPrintMargin: false
-        });
-
-        // remove newlines in pasted text
-        editor.on("paste", function (e) {
-            e.text = e.text.replace(/[\r\n]+/g, " ");
-        });
-        // make mouse position clipping nicer
-        editor.renderer.screenToTextCoordinates = function (x, y) {
-            var pos = this.pixelToScreenCoordinates(x, y);
-            return this.session.screenToDocumentPosition(
-                Math.min(this.session.getScreenLength() - 1, Math.max(pos.row, 0)),
-                Math.max(pos.column, 0)
-            );
-        };
-        // disable Enter Shift-Enter keys
-        editor.commands.bindKey("Enter|Shift-Enter", Template.find.executeQuery);
-    });
-};
 
 Template.find.initializeOptions = function () {
-    var cmb = $('#cmbCursorOptions');
+    var cmb = $('#cmbFindCursorOptions');
     $.each(CURSOR_OPTIONS, function (key, value) {
         cmb.append($("<option></option>")
             .attr("value", key)
@@ -45,27 +16,10 @@ Template.find.initializeOptions = function () {
     });
 
     cmb.chosen();
-    Template.find.setCursorOptionsChangeEvent(cmb);
+    Template.setOptionsComboboxChangeEvent(cmb);
 };
 
-Template.find.setCursorOptionsChangeEvent = function (cmb) {
-    cmb.on('change', function (evt, params) {
-        var array = Session.get(Template.strSessionSelectedOptions);
-        if (params.deselected) {
-            array.remove(params.deselected);
-        }
-        else {
-            array.push(params.selected);
-        }
-        Session.set(Template.strSessionSelectedOptions, array);
-    });
-};
-
-Template.find.initializeSessionVariable = function () {
-    Session.set(Template.strSessionSelectedOptions, []);
-};
-
-Template.find.executeQuery = function (methodName) {
+Template.find.executeQuery = function () {
     var laddaButton = Template.browseCollection.initExecuteQuery();
     var connection = Connections.findOne({_id: Session.get(Template.strSessionConnection)});
     var selectedCollection = Session.get(Template.strSessionSelectedCollection);
@@ -92,7 +46,7 @@ Template.find.executeQuery = function (methodName) {
         return;
     }
 
-    Meteor.call((methodName ? methodName : "find"), connection, selectedCollection, selector, cursorOptions, function (err, result) {
+    Meteor.call("find", connection, selectedCollection, selector, cursorOptions, function (err, result) {
         if (err || result.error) {
             var errorMessage;
             if (err) {

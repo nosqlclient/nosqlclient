@@ -15,6 +15,11 @@ Template.browseCollection.onRendered(function () {
     });
 
     cmb.chosen();
+    cmb.on('change', function (evt, params) {
+        Session.set(Template.strSessionSelectedOptions, []);
+    });
+
+    Session.set(Template.strSessionSelectedOptions, []);
 });
 
 Template.browseCollection.events({
@@ -41,7 +46,7 @@ Template.browseCollection.events({
         var queryTemplate = Session.get(Template.strSessionSelectedQuery);
         if (queryTemplate) {
             Template[queryTemplate].executeQuery();
-        }else{
+        } else {
             Template["find"].executeQuery();
         }
     }

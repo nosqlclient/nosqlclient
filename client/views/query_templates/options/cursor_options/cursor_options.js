@@ -1,20 +1,6 @@
 /**
  * Created by sercan on 31.12.2015.
  */
-Template.cursorOptions.helpers({
-    'isSelected': function (option) {
-        return $.inArray(option, Session.get(Template.strSessionSelectedOptions)) != -1;
-    }
-});
-
-Template.project.onRendered(function () {
-    Template.cursorOptions.initializeAceEditor('aceProject');
-});
-
-Template.sort.onRendered(function () {
-    Template.cursorOptions.initializeAceEditor('aceSort');
-});
-
 Template.max.onRendered(function () {
     Template.cursorOptions.initializeAceEditor('aceMax');
 });
@@ -24,37 +10,14 @@ Template.min.onRendered(function () {
 });
 
 Template.cursorOptions.initializeAceEditor = function (id) {
-    AceEditor.instance(id, {
-        mode: "javascript",
-        theme: 'dawn'
-    }, function (editor) {
-        editor.$blockScrolling = Infinity;
-        editor.setOptions({
-            fontSize: "11pt",
-            showPrintMargin: false
-        });
+    // find and findOne templates uses same cursor options so clarify ENTER key event on SELECTOR.
+    // disable Enter Shift-Enter keys and bind to executeQuery for corresponding template
+    var parentTemplateName = Template.getParentTemplateName(2);
+    if (parentTemplateName == QUERY_TYPES.FIND) {
+        Template.initializeAceEditor(id, Template.find.executeQuery);
+    }
+    else if (parentTemplateName == QUERY_TYPES.FINDONE) {
+        Template.initializeAceEditor(id, Template.findOne.executeQuery);
+    }
 
-        // remove newlines in pasted text
-        editor.on("paste", function (e) {
-            e.text = e.text.replace(/[\r\n]+/g, " ");
-        });
-        // make mouse position clipping nicer
-        editor.renderer.screenToTextCoordinates = function (x, y) {
-            var pos = this.pixelToScreenCoordinates(x, y);
-            return this.session.screenToDocumentPosition(
-                Math.min(this.session.getScreenLength() - 1, Math.max(pos.row, 0)),
-                Math.max(pos.column, 0)
-            );
-        };
-
-        // disable Enter Shift-Enter keys and bind to executeQuery for corresponding template
-        var name = Template.instance().parentTemplate(2).view.name;
-        var cleanName = name.substring(name.indexOf('.') + 1);
-        if (cleanName == QUERY_TYPES.FIND) {
-            editor.commands.bindKey("Enter|Shift-Enter", Template.find.executeQuery);
-        }
-        else if (cleanName == QUERY_TYPES.FINDONE) {
-            editor.commands.bindKey("Enter|Shift-Enter", Template.findOne.executeQuery);
-        }
-    });
 };
