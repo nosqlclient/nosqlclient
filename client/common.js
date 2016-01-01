@@ -5,7 +5,7 @@ Template.strSessionConnection = 'connection';
 Template.strSessionCollectionNames = 'collectionNames';
 Template.strSessionSelectedCollection = 'selectedCollection';
 Template.strSessionSelectedQuery = 'selectedQuery';
-Template.strSessionSelectedOptions = "selectedCursorOptions";
+Template.strSessionSelectedOptions = "selectedOptions";
 
 Template.clearSessions = function () {
     Session.set(Template.strSessionCollectionNames, undefined);

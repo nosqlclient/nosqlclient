@@ -25,4 +25,4 @@ Template.findOne.initializeOptions = function () {
 
 Template.findOne.executeQuery = function () {
     Template.find.executeQuery('findOne');
-}
+};

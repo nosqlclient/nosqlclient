@@ -18,14 +18,14 @@ Template.browseCollection.onRendered(function () {
 });
 
 Template.browseCollection.events({
-    'change #cmbQueries': function (e) {
+    'change #cmbQueries': function () {
         var value = $('#cmbQueries').find(":selected").text();
         if (value) {
             Session.set(Template.strSessionSelectedQuery, value);
         }
     },
 
-    'click #btnSwitchView': function (e) {
+    'click #btnSwitchView': function () {
         var jsonView = $('#divJsonEditor');
         var aceView = $('#divAceEditor');
 
@@ -36,7 +36,14 @@ Template.browseCollection.events({
             jsonView.hide();
             aceView.show('slow');
         }
-
+    },
+    'click #btnExecuteQuery': function () {
+        var queryTemplate = Session.get(Template.strSessionSelectedQuery);
+        if (queryTemplate) {
+            Template[queryTemplate].executeQuery();
+        }else{
+            Template["find"].executeQuery();
+        }
     }
 });
 
@@ -59,7 +66,7 @@ Template.browseCollection.initExecuteQuery = function () {
     var l = $('#btnExecuteQuery').ladda();
     l.ladda('start');
     return l;
-}
+};
 
 Template.browseCollection.setResult = function (result) {
     // set json editor
@@ -90,4 +97,4 @@ Template.browseCollection.getEditor = function () {
         });
     }
     return jsonEditor;
-}
+};

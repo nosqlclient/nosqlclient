@@ -3,10 +3,7 @@
  */
 Template.cursorOptions.helpers({
     'isSelected': function (option) {
-        if ($.inArray(option, Session.get(Template.strSessionSelectedOptions)) != -1) {
-            return true;
-        }
-        return false;
+        return $.inArray(option, Session.get(Template.strSessionSelectedOptions)) != -1;
     }
 });
 
@@ -34,7 +31,7 @@ Template.cursorOptions.initializeAceEditor = function (id) {
         editor.$blockScrolling = Infinity;
         editor.setOptions({
             fontSize: "11pt",
-            showPrintMargin: false,
+            showPrintMargin: false
         });
 
         // remove newlines in pasted text
@@ -60,4 +57,4 @@ Template.cursorOptions.initializeAceEditor = function (id) {
             editor.commands.bindKey("Enter|Shift-Enter", Template.findOne.executeQuery);
         }
     });
-}
+};

@@ -8,14 +8,6 @@ Template.find.onRendered(function () {
     Template.find.initializeSessionVariable();
 });
 
-//TODO change this
-Template.browseCollection.events({
-    'click #btnExecuteQuery': function (e) {
-        Template.find.executeQuery();
-    }
-});
-
-
 Template.find.initializeAceEditor = function () {
     AceEditor.instance("preSelector", {
         mode: "javascript",
@@ -24,7 +16,7 @@ Template.find.initializeAceEditor = function () {
         editor.$blockScrolling = Infinity;
         editor.setOptions({
             fontSize: "11pt",
-            showPrintMargin: false,
+            showPrintMargin: false
         });
 
         // remove newlines in pasted text
@@ -42,7 +34,7 @@ Template.find.initializeAceEditor = function () {
         // disable Enter Shift-Enter keys
         editor.commands.bindKey("Enter|Shift-Enter", Template.find.executeQuery);
     });
-}
+};
 
 Template.find.initializeOptions = function () {
     var cmb = $('#cmbCursorOptions');
@@ -54,7 +46,7 @@ Template.find.initializeOptions = function () {
 
     cmb.chosen();
     Template.find.setCursorOptionsChangeEvent(cmb);
-}
+};
 
 Template.find.setCursorOptionsChangeEvent = function (cmb) {
     cmb.on('change', function (evt, params) {
@@ -67,11 +59,11 @@ Template.find.setCursorOptionsChangeEvent = function (cmb) {
         }
         Session.set(Template.strSessionSelectedOptions, array);
     });
-}
+};
 
 Template.find.initializeSessionVariable = function () {
     Session.set(Template.strSessionSelectedOptions, []);
-}
+};
 
 Template.find.executeQuery = function (methodName) {
     var laddaButton = Template.browseCollection.initExecuteQuery();
@@ -118,91 +110,91 @@ Template.find.executeQuery = function (methodName) {
         // stop loading animation
         laddaButton.ladda('stop');
     });
-}
+};
 
 Template.find.getCursorOptions = function () {
     var result = {};
     if ($.inArray("PROJECT", Session.get(Template.strSessionSelectedOptions)) != -1) {
-        var val = ace.edit("aceProject").getSession().getValue();
-        if (!val) {
-            val = {};
+        var projectVal = ace.edit("aceProject").getSession().getValue();
+        if (!projectVal) {
+            projectVal = {};
         }
         else {
             try {
-                val = JSON.parse(val);
+                projectVal = JSON.parse(projectVal);
             }
             catch (err) {
                 result["ERROR"] = "Syntax Error on $project: " + err.message;
                 return result;
             }
         }
-        result[CURSOR_OPTIONS.PROJECT] = val;
+        result[CURSOR_OPTIONS.PROJECT] = projectVal;
     }
 
     if ($.inArray("SKIP", Session.get(Template.strSessionSelectedOptions)) != -1) {
-        var val = $('#inputSkip').val();
-        if (val) {
-            result[CURSOR_OPTIONS.SKIP] = parseInt(val);
+        var skipVal = $('#inputSkip').val();
+        if (skipVal) {
+            result[CURSOR_OPTIONS.SKIP] = parseInt(skipVal);
         }
     }
 
     if ($.inArray("LIMIT", Session.get(Template.strSessionSelectedOptions)) != -1) {
-        var val = $('#inputLimit').val();
-        if (val) {
-            result[CURSOR_OPTIONS.LIMIT] = parseInt(val);
+        var limitVal = $('#inputLimit').val();
+        if (limitVal) {
+            result[CURSOR_OPTIONS.LIMIT] = parseInt(limitVal);
         }
     }
 
     if ($.inArray("MAX", Session.get(Template.strSessionSelectedOptions)) != -1) {
-        var val = ace.edit("aceMax").getSession().getValue();
-        if (!val) {
-            val = {};
+        var maxVal = ace.edit("aceMax").getSession().getValue();
+        if (!maxVal) {
+            maxVal = {};
         }
         else {
             try {
-                val = JSON.parse(val);
+                maxVal = JSON.parse(maxVal);
             }
             catch (err) {
                 result["ERROR"] = "Syntax Error on $max: " + err.message;
                 return result;
             }
         }
-        result[CURSOR_OPTIONS.MAX] = val;
+        result[CURSOR_OPTIONS.MAX] = maxVal;
     }
 
     if ($.inArray("MIN", Session.get(Template.strSessionSelectedOptions)) != -1) {
-        var val = ace.edit("aceMin").getSession().getValue();
-        if (!val) {
-            val = {};
+        var minVal = ace.edit("aceMin").getSession().getValue();
+        if (!minVal) {
+            minVal = {};
         }
         else {
             try {
-                val = JSON.parse(val);
+                minVal = JSON.parse(minVal);
             }
             catch (err) {
                 result["ERROR"] = "Syntax Error on $min: " + err.message;
                 return result;
             }
         }
-        result[CURSOR_OPTIONS.MIN] = val;
+        result[CURSOR_OPTIONS.MIN] = minVal;
     }
 
     if ($.inArray("SORT", Session.get(Template.strSessionSelectedOptions)) != -1) {
-        var val = ace.edit("aceSort").getSession().getValue();
-        if (!val) {
-            val = {};
+        var sortVal = ace.edit("aceSort").getSession().getValue();
+        if (!sortVal) {
+            sortVal = {};
         }
         else {
             try {
-                val = JSON.parse(val);
+                sortVal = JSON.parse(sortVal);
             }
             catch (err) {
                 result["ERROR"] = "Syntax Error on $sort: " + err.message;
                 return result;
             }
         }
-        result[CURSOR_OPTIONS.SORT] = val;
+        result[CURSOR_OPTIONS.SORT] = sortVal;
     }
 
     return result;
-}
+};

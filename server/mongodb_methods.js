@@ -7,7 +7,7 @@ Meteor.methods({
         console.log('connecting to : ' + connectionUrl);
         var mongodbApi = Meteor.npmRequire('mongodb').MongoClient;
 
-        var collectionNames = Async.runSync(function (done) {
+        return Async.runSync(function (done) {
             mongodbApi.connect(connectionUrl, function (err, db) {
                 if (db == null || db == undefined) {
                     console.log('could not connect, db is null');
@@ -20,8 +20,6 @@ Meteor.methods({
                 }
             });
         });
-
-        return collectionNames;
     },
 
     'findOne': function (connection, selectedCollection, selector, cursorOptions) {
@@ -32,11 +30,15 @@ Meteor.methods({
         return proceedFindQuery(connection, selectedCollection, selector, cursorOptions);
     },
 
+    'findOneAndUpdate': function (connection, selectedCollection, selector, options) {
+
+    },
+
     'dropDB': function (connection) {
         var connectionUrl = getConnectionUrl(connection);
         var mongodbApi = Meteor.npmRequire('mongodb').MongoClient;
 
-        var result = Async.runSync(function (done) {
+        return Async.runSync(function (done) {
             mongodbApi.connect(connectionUrl, function (err, db) {
                 db.dropDatabase(function (err, result) {
                     db.close();
@@ -44,8 +46,6 @@ Meteor.methods({
                 });
             });
         });
-
-        return result;
     }
 });
 
@@ -91,4 +91,4 @@ var proceedFindQuery = function (connection, selectedCollection, selector, curso
 
     convertBSONtoJSON(result);
     return result;
-}
+};
