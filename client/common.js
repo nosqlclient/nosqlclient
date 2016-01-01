@@ -13,6 +13,27 @@ Template.clearSessions = function () {
     Session.set(Template.strSessionSelectedCollection, undefined);
 };
 
+Template.checkAceEditorOption = function (option, editorId, optionEnum, result) {
+    if ($.inArray(option, Session.get(Template.strSessionSelectedOptions)) != -1) {
+        var projectVal = ace.edit(editorId).getSession().getValue();
+        if (!projectVal) {
+            projectVal = {};
+        }
+        else {
+            try {
+                projectVal = JSON.parse(projectVal);
+            }
+            catch (err) {
+                result["ERROR"] = "Syntax Error on " + optionEnum[option] + ": " + err.message;
+                return result;
+            }
+        }
+        result[optionEnum[option]] = projectVal;
+    }
+
+    return result;
+};
+
 Template.setOptionsComboboxChangeEvent = function (cmb) {
     cmb.on('change', function (evt, params) {
         var array = Session.get(Template.strSessionSelectedOptions);

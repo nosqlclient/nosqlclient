@@ -2,7 +2,7 @@
  * Created by sercan on 30.12.2015.
  */
 Template.find.onRendered(function () {
-    Template.initializeAceEditor('preSelector', Template.find.executeQuery);
+    Template.initializeAceEditor('aceSelector', Template.find.executeQuery);
     Template.find.initializeOptions();
 });
 
@@ -24,7 +24,7 @@ Template.find.executeQuery = function () {
     var connection = Connections.findOne({_id: Session.get(Template.strSessionConnection)});
     var selectedCollection = Session.get(Template.strSessionSelectedCollection);
     var cursorOptions = Template.find.getCursorOptions();
-    var selector = ace.edit("preSelector").getSession().getValue();
+    var selector = ace.edit("aceSelector").getSession().getValue();
 
     if (!selector) {
         selector = {};
@@ -68,22 +68,10 @@ Template.find.executeQuery = function () {
 
 Template.find.getCursorOptions = function () {
     var result = {};
-    if ($.inArray("PROJECT", Session.get(Template.strSessionSelectedOptions)) != -1) {
-        var projectVal = ace.edit("aceProject").getSession().getValue();
-        if (!projectVal) {
-            projectVal = {};
-        }
-        else {
-            try {
-                projectVal = JSON.parse(projectVal);
-            }
-            catch (err) {
-                result["ERROR"] = "Syntax Error on $project: " + err.message;
-                return result;
-            }
-        }
-        result[CURSOR_OPTIONS.PROJECT] = projectVal;
-    }
+    Template.checkAceEditorOption("PROJECT", "aceProject", result, CURSOR_OPTIONS);
+    Template.checkAceEditorOption("MAX", "aceMax", result, CURSOR_OPTIONS);
+    Template.checkAceEditorOption("MIN", "aceMin", result, CURSOR_OPTIONS);
+    Template.checkAceEditorOption("SORT", "aceSort", result, CURSOR_OPTIONS);
 
     if ($.inArray("SKIP", Session.get(Template.strSessionSelectedOptions)) != -1) {
         var skipVal = $('#inputSkip').val();
@@ -97,57 +85,6 @@ Template.find.getCursorOptions = function () {
         if (limitVal) {
             result[CURSOR_OPTIONS.LIMIT] = parseInt(limitVal);
         }
-    }
-
-    if ($.inArray("MAX", Session.get(Template.strSessionSelectedOptions)) != -1) {
-        var maxVal = ace.edit("aceMax").getSession().getValue();
-        if (!maxVal) {
-            maxVal = {};
-        }
-        else {
-            try {
-                maxVal = JSON.parse(maxVal);
-            }
-            catch (err) {
-                result["ERROR"] = "Syntax Error on $max: " + err.message;
-                return result;
-            }
-        }
-        result[CURSOR_OPTIONS.MAX] = maxVal;
-    }
-
-    if ($.inArray("MIN", Session.get(Template.strSessionSelectedOptions)) != -1) {
-        var minVal = ace.edit("aceMin").getSession().getValue();
-        if (!minVal) {
-            minVal = {};
-        }
-        else {
-            try {
-                minVal = JSON.parse(minVal);
-            }
-            catch (err) {
-                result["ERROR"] = "Syntax Error on $min: " + err.message;
-                return result;
-            }
-        }
-        result[CURSOR_OPTIONS.MIN] = minVal;
-    }
-
-    if ($.inArray("SORT", Session.get(Template.strSessionSelectedOptions)) != -1) {
-        var sortVal = ace.edit("aceSort").getSession().getValue();
-        if (!sortVal) {
-            sortVal = {};
-        }
-        else {
-            try {
-                sortVal = JSON.parse(sortVal);
-            }
-            catch (err) {
-                result["ERROR"] = "Syntax Error on $sort: " + err.message;
-                return result;
-            }
-        }
-        result[CURSOR_OPTIONS.SORT] = sortVal;
     }
 
     return result;

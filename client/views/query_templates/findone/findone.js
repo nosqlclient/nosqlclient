@@ -2,7 +2,7 @@
  * Created by RSercan on 1.1.2016.
  */
 Template.findOne.onRendered(function () {
-    Template.initializeAceEditor('preSelector', Template.findOne.executeQuery);
+    Template.initializeAceEditor('aceSelector', Template.findOne.executeQuery);
     Template.findOne.initializeOptions();
 });
 
@@ -26,7 +26,7 @@ Template.findOne.executeQuery = function () {
     var connection = Connections.findOne({_id: Session.get(Template.strSessionConnection)});
     var selectedCollection = Session.get(Template.strSessionSelectedCollection);
     var cursorOptions = Template.find.getCursorOptions();
-    var selector = ace.edit("preSelector").getSession().getValue();
+    var selector = ace.edit("aceSelector").getSession().getValue();
 
     if (!selector) {
         selector = {};
