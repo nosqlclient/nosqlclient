@@ -2,8 +2,8 @@
  * Created by RSercan on 1.1.2016.
  */
 Template.findOneAndUpdate.onRendered(function () {
-    // set ace editor
     Template.initializeAceEditor('aceSelector', Template.findOneAndUpdate.executeQuery);
+    Template.initializeAceEditor('aceSet', Template.findOneAndUpdate.executeQuery);
     Template.findOneAndUpdate.initializeOptions();
 });
 
@@ -27,32 +27,18 @@ Template.findOneAndUpdate.executeQuery = function () {
     var selector = ace.edit("aceSelector").getSession().getValue();
     var setObject = ace.edit("aceSet").getSession().getValue();
 
-    if (!selector) {
-        selector = {};
-    }
-    else {
-        try {
-            selector = JSON.parse(selector);
-        }
-        catch (err) {
-            toastr.error("Syntax error on selector: " + err.message);
-            laddaButton.ladda('stop');
-            return;
-        }
+    selector = Template.convertAndCheckJSON(selector);
+    if (selector["ERROR"]) {
+        toastr.error("Syntax error on selector: " + selector["ERROR"]);
+        laddaButton.ladda('stop');
+        return;
     }
 
-    if (!setObject) {
-        setObject = {};
-    }
-    else {
-        try {
-            setObject = JSON.parse(setObject);
-        }
-        catch (err) {
-            toastr.error("Syntax error on set: " + err.message);
-            laddaButton.ladda('stop');
-            return;
-        }
+    setObject = Template.convertAndCheckJSON(setObject);
+    if (setObject["ERROR"]) {
+        toastr.error("Syntax error on set: " + setObject["ERROR"]);
+        laddaButton.ladda('stop');
+        return;
     }
 
     if (options["ERROR"]) {
@@ -82,5 +68,9 @@ Template.findOneAndUpdate.executeQuery = function () {
 };
 
 Template.findOneAndUpdate.getOptions = function () {
-    //TODO get options for http://mongodb.github.io/node-mongodb-native/2.1/api/Collection.html#findOneAndUpdate
+    var result = {};
+
+
+
+    return result;
 };

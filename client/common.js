@@ -13,25 +13,34 @@ Template.clearSessions = function () {
     Session.set(Template.strSessionSelectedCollection, undefined);
 };
 
-Template.checkAceEditorOption = function (option, editorId, optionEnum, result) {
-    if ($.inArray(option, Session.get(Template.strSessionSelectedOptions)) != -1) {
-        var projectVal = ace.edit(editorId).getSession().getValue();
-        if (!projectVal) {
-            projectVal = {};
-        }
-        else {
-            try {
-                projectVal = JSON.parse(projectVal);
-            }
-            catch (err) {
-                result["ERROR"] = "Syntax Error on " + optionEnum[option] + ": " + err.message;
-                return result;
-            }
-        }
-        result[optionEnum[option]] = projectVal;
+Template.convertAndCheckJSON = function (json) {
+    if (json == "") return {};
+    var result = {};
+    try {
+        result = JSON.parse(json);
+    }
+    catch (err) {
+        result["ERROR"] = err.message;
     }
 
     return result;
+};
+
+Template.checkAceEditorOption = function (option, editorId, result, optionEnum) {
+    if ($.inArray(option, Session.get(Template.strSessionSelectedOptions)) != -1) {
+        var val = ace.edit(editorId).getSession().getValue();
+
+        if (val == "") result[optionEnum[option]] = {};
+        else {
+            try {
+                val = JSON.parse(val);
+                result[optionEnum[option]] = val;
+            }
+            catch (err) {
+                result["ERROR"] = "Syntax Error on " + optionEnum[option] + ": " + err.message;
+            }
+        }
+    }
 };
 
 Template.setOptionsComboboxChangeEvent = function (cmb) {

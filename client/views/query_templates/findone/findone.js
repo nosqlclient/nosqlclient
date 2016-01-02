@@ -28,18 +28,11 @@ Template.findOne.executeQuery = function () {
     var cursorOptions = Template.find.getCursorOptions();
     var selector = ace.edit("aceSelector").getSession().getValue();
 
-    if (!selector) {
-        selector = {};
-    }
-    else {
-        try {
-            selector = JSON.parse(selector);
-        }
-        catch (err) {
-            toastr.error("Syntax error on selector: " + err.message);
-            laddaButton.ladda('stop');
-            return;
-        }
+    selector = Template.convertAndCheckJSON(selector);
+    if (selector["ERROR"]) {
+        toastr.error("Syntax error on selector: " + selector["ERROR"]);
+        laddaButton.ladda('stop');
+        return;
     }
 
     if (cursorOptions["ERROR"]) {

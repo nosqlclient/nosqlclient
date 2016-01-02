@@ -17,6 +17,8 @@ Template.browseCollection.onRendered(function () {
     cmb.chosen();
     cmb.on('change', function (evt, params) {
         Session.set(Template.strSessionSelectedOptions, []);
+        $('#divJsonEditor').hide();
+        $('#divAceEditor').hide();
     });
 
     Session.set(Template.strSessionSelectedOptions, []);
