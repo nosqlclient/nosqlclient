@@ -20,7 +20,7 @@ Template.findOneAndUpdate.initializeOptions = function () {
 };
 
 Template.findOneAndUpdate.executeQuery = function () {
-    var laddaButton = Template.browseCollection.initExecuteQuery();
+    Template.browseCollection.initExecuteQuery();
     var connection = Connections.findOne({_id: Session.get(Template.strSessionConnection)});
     var selectedCollection = Session.get(Template.strSessionSelectedCollection);
     var options = Template.findOneModifyOptions.getOptions();
@@ -30,40 +30,25 @@ Template.findOneAndUpdate.executeQuery = function () {
     selector = Template.convertAndCheckJSON(selector);
     if (selector["ERROR"]) {
         toastr.error("Syntax error on selector: " + selector["ERROR"]);
-        laddaButton.ladda('stop');
+        Ladda.stopAll();
         return;
     }
 
     setObject = Template.convertAndCheckJSON(setObject);
     if (setObject["ERROR"]) {
         toastr.error("Syntax error on set: " + setObject["ERROR"]);
-        laddaButton.ladda('stop');
+        Ladda.stopAll();
         return;
     }
     setObject = {"$set": setObject};
 
     if (options["ERROR"]) {
         toastr.error(options["ERROR"]);
-        laddaButton.ladda('stop');
+        Ladda.stopAll();
         return;
     }
 
     Meteor.call("findOneAndUpdate", connection, selectedCollection, selector, setObject, options, function (err, result) {
-        if (err || result.error) {
-            var errorMessage;
-            if (err) {
-                errorMessage = err.message;
-            } else {
-                errorMessage = result.error.message;
-            }
-            toastr.error("Couldn't execute query: " + errorMessage);
-            // stop loading animation
-            laddaButton.ladda('stop');
-            return;
-        }
-
-        Template.browseCollection.setResult(result.result);
-        // stop loading animation
-        laddaButton.ladda('stop');
+        Template.renderAfterQueryExecution(err, result);
     });
 };

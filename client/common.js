@@ -13,6 +13,23 @@ Template.clearSessions = function () {
     Session.set(Template.strSessionSelectedCollection, undefined);
 };
 
+Template.renderAfterQueryExecution = function (err, result) {
+    if (err || result.error) {
+        var errorMessage;
+        if (err) {
+            errorMessage = err.message;
+        } else {
+            errorMessage = result.error.message;
+        }
+        toastr.error("Couldn't execute query: " + errorMessage);
+    }else{
+        Template.browseCollection.setResult(result.result);
+    }
+
+    // stop loading animation
+    Ladda.stopAll();
+};
+
 Template.convertAndCheckJSON = function (json) {
     if (json == "") return {};
     var result = {};

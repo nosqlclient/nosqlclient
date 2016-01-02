@@ -84,7 +84,6 @@ Template.browseCollection.initExecuteQuery = function () {
     // loading button
     var l = $('#btnExecuteQuery').ladda();
     l.ladda('start');
-    return l;
 };
 
 Template.browseCollection.setResult = function (result) {
