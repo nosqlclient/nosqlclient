@@ -97,7 +97,7 @@ Template.initializeAceEditor = function (id, evt) {
     });
 };
 
-Template.registerHelper('isSelected', function (option) {
+Template.registerHelper('isOptionSelected', function (option) {
     return $.inArray(option, Session.get(Template.strSessionSelectedOptions)) != -1;
 });
 

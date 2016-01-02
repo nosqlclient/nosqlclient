@@ -1,14 +1,6 @@
 /**
  * Created by sercan on 31.12.2015.
  */
-Template.max.onRendered(function () {
-    Template.cursorOptions.initializeAceEditor('aceMax');
-});
-
-Template.min.onRendered(function () {
-    Template.cursorOptions.initializeAceEditor('aceMin');
-});
-
 Template.cursorOptions.initializeAceEditor = function (id) {
     // find and findOne templates uses same cursor options so clarify ENTER key event on SELECTOR.
     // disable Enter Shift-Enter keys and bind to executeQuery for corresponding template

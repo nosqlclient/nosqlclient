@@ -1,56 +1,20 @@
 <template name="cursorOptions">
-    {{#if isSelected "PROJECT"}}
+    {{#if isOptionSelected "PROJECT"}}
         {{> project}}
     {{/if}}
-    {{#if isSelected "LIMIT"}}
+    {{#if isOptionSelected "LIMIT"}}
         {{> limit}}
     {{/if}}
-    {{#if isSelected "SKIP"}}
+    {{#if isOptionSelected "SKIP"}}
         {{> skip}}
     {{/if}}
-    {{#if isSelected "SORT"}}
+    {{#if isOptionSelected "SORT"}}
         {{> sort}}
     {{/if}}
-    {{#if isSelected "MAX"}}
+    {{#if isOptionSelected "MAX"}}
         {{> max}}
     {{/if}}
-    {{#if isSelected "MIN"}}
+    {{#if isOptionSelected "MIN"}}
         {{> min}}
     {{/if}}
-</template>
-
-<template name="limit">
-    <div class="form-group">
-        <label class="col-lg-1 control-label" labelfo>limit</label>
-        <div class="col-lg-11">
-            <input id="inputLimit" min="0" required="true" type="number" class="form-control">
-        </div>
-    </div>
-</template>
-
-<template name="skip">
-    <div class="form-group">
-        <label class="col-lg-1 control-label">skip</label>
-        <div class="col-lg-11">
-            <input id="inputSkip" min="0" required="true" type="number" class="form-control">
-        </div>
-    </div>
-</template>
-
-<template name="max">
-    <div class="form-group">
-        <label class="col-lg-1 control-label">max</label>
-        <div class="col-lg-11">
-            <pre class="form-control" id='aceMax'></pre>
-        </div>
-    </div>
-</template>
-
-<template name="min">
-    <div class="form-group">
-        <label class="col-lg-1 control-label">min</label>
-        <div class="col-lg-11">
-            <pre class="form-control" id='aceMin'></pre>
-        </div>
-    </div>
 </template>
