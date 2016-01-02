@@ -23,79 +23,83 @@ Meteor.methods({
     },
 
     'findOne': function (connection, selectedCollection, selector, cursorOptions) {
-        return proceedFindQuery(connection, selectedCollection, selector, cursorOptions, true);
+        var methodArray = [
+            {
+                "find": [selector]
+            }
+        ];
+        for (var key in cursorOptions) {
+            if (cursorOptions.hasOwnProperty(key) && cursorOptions[key]) {
+                var obj = {};
+                obj[key] = [cursorOptions[key]];
+                methodArray.push(obj);
+            }
+        }
+        methodArray.push({'limit': [1]});
+        methodArray.push({'next': []});
+        return proceedQueryExecution(connection, selectedCollection, methodArray);
     },
 
     'find': function (connection, selectedCollection, selector, cursorOptions) {
-        return proceedFindQuery(connection, selectedCollection, selector, cursorOptions);
+        var methodArray = [
+            {
+                "find": [selector]
+            }
+        ];
+        for (var key in cursorOptions) {
+            if (cursorOptions.hasOwnProperty(key) && cursorOptions[key]) {
+                var obj = {};
+                obj[key] = [cursorOptions[key]];
+                methodArray.push(obj);
+            }
+        }
+        methodArray.push({'toArray': []});
+        return proceedQueryExecution(connection, selectedCollection, methodArray);
     },
 
     'findOneAndUpdate': function (connection, selectedCollection, selector, setObject, options) {
-        return proceedFindOneAndModifyQuery(connection, selectedCollection, selector, setObject, options, 'Update');
+        var methodArray = [
+            {
+                "findOneAndUpdate": [selector, setObject, options]
+            }
+        ];
+        return proceedQueryExecution(connection, selectedCollection, methodArray);
     },
 
     'findOneAndReplace': function (connection, selectedCollection, selector, setObject, options) {
-        return proceedFindOneAndModifyQuery(connection, selectedCollection, selector, setObject, options, 'Replace');
+        var methodArray = [
+            {
+                "findOneAndReplace": [selector, setObject, options]
+            }
+        ];
+        return proceedQueryExecution(connection, selectedCollection, methodArray);
     },
 
     'findOneAndDelete': function (connection, selectedCollection, selector, options) {
-        return proceedFindOneAndModifyQuery(connection, selectedCollection, selector, null, options, 'Delete');
+        var methodArray = [
+            {
+                "findOneAndDelete": [selector, options]
+            }
+        ];
+        return proceedQueryExecution(connection, selectedCollection, methodArray);
     },
 
     'aggregate': function (connection, selectedCollection, pipeline) {
-        var connectionUrl = getConnectionUrl(connection);
-        console.log('executing aggregate query ' + JSON.stringify(pipeline) + ' on: ' + connectionUrl + '/' + selectedCollection);
-
-        var mongodbApi = Meteor.npmRequire('mongodb').MongoClient;
-
-        convertJSONtoBSON(pipeline);
-
-        var result = Async.runSync(function (done) {
-            mongodbApi.connect(connectionUrl, function (err, db) {
-                try {
-                    db.collection(selectedCollection).aggregate(pipeline, function (err, count) {
-                        done(err, count);
-                        db.close();
-                    });
-                }
-                catch (ex) {
-                    console.error(ex);
-                    done(ex, null);
-                    db.close();
-                }
-            });
-        });
-
-        convertBSONtoJSON(result);
-        return result;
+        var methodArray = [
+            {
+                "aggregate": [pipeline]
+            }
+        ];
+        return proceedQueryExecution(connection, selectedCollection, methodArray);
     },
 
     'count': function (connection, selectedCollection, selector) {
-        var connectionUrl = getConnectionUrl(connection);
-        console.log('executing count query ' + JSON.stringify(selector) + ' on: ' + connectionUrl + '/' + selectedCollection);
-
-        var mongodbApi = Meteor.npmRequire('mongodb').MongoClient;
-
-        convertJSONtoBSON(selector);
-
-        var result = Async.runSync(function (done) {
-            mongodbApi.connect(connectionUrl, function (err, db) {
-                try {
-                    db.collection(selectedCollection).count(selector, function (err, count) {
-                        done(err, count);
-                        db.close();
-                    });
-                }
-                catch (ex) {
-                    console.error(ex);
-                    done(ex, null);
-                    db.close();
-                }
-            });
-        });
-
-        convertBSONtoJSON(result);
-        return result;
+        var methodArray = [
+            {
+                "count": [selector]
+            }
+        ];
+        return proceedQueryExecution(connection, selectedCollection, methodArray);
     },
 
     'dropDB': function (connection) {
@@ -113,76 +117,33 @@ Meteor.methods({
     }
 });
 
-var proceedFindOneAndModifyQuery = function (connection, selectedCollection, selector, setObject, options, methodNameExtension) {
+var proceedQueryExecution = function (connection, selectedCollection, methodArray) {
     var connectionUrl = getConnectionUrl(connection);
-    console.log('executing findOneAnd' + methodNameExtension + ' query ' + JSON.stringify(selector) + ' with set: ' + JSON.stringify(setObject) + ' with options: '
-        + JSON.stringify(options) + ' on: ' + connectionUrl + '/' + selectedCollection);
-
     var mongodbApi = Meteor.npmRequire('mongodb').MongoClient;
 
-    convertJSONtoBSON(selector);
-    convertJSONtoBSON(setObject);
-    convertJSONtoBSON(options);
+    console.log('Connection: ' + connectionUrl + '/' + selectedCollection + ', MethodArray: ' + JSON.stringify(methodArray));
 
     var result = Async.runSync(function (done) {
         mongodbApi.connect(connectionUrl, function (err, db) {
             try {
-                if (methodNameExtension == 'Delete') {
-                    db.collection(selectedCollection)['findOneAndDelete'](selector, options, function (err, doc) {
-                        done(err, doc);
-                        db.close();
-                    });
-                }
-                else {
-                    db.collection(selectedCollection)['findOneAnd' + methodNameExtension](selector, setObject, options, function (err, doc) {
-                        done(err, doc);
-                        db.close();
-                    });
-                }
-            }
-            catch (ex) {
-                console.error(ex);
-                done(ex, null);
-                db.close();
-            }
-        });
-    });
+                var execution = db.collection(selectedCollection);
+                for (var i = 0; i < methodArray.length; i++) {
+                    var last = i == (methodArray.length - 1);
+                    var entry = methodArray[i];
+                    for (var key in entry) {
 
-    convertBSONtoJSON(result);
-    return result;
-};
-
-var proceedFindQuery = function (connection, selectedCollection, selector, cursorOptions, one) {
-    var connectionUrl = getConnectionUrl(connection);
-    console.log('executing find ' + (one ? 'One' : '') + ' query ' + JSON.stringify(selector) + ' with cursor options: '
-        + JSON.stringify(cursorOptions) + ' on: ' + connectionUrl + '/' + selectedCollection);
-
-    var mongodbApi = Meteor.npmRequire('mongodb').MongoClient;
-
-    convertJSONtoBSON(selector);
-    convertJSONtoBSON(cursorOptions);
-
-    var result = Async.runSync(function (done) {
-        mongodbApi.connect(connectionUrl, function (err, db) {
-            try {
-                var cursor = db.collection(selectedCollection).find(selector);
-
-                for (var key in cursorOptions) {
-                    if (cursorOptions.hasOwnProperty(key) && cursorOptions[key]) {
-                        cursor = cursor[key](cursorOptions[key]);
+                        if (last && key == Object.keys(entry)[Object.keys(entry).length - 1]) {
+                            entry[key].push(function (err, docs) {
+                                done(err, docs);
+                                db.close();
+                            });
+                            execution[key].apply(execution, entry[key]);
+                        }
+                        else {
+                            execution = execution[key].apply(execution, entry[key]);
+                        }
                     }
                 }
-                if (one) {
-                    cursor.limit(1).next(function (err, doc) {
-                        done(err, doc);
-                        db.close();
-                    });
-                } else {
-                    cursor.toArray(function (err, docs) {
-                        done(err, docs);
-                        db.close();
-                    });
-                }
             }
             catch (ex) {
                 console.error(ex);
@@ -194,8 +155,4 @@ var proceedFindQuery = function (connection, selectedCollection, selector, curso
 
     convertBSONtoJSON(result);
     return result;
-};
-
-var proceedQueryExecution = function (connection, selectedCollection) {
-
 };
