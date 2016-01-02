@@ -21,3 +21,27 @@ Template.cursorOptions.initializeAceEditor = function (id) {
     }
 
 };
+
+Template.cursorOptions.getCursorOptions = function () {
+    var result = {};
+    Template.checkAceEditorOption("PROJECT", "aceProject", result, CURSOR_OPTIONS);
+    Template.checkAceEditorOption("MAX", "aceMax", result, CURSOR_OPTIONS);
+    Template.checkAceEditorOption("MIN", "aceMin", result, CURSOR_OPTIONS);
+    Template.checkAceEditorOption("SORT", "aceSort", result, CURSOR_OPTIONS);
+
+    if ($.inArray("SKIP", Session.get(Template.strSessionSelectedOptions)) != -1) {
+        var skipVal = $('#inputSkip').val();
+        if (skipVal) {
+            result[CURSOR_OPTIONS.SKIP] = parseInt(skipVal);
+        }
+    }
+
+    if ($.inArray("LIMIT", Session.get(Template.strSessionSelectedOptions)) != -1) {
+        var limitVal = $('#inputLimit').val();
+        if (limitVal) {
+            result[CURSOR_OPTIONS.LIMIT] = parseInt(limitVal);
+        }
+    }
+
+    return result;
+};

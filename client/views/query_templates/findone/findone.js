@@ -25,7 +25,7 @@ Template.findOne.executeQuery = function () {
     var laddaButton = Template.browseCollection.initExecuteQuery();
     var connection = Connections.findOne({_id: Session.get(Template.strSessionConnection)});
     var selectedCollection = Session.get(Template.strSessionSelectedCollection);
-    var cursorOptions = Template.find.getCursorOptions();
+    var cursorOptions = Template.cursorOptions.getCursorOptions();
     var selector = ace.edit("aceSelector").getSession().getValue();
 
     selector = Template.convertAndCheckJSON(selector);

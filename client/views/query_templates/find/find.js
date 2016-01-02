@@ -23,7 +23,7 @@ Template.find.executeQuery = function () {
     var laddaButton = Template.browseCollection.initExecuteQuery();
     var connection = Connections.findOne({_id: Session.get(Template.strSessionConnection)});
     var selectedCollection = Session.get(Template.strSessionSelectedCollection);
-    var cursorOptions = Template.find.getCursorOptions();
+    var cursorOptions = Template.cursorOptions.getCursorOptions();
     var selector = ace.edit("aceSelector").getSession().getValue();
 
     selector = Template.convertAndCheckJSON(selector);
@@ -57,28 +57,4 @@ Template.find.executeQuery = function () {
         // stop loading animation
         laddaButton.ladda('stop');
     });
-};
-
-Template.find.getCursorOptions = function () {
-    var result = {};
-    Template.checkAceEditorOption("PROJECT", "aceProject", result, CURSOR_OPTIONS);
-    Template.checkAceEditorOption("MAX", "aceMax", result, CURSOR_OPTIONS);
-    Template.checkAceEditorOption("MIN", "aceMin", result, CURSOR_OPTIONS);
-    Template.checkAceEditorOption("SORT", "aceSort", result, CURSOR_OPTIONS);
-
-    if ($.inArray("SKIP", Session.get(Template.strSessionSelectedOptions)) != -1) {
-        var skipVal = $('#inputSkip').val();
-        if (skipVal) {
-            result[CURSOR_OPTIONS.SKIP] = parseInt(skipVal);
-        }
-    }
-
-    if ($.inArray("LIMIT", Session.get(Template.strSessionSelectedOptions)) != -1) {
-        var limitVal = $('#inputLimit').val();
-        if (limitVal) {
-            result[CURSOR_OPTIONS.LIMIT] = parseInt(limitVal);
-        }
-    }
-
-    return result;
 };

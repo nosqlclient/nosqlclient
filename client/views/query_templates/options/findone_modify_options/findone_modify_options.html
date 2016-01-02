@@ -1,5 +1,5 @@
 <template name="findOneModifyOptions">
-    {{#if isSelected "PROJECT"}}
+    {{#if isSelected "PROJECTION"}}
         {{> project}}
     {{/if}}
     {{#if isSelected "SORT"}}
@@ -17,7 +17,7 @@
     <div class="form-group">
         <label class="col-lg-1 control-label">upsert</label>
         <div class="col-lg-11">
-            <div class="i-checks">
+            <div id="divUpsert" class="i-checks">
                 <input id="inputUpsert" type="checkbox" value=""
                        class="form-control"
                        checked=""
@@ -31,10 +31,10 @@
     <div class="form-group">
         <label class="col-lg-1 control-label">returnOriginal</label>
         <div class="col-lg-11">
-            <div class="i-checks">
-                <input id="inputReturnOriginal" type="checkbox" value=""
+            <div id="divReturnOriginal" class="i-checks">
+                <input type="checkbox" value=""
                        class="form-control"
-                       checked="false"
+                       checked=""
                        style="position: absolute; opacity: 0;"/>
             </div>
         </div>

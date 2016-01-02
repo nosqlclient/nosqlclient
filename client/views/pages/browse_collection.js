@@ -15,7 +15,7 @@ Template.browseCollection.onRendered(function () {
     });
 
     cmb.chosen();
-    cmb.on('change', function (evt, params) {
+    cmb.on('change', function () {
         Session.set(Template.strSessionSelectedOptions, []);
         $('#divJsonEditor').hide();
         $('#divAceEditor').hide();
@@ -61,6 +61,18 @@ Template.browseCollection.helpers({
         }
 
         return Session.get(Template.strSessionSelectedQuery);
+    },
+
+    'getHelpBlockForSelectedQuery': function () {
+        switch (Session.get(Template.strSessionSelectedQuery)) {
+            case QUERY_TYPES.FINDONE_AND_REPLACE:
+                return Spacebars.SafeString('This query replaces whole document which matched by <strong>selector</strong> with the <strong>set</strong> object');
+
+            case QUERY_TYPES.FINDONE_AND_DELETE:
+                return Spacebars.SafeString('<strong><font color=\'red\'>CAUTION:</font></strong> This query removes whole document which matched by <strong>selector</strong>');
+            default:
+                return '';
+        }
     }
 });
 

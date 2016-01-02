@@ -30,8 +30,16 @@ Meteor.methods({
         return proceedFindQuery(connection, selectedCollection, selector, cursorOptions);
     },
 
-    'findOneAndUpdate': function (connection, selectedCollection, selector, options) {
+    'findOneAndUpdate': function (connection, selectedCollection, selector, setObject, options) {
+        return proceedFindOneAndModifyQuery(connection, selectedCollection, selector, setObject, options, 'Update');
+    },
 
+    'findOneAndReplace': function (connection, selectedCollection, selector, setObject, options) {
+        return proceedFindOneAndModifyQuery(connection, selectedCollection, selector, setObject, options, 'Replace');
+    },
+
+    'findOneAndDelete': function (connection, selectedCollection, selector, options) {
+        return proceedFindOneAndModifyQuery(connection, selectedCollection, selector, null, options, 'Delete');
     },
 
     'dropDB': function (connection) {
@@ -48,6 +56,45 @@ Meteor.methods({
         });
     }
 });
+
+var proceedFindOneAndModifyQuery = function (connection, selectedCollection, selector, setObject, options, methodNameExtension) {
+    var connectionUrl = getConnectionUrl(connection);
+    console.log('executing findOneAnd' + methodNameExtension + ' query ' + JSON.stringify(selector) + ' with set: ' + JSON.stringify(setObject) + ' with options: '
+        + JSON.stringify(options) + ' on: ' + connectionUrl + '/' + selectedCollection);
+
+    var mongodbApi = Meteor.npmRequire('mongodb').MongoClient;
+
+    convertJSONtoBSON(selector);
+    convertJSONtoBSON(setObject);
+    convertJSONtoBSON(options);
+
+    var result = Async.runSync(function (done) {
+        mongodbApi.connect(connectionUrl, function (err, db) {
+            try {
+                if (methodNameExtension == 'Delete') {
+                    db.collection(selectedCollection)['findOneAndDelete'](selector, options, function (err, doc) {
+                        done(err, doc);
+                        db.close();
+                    });
+                }
+                else {
+                    db.collection(selectedCollection)['findOneAnd' + methodNameExtension](selector, setObject, options, function (err, doc) {
+                        done(err, doc);
+                        db.close();
+                    });
+                }
+            }
+            catch (ex) {
+                console.error(ex);
+                done(ex, null);
+                db.close();
+            }
+        });
+    });
+
+    convertBSONtoJSON(result);
+    return result;
+};
 
 var proceedFindQuery = function (connection, selectedCollection, selector, cursorOptions, one) {
     var connectionUrl = getConnectionUrl(connection);
