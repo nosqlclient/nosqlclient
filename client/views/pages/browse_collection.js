@@ -70,6 +70,13 @@ Template.browseCollection.helpers({
 
             case QUERY_TYPES.FINDONE_AND_DELETE:
                 return Spacebars.SafeString('<strong><font color=\'red\'>CAUTION:</font></strong> This query removes whole document which matched by <strong>selector</strong>');
+
+            case QUERY_TYPES.CREATE_INDEX:
+                return Spacebars.SafeString('Since mongodb version <strong>3.0.0</strong>, this query can be used instead of <strong>ensureIndex</strong>');
+
+            case QUERY_TYPES.DELETE:
+                return Spacebars.SafeString('<strong><font color=\'red\'>CAUTION:</font></strong> This query removes whole document(s) which matched by <strong>selector</strong>');
+
             default:
                 return '';
         }

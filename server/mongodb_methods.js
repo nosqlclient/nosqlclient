@@ -22,6 +22,26 @@ Meteor.methods({
         });
     },
 
+    'delete': function (connection, selectedCollection, selector) {
+        var methodArray = [
+            {
+                "deleteMany": [selector]
+            }
+        ];
+
+        return proceedQueryExecution(connection, selectedCollection, methodArray);
+    },
+
+    'createIndex': function (connection, selectedCollection, fields, options) {
+        var methodArray = [
+            {
+                "createIndex": [fields, options]
+            }
+        ];
+
+        return proceedQueryExecution(connection, selectedCollection, methodArray);
+    },
+
     'findOne': function (connection, selectedCollection, selector, cursorOptions) {
         var methodArray = [
             {

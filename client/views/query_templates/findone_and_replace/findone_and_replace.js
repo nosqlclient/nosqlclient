@@ -3,9 +3,22 @@
  */
 Template.findOneAndReplace.onRendered(function () {
     Template.initializeAceEditor('aceSelector', Template.findOneAndReplace.executeQuery);
-    Template.initializeAceEditor('aceReplacement', Template.findOneAndReplace.executeQuery);
+    Template.findOneAndReplace.initializeAceEditor();
     Template.findOneAndReplace.initializeOptions();
 });
+
+Template.findOneAndReplace.initializeAceEditor = function () {
+    AceEditor.instance('aceReplacement', {
+        mode: "javascript",
+        theme: 'dawn'
+    }, function (editor) {
+        editor.$blockScrolling = Infinity;
+        editor.setOptions({
+            fontSize: "11pt",
+            showPrintMargin: false
+        });
+    });
+};
 
 Template.findOneAndReplace.initializeOptions = function () {
     var cmb = $('#cmbFindOneModifyOptions');

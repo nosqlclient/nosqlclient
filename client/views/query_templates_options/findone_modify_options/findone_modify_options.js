@@ -9,14 +9,14 @@ Template.findOneModifyOptions.getOptions = function () {
     if ($.inArray("RETURN_ORIGINAL", Session.get(Template.strSessionSelectedOptions)) != -1) {
         var returnOrgVal = $('#divReturnOriginal').iCheck('update')[0].checked;
         if (returnOrgVal) {
-            result[FINDONE_MODIFY_OPTIONS.RETURN_ORIGINAL] = parseInt(returnOrgVal);
+            result[FINDONE_MODIFY_OPTIONS.RETURN_ORIGINAL] = returnOrgVal;
         }
     }
 
     if ($.inArray("UPSERT", Session.get(Template.strSessionSelectedOptions)) != -1) {
         var upsertVal = $('#divUpsert').iCheck('update')[0].checked;
         if (upsertVal) {
-            result[FINDONE_MODIFY_OPTIONS.UPSERT] = parseInt(upsertVal);
+            result[FINDONE_MODIFY_OPTIONS.UPSERT] = upsertVal;
         }
     }
 

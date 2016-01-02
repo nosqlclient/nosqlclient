@@ -1,0 +1,59 @@
+<template name="createIndexOptions">
+    {{#if isOptionSelected "UNIQUE"}}
+        {{> unique}}
+    {{/if}}
+    {{#if isOptionSelected "SPARSE"}}
+        {{> sparse}}
+    {{/if}}
+    {{#if isOptionSelected "BACKGROUND"}}
+        {{> background}}
+    {{/if}}
+    {{#if isOptionSelected "MAX"}}
+        {{> max}}
+    {{/if}}
+    {{#if isOptionSelected "MIN"}}
+        {{> min}}
+    {{/if}}
+</template>
+
+<template name="unique">
+    <div class="form-group">
+        <label class="col-lg-1 control-label">unique</label>
+        <div class="col-lg-11">
+            <div id="divUnique" class="i-checks">
+                <input type="checkbox" value=""
+                       class="form-control"
+                       checked=""
+                       style="position: absolute; opacity: 0;"/>
+            </div>
+        </div>
+    </div>
+</template>
+
+<template name="sparse">
+    <div class="form-group">
+        <label class="col-lg-1 control-label">sparse</label>
+        <div class="col-lg-11">
+            <div id="divSparse" class="i-checks">
+                <input type="checkbox" value=""
+                       class="form-control"
+                       checked=""
+                       style="position: absolute; opacity: 0;"/>
+            </div>
+        </div>
+    </div>
+</template>
+
+<template name="background">
+    <div class="form-group">
+        <label class="col-lg-1 control-label">background</label>
+        <div class="col-lg-11">
+            <div id="divBackground" class="i-checks">
+                <input type="checkbox" value=""
+                       class="form-control"
+                       checked=""
+                       style="position: absolute; opacity: 0;"/>
+            </div>
+        </div>
+    </div>
+</template>
