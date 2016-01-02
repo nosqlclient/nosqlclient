@@ -42,6 +42,34 @@ Meteor.methods({
         return proceedFindOneAndModifyQuery(connection, selectedCollection, selector, null, options, 'Delete');
     },
 
+    'aggregate': function (connection, selectedCollection, pipeline) {
+        var connectionUrl = getConnectionUrl(connection);
+        console.log('executing aggregate query ' + JSON.stringify(pipeline) + ' on: ' + connectionUrl + '/' + selectedCollection);
+
+        var mongodbApi = Meteor.npmRequire('mongodb').MongoClient;
+
+        convertJSONtoBSON(pipeline);
+
+        var result = Async.runSync(function (done) {
+            mongodbApi.connect(connectionUrl, function (err, db) {
+                try {
+                    db.collection(selectedCollection).aggregate(pipeline, function (err, count) {
+                        done(err, count);
+                        db.close();
+                    });
+                }
+                catch (ex) {
+                    console.error(ex);
+                    done(ex, null);
+                    db.close();
+                }
+            });
+        });
+
+        convertBSONtoJSON(result);
+        return result;
+    },
+
     'count': function (connection, selectedCollection, selector) {
         var connectionUrl = getConnectionUrl(connection);
         console.log('executing count query ' + JSON.stringify(selector) + ' on: ' + connectionUrl + '/' + selectedCollection);
@@ -166,4 +194,8 @@ var proceedFindQuery = function (connection, selectedCollection, selector, curso
 
     convertBSONtoJSON(result);
     return result;
+};
+
+var proceedQueryExecution = function (connection, selectedCollection) {
+
 };
