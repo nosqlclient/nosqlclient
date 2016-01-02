@@ -22,6 +22,35 @@ Meteor.methods({
         });
     },
 
+    'geoHaystackSearch': function (connection, selectedCollection, xAxis, yAxis, options) {
+        var methodArray = [
+            {
+                "geoHaystackSearch": [xAxis, yAxis, options]
+            }
+        ];
+        return proceedQueryExecution(connection, selectedCollection, methodArray);
+    },
+
+    'dropIndex': function (connection, selectedCollection, indexName) {
+        var methodArray = [
+            {
+                "dropIndex": [indexName]
+            }
+        ];
+
+        return proceedQueryExecution(connection, selectedCollection, methodArray);
+    },
+
+    'distinct': function (connection, selectedCollection, selector, fieldName) {
+        var methodArray = [
+            {
+                "distinct": [fieldName, selector]
+            }
+        ];
+
+        return proceedQueryExecution(connection, selectedCollection, methodArray);
+    },
+
     'delete': function (connection, selectedCollection, selector) {
         var methodArray = [
             {

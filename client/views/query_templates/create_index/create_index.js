@@ -27,7 +27,7 @@ Template.createIndex.executeQuery = function () {
 
     fields = Template.convertAndCheckJSON(fields);
     if (fields["ERROR"]) {
-        toastr.error("Syntax error on selector: " + fields["ERROR"]);
+        toastr.error("Syntax error on index field: " + fields["ERROR"]);
         Ladda.stopAll();
         return;
     }

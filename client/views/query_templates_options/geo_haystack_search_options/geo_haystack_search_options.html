@@ -1,0 +1,29 @@
+<template name="geoHaystackSearchOptions">
+    {{#if isOptionSelected "SEARCH"}}
+        {{> search}}
+    {{/if}}
+    {{#if isOptionSelected "MAX_DISTANCE"}}
+        {{> maxDistance}}
+    {{/if}}
+    {{#if isOptionSelected "LIMIT"}}
+        {{> limit}}
+    {{/if}}
+</template>
+
+<template name="search">
+    <div class="form-group">
+        <label class="col-lg-1 control-label">search</label>
+        <div class="col-lg-11">
+            <pre class="form-control" id='aceSearch'></pre>
+        </div>
+    </div>
+</template>
+
+<template name="maxDistance">
+    <div class="form-group">
+        <label class="col-lg-1 control-label" labelfo>max distance</label>
+        <div class="col-lg-11">
+            <input id="inputMaxDistance<" min="0" required="true" type="number" class="form-control">
+        </div>
+    </div>
+</template>

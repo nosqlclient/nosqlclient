@@ -77,6 +77,9 @@ Template.browseCollection.helpers({
             case QUERY_TYPES.DELETE:
                 return Spacebars.SafeString('<strong><font color=\'red\'>CAUTION:</font></strong> This query removes whole document(s) which matched by <strong>selector</strong>');
 
+            case QUERY_TYPES.GEO_HAYSTACK_SEARCH:
+                return Spacebars.SafeString('This query executes a geo search using a <strong>geo haystack index</strong> on a collection');
+
             default:
                 return '';
         }

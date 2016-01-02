@@ -26,7 +26,7 @@ Template.aggregate.executeQuery = function () {
 
     pipeline = Template.convertAndCheckJSON(pipeline);
     if (pipeline["ERROR"]) {
-        toastr.error("Syntax error on selector: " + pipeline["ERROR"]);
+        toastr.error("Syntax error on pipeline: " + pipeline["ERROR"]);
         Ladda.stopAll();
         return;
     }
