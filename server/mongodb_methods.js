@@ -22,6 +22,15 @@ Meteor.methods({
         });
     },
 
+    'isCapped': function (connection, selectedCollection) {
+        var methodArray = [
+            {
+                "isCapped": []
+            }
+        ];
+        return proceedQueryExecution(connection, selectedCollection, methodArray);
+    },
+
     'insertMany': function (connection, selectedCollection, docs) {
         var methodArray = [
             {
@@ -206,8 +215,9 @@ var proceedQueryExecution = function (connection, selectedCollection, methodArra
                 for (var i = 0; i < methodArray.length; i++) {
                     var last = i == (methodArray.length - 1);
                     var entry = methodArray[i];
-                    for (var key in entry) {
+                    convertJSONtoBSON(entry);
 
+                    for (var key in entry) {
                         if (last && key == Object.keys(entry)[Object.keys(entry).length - 1]) {
                             entry[key].push(function (err, docs) {
                                 done(err, docs);

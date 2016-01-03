@@ -9,17 +9,17 @@ getConnectionUrl = function (connection) {
     connectionUrl += connection.host + ':' + connection.port + '/' + connection.databaseName;
 
     return connectionUrl;
-}
+};
 
 convertBSONtoJSON = function (obj) {
     convertObjectIDsToString(obj);
     convertDatesToString(obj);
-}
+};
 
 convertJSONtoBSON = function (obj) {
     convertValidObjectIds(obj);
     convertValidDates(obj);
-}
+};
 
 
 var convertDatesToString = function (obj) {
@@ -34,13 +34,13 @@ var convertDatesToString = function (obj) {
                 }
             }
             else {
-                if (obj[property] instanceof Date) {
-                    obj[property] = moment(obj[property]).format('DD.MM.YYYY HH:mm:ss');
+                if (Object.prototype.toString.call(obj[property]) === '[object Date]') {
+                    obj[property] = moment(obj[property]).format('YYYY-MM-DD HH:mm:ss.SSS');
                 }
             }
         }
     }
-}
+};
 
 var convertObjectIDsToString = function (obj) {
     var objectID = Meteor.npmRequire('mongodb').ObjectID;
@@ -62,7 +62,7 @@ var convertObjectIDsToString = function (obj) {
             }
         }
     }
-}
+};
 
 var convertValidObjectIds = function (obj) {
     var objectID = Meteor.npmRequire('mongodb').ObjectID;
@@ -84,7 +84,7 @@ var convertValidObjectIds = function (obj) {
             }
         }
     }
-}
+};
 
 var convertValidDates = function (obj) {
     for (var property in obj) {
@@ -98,10 +98,10 @@ var convertValidDates = function (obj) {
                 }
             }
             else {
-                if (moment(obj[property].toString(), 'DD.MM.YYYY HH:mm:ss', true).isValid()) {
-                    obj[property] = moment(obj[property].toString(), 'DD.MM.YYYY HH:mm:ss', true).toDate();
+                if (moment(obj[property].toString(), 'YYYY-MM-DD HH:mm:ss', true).isValid()) {
+                    obj[property] = moment(obj[property].toString(), 'YYYY-MM-DD HH:mm:ss', true).toDate();
                 }
             }
         }
     }
-}
+};

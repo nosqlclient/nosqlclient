@@ -80,6 +80,9 @@ Template.browseCollection.helpers({
             case QUERY_TYPES.GEO_HAYSTACK_SEARCH:
                 return Spacebars.SafeString('This query executes a geo search using a <strong>geo haystack index</strong> on a collection');
 
+            case QUERY_TYPES.IS_CAPPED:
+                return Spacebars.SafeString('Returns if the collection is a capped collection');
+
             default:
                 return '';
         }
