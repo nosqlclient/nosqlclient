@@ -22,6 +22,15 @@ Meteor.methods({
         });
     },
 
+    'insertMany': function (connection, selectedCollection, docs) {
+        var methodArray = [
+            {
+                "insertMany": [docs]
+            }
+        ];
+        return proceedQueryExecution(connection, selectedCollection, methodArray);
+    },
+
     'indexInformation': function (connection, selectedCollection, isFull) {
         var methodArray = [
             {
