@@ -19,6 +19,9 @@ Template.sort.onRendered(function () {
         case QUERY_TYPES.FINDONE_AND_DELETE:
             eventToBindEnter = Template.findOneAndDelete.executeQuery;
             break;
+        case QUERY_TYPES.MAP_REDUCE:
+            eventToBindEnter = Template.mapReduce.executeQuery;
+            break;
     }
 
     Template.initializeAceEditor('aceSort', eventToBindEnter);

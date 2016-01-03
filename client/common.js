@@ -11,6 +11,8 @@ Template.clearSessions = function () {
     Session.set(Template.strSessionCollectionNames, undefined);
     Session.set(Template.strSessionConnection, undefined);
     Session.set(Template.strSessionSelectedCollection, undefined);
+    Session.set(Template.strSessionSelectedQuery, undefined);
+    Session.set(Template.strSessionSelectedOptions, undefined);
 };
 
 Template.renderAfterQueryExecution = function (err, result) {
@@ -22,7 +24,7 @@ Template.renderAfterQueryExecution = function (err, result) {
             errorMessage = result.error.message;
         }
         toastr.error("Couldn't execute query: " + errorMessage);
-    }else{
+    } else {
         Template.browseCollection.setResult(result.result);
     }
 
@@ -144,4 +146,17 @@ Array.prototype.remove = function () {
         }
     }
     return this;
+};
+
+/**
+ * JS functions can be generated from strings.
+ * */
+String.prototype.parseFunction = function () {
+    var funcReg = /function *\(([^()]*)\)[ \n\t]*{(.*)}/gmi;
+    var match = funcReg.exec(this.replace(/\n/g, ' '));
+    if (match) {
+        return new Function(match[1].split(','), match[2]);
+    }
+
+    return null;
 };

@@ -1,10 +1,6 @@
 /**
  * Created by RSercan on 3.1.2016.
  */
-Template.query.onRendered(function () {
-    Template.initializeAceEditor('aceQuery', Template.geoNear.executeQuery);
-});
-
 Template.spherical.onRendered(function () {
     $('#divSpherical').iCheck({
         checkboxClass: 'icheckbox_square-green'

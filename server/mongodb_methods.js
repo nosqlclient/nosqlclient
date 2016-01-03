@@ -22,6 +22,15 @@ Meteor.methods({
         });
     },
 
+    'mapReduce': function (connection, selectedCollection, map, reduce, options) {
+        var methodArray = [
+            {
+                "mapReduce": [map, reduce, options]
+            }
+        ];
+        return proceedQueryExecution(connection, selectedCollection, methodArray);
+    },
+
     'isCapped': function (connection, selectedCollection) {
         var methodArray = [
             {

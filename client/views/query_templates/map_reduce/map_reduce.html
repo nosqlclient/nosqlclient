@@ -1,0 +1,33 @@
+<template name="mapReduce">
+    <div class="form-group">
+        <label class="col-lg-1 control-label">Map</label>
+        <div class="col-lg-11">
+            <pre class="form-control" style="height: 150px" id='aceMap'></pre>
+            <span class="help-block m-b-none">You can use <strong>string</strong> to query <strong>ISODate</strong> and <strong>ObjectID</strong>, date format is <strong>YYYY-MM-DD
+                HH:mm:ss</strong><br/>Please provide a valid function which starts with <strong>function</strong> keyword</span>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="col-lg-1 control-label">Reduce</label>
+        <div class="col-lg-11">
+            <pre class="form-control" style="height: 150px" id='aceReduce'></pre>
+            <span class="help-block m-b-none">You can use <strong>string</strong> to query <strong>ISODate</strong> and <strong>ObjectID</strong>, date format is <strong>YYYY-MM-DD
+                HH:mm:ss</strong><br/>Please provide a valid function which starts with <strong>function</strong> keyword</span>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="col-lg-1 control-label">Options</label>
+        <div class="col-lg-11">
+            <select id="cmbMapReduceOptions"
+                    data-placeholder="Choose one or more options.."
+                    multiple="true"
+                    class="chosen-select form-control"
+                    tabindex="-1">
+            </select>
+        </div>
+    </div>
+
+    {{> mapReduceOptions}}
+</template>
