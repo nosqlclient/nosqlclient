@@ -22,6 +22,24 @@ Meteor.methods({
         });
     },
 
+    'indexInformation': function (connection, selectedCollection, isFull) {
+        var methodArray = [
+            {
+                "indexInformation": [{'full': isFull}]
+            }
+        ];
+        return proceedQueryExecution(connection, selectedCollection, methodArray);
+    },
+
+    'geoNear': function (connection, selectedCollection, xAxis, yAxis, options) {
+        var methodArray = [
+            {
+                "geoNear": [xAxis, yAxis, options]
+            }
+        ];
+        return proceedQueryExecution(connection, selectedCollection, methodArray);
+    },
+
     'geoHaystackSearch': function (connection, selectedCollection, xAxis, yAxis, options) {
         var methodArray = [
             {

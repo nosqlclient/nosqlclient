@@ -1,0 +1,112 @@
+<template name="geoNearOptions">
+    {{#if isOptionSelected "MAX_NUMBER"}}
+        {{> num}}
+    {{/if}}
+    {{#if isOptionSelected "MAX_DISTANCE"}}
+        {{> minDistance}}
+    {{/if}}
+    {{#if isOptionSelected "MIN_DISTANCE"}}
+        {{> maxDistance}}
+    {{/if}}
+    {{#if isOptionSelected "DISTANCE_MULTIPLIER"}}
+        {{> distanceMultiplier}}
+    {{/if}}
+    {{#if isOptionSelected "QUERY"}}
+        {{> query}}
+    {{/if}}
+    {{#if isOptionSelected "SPHERICAL"}}
+        {{> spherical}}
+    {{/if}}
+    {{#if isOptionSelected "UNIQUE_DOCS"}}
+        {{> uniqueDocs}}
+    {{/if}}
+    {{#if isOptionSelected "INCLUDE_LOCS"}}
+        {{> includeLocs}}
+    {{/if}}
+</template>
+
+<template name="includeLocs">
+    <div class="form-group">
+        <label class="col-lg-1 control-label">include locs</label>
+        <div class="col-lg-11">
+            <div id="divIncludeLocs" class="i-checks">
+                <input id="inputIncludeLocs" type="checkbox" value=""
+                       class="form-control"
+                       checked=""
+                       style="position: absolute; opacity: 0;"/>
+                <span class="help-block m-b-none">Include the location data fields in the top level of the results<strong> MongoDB
+                    > 2.X</strong></span>
+            </div>
+        </div>
+    </div>
+</template>
+
+<template name="uniqueDocs">
+    <div class="form-group">
+        <label class="col-lg-1 control-label">unique docs</label>
+        <div class="col-lg-11">
+            <div id="divUniqueDocs" class="i-checks">
+                <input id="inputUniqueDocs" type="checkbox" value=""
+                       class="form-control"
+                       checked=""
+                       style="position: absolute; opacity: 0;"/>
+                <span class="help-block m-b-none">The closest location in a document to the center of the search region will always be returned<strong>
+                    MongoDB > 2.X</strong></span>
+            </div>
+        </div>
+    </div>
+</template>
+
+<template name="spherical">
+    <div class="form-group">
+        <label class="col-lg-1 control-label">spherical</label>
+        <div class="col-lg-11">
+            <div id="divSpherical" class="i-checks">
+                <input id="inputSpherical" type="checkbox" value=""
+                       class="form-control"
+                       checked=""
+                       style="position: absolute; opacity: 0;"/>
+                <span class="help-block m-b-none">Perform query using a spherical model</span>
+            </div>
+        </div>
+    </div>
+</template>
+
+<template name="query">
+    <div class="form-group">
+        <label class="col-lg-1 control-label">query</label>
+        <div class="col-lg-11">
+            <pre class="form-control" id='aceQuery'></pre>
+            <span class="help-block m-b-none">You can use <strong>string</strong> to query <strong>ISODate</strong> and <strong>ObjectID</strong>, date format is <strong>DD.MM.YYYY
+                HH:mm:ss</strong></span>
+        </div>
+    </div>
+</template>
+
+<template name="distanceMultiplier">
+    <div class="form-group">
+        <label class="col-lg-1 control-label">distance multiplier</label>
+        <div class="col-lg-11">
+            <input id="inputDistanceMultiplier" required="true" type="number" class="form-control">
+            <span class="help-block m-b-none">Include a value to multiply the distances with allowing for range conversions</span>
+        </div>
+    </div>
+</template>
+
+<template name="minDistance">
+    <div class="form-group">
+        <label class="col-lg-1 control-label">min distance</label>
+        <div class="col-lg-11">
+            <input id="inputMinDistance" required="true" type="number" class="form-control">
+        </div>
+    </div>
+</template>
+
+<template name="num">
+    <div class="form-group">
+        <label class="col-lg-1 control-label">max number</label>
+        <div class="col-lg-11">
+            <input id="inputMaxNumber" required="true" type="number" class="form-control">
+        </div>
+    </div>
+</template>
