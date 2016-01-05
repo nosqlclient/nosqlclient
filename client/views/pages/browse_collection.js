@@ -81,7 +81,13 @@ Template.browseCollection.helpers({
                 return Spacebars.SafeString('This query executes a geo search using a <strong>geo haystack index</strong> on a collection');
 
             case QUERY_TYPES.IS_CAPPED:
-                return Spacebars.SafeString('Returns if the collection is a capped collection');
+                return Spacebars.SafeString('Returns the information of if the collection is a <strong>capped</strong> collection');
+
+            case QUERY_TYPES.OPTIONS:
+                return Spacebars.SafeString('Returns <strong>collection</strong> options');
+
+            case QUERY_TYPES.RE_INDEX:
+                return Spacebars.SafeString('Reindex all indexes on the collection <strong>Warning:</strong> reIndex is a blocking operation <i>(indexes are rebuilt in the foreground)</i> and will be slow for large collections');
 
             default:
                 return '';

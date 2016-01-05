@@ -22,6 +22,24 @@ Meteor.methods({
         });
     },
 
+    'reIndex': function (connection, selectedCollection) {
+        var methodArray = [
+            {
+                "reIndex": []
+            }
+        ];
+        return proceedQueryExecution(connection, selectedCollection, methodArray);
+    },
+
+    'options': function (connection, selectedCollection) {
+        var methodArray = [
+            {
+                "options": []
+            }
+        ];
+        return proceedQueryExecution(connection, selectedCollection, methodArray);
+    },
+
     'mapReduce': function (connection, selectedCollection, map, reduce, options) {
         return proceedMapReduceExecution(connection, selectedCollection, map, reduce, options);
     },
@@ -206,7 +224,6 @@ Meteor.methods({
     }
 });
 
-// TODO mapReduce BSON support for ObjectID and Date in map,reduce,finalize function strings
 var proceedMapReduceExecution = function (connection, selectedCollection, map, reduce, options) {
     var connectionUrl = getConnectionUrl(connection);
     var mongodbApi = Meteor.npmRequire('mongodb').MongoClient;
@@ -216,7 +233,7 @@ var proceedMapReduceExecution = function (connection, selectedCollection, map, r
     console.log('Connection: ' + connectionUrl + '/' + selectedCollection + ', Map: ' + map + ', Reduce: ' + reduce + ',Options: ' + JSON.stringify(options));
     var result = Async.runSync(function (done) {
         mongodbApi.connect(connectionUrl, function (mainError, db) {
-            if(mainError){
+            if (mainError) {
                 done(mainError, null);
                 if (db) {
                     db.close();
@@ -262,7 +279,7 @@ var proceedQueryExecution = function (connection, selectedCollection, methodArra
 
     var result = Async.runSync(function (done) {
         mongodbApi.connect(connectionUrl, function (mainError, db) {
-            if(mainError){
+            if (mainError) {
                 done(mainError, null);
                 if (db) {
                     db.close();
