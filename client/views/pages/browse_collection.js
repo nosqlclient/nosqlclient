@@ -8,24 +8,24 @@ Template.browseCollection.onRendered(function () {
     }
 
     var cmb = $('#cmbQueries');
-    $.each(QUERY_TYPES, function (key, value) {
+
+    $.each(Template.sortObjectByKey(QUERY_TYPES), function (key, value) {
         cmb.append($("<option></option>")
             .attr("value", key)
             .text(value));
     });
 
     cmb.chosen();
-    cmb.on('change', function () {
-        Session.set(Template.strSessionSelectedOptions, []);
-        $('#divJsonEditor').hide();
-        $('#divAceEditor').hide();
-    });
 
     Session.set(Template.strSessionSelectedOptions, []);
 });
 
 Template.browseCollection.events({
     'change #cmbQueries': function () {
+        Session.set(Template.strSessionSelectedOptions, []);
+        $('#divJsonEditor').hide();
+        $('#divAceEditor').hide();
+
         var value = $('#cmbQueries').find(":selected").text();
         if (value) {
             Session.set(Template.strSessionSelectedQuery, value);
@@ -49,17 +49,13 @@ Template.browseCollection.events({
         if (queryTemplate) {
             Template[queryTemplate].executeQuery();
         } else {
-            Template["find"].executeQuery();
+            toastr.warning('Select Query', 'Please select a query first ');
         }
     }
 });
 
 Template.browseCollection.helpers({
     'getQueryTemplate': function () {
-        if (!Session.get(Template.strSessionSelectedQuery)) {
-            Session.set(Template.strSessionSelectedQuery, 'find')
-        }
-
         return Session.get(Template.strSessionSelectedQuery);
     },
 

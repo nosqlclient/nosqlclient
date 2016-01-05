@@ -36,6 +36,24 @@ Template.renderAfterQueryExecution = function (err, result) {
     Ladda.stopAll();
 };
 
+Template.sortObjectByKey = function (obj) {
+    var keys = [];
+    var sorted_obj = {};
+
+    for (var key in obj) {
+        if (obj.hasOwnProperty(key)) {
+            keys.push(key);
+        }
+    }
+
+    keys.sort();
+    jQuery.each(keys, function (i, key) {
+        sorted_obj[key] = obj[key];
+    });
+
+    return sorted_obj;
+};
+
 Template.convertAndCheckJSON = function (json) {
     if (json == "") return {};
     var result = {};
