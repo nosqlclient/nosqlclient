@@ -178,8 +178,15 @@ Template.topNavbar.events({
 
         var connection = Connections.findOne({_id: Session.get(Template.strSessionConnection)});
         Meteor.call('connect', connection, function (err, result) {
-            if (result.error) {
-                toastr.error("Couldn't connect: " + result.error.message);
+            if (err || result.error) {
+                var errorMessage;
+                if (err) {
+                    errorMessage = err.message;
+                } else {
+                    errorMessage = result.error.message;
+                }
+
+                toastr.error("Couldn't connect: " + errorMessage);
                 l.ladda('stop');
                 return;
             }
