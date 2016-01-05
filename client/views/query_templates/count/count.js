@@ -1,10 +1,6 @@
 /**
  * Created by RSercan on 2.1.2016.
  */
-Template.count.onRendered(function () {
-    Template.initializeAceEditor('aceSelector', Template.count.executeQuery);
-});
-
 Template.count.executeQuery = function () {
     Template.browseCollection.initExecuteQuery();
     var connection = Connections.findOne({_id: Session.get(Template.strSessionConnection)});

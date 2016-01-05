@@ -21,7 +21,7 @@ Template.includeLocs.onRendered(function () {
 
 Template.geoNearOptions.getOptions = function () {
     var result = {};
-    Template.checkAceEditorOption("QUERY", "aceQuery", result, GEO_NEAR_OPTIONS);
+    Template.checkAceEditorOption("QUERY", "aceSelector", result, GEO_NEAR_OPTIONS);
 
     if ($.inArray("MAX_DISTANCE", Session.get(Template.strSessionSelectedOptions)) != -1) {
         var maxDistanceValue = $('#inputMaxDistance').val();

@@ -1,0 +1,38 @@
+<template name="rename">
+    <div class="form-group">
+        <label class="col-lg-1 control-label">New name</label>
+        <div class="col-lg-11">
+            <input type="text" class="form-control" id='inputNewName'/>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-lg-1 control-label">Options</label>
+        <div class="col-lg-11">
+            <select id="cmbRenameOptions"
+                    data-placeholder="Choose one or more options.."
+                    multiple="true"
+                    class="chosen-select form-control"
+                    tabindex="-1">
+            </select>
+        </div>
+    </div>
+
+    {{#if isOptionSelected "DROP_TARGET"}}
+        {{> dropTarget}}
+    {{/if}}
+</template>
+
+<template name="dropTarget">
+    <div class="form-group">
+        <label class="col-lg-1 control-label">drop target</label>
+        <div class="col-lg-11">
+            <div id="divDropTarget" class="i-checks">
+                <input id="inputDropTarget" type="checkbox" value=""
+                       class="form-control"
+                       checked=""
+                       style="position: absolute; opacity: 0;"/>
+                <span class="help-block m-b-none"><strong>Drop </strong>the target name collection if it previously exists.</span>
+            </div>
+        </div>
+    </div>
+</template>

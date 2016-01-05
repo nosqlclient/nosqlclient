@@ -1,10 +1,6 @@
 /**
  * Created by RSercan on 2.1.2016.
  */
-Template.delete.onRendered(function () {
-    Template.initializeAceEditor('aceSelector', Template.delete.executeQuery);
-});
-
 Template.delete.executeQuery = function () {
     Template.browseCollection.initExecuteQuery();
     var connection = Connections.findOne({_id: Session.get(Template.strSessionConnection)});

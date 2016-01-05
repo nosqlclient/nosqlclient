@@ -2,7 +2,6 @@
  * Created by RSercan on 1.1.2016.
  */
 Template.findOneAndUpdate.onRendered(function () {
-    Template.initializeAceEditor('aceSelector', Template.findOneAndUpdate.executeQuery);
     Template.initializeAceEditor('aceSet', Template.findOneAndUpdate.executeQuery);
     Template.findOneAndUpdate.initializeOptions();
 });

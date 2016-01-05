@@ -38,7 +38,7 @@ Template.finalize.onRendered(function () {
 Template.mapReduceOptions.getOptions = function () {
     var result = {};
     Template.checkAceEditorOption("OUT", "aceOut", result, MAP_REDUCE_OPTIONS);
-    Template.checkAceEditorOption("QUERY", "aceQuery", result, MAP_REDUCE_OPTIONS);
+    Template.checkAceEditorOption("QUERY", "aceSelector", result, MAP_REDUCE_OPTIONS);
     Template.checkAceEditorOption("SORT", "aceSort", result, MAP_REDUCE_OPTIONS);
     Template.checkAceEditorOption("SCOPE", "aceScope", result, MAP_REDUCE_OPTIONS);
 

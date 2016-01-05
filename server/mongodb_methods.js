@@ -22,6 +22,15 @@ Meteor.methods({
         });
     },
 
+    'rename': function (connection, selectedCollection, newName, options) {
+        var methodArray = [
+            {
+                "rename": [newName, options]
+            }
+        ];
+        return proceedQueryExecution(connection, selectedCollection, methodArray);
+    },
+
     'reIndex': function (connection, selectedCollection) {
         var methodArray = [
             {

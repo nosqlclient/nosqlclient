@@ -2,10 +2,8 @@
  * Created by sercan on 30.12.2015.
  */
 Template.find.onRendered(function () {
-    Template.initializeAceEditor('aceSelector', Template.find.executeQuery);
     Template.find.initializeOptions();
 });
-
 
 Template.find.initializeOptions = function () {
     var cmb = $('#cmbFindCursorOptions');
