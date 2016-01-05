@@ -44,9 +44,7 @@ Template.mapReduceOptions.getOptions = function () {
 
     if ($.inArray("FINALIZE", Session.get(Template.strSessionSelectedOptions)) != -1) {
         var finalize = ace.edit("aceFinalize").getSession().getValue();
-        finalize = finalize.parseFunction();
-
-        if (finalize == null) {
+        if (finalize.parseFunction() == null) {
             result["ERROR"] = "Syntax Error on finalize, not a valid function";
             return;
         }

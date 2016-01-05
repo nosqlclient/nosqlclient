@@ -41,16 +41,14 @@ Template.mapReduce.executeQuery = function () {
     var map = ace.edit("aceMap").getSession().getValue();
     var reduce = ace.edit("aceReduce").getSession().getValue();
 
-    map = map.parseFunction();
-    reduce = reduce.parseFunction();
 
-    if (map == null) {
+    if (map.parseFunction() == null) {
         toastr.error("Syntax error on map, not a valid function ");
         Ladda.stopAll();
         return;
     }
 
-    if (reduce == null) {
+    if (reduce.parseFunction() == null) {
         toastr.error("Syntax error on reduce, not a valid function ");
         Ladda.stopAll();
         return;

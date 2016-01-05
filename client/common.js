@@ -23,7 +23,11 @@ Template.renderAfterQueryExecution = function (err, result) {
         } else {
             errorMessage = result.error.message;
         }
-        toastr.error("Couldn't execute query: " + errorMessage);
+        if (errorMessage) {
+            toastr.error("Couldn't execute query: " + errorMessage);
+        } else {
+            toastr.error("Couldn't execute query, unknown reason ");
+        }
     } else {
         Template.browseCollection.setResult(result.result);
     }

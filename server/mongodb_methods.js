@@ -23,12 +23,7 @@ Meteor.methods({
     },
 
     'mapReduce': function (connection, selectedCollection, map, reduce, options) {
-        var methodArray = [
-            {
-                "mapReduce": [map, reduce, options]
-            }
-        ];
-        return proceedQueryExecution(connection, selectedCollection, methodArray);
+        return proceedMapReduceExecution(connection, selectedCollection, map, reduce, options);
     },
 
     'isCapped': function (connection, selectedCollection) {
@@ -211,6 +206,54 @@ Meteor.methods({
     }
 });
 
+// TODO mapReduce BSON support for ObjectID and Date in map,reduce,finalize function strings
+var proceedMapReduceExecution = function (connection, selectedCollection, map, reduce, options) {
+    var connectionUrl = getConnectionUrl(connection);
+    var mongodbApi = Meteor.npmRequire('mongodb').MongoClient;
+
+    convertJSONtoBSON(options);
+
+    console.log('Connection: ' + connectionUrl + '/' + selectedCollection + ', Map: ' + map + ', Reduce: ' + reduce + ',Options: ' + JSON.stringify(options));
+    var result = Async.runSync(function (done) {
+        mongodbApi.connect(connectionUrl, function (mainError, db) {
+            if(mainError){
+                done(mainError, null);
+                if (db) {
+                    db.close();
+                }
+                return;
+            }
+            try {
+                var collection = db.collection(selectedCollection);
+                collection.mapReduce(map, reduce, options, function (err, resultCollection) {
+                    if (err) {
+                        done(err, null);
+                        if (db) {
+                            db.close();
+                        }
+                        return;
+                    }
+                    resultCollection.find().toArray(function (err, result) {
+                        done(err, result);
+                        if (db) {
+                            db.close();
+                        }
+                    });
+                });
+            }
+            catch (ex) {
+                done(new Meteor.Error(ex.message), null);
+                if (db) {
+                    db.close();
+                }
+            }
+        });
+    });
+
+    convertBSONtoJSON(result);
+    return result;
+};
+
 var proceedQueryExecution = function (connection, selectedCollection, methodArray) {
     var connectionUrl = getConnectionUrl(connection);
     var mongodbApi = Meteor.npmRequire('mongodb').MongoClient;
@@ -218,7 +261,14 @@ var proceedQueryExecution = function (connection, selectedCollection, methodArra
     console.log('Connection: ' + connectionUrl + '/' + selectedCollection + ', MethodArray: ' + JSON.stringify(methodArray));
 
     var result = Async.runSync(function (done) {
-        mongodbApi.connect(connectionUrl, function (err, db) {
+        mongodbApi.connect(connectionUrl, function (mainError, db) {
+            if(mainError){
+                done(mainError, null);
+                if (db) {
+                    db.close();
+                }
+                return;
+            }
             try {
                 var execution = db.collection(selectedCollection);
                 for (var i = 0; i < methodArray.length; i++) {
@@ -230,7 +280,9 @@ var proceedQueryExecution = function (connection, selectedCollection, methodArra
                         if (last && key == Object.keys(entry)[Object.keys(entry).length - 1]) {
                             entry[key].push(function (err, docs) {
                                 done(err, docs);
-                                db.close();
+                                if (db) {
+                                    db.close();
+                                }
                             });
                             execution[key].apply(execution, entry[key]);
                         }
@@ -241,9 +293,10 @@ var proceedQueryExecution = function (connection, selectedCollection, methodArra
                 }
             }
             catch (ex) {
-                console.error(ex);
-                done(ex, null);
-                db.close();
+                done(new Meteor.Error(ex.message), null);
+                if (db) {
+                    db.close();
+                }
             }
         });
     });
