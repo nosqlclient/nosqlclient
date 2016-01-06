@@ -1,7 +1,9 @@
 /**
  * Created by RSercan on 3.1.2016.
  */
-/** If selector is not in options then we need parent 1, otherwise it's 2 */
+/**
+ * If selector is not in options then we need parent 1, otherwise it's 2
+ * */
 Template.selector.onRendered(function () {
 
     var eventToBindEnter = null;

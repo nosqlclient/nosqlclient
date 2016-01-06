@@ -1,4 +1,4 @@
-<template name="findOneAndUpdate">
+<template name="updateMany">
     {{> selector}}
 
     {{> set}}
@@ -6,7 +6,7 @@
     <div class="form-group">
         <label class="col-lg-1 control-label">Options</label>
         <div class="col-lg-11">
-            <select id="cmbFindOneModifyOptions"
+            <select id="cmbUpdateManyOptions"
                     data-placeholder="Choose one or more options.."
                     multiple="true"
                     class="chosen-select form-control"
@@ -15,6 +15,7 @@
         </div>
     </div>
 
-    {{> findOneModifyOptions}}
-
+    {{#if isOptionSelected "UPSERT"}}
+        {{> upsert}}
+    {{/if}}
 </template>

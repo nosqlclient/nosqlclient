@@ -1,13 +1,13 @@
 /**
- * Created by RSercan on 1.1.2016.
+ * Created by sercan on 06.01.2016.
  */
-Template.findOneAndUpdate.onRendered(function () {
-    Template.findOneAndUpdate.initializeOptions();
+Template.updateMany.onRendered(function () {
+    Template.updateMany.initializeOptions();
 });
 
-Template.findOneAndUpdate.initializeOptions = function () {
-    var cmb = $('#cmbFindOneModifyOptions');
-    $.each(Template.sortObjectByKey(FINDONE_MODIFY_OPTIONS), function (key, value) {
+Template.updateMany.initializeOptions = function () {
+    var cmb = $('#cmbUpdateManyOptions');
+    $.each(Template.sortObjectByKey(UPDATE_OPTIONS), function (key, value) {
         cmb.append($("<option></option>")
             .attr("value", key)
             .text(value));
@@ -17,11 +17,11 @@ Template.findOneAndUpdate.initializeOptions = function () {
     Template.setOptionsComboboxChangeEvent(cmb);
 };
 
-Template.findOneAndUpdate.executeQuery = function () {
+Template.updateMany.executeQuery = function () {
     Template.browseCollection.initExecuteQuery();
     var connection = Connections.findOne({_id: Session.get(Template.strSessionConnection)});
     var selectedCollection = Session.get(Template.strSessionSelectedCollection);
-    var options = Template.findOneModifyOptions.getOptions();
+    var options = Template.updateMany.getOptions();
     var selector = ace.edit("aceSelector").getSession().getValue();
     var setObject = ace.edit("aceSet").getSession().getValue();
 
@@ -40,13 +40,27 @@ Template.findOneAndUpdate.executeQuery = function () {
     }
     setObject = {"$set": setObject};
 
+
     if (options["ERROR"]) {
         toastr.error(options["ERROR"]);
         Ladda.stopAll();
         return;
     }
 
-    Meteor.call("findOneAndUpdate", connection, selectedCollection, selector, setObject, options, function (err, result) {
+    Meteor.call("updateMany", connection, selectedCollection, selector, setObject, options, function (err, result) {
         Template.renderAfterQueryExecution(err, result);
     });
+};
+
+Template.updateMany.getOptions = function () {
+    var result = {};
+
+    if ($.inArray("UPSERT", Session.get(Template.strSessionSelectedOptions)) != -1) {
+        var upsertVal = $('#divUpsert').iCheck('update')[0].checked;
+        if (upsertVal) {
+            result[UPDATE_OPTIONS.UPSERT] = upsertVal;
+        }
+    }
+
+    return result;
 };
