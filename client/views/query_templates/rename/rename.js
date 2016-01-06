@@ -34,7 +34,7 @@ Template.rename.executeQuery = function () {
         Meteor.call("rename", connection, selectedCollection, newName, options, function (err, result) {
             Template.renderAfterQueryExecution(err, result);
             if (err == undefined && result.error == undefined) {
-                Template.rename.renderCollectionnames();
+                Template.rename.renderCollectionnames(newName);
             }
         });
     }
@@ -45,8 +45,7 @@ Template.rename.executeQuery = function () {
     }
 };
 
-//TODO keep going on here
-Template.rename.renderCollectionnames = function () {
+Template.rename.renderCollectionnames = function (newName) {
     var connection = Connections.findOne({_id: Session.get(Template.strSessionConnection)});
     Meteor.call('connect', connection, function (err, result) {
         if (err || result.error) {
@@ -60,7 +59,14 @@ Template.rename.renderCollectionnames = function () {
             toastr.error("Couldn't connect: " + errorMessage);
             return;
         }
+
+        // re-set collection names and selected collection
         Session.set(Template.strSessionCollectionNames, result.result);
+        Session.set(Template.strSessionSelectedCollection, newName);
+
+        // set all session values undefined except connection and collection
+        Session.set(Template.strSessionSelectedQuery, undefined);
+        Session.set(Template.strSessionSelectedOptions, undefined);
     });
 };
 
