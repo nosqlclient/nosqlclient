@@ -21,7 +21,7 @@ Template.findOneAndReplace.initializeAceEditor = function () {
 
 Template.findOneAndReplace.initializeOptions = function () {
     var cmb = $('#cmbFindOneModifyOptions');
-    $.each(FINDONE_MODIFY_OPTIONS, function (key, value) {
+    $.each(Template.sortObjectByKey(FINDONE_MODIFY_OPTIONS), function (key, value) {
         cmb.append($("<option></option>")
             .attr("value", key)
             .text(value));

@@ -13,7 +13,7 @@ Template.dropTarget.onRendered(function () {
 
 Template.rename.initializeOptions = function () {
     var cmb = $('#cmbRenameOptions');
-    $.each(RENAME_OPTIONS, function (key, value) {
+    $.each(Template.sortObjectByKey(RENAME_OPTIONS), function (key, value) {
         cmb.append($("<option></option>")
             .attr("value", key)
             .text(value));

@@ -7,7 +7,7 @@ Template.geoHaystackSearch.onRendered(function () {
 
 Template.geoHaystackSearch.initializeOptions = function () {
     var cmb = $('#cmbGeoHaystackSearchOptions');
-    $.each(GEO_HAYSTACK_SEARCH_OPTIONS, function (key, value) {
+    $.each(Template.sortObjectByKey(GEO_HAYSTACK_SEARCH_OPTIONS), function (key, value) {
         cmb.append($("<option></option>")
             .attr("value", key)
             .text(value));

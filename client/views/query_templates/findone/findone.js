@@ -7,7 +7,7 @@ Template.findOne.onRendered(function () {
 
 Template.findOne.initializeOptions = function () {
     var cmb = $('#cmbFindOneCursorOptions');
-    $.each(CURSOR_OPTIONS, function (key, value) {
+    $.each(Template.sortObjectByKey(CURSOR_OPTIONS), function (key, value) {
         // dont add limit, it will be 1 already
         if (value != CURSOR_OPTIONS.LIMIT) {
             cmb.append($("<option></option>")

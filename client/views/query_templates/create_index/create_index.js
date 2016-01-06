@@ -8,7 +8,7 @@ Template.createIndex.onRendered(function () {
 
 Template.createIndex.initializeOptions = function () {
     var cmb = $('#cmbCreateIndexOptions');
-    $.each(CREATE_INDEX_OPTIONS, function (key, value) {
+    $.each(Template.sortObjectByKey(CREATE_INDEX_OPTIONS), function (key, value) {
         cmb.append($("<option></option>")
             .attr("value", key)
             .text(value));

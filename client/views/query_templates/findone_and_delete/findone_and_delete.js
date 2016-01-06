@@ -7,7 +7,7 @@ Template.findOneAndDelete.onRendered(function () {
 
 Template.findOneAndDelete.initializeOptions = function () {
     var cmb = $('#cmbFindOneModifyOptions');
-    $.each(FINDONE_MODIFY_OPTIONS, function (key, value) {
+    $.each(Template.sortObjectByKey(FINDONE_MODIFY_OPTIONS), function (key, value) {
         // upsert and returnOriginal is not for delete
         if (value != FINDONE_MODIFY_OPTIONS.UPSERT && value != FINDONE_MODIFY_OPTIONS.RETURN_ORIGINAL) {
             cmb.append($("<option></option>")

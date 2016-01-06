@@ -7,7 +7,7 @@ Template.find.onRendered(function () {
 
 Template.find.initializeOptions = function () {
     var cmb = $('#cmbFindCursorOptions');
-    $.each(CURSOR_OPTIONS, function (key, value) {
+    $.each(Template.sortObjectByKey(CURSOR_OPTIONS), function (key, value) {
         cmb.append($("<option></option>")
             .attr("value", key)
             .text(value));

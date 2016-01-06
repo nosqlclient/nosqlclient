@@ -7,7 +7,7 @@ Template.geoNear.onRendered(function () {
 
 Template.geoNear.initializeOptions = function () {
     var cmb = $('#cmbGeoNearOptions');
-    $.each(GEO_NEAR_OPTIONS, function (key, value) {
+    $.each(Template.sortObjectByKey(GEO_NEAR_OPTIONS), function (key, value) {
         cmb.append($("<option></option>")
             .attr("value", key)
             .text(value));

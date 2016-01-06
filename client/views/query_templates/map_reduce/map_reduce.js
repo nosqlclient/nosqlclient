@@ -9,7 +9,7 @@ Template.mapReduce.onRendered(function () {
 
 Template.mapReduce.initializeOptions = function () {
     var cmb = $('#cmbMapReduceOptions');
-    $.each(MAP_REDUCE_OPTIONS, function (key, value) {
+    $.each(Template.sortObjectByKey(MAP_REDUCE_OPTIONS), function (key, value) {
         cmb.append($("<option></option>")
             .attr("value", key)
             .text(value));
