@@ -22,6 +22,15 @@ Meteor.methods({
         });
     },
 
+    'updateOne': function (connection, selectedCollection, selector, setObject, options) {
+        var methodArray = [
+            {
+                "updateOne": [selector, setObject, options]
+            }
+        ];
+        return proceedQueryExecution(connection, selectedCollection, methodArray);
+    },
+
     'updateMany': function (connection, selectedCollection, selector, setObject, options) {
         var methodArray = [
             {

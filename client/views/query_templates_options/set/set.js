@@ -10,6 +10,9 @@ Template.set.onRendered(function () {
         case QUERY_TYPES.UPDATE_MANY:
             eventToBindEnter = Template.updateMany.executeQuery;
             break;
+        case QUERY_TYPES.UPDATE_ONE:
+            eventToBindEnter = Template.updateOne.executeQuery;
+            break;
     }
 
     Template.initializeAceEditor('aceSet', eventToBindEnter);

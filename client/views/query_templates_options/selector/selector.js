@@ -32,6 +32,12 @@ Template.selector.onRendered(function () {
         case QUERY_TYPES.FINDONE_AND_UPDATE:
             eventToBindEnter = Template.findOneAndUpdate.executeQuery;
             break;
+        case QUERY_TYPES.UPDATE_MANY:
+            eventToBindEnter = Template.updateMany.executeQuery;
+            break;
+        case QUERY_TYPES.UPDATE_ONE:
+            eventToBindEnter = Template.updateOne.executeQuery;
+            break;
     }
 
     if (eventToBindEnter == null) {
@@ -44,7 +50,6 @@ Template.selector.onRendered(function () {
                 break;
         }
     }
-
 
     Template.initializeAceEditor('aceSelector', eventToBindEnter);
 });
