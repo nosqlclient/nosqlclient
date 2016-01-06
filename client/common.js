@@ -116,7 +116,6 @@ Template.initializeAceEditor = function (id, evt) {
         mode: "javascript",
         theme: 'dawn'
     }, function (editor) {
-        console.log('BOK1');
         editor.$blockScrolling = Infinity;
         editor.setOptions({
             fontSize: "11pt",
@@ -137,9 +136,7 @@ Template.initializeAceEditor = function (id, evt) {
         };
         // disable Enter Shift-Enter keys
         editor.commands.bindKey("Enter|Shift-Enter", evt);
-        console.log('BOK2');
     });
-    console.log('BOK3');
 };
 
 Template.registerHelper('isOptionSelected', function (option) {

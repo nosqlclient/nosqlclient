@@ -15,6 +15,7 @@ Template.set.onRendered(function () {
             break;
     }
 
+
     Template.initializeAceEditor('aceSet', eventToBindEnter);
 });
 
