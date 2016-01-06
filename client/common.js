@@ -110,33 +110,37 @@ Template.getParentTemplateName = function (levels) {
     }
 };
 
-//TODO load this synchronously
 Template.initializeAceEditor = function (id, evt) {
-    AceEditor.instance(id, {
-        mode: "javascript",
-        theme: 'dawn'
-    }, function (editor) {
-        editor.$blockScrolling = Infinity;
-        editor.setOptions({
-            fontSize: "11pt",
-            showPrintMargin: false
+    Tracker.autorun(function (e) {
+        var editor = AceEditor.instance(id, {
+            mode: "javascript",
+            theme: 'dawn'
         });
+        if (editor.loaded !== undefined) {
+            e.stop();
+            editor.$blockScrolling = Infinity;
+            editor.setOptions({
+                fontSize: "11pt",
+                showPrintMargin: false
+            });
 
-        // remove newlines in pasted text
-        editor.on("paste", function (e) {
-            e.text = e.text.replace(/[\r\n]+/g, " ");
-        });
-        // make mouse position clipping nicer
-        editor.renderer.screenToTextCoordinates = function (x, y) {
-            var pos = this.pixelToScreenCoordinates(x, y);
-            return this.session.screenToDocumentPosition(
-                Math.min(this.session.getScreenLength() - 1, Math.max(pos.row, 0)),
-                Math.max(pos.column, 0)
-            );
-        };
-        // disable Enter Shift-Enter keys
-        editor.commands.bindKey("Enter|Shift-Enter", evt);
+            // remove newlines in pasted text
+            editor.on("paste", function (e) {
+                e.text = e.text.replace(/[\r\n]+/g, " ");
+            });
+            // make mouse position clipping nicer
+            editor.renderer.screenToTextCoordinates = function (x, y) {
+                var pos = this.pixelToScreenCoordinates(x, y);
+                return this.session.screenToDocumentPosition(
+                    Math.min(this.session.getScreenLength() - 1, Math.max(pos.row, 0)),
+                    Math.max(pos.column, 0)
+                );
+            };
+            // disable Enter Shift-Enter keys
+            editor.commands.bindKey("Enter|Shift-Enter", evt);
+        }
     });
+
 };
 
 Template.registerHelper('isOptionSelected', function (option) {
