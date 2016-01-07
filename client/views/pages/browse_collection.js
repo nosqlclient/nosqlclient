@@ -36,6 +36,10 @@ Template.browseCollection.events({
         var jsonView = $('#divJsonEditor');
         var aceView = $('#divAceEditor');
 
+        if (jsonView.css('display') == 'none' && aceView.css('display') == 'none') {
+            return;
+        }
+
         if (jsonView.css('display') == 'none') {
             aceView.hide();
             jsonView.show('slow');
