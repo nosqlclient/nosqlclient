@@ -35,12 +35,26 @@ Template.navigation.events({
         $('#listCollectionNames li').each(function (index, li) {
             $(li).removeClass('active');
         });
+
+        $('#listSystemCollections li').each(function (index, li) {
+            $(li).removeClass('active');
+        });
     },
 
     'click .navCollection': function () {
         var name = this.name;
 
         $('#listCollectionNames li').each(function (index, li) {
+            var liObject = $(li);
+            if (liObject[0].innerText.substr(1).trim() == name) {
+                liObject.addClass('active');
+            }
+            else {
+                liObject.removeClass('active');
+            }
+        });
+
+        $('#listSystemCollections li').each(function (index, li) {
             var liObject = $(li);
             if (liObject[0].innerText.substr(1).trim() == name) {
                 liObject.addClass('active');

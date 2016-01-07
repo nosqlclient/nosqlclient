@@ -35,7 +35,8 @@
                     </div>
                 </li>
                 <li id="liBrowseDB" class="{{isActiveRoute regex='browseDB'}}">
-                    <a id="aBrowseDB" href="{{pathFor route='browseDB'}}"><i class="fa fa-dashboard"></i> <span class="nav-label">Browse</span>
+                    <a id="aBrowseDB" href="{{pathFor route='browseDB'}}"><i class="fa fa-dashboard"></i> <span
+                            class="nav-label">Browse</span>
                     </a>
                 </li>
                 {{#if getCollectionNames}}
@@ -50,6 +51,25 @@
                         {{/each}}
                     </ul>
                 {{/if}}
+
+                {{#if getSystemCollectionNames}}
+                    <li>
+                        <a href="#"><i class="fa fa-server"></i> <span
+                                class="nav-label">System</span>
+                        </a>
+                    </li>
+                    <ul id="listSystemCollections" class="nav nav-second-level collapse in">
+                        {{#each getSystemCollectionNames}}
+                            <li>
+                                <a class="navCollection" href="{{pathFor route='browseCollection'}}"><i
+                                        class="fa fa-book"></i> <span
+                                        class="nav-label">{{name}}</span>
+                                </a>
+                            </li>
+                        {{/each}}
+                    </ul>
+                {{/if}}
+
             </ul>
         </div>
     </nav>
