@@ -2,7 +2,7 @@ Template.mainLayout.rendered = function () {
 
     $(document).idleTimer(300000);
     $(document).on("idle.idleTimer", function () {
-        toastr.info('You are idle for at least 30 seconds...', 'Idle');
+        toastr.info('You are idle for at least 5 minutes...', 'Idle');
     });
     $(document).on("active.idleTimer", function () {
         toastr.success('Welcome back !', 'You are back');
