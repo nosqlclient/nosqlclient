@@ -113,13 +113,13 @@ Template.browseCollection.setResult = function (result) {
     Template.browseCollection.getEditor().set(result);
 
     // set ace editor
-    AceEditor.instance("aceeditor", {
-        mode: "javascript",
+    AceEditor.instance('aceeditor', {
+        mode: 'javascript',
         theme: 'dawn'
     }, function (editor) {
         editor.$blockScrolling = Infinity;
         editor.setOptions({
-            fontSize: "12pt",
+            fontSize: '12pt',
             showPrintMargin: false
         });
         editor.setValue(JSON.stringify(result, null, '\t'), -1);
@@ -131,8 +131,9 @@ Template.browseCollection.setResult = function (result) {
 var jsonEditor;
 Template.browseCollection.getEditor = function () {
     if ($('.jsoneditor').length == 0) {
-        jsonEditor = new JSONEditor(document.getElementById("jsoneditor"), {
-            mode: "tree",
+        jsonEditor = new JSONEditor(document.getElementById('jsoneditor'), {
+            mode: 'tree',
+            modes: ['code', 'form', 'text', 'tree', 'view'],
             search: true
         });
     }

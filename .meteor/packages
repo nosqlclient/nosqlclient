@@ -25,6 +25,5 @@ twbs:bootstrap@3.3.6
 ephemer:reactive-datatables
 meteorhacks:npm
 npm-container
-dataflows:jsoneditor
 momentjs:moment
 arch:ace-editor

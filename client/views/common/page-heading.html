@@ -1,21 +1,24 @@
 <template name="pageHeading">
+    {{getCollectionInformation}}
 
     <div class="row wrapper border-bottom white-bg page-heading">
-        <div class="col-lg-12">
+        <div class="col-lg-9">
             <h2>{{title}}</h2>
             <ol class="breadcrumb">
                 <li>
-                    <a href="{{pathFor route=home}}">Home</a>
+                    <a href="{{pathFor route='browseDB'}}">Home</a>
                 </li>
                 {{#if category}}
-                <li>
-                    <a>{{category}}</a>
-                </li>
+                    <li>
+                        <a>{{category}}</a>
+                    </li>
                 {{/if}}
                 <li class="active">
                     <strong>{{title}}</strong>
                 </li>
             </ol>
+        </div>
+        <div id="divCollectionInfo" class="col-lg-3 title-action">
         </div>
     </div>
 </template>
