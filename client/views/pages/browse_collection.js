@@ -125,7 +125,13 @@ Template.browseCollection.setResult = function (result) {
         editor.setValue(JSON.stringify(result, null, '\t'), -1);
     });
 
-    $('#divJsonEditor').show('slow');
+    var settings = Settings.findOne();
+    if (settings.defaultResultView == 'Jsoneditor') {
+        $('#divJsonEditor').show('slow');
+    }
+    else{
+        $('#divAceEditor').show('slow');
+    }
 };
 
 var jsonEditor;

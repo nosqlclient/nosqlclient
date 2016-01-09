@@ -17,6 +17,10 @@ Template.navigation.events({
         }, function () {
             var connection = Connections.findOne({_id: Session.get(Template.strSessionConnection)});
             Meteor.call('dropDB', connection, function (err, result) {
+                if (err) {
+                    toastr.error("Couldn't drop database: " + err.message);
+                    return;
+                }
                 if (result.error) {
                     toastr.error("Couldn't drop database: " + result.error.message);
                     return;
@@ -32,11 +36,11 @@ Template.navigation.events({
     },
 
     'click #aBrowseDB': function () {
-        $('#listCollectionNames li').each(function (index, li) {
+        $('#listCollectionNames').find('li').each(function (index, li) {
             $(li).removeClass('active');
         });
 
-        $('#listSystemCollections li').each(function (index, li) {
+        $('#listSystemCollections').find('li').each(function (index, li) {
             $(li).removeClass('active');
         });
     },
@@ -44,7 +48,7 @@ Template.navigation.events({
     'click .navCollection': function () {
         var name = this.name;
 
-        $('#listCollectionNames li').each(function (index, li) {
+        $('#listCollectionNames').find('li').each(function (index, li) {
             var liObject = $(li);
             if (liObject[0].innerText.substr(1).trim() == name) {
                 liObject.addClass('active');
@@ -54,7 +58,7 @@ Template.navigation.events({
             }
         });
 
-        $('#listSystemCollections li').each(function (index, li) {
+        $('#listSystemCollections').find('li').each(function (index, li) {
             var liObject = $(li);
             if (liObject[0].innerText.substr(1).trim() == name) {
                 liObject.addClass('active');

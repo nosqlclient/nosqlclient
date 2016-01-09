@@ -4,7 +4,7 @@
             <div class="navbar-header">
                 <a id="navbar-minimalize" class="minimalize-styl-2 btn btn-primary " href="#"><i class="fa fa-bars"></i>
                 </a>
-                <form role="search" class="navbar-form-custom" action="search_results">
+                <form role="search" class="navbar-form-custom">
                     <div class="form-group">
                         <input type="text" placeholder="Search for something..." class="form-control" name="top-search"
                                id="top-search">
@@ -12,6 +12,11 @@
                 </form>
             </div>
             <ul class="nav navbar-top-links navbar-right">
+                <li>
+                    <a href="{{pathFor route="settings"}}">
+                        <i class="fa fa-archive"></i> Settings
+                    </a>
+                </li>
                 <li>
                     {{#if getCollectionNames}}
                         <a id="btnDisconnect" href="#">
@@ -72,24 +77,24 @@
                 <div class="modal-body">
                     <form id="formCreateConnection" class="form-horizontal">
                         <div class="form-group"><label class="col-lg-2 control-label">Connection Name</label>
-                            <div class="col-lg-10"><input id="inputConnectionName" required="true" type="text"
+                            <div class="col-lg-10"><input id="inputConnectionName" data-required="true" type="text"
                                                           placeholder="Connection Name" class="form-control">
                             </div>
                         </div>
                         <div class="form-group"><label class="col-lg-2 control-label">Hostname</label>
-                            <div class="col-lg-10"><input id="inputHost" required="true" type="text"
+                            <div class="col-lg-10"><input id="inputHost" data-required="true" type="text"
                                                           placeholder="Hostname"
                                                           class="form-control">
                             </div>
                         </div>
                         <div class="form-group"><label class="col-lg-2 control-label">Port</label>
-                            <div class="col-lg-10"><input id="inputPort" value="27017" required="true" type="number"
+                            <div class="col-lg-10"><input id="inputPort" value="27017" data-required="true" type="number"
                                                           placeholder="Port"
                                                           class="form-control">
                             </div>
                         </div>
                         <div class="form-group"><label class="col-lg-2 control-label">DB Name</label>
-                            <div class="col-lg-10"><input id="inputDatabaseName" required="true" type="text"
+                            <div class="col-lg-10"><input id="inputDatabaseName" data-required="true" type="text"
                                                           placeholder="Database Name"
                                                           class="form-control">
                             </div>

@@ -1,3 +1,8 @@
+aldeed:collection2@2.8.0
+aldeed:collection2-core@1.0.0
+aldeed:schema-deny@1.0.1
+aldeed:schema-index@1.0.1
+aldeed:simple-schema@1.5.3
 arch:ace-editor@1.2.1
 autoupdate@1.2.4
 babel-compiler@5.8.24_1
@@ -45,6 +50,7 @@ launch-screen@1.0.4
 less@2.5.1
 livedata@1.0.15
 logging@1.0.8
+mdg:validation-error@0.2.0
 meteor@1.1.10
 meteor-base@1.0.1
 meteorhacks:async@1.0.0
@@ -62,6 +68,7 @@ observe-sequence@1.0.7
 okgrow:router-autoscroll@0.1.6
 ordered-dict@1.0.4
 promise@0.5.1
+raix:eventemitter@0.1.3
 random@1.0.5
 reactive-dict@1.1.3
 reactive-var@1.0.6

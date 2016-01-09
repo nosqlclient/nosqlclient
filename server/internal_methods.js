@@ -1,7 +1,27 @@
 /**
  * Created by RSercan on 26.12.2015.
  */
+Meteor.startup(function () {
+    if (!Settings.findOne()) {
+        Settings.insert({
+            scale: "MegaBytes",
+            defaultResultView: "Jsoneditor",
+            autoCompleteFields: false
+        });
+    }
+});
+
 Meteor.methods({
+    'updateSettings': function (settings) {
+        Settings.update({}, {
+            $set: {
+                scale: settings.scale,
+                defaultResultView: settings.defaultResultView,
+                autoCompleteFields: settings.autoCompleteFields
+            }
+        });
+    },
+
     'saveConnection': function (connection) {
         Connections.insert(connection);
     },

@@ -36,6 +36,7 @@ Template.renderAfterQueryExecution = function (err, result) {
     Ladda.stopAll();
 };
 
+
 Template.sortObjectByKey = function (obj) {
     var keys = [];
     var sorted_obj = {};
