@@ -68,9 +68,15 @@ Template.navigation.events({
         /*$('#liBrowseDB').removeClass('active');
          $('#liAdminQueries').removeClass('active');*/
 
-        Session.set(Template.strSessionSelectedCollection, name);
         $('#divJsonEditor').hide();
         $('#divAceEditor').hide();
+
+        Session.set(Template.strSessionSelectedCollection, name);
+        Session.set(Template.strSessionSelectedQuery, undefined);
+        Session.set(Template.strSessionSelectedOptions, undefined);
+
+        $('#cmbQueries').val('').trigger('chosen:updated');
+        $('#cmbAdminQueries').val('').trigger('chosen:updated');
     }
 });
 
@@ -86,4 +92,7 @@ Template.navigation.handleNavigationAndSessions = function () {
     Session.set(Template.strSessionSelectedCollection, undefined);
     Session.set(Template.strSessionSelectedQuery, undefined);
     Session.set(Template.strSessionSelectedOptions, undefined);
+
+    $('#cmbQueries').val('').trigger('chosen:updated');
+    $('#cmbAdminQueries').val('').trigger('chosen:updated');
 };
