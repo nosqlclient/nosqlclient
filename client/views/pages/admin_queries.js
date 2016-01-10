@@ -71,6 +71,30 @@ Template.adminQueries.helpers({
             case ADMIN_QUERY_TYPES.BUILD_INFO:
                 return Spacebars.SafeString('Retrieve the server information for the current instance of the db client');
 
+            case ADMIN_QUERY_TYPES.LIST_DATABASES:
+                return Spacebars.SafeString('List the available databases');
+
+            case ADMIN_QUERY_TYPES.COMMAND:
+                return Spacebars.SafeString('Execute a command');
+
+            case ADMIN_QUERY_TYPES.PING:
+                return Spacebars.SafeString('Ping the server and retrieve results');
+
+            case ADMIN_QUERY_TYPES.PROFILING_INFO:
+                return Spacebars.SafeString('Retrive the current profiling information');
+
+            case ADMIN_QUERY_TYPES.REPL_SET_GET_STATUS:
+                return Spacebars.SafeString('Get <strong>ReplicaSet</strong> status');
+
+            case ADMIN_QUERY_TYPES.SERVER_STATUS:
+                return Spacebars.SafeString('Retrieve this <strong>db\'s</strong> server status.');
+
+            case ADMIN_QUERY_TYPES.SET_PROFILING_LEVEL:
+                return Spacebars.SafeString('Set the current profiling level');
+
+            case ADMIN_QUERY_TYPES.VALIDATE_COLLECTION:
+                return Spacebars.SafeString('Validate an existing collection');
+
             default:
                 return '';
         }

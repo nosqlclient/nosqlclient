@@ -330,17 +330,19 @@ var proceedQueryExecution = function (connection, selectedCollection, methodArra
                     convertJSONtoBSON(entry);
 
                     for (var key in entry) {
-                        if (last && key == Object.keys(entry)[Object.keys(entry).length - 1]) {
-                            entry[key].push(function (err, docs) {
-                                done(err, docs);
-                                if (db) {
-                                    db.close();
-                                }
-                            });
-                            execution[key].apply(execution, entry[key]);
-                        }
-                        else {
-                            execution = execution[key].apply(execution, entry[key]);
+                        if (entry.hasOwnProperty(key)) {
+                            if (last && key == Object.keys(entry)[Object.keys(entry).length - 1]) {
+                                entry[key].push(function (err, docs) {
+                                    done(err, docs);
+                                    if (db) {
+                                        db.close();
+                                    }
+                                });
+                                execution[key].apply(execution, entry[key]);
+                            }
+                            else {
+                                execution = execution[key].apply(execution, entry[key]);
+                            }
                         }
                     }
                 }
