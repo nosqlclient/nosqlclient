@@ -23,7 +23,6 @@ Template.addUser.executeQuery = function () {
     var options = Template.addUserOptions.getOptions();
     var username = $('#inputAddUserUsername').val();
     var password = $('#inputAddUserPassword').val();
-    var rePassword = $('#inputAddUserRePassword').val();
 
     if (username == null || username.length === 0) {
         toastr.error('Username can not be empty');
@@ -33,18 +32,6 @@ Template.addUser.executeQuery = function () {
 
     if (password == null || password.length === 0) {
         toastr.error('Password can not be empty');
-        Ladda.stopAll();
-        return;
-    }
-
-    if (rePassword == null || rePassword.length === 0) {
-        toastr.error('Re-Password can not be empty');
-        Ladda.stopAll();
-        return;
-    }
-
-    if (password != rePassword) {
-        toastr.error('Passwords do not matched !');
         Ladda.stopAll();
         return;
     }
