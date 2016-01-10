@@ -8,28 +8,16 @@ Template.browseCollection.onRendered(function () {
     }
 
     var cmb = $('#cmbQueries');
-
     cmb.append($("<optgroup id='optGroupCollectionQueries' label='Collection Queries'></optgroup>"));
-    cmb.append($("<optgroup id='optGroupAdminQueries' label='Admin Queries'></optgroup>"));
-
-    var cmbOptGroupCollection = $('#cmbQueries').find('#optGroupCollectionQueries');
-    var cmbOptGroupAdmin = $('#cmbQueries').find('#optGroupAdminQueries');
+    var cmbOptGroupCollection = cmb.find('#optGroupCollectionQueries');
 
     $.each(Template.sortObjectByKey(QUERY_TYPES), function (key, value) {
         cmbOptGroupCollection.append($("<option></option>")
             .attr("value", key)
             .text(value));
     });
-
-    $.each(Template.sortObjectByKey(ADMIN_QUERY_TYPES), function (key, value) {
-        cmbOptGroupAdmin.append($("<option></option>")
-            .attr("value", key)
-            .text(value));
-    });
-
     cmb.chosen();
 
-    Session.set(Template.strSessionSelectedOptions, []);
 });
 
 Template.browseCollection.events({

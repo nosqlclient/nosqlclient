@@ -1,3 +1,36 @@
 <template name="addUser">
+    <div class="form-group">
+        <label class="col-lg-1 control-label">Username</label>
+        <div class="col-lg-11">
+            <input id="inputAddUserUsername" type="text" placeholder="Enter username" class="form-control">
+        </div>
+    </div>
 
+    <div class="form-group">
+        <label class="col-lg-1 control-label">Password</label>
+        <div class="col-lg-11">
+            <input id="inputAddUserPassword" type="password" placeholder="Enter password" class="form-control">
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="col-lg-1 control-label">Re-Password</label>
+        <div class="col-lg-11">
+            <input id="inputAddUserRePassword" type="password" placeholder="Enter password again" class="form-control">
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="col-lg-1 control-label">Options</label>
+        <div class="col-lg-11">
+            <select id="cmbAddUserOptions"
+                    data-placeholder="Choose one or more options.."
+                    multiple="true"
+                    class="chosen-select form-control"
+                    tabindex="-1">
+            </select>
+        </div>
+    </div>
+
+    {{> addUserOptions}}
 </template>

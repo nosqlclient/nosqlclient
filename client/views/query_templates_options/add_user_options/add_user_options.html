@@ -1,0 +1,32 @@
+<template name="addUserOptions">
+    {{#if isOptionSelected "CUSTOM_DATA"}}
+        {{> customData}}
+    {{/if}}
+    {{#if isOptionSelected "ROLES"}}
+        {{> roles}}
+    {{/if}}
+</template>
+
+<template name="customData">
+    <div class="form-group">
+        <label class="col-lg-1 control-label">Custom data</label>
+        <div class="col-lg-11">
+            <pre class="form-control" id='aceCustomData'></pre>
+            <span class="help-block m-b-none">Custom data associated with the user <strong>(only Mongodb 2.6 or
+                higher)</strong><br/>
+                You can use <strong>string</strong> to query <strong>ISODate</strong> and <strong>ObjectID</strong>, date format is <strong>YYYY-MM-DD
+                    HH:mm:ss</strong></span>
+        </div>
+    </div>
+</template>
+
+<template name="roles">
+    <div class="form-group">
+        <label class="col-lg-1 control-label">Roles</label>
+        <div class="col-lg-11">
+            <pre class="form-control" id='aceRoles'></pre>
+            <span class="help-block m-b-none">Array | Object<br/>Creating a user without roles is deprecated in <strong>MongoDB
+                >= 2.6</strong></span>
+        </div>
+    </div>
+</template>

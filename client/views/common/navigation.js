@@ -35,14 +35,12 @@ Template.navigation.events({
         });
     },
 
-    'click #aBrowseDB': function () {
-        $('#listCollectionNames').find('li').each(function (index, li) {
-            $(li).removeClass('active');
-        });
+    'click #aAdminQueries': function () {
+        Template.navigation.handleNavigationAndSessions();
+    },
 
-        $('#listSystemCollections').find('li').each(function (index, li) {
-            $(li).removeClass('active');
-        });
+    'click #aBrowseDB': function () {
+        Template.navigation.handleNavigationAndSessions();
     },
 
     'click .navCollection': function () {
@@ -67,10 +65,25 @@ Template.navigation.events({
             }
         });
 
-        $('#liBrowseDB').removeClass('active');
+        /*$('#liBrowseDB').removeClass('active');
+         $('#liAdminQueries').removeClass('active');*/
 
         Session.set(Template.strSessionSelectedCollection, name);
         $('#divJsonEditor').hide();
         $('#divAceEditor').hide();
     }
 });
+
+Template.navigation.handleNavigationAndSessions = function () {
+    $('#listCollectionNames').find('li').each(function (index, li) {
+        $(li).removeClass('active');
+    });
+
+    $('#listSystemCollections').find('li').each(function (index, li) {
+        $(li).removeClass('active');
+    });
+
+    Session.set(Template.strSessionSelectedCollection, undefined);
+    Session.set(Template.strSessionSelectedQuery, undefined);
+    Session.set(Template.strSessionSelectedOptions, undefined);
+};

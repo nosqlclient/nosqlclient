@@ -2,6 +2,7 @@
  * Created by RSercan on 26.12.2015.
  */
 Meteor.startup(function () {
+    // create a setting if not exist
     if (!Settings.findOne()) {
         Settings.insert({
             scale: "MegaBytes",

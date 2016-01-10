@@ -1,0 +1,64 @@
+<template name="adminQueries">
+    {{#if getConnection}}
+        {{> pageHeading title='Admin Queries'}}
+        <div class="wrapper wrapper-content animated fadeInRight">
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="ibox float-e-margins">
+                        <div class="ibox-title">
+                            <h5>Admin
+                                <small>These queries can only be executed if you have necessary privileges</small>
+                            </h5>
+                            <div class="ibox-tools">
+                                <a id="btnSwitchView" href="#"
+                                   title="Switch Result View">
+                                    <i class="fa fa-exchange"></i>
+                                </a>
+                            </div>
+                        </div>
+                        <div class="ibox-content">
+                            <form class="form-horizontal">
+                                <div class="form-group">
+                                    <label class="col-lg-1 control-label">Admin Query</label>
+                                    <div class="col-lg-11">
+                                        <select id="cmbAdminQueries"
+                                                data-placeholder="Choose a query..."
+                                                class="chosen-select form-control"
+                                                tabindex="-1">
+                                            <option></option>
+                                        </select>
+                                        <span class="help-block m-b-none">{{getHelpBlockForSelectedQuery}}</span>
+                                    </div>
+                                </div>
+
+                                {{> Template.dynamic template=getQueryTemplate}}
+
+                                <div class="form-group">
+                                    <div class="col-lg-12">
+                                        <button id="btnExecuteAdminQuery"
+                                                class="btn btn-block btn-outline btn-primary ladda-button"
+                                                type="button"
+                                                data-style="contract">
+                                            <strong>Execute</strong></button>
+                                    </div>
+                                </div>
+
+                                <div id="divJsonEditor" class="form-group" style="display:none;">
+                                    <div id="jsoneditor" style="width: 100%;height:500px" class="col-lg-12">
+
+                                    </div>
+                                </div>
+
+                                <div id="divAceEditor" class="form-group" style="display: none">
+                                    <div class="col-lg-12">
+                                        <pre id='aceeditor' style="height: 500px"></pre>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {{/if}}
+</template>

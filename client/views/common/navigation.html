@@ -34,12 +34,20 @@
                         MC+
                     </div>
                 </li>
-                <li id="liBrowseDB" class="{{isActiveRoute regex='browseDB'}}">
-                    <a id="aBrowseDB" href="{{pathFor route='browseDB'}}"><i class="fa fa-dashboard"></i> <span
-                            class="nav-label">Browse</span>
-                    </a>
-                </li>
                 {{#if getCollectionNames}}
+                    <li id="liAdminQueries" class="{{isActiveRoute regex='adminQueries'}}">
+                        <a id="aAdminQueries" href="{{pathFor route='adminQueries'}}"><i
+                                class="fa fa-key"></i> <span
+                                class="nav-label">Admin Queries</span>
+                        </a>
+                    </li>
+                {{/if}}
+                {{#if getCollectionNames}}
+                    <li id="liBrowseDB" class="{{isActiveRoute regex='browseDB'}}">
+                        <a id="aBrowseDB" href="{{pathFor route='browseDB'}}"><i class="fa fa-dashboard"></i> <span
+                                class="nav-label">Collections</span>
+                        </a>
+                    </li>
                     <ul id="listCollectionNames" class="nav nav-second-level collapse in">
                         {{#each getCollectionNames}}
                             <li>

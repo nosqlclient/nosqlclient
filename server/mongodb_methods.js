@@ -311,7 +311,7 @@ var proceedQueryExecution = function (connection, selectedCollection, methodArra
     var connectionUrl = getConnectionUrl(connection);
     var mongodbApi = Meteor.npmRequire('mongodb').MongoClient;
 
-    console.log('Connection: ' + connectionUrl + '/' + selectedCollection + ', MethodArray: ' + JSON.stringify(methodArray));
+    console.log('[Collection Query]', 'Connection: ' + connectionUrl + '/' + selectedCollection + ', MethodArray: ' + JSON.stringify(methodArray));
 
     var result = Async.runSync(function (done) {
         mongodbApi.connect(connectionUrl, function (mainError, db) {
