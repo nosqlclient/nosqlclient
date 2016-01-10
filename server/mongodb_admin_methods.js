@@ -9,6 +9,15 @@ Meteor.methods({
             }
         ];
         return proceedQueryExecution(connection, methodArray);
+    },
+
+    'buildInfo': function (connection) {
+        var methodArray = [
+            {
+                "buildInfo": []
+            }
+        ];
+        return proceedQueryExecution(connection, methodArray);
     }
 });
 

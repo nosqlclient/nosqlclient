@@ -68,6 +68,9 @@ Template.adminQueries.helpers({
             case ADMIN_QUERY_TYPES.ADD_USER:
                 return Spacebars.SafeString('Add a user to the database');
 
+            case ADMIN_QUERY_TYPES.BUILD_INFO:
+                return Spacebars.SafeString('Retrieve the server information for the current instance of the db client');
+
             default:
                 return '';
         }
