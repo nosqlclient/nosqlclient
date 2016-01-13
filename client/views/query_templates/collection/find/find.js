@@ -23,6 +23,7 @@ Template.find.executeQuery = function () {
     var selectedCollection = Session.get(Template.strSessionSelectedCollection);
     var cursorOptions = Template.cursorOptions.getCursorOptions();
     var selector = ace.edit("aceSelector").getSession().getValue();
+    var maxAllowedFetchSize = Settings.findOne().maxAllowedFetchSize;
 
     selector = Template.convertAndCheckJSON(selector);
     if (selector["ERROR"]) {
@@ -37,7 +38,7 @@ Template.find.executeQuery = function () {
         return;
     }
 
-    Meteor.call("find", connection, selectedCollection, selector, cursorOptions, function (err, result) {
+    Meteor.call("find", connection, selectedCollection, selector, cursorOptions, maxAllowedFetchSize, function (err, result) {
         Template.renderAfterQueryExecution(err, result);
     });
 };

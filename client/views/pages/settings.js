@@ -30,6 +30,7 @@ Template.settings.getSettingsFromForm = function () {
     settings.autoCompleteFields = $('#divAutoCompleteFields').iCheck('update')[0].checked;
     settings.scale = $("#cmbScale").chosen().val();
     settings.defaultResultView = $("#cmbResultView").chosen().val();
+    settings.maxAllowedFetchSize = $("#inputMaxAllowedFetchSize").val();
     return settings;
 };
 
@@ -37,12 +38,19 @@ Template.settings.load = function () {
     var settings = Settings.findOne();
     var cmbScale = $('#cmbScale');
     var cmbResultView = $('#cmbResultView');
+    var inputMaxAllowedFetchSize = $('#inputMaxAllowedFetchSize');
 
     cmbScale.val(settings.scale);
     cmbScale.trigger("chosen:updated");
 
     cmbResultView.val(settings.defaultResultView);
     cmbResultView.trigger("chosen:updated");
+
+    if (settings.maxAllowedFetchSize) {
+        inputMaxAllowedFetchSize.val(settings.maxAllowedFetchSize);
+    } else {
+        inputMaxAllowedFetchSize.val(0);
+    }
 
     if (settings.autoCompleteFields) {
         $('#inputAutoCompleteFields').iCheck('check');

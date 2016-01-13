@@ -7,6 +7,7 @@ Meteor.startup(function () {
         Settings.insert({
             scale: "MegaBytes",
             defaultResultView: "Jsoneditor",
+            maxAllowedFetchSize: 3,
             autoCompleteFields: false
         });
     }
@@ -17,6 +18,7 @@ Meteor.methods({
         Settings.update({}, {
             $set: {
                 scale: settings.scale,
+                maxAllowedFetchSize: settings.maxAllowedFetchSize,
                 defaultResultView: settings.defaultResultView,
                 autoCompleteFields: settings.autoCompleteFields
             }

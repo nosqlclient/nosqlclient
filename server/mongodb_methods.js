@@ -183,7 +183,7 @@ Meteor.methods({
         return proceedQueryExecution(connection, selectedCollection, methodArray);
     },
 
-    'find': function (connection, selectedCollection, selector, cursorOptions) {
+    'find': function (connection, selectedCollection, selector, cursorOptions, maxAllowedFetchSize) {
         var methodArray = [
             {
                 "find": [selector]
@@ -197,7 +197,23 @@ Meteor.methods({
             }
         }
         methodArray.push({'toArray': []});
-        return proceedQueryExecution(connection, selectedCollection, methodArray);
+
+        var findResult = proceedQueryExecution(connection, selectedCollection, methodArray);
+
+        // max allowed fetch size  != 0 and there's no project option, check for size
+        if (maxAllowedFetchSize && maxAllowedFetchSize != 0 && !(CURSOR_OPTIONS.PROJECT in cursorOptions)) {
+            // get stats to calculate fetched documents size from avgObjSize
+            var statsResult = proceedQueryExecution(connection, selectedCollection, [{"stats": []}]);
+            if (statsResult && statsResult.result && statsResult.result.avgObjSize && findResult && findResult.result && findResult.result.length > 0) {
+                var totalBytes = findResult.result.length * statsResult.result.avgObjSize;
+                var totalMegabytes = Number(totalBytes / (1024 * 1024)).toFixed(2);
+                if (totalMegabytes > maxAllowedFetchSize) {
+                    throw new Meteor.Error("The fetched document size (average): " + totalMegabytes + " MB, exceeds maximum allowed size (" + maxAllowedFetchSize + " MB), please use LIMIT, SKIP options.");
+                }
+            }
+        }
+
+        return findResult;
     },
 
     'findOneAndUpdate': function (connection, selectedCollection, selector, setObject, options) {
