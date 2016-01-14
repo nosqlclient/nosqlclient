@@ -8,7 +8,8 @@ Meteor.startup(function () {
             scale: "MegaBytes",
             defaultResultView: "Jsoneditor",
             maxAllowedFetchSize: 3,
-            autoCompleteFields: false
+            autoCompleteFields: false,
+            maxAllowedTimeInSeconds: 5
         });
     }
 });
@@ -20,7 +21,8 @@ Meteor.methods({
                 scale: settings.scale,
                 maxAllowedFetchSize: settings.maxAllowedFetchSize,
                 defaultResultView: settings.defaultResultView,
-                autoCompleteFields: settings.autoCompleteFields
+                autoCompleteFields: settings.autoCompleteFields,
+                maxAllowedTimeInSeconds: settings.maxAllowedTimeInSeconds
             }
         });
     },

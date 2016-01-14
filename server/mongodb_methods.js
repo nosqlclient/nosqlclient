@@ -183,7 +183,7 @@ Meteor.methods({
         return proceedQueryExecution(connection, selectedCollection, methodArray);
     },
 
-    'find': function (connection, selectedCollection, selector, cursorOptions) {
+    'find': function (connection, selectedCollection, selector, cursorOptions, maxAllowedTimeInSeconds) {
         var methodArray = [
             {
                 "find": [selector]
@@ -196,6 +196,14 @@ Meteor.methods({
                 methodArray.push(obj);
             }
         }
+
+        if (maxAllowedTimeInSeconds && maxAllowedTimeInSeconds > 0) {
+            var miliseconds = maxAllowedTimeInSeconds * 1000;
+            methodArray.push({
+                "maxTimeMS": [miliseconds]
+            });
+        }
+
         methodArray.push({'toArray': []});
 
         return proceedQueryExecution(connection, selectedCollection, methodArray);
