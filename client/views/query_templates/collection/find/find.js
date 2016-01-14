@@ -38,7 +38,56 @@ Template.find.executeQuery = function () {
         return;
     }
 
-    Meteor.call("find", connection, selectedCollection, selector, cursorOptions, maxAllowedFetchSize, function (err, result) {
+    // max allowed fetch size  != 0 and there's no project option, check for size
+    if (maxAllowedFetchSize && maxAllowedFetchSize != 0 && !(CURSOR_OPTIONS.PROJECT in cursorOptions)) {
+        // get stats to calculate fetched documents size from avgObjSize (stats could be changed, therefore we can't get it from html )
+        Meteor.call("stats", connection, selectedCollection, {}, function (statsError, statsResult) {
+            if (statsError || statsResult.error || !(statsResult.result.avgObjSize)) {
+                // if there's an error, nothing we can do
+                Template.find.proceedFindQuery(connection, selectedCollection, selector, cursorOptions);
+            }
+            else {
+                if (CURSOR_OPTIONS.LIMIT in cursorOptions) {
+                    var count = cursorOptions.limit;
+                    if (Template.find.checkAverageSize(count, statsResult.result.avgObjSize, maxAllowedFetchSize)) {
+                        Template.find.proceedFindQuery(connection, selectedCollection, selector, cursorOptions);
+                    }
+                }
+                else {
+                    Meteor.call("count", connection, selectedCollection, selector, function (err, result) {
+                        if (err || result.error) {
+                            Template.find.proceedFindQuery(connection, selectedCollection, selector, cursorOptions);
+                        }
+                        else {
+                            var count = result.result;
+                            if (Template.find.checkAverageSize(count, statsResult.result.avgObjSize, maxAllowedFetchSize)) {
+                                Template.find.proceedFindQuery(connection, selectedCollection, selector, cursorOptions);
+                            }
+                        }
+                    });
+                }
+            }
+        });
+    }
+    else {
+        Template.find.proceedFindQuery(connection, selectedCollection, selector, cursorOptions);
+    }
+};
+
+Template.find.proceedFindQuery = function (connection, selectedCollection, selector, cursorOptions) {
+    Meteor.call("find", connection, selectedCollection, selector, cursorOptions, function (err, result) {
         Template.renderAfterQueryExecution(err, result);
     });
+};
+
+Template.find.checkAverageSize = function (count, avgObjSize, maxAllowedFetchSize) {
+    var totalBytes = count * avgObjSize;
+    var totalMegabytes = Number(totalBytes / (1024 * 1024)).toFixed(2);
+    if (totalMegabytes > maxAllowedFetchSize) {
+        Ladda.stopAll();
+        toastr.error("The fetched document size (average): " + totalMegabytes + " MB, exceeds maximum allowed size (" + maxAllowedFetchSize + " MB), please use LIMIT, SKIP options.");
+        return false;
+    }
+
+    return true;
 };
