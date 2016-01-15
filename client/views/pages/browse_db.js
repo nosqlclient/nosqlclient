@@ -2,7 +2,7 @@
  * Created by RSercan on 26.12.2015.
  */
 var interval = null;
-var heapMemoryChart = null;
+var heapMemoryChart = null, heapMemoryChartIndex = 0;
 
 Template.browseDB.onRendered(function () {
     if (Settings.findOne().showDBStats) {
@@ -12,7 +12,6 @@ Template.browseDB.onRendered(function () {
 
         // fetch stats only once.
         Template.browseDB.fetchStats();
-        Template.browseDB.initCharts();
     }
 });
 
@@ -22,57 +21,87 @@ Template.browseDB.onDestroyed(function () {
     }
 });
 
-Template.browseDB.initCharts = function () {
-    if (Session.get(Template.strSessionConnection) && heapMemoryChart == null) {
-        var lineOptions = {
-            series: {
-                lines: {
-                    show: true,
-                    lineWidth: 2,
-                    fill: true,
-                    fillColor: {
-                        colors: [{
-                            opacity: 0.0
-                        }, {
-                            opacity: 0.0
-                        }]
+Template.browseDB.initCharts = function (data) {
+    if (Session.get(Template.strSessionConnection)) {
+        if (data == undefined) {
+            $('#divHeapMemoryChart').html('This feature is only supported for Linux systems');
+            return;
+        }
+        var scale = 1024;
+        var text = "Bytes";
+        var settings = Settings.findOne();
+        switch (settings.scale) {
+            case "MegaBytes":
+                scale = 1024 * 1024;
+                text = "MBs";
+                break;
+            case "KiloBytes":
+                scale = 1024;
+                text = "KBs";
+                break;
+            default:
+                scale = 1;
+                text = "Bytes";
+                break;
+        }
+
+        data = Math.round(data * 100 * scale) / 100;
+
+        if (heapMemoryChart == null) {
+            var lineOptions = {
+                series: {
+                    lines: {
+                        show: true,
+                        lineWidth: 2,
+                        fill: true,
+                        fillColor: {
+                            colors: [{
+                                opacity: 0.0
+                            }, {
+                                opacity: 0.0
+                            }]
+                        }
+                    }
+                },
+                xaxis: {
+                    tickDecimals: 0,
+                    show: false
+                },
+                colors: ["#1ab394"],
+                grid: {
+                    color: "#999999",
+                    hoverable: true,
+                    clickable: true,
+                    tickColor: "#D4D4D4",
+                    borderWidth: 0
+                },
+                legend: {
+                    show: false
+                },
+                tooltip: true,
+                tooltipOpts: {
+                    content: "%y " + text
+                },
+                yaxis: {
+                    tickFormatter: function (val, axis) {
+                        return val + text;
                     }
                 }
-            },
-            xaxis: {
-                tickDecimals: 0,
-                show: false
-            },
-            colors: ["#1ab394"],
-            grid: {
-                color: "#999999",
-                hoverable: true,
-                clickable: true,
-                tickColor: "#D4D4D4",
-                borderWidth: 0
-            },
-            legend: {
-                show: false
-            },
-            tooltip: true,
-            tooltipOpts: {
-                content: "x: %x, y: %y"
+            };
+
+            heapMemoryChart = $.plot($("#divHeapMemoryChart"), [data], lineOptions);
+        }
+        else {
+            var existingData = heapMemoryChart.getData();
+            console.log(existingData);
+            if (existingData[0].data.length == 3) {
+                existingData[0].data = existingData[0].data.slice(0, 2);
             }
-        };
-        var lineData = {
-            label: "bar",
-            data: [
-                [1, 34],
-                [2, 25],
-                [3, 19],
-                [4, 34],
-                [5, 32],
-                [6, 44]
-            ]
-        };
-
-        heapMemoryChart = $.plot($("#divHeapMemoryChart"), [lineData], lineOptions);
-
+            existingData[0].data.push.apply(existingData[0].data, data);
+            heapMemoryChart.setData(existingData);
+            heapMemoryChart.setupGrid();
+            heapMemoryChart.draw();
+        }
     }
 };
 
@@ -107,7 +136,6 @@ Template.browseDB.fetchStats = function () {
             }
             else {
                 Template.browseDB.convertInformationsToKB(result.result);
-
                 Session.set(Template.strSessionDBStats, result.result);
             }
         });
@@ -132,12 +160,17 @@ Template.browseDB.fetchStatus = function () {
             }
             else {
                 Session.set(Template.strSessionServerStatus, result.result);
-                Template.browseDB.initCharts();
-                if (heapMemoryChart) {
-                    var data = [[0, 3], [1, 4], [2, 6], [3, 2]];
-                    heapMemoryChart.setData([data]);
-                    heapMemoryChart.draw();
-                }
+                var data;
+                //if (result.result.extra_info.heap_usage_bytes) {
+                //    data = [[++heapMemoryChartIndex, result.result.extra_info.heap_usage_bytes]];
+                //}
+
+                data = [[++heapMemoryChartIndex, (Math.random() * 100) ]];
+
+                // make sure gui is rendered
+                Meteor.setTimeout(function () {
+                    Template.browseDB.initCharts(data);
+                }, 1500);
             }
         });
     }
