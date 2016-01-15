@@ -45,8 +45,7 @@ Template.browseDB.initCharts = function (data) {
                 break;
         }
 
-        data = Math.round(data * 100 * scale) / 100;
-
+        data[0][1] = Math.round((data[0][1] / scale) * 100) / 100;
         if (heapMemoryChart == null) {
             var lineOptions = {
                 series: {
@@ -84,7 +83,7 @@ Template.browseDB.initCharts = function (data) {
                 },
                 yaxis: {
                     tickFormatter: function (val, axis) {
-                        return val + text;
+                        return val + " " + text;
                     }
                 }
             };
@@ -93,7 +92,6 @@ Template.browseDB.initCharts = function (data) {
         }
         else {
             var existingData = heapMemoryChart.getData();
-            console.log(existingData);
             if (existingData[0].data.length == 3) {
                 existingData[0].data = existingData[0].data.slice(0, 2);
             }
@@ -165,7 +163,7 @@ Template.browseDB.fetchStatus = function () {
                 //    data = [[++heapMemoryChartIndex, result.result.extra_info.heap_usage_bytes]];
                 //}
 
-                data = [[++heapMemoryChartIndex, (Math.random() * 100) ]];
+                data = [[++heapMemoryChartIndex, (Math.random() * 1024 * 1024 * 1024)]];
 
                 // make sure gui is rendered
                 Meteor.setTimeout(function () {

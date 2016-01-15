@@ -23,10 +23,10 @@ getConnectionOptions = function () {
         result.server.socketOptions.connectTimeoutMS = connectionTimeout;
     }
 
-    var socketTİmeout = settings.socketTimeoutInSeconds;
-    if (socketTİmeout) {
-        socketTİmeout = Math.round(socketTİmeout * 100 * 1000) / 100;
-        result.server.socketOptions.socketTimeoutMS = socketTİmeout;
+    var socketTimeout = settings.socketTimeoutInSeconds;
+    if (socketTimeout) {
+        socketTimeout = Math.round(socketTimeout * 100 * 1000) / 100;
+        result.server.socketOptions.socketTimeoutMS = socketTimeout;
     }
 
     return result;
