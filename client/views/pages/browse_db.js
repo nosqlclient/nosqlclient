@@ -24,18 +24,55 @@ Template.browseDB.onDestroyed(function () {
 
 Template.browseDB.initCharts = function () {
     if (Session.get(Template.strSessionConnection) && heapMemoryChart == null) {
-        heapMemoryChart = $.plot("#divHeapMemoryChart", [], {
+        var lineOptions = {
             series: {
-                shadowSize: 0	// Drawing is faster without shadows
-            },
-            yaxis: {
-                min: 0,
-                max: 10
+                lines: {
+                    show: true,
+                    lineWidth: 2,
+                    fill: true,
+                    fillColor: {
+                        colors: [{
+                            opacity: 0.0
+                        }, {
+                            opacity: 0.0
+                        }]
+                    }
+                }
             },
             xaxis: {
+                tickDecimals: 0,
                 show: false
+            },
+            colors: ["#1ab394"],
+            grid: {
+                color: "#999999",
+                hoverable: true,
+                clickable: true,
+                tickColor: "#D4D4D4",
+                borderWidth: 0
+            },
+            legend: {
+                show: false
+            },
+            tooltip: true,
+            tooltipOpts: {
+                content: "x: %x, y: %y"
             }
-        });
+        };
+        var lineData = {
+            label: "bar",
+            data: [
+                [1, 34],
+                [2, 25],
+                [3, 19],
+                [4, 34],
+                [5, 32],
+                [6, 44]
+            ]
+        };
+
+        heapMemoryChart = $.plot($("#divHeapMemoryChart"), [lineData], lineOptions);
+
     }
 };
 
