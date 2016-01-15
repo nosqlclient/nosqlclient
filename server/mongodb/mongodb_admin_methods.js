@@ -2,6 +2,44 @@
  * Created by RSercan on 10.1.2016.
  */
 Meteor.methods({
+    'dbStats': function (connection) {
+        var connectionUrl = getConnectionUrl(connection);
+        var connectionOptions = getConnectionOptions();
+
+        var mongodbApi = Meteor.npmRequire('mongodb').MongoClient;
+
+        console.log('[Admin Query]', 'Connection: ' + connectionUrl + ', ConnectionOptions: ' + JSON.stringify(connectionOptions) + ', MethodArray: [stats]');
+
+        var result = Async.runSync(function (done) {
+            mongodbApi.connect(connectionUrl, connectionOptions, function (mainError, db) {
+                if (mainError) {
+                    done(mainError, null);
+                    if (db) {
+                        db.close();
+                    }
+                    return;
+                }
+                try {
+                    db.stats(function (err, docs) {
+                        done(err, docs);
+                        if (db) {
+                            db.close();
+                        }
+                    });
+                }
+                catch (ex) {
+                    done(new Meteor.Error(ex.message), null);
+                    if (db) {
+                        db.close();
+                    }
+                }
+            });
+        });
+
+        convertBSONtoJSON(result);
+        return result;
+    },
+
     'validateCollection': function (connection, collectionName, options) {
         var methodArray = [
             {

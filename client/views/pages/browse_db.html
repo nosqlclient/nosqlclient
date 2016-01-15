@@ -1,18 +1,115 @@
 <template name="browseDB">
 
     {{> pageHeading title='Browse' }}
-    <div class="wrapper wrapper-content animated fadeInRight">
-        <div class="row">
-            <div class="col-lg-12">
-                <div class="text-center m-t-lg">
-                    <h1>
-                        Welcome to Featured Mongo Client
-                    </h1>
-                    <small>
-                        You can connect a new database by pressing <strong>Connect</strong> button.
-                    </small>
+
+    {{#if getCollectionNames}}
+
+        {{#if getServerStatus}}
+            <div class="row m-b-lg m-t-lg">
+                <div class="col-md-9">
+
+                    <div class="profile-info">
+                        <div class="">
+                            <div>
+                                <h2 class="no-margins">
+                                    {{getServerStatus.host}}
+                                </h2>
+                                <h4>The server is up for {{getServerStatus.uptime}} seconds</h4>
+                                <small>
+                                    The performances which are shown here are coming from <strong>serverStatus</strong>
+                                    and
+                                    <strong>stats</strong> queries.
+                                    Therefore, before having a look at below graphs consider
+                                    <strong>mongoclient</strong> is
+                                    already executing <strong>serverStatus</strong> at regular intervals. See <a
+                                        href="https://docs.mongodb.org/manual/administration/monitoring/#commands">here</a>
+                                    for more info<br/><br/>
+
+                                    Mongodb version is <strong>{{getServerStatus.version}}</strong><br/>
+                                    Process id is <strong>{{getServerStatus.pid}}</strong><br/>
+                                    Process name is <strong>{{getServerStatus.process}}</strong><br/>
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {{#if getDBStats}}
+                    <div class="col-md-3">
+                        <table class="table small m-b-xs">
+                            <tbody>
+                            <tr>
+                                <td>
+                                    <strong>{{getDBStats.collections}}</strong> Collections
+                                </td>
+                                <td>
+                                    <strong>{{getDBStats.objects}}</strong> Objects
+                                </td>
+
+                            </tr>
+                            <tr>
+                                <td>
+                                    <strong>{{getDBStats.dataSize}}</strong> Data Size
+                                </td>
+                                <td>
+                                    <strong>{{getDBStats.storageSize}}</strong> Storage Size
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <strong>{{getDBStats.indexes}}</strong> Indexes
+                                </td>
+                                <td>
+                                    <strong>{{getDBStats.indexSize}}</strong> Index Size
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <strong>{{getDBStats.fileSize}}</strong> File Size
+                                </td>
+                                <td>
+                                    <strong>{{getDBStats.numExtents}}</strong> Extents
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                {{/if}}
+            </div>
+        {{else}}
+            <div class="wrapper wrapper-content animated fadeInRight">
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="text-center m-t-lg">
+                            <h1>
+                                Welcome to Featured Mongo Client
+                            </h1>
+                            <small>
+                                You can connect a new database by pressing <strong>Connect</strong> button.<br/>
+                                Once you've connected, to see the statistics of your database, simply
+                                <strong>enable</strong> <i>show database statistics</i> setting
+                            </small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {{/if}}
+
+
+    {{else}}
+        <div class="wrapper wrapper-content animated fadeInRight">
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="text-center m-t-lg">
+                        <h1>
+                            Welcome to Featured Mongo Client
+                        </h1>
+                        <small>
+                            You can connect a new database by pressing <strong>Connect</strong> button.
+                        </small>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
+    {{/if}}
 </template>

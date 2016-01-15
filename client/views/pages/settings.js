@@ -6,6 +6,10 @@ Template.settings.onRendered(function () {
         checkboxClass: 'icheckbox_square-green'
     });
 
+    $('#divShowDBStats').iCheck({
+        checkboxClass: 'icheckbox_square-green'
+    });
+
     $('#cmbScale').chosen();
     $('#cmbResultView').chosen();
 
@@ -33,6 +37,7 @@ Template.settings.getSettingsFromForm = function () {
     settings.maxAllowedFetchSize = $("#inputMaxAllowedFetchSize").val();
     settings.socketTimeoutInSeconds = $("#inputSocketTimeout").val();
     settings.connectionTimeoutInSeconds = $("#inputConnectionTimeout").val();
+    settings.showDBStats = $('#divShowDBStats').iCheck('update')[0].checked;
     return settings;
 };
 
@@ -44,6 +49,8 @@ Template.settings.load = function () {
     var inputMaxAllowedFetchSize = $('#inputMaxAllowedFetchSize');
     var inputSocketTimeout = $('#inputSocketTimeout');
     var inputConnectionTimeout = $('#inputConnectionTimeout');
+    var inputAutoCompleteFields = $('#inputAutoCompleteFields');
+    var inputShowDBStats = $('#inputShowDBStats');
 
     cmbScale.val(settings.scale);
     cmbScale.trigger("chosen:updated");
@@ -70,8 +77,14 @@ Template.settings.load = function () {
     }
 
     if (settings.autoCompleteFields) {
-        $('#inputAutoCompleteFields').iCheck('check');
+        inputAutoCompleteFields.iCheck('check');
     } else {
-        $('#inputAutoCompleteFields').iCheck('uncheck');
+        inputAutoCompleteFields.iCheck('uncheck');
+    }
+
+    if (settings.showDBStats) {
+        inputShowDBStats.iCheck('check');
+    } else {
+        inputShowDBStats.iCheck('uncheck');
     }
 };

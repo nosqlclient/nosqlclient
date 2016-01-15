@@ -6,6 +6,8 @@ Template.strSessionCollectionNames = 'collectionNames';
 Template.strSessionSelectedCollection = 'selectedCollection';
 Template.strSessionSelectedQuery = 'selectedQuery';
 Template.strSessionSelectedOptions = "selectedOptions";
+Template.strSessionServerStatus = "serverStatus";
+Template.strSessionDBStats = "dbStats";
 
 Template.clearSessions = function () {
     Session.set(Template.strSessionCollectionNames, undefined);
@@ -13,6 +15,8 @@ Template.clearSessions = function () {
     Session.set(Template.strSessionSelectedCollection, undefined);
     Session.set(Template.strSessionSelectedQuery, undefined);
     Session.set(Template.strSessionSelectedOptions, undefined);
+    Session.set(Template.strSessionServerStatus, undefined);
+    Session.set(Template.strSessionDBStats, undefined);
 };
 
 Template.renderAfterQueryExecution = function (err, result) {

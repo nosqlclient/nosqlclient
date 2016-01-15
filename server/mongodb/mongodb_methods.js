@@ -12,8 +12,8 @@ Meteor.methods({
 
         return Async.runSync(function (done) {
             mongodbApi.connect(connectionUrl, connectionOptions, function (err, db) {
-                if (db == null || db == undefined) {
-                    console.log('could not connect, db is null');
+                if (err || db == null || db == undefined) {
+                    console.log('could not connect, err: ' + err);
                     done(err, db);
                 } else {
                     db.listCollections().toArray(function (err, collections) {

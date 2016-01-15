@@ -10,7 +10,8 @@ Meteor.startup(function () {
             maxAllowedFetchSize: 3,
             autoCompleteFields: false,
             socketTimeoutInSeconds: 5,
-            connectionTimeoutInSeconds: 3
+            connectionTimeoutInSeconds: 3,
+            showDBStats: true
         });
     }
 });
@@ -24,7 +25,8 @@ Meteor.methods({
                 defaultResultView: settings.defaultResultView,
                 autoCompleteFields: settings.autoCompleteFields,
                 socketTimeoutInSeconds: settings.socketTimeoutInSeconds,
-                connectionTimeoutInSeconds: settings.connectionTimeoutInSeconds
+                connectionTimeoutInSeconds: settings.connectionTimeoutInSeconds,
+                showDBStats: settings.showDBStats
             }
         });
     },

@@ -41,10 +41,16 @@
                                 class="nav-label">Admin Queries</span>
                         </a>
                     </li>
-                {{/if}}
-                {{#if getCollectionNames}}
+
                     <li id="liBrowseDB" class="{{isActiveRoute regex='browseDB'}}">
-                        <a id="aBrowseDB" href="{{pathFor route='browseDB'}}"><i class="fa fa-dashboard"></i> <span
+                        <a id="aBrowseDB" href="{{pathFor route='browseDB'}}"><i
+                                class="fa fa-eye"></i> <span
+                                class="nav-label">Database Stats</span>
+                        </a>
+                    </li>
+
+                    <li>
+                        <a href=""><i class="fa fa-dashboard"></i> <span
                                 class="nav-label">Collections</span>
                         </a>
                     </li>
