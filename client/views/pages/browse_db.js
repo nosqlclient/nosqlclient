@@ -2,6 +2,8 @@
  * Created by RSercan on 26.12.2015.
  */
 var interval = null;
+var heapMemoryChart = null;
+
 Template.browseDB.onRendered(function () {
     if (Settings.findOne().showDBStats) {
         interval = Meteor.setInterval(function () {
@@ -10,6 +12,7 @@ Template.browseDB.onRendered(function () {
 
         // fetch stats only once.
         Template.browseDB.fetchStats();
+        Template.browseDB.initCharts();
     }
 });
 
@@ -18,6 +21,23 @@ Template.browseDB.onDestroyed(function () {
         clearInterval(interval);
     }
 });
+
+Template.browseDB.initCharts = function () {
+    if (Session.get(Template.strSessionConnection) && heapMemoryChart == null) {
+        heapMemoryChart = $.plot("#divHeapMemoryChart", [], {
+            series: {
+                shadowSize: 0	// Drawing is faster without shadows
+            },
+            yaxis: {
+                min: 0,
+                max: 10
+            },
+            xaxis: {
+                show: false
+            }
+        });
+    }
+};
 
 Template.browseDB.helpers({
     'getServerStatus': function () {
@@ -75,6 +95,12 @@ Template.browseDB.fetchStatus = function () {
             }
             else {
                 Session.set(Template.strSessionServerStatus, result.result);
+                Template.browseDB.initCharts();
+                if (heapMemoryChart) {
+                    var data = [[0, 3], [1, 4], [2, 6], [3, 2]];
+                    heapMemoryChart.setData([data]);
+                    heapMemoryChart.draw();
+                }
             }
         });
     }
