@@ -114,12 +114,14 @@ Meteor.methods({
 
 var proceedQueryExecution = function (connection, methodArray) {
     var connectionUrl = getConnectionUrl(connection);
+    var connectionOptions = getConnectionOptions();
+
     var mongodbApi = Meteor.npmRequire('mongodb').MongoClient;
 
-    console.log('[Admin Query]', 'Connection: ' + connectionUrl + ', MethodArray: ' + JSON.stringify(methodArray));
+    console.log('[Admin Query]', 'Connection: ' + connectionUrl + ', ConnectionOptions: ' + JSON.stringify(connectionOptions) + ', MethodArray: ' + JSON.stringify(methodArray));
 
     var result = Async.runSync(function (done) {
-        mongodbApi.connect(connectionUrl, function (mainError, db) {
+        mongodbApi.connect(connectionUrl, connectionOptions, function (mainError, db) {
             if (mainError) {
                 done(mainError, null);
                 if (db) {

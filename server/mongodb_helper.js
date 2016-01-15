@@ -11,6 +11,27 @@ getConnectionUrl = function (connection) {
     return connectionUrl;
 };
 
+getConnectionOptions = function () {
+    var result = {
+        server: {socketOptions: {}}
+    };
+
+    var settings = Settings.findOne();
+    var connectionTimeout = settings.connectionTimeoutInSeconds;
+    if (connectionTimeout) {
+        connectionTimeout = Math.round(connectionTimeout * 100 * 1000) / 100;
+        result.server.socketOptions.connectTimeoutMS = connectionTimeout;
+    }
+
+    var socketTİmeout = settings.socketTimeoutInSeconds;
+    if (socketTİmeout) {
+        socketTİmeout = Math.round(socketTİmeout * 100 * 1000) / 100;
+        result.server.socketOptions.socketTimeoutMS = socketTİmeout;
+    }
+
+    return result;
+};
+
 convertBSONtoJSON = function (obj) {
     convertObjectIDsToString(obj);
     convertDatesToString(obj);

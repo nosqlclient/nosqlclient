@@ -31,7 +31,8 @@ Template.settings.getSettingsFromForm = function () {
     settings.scale = $("#cmbScale").chosen().val();
     settings.defaultResultView = $("#cmbResultView").chosen().val();
     settings.maxAllowedFetchSize = $("#inputMaxAllowedFetchSize").val();
-    settings.maxAllowedTimeInSeconds = $("#inputMaxAllowedTimeInSeconds").val();
+    settings.socketTimeoutInSeconds = $("#inputSocketTimeout").val();
+    settings.connectionTimeoutInSeconds = $("#inputConnectionTimeout").val();
     return settings;
 };
 
@@ -41,7 +42,8 @@ Template.settings.load = function () {
     var cmbScale = $('#cmbScale');
     var cmbResultView = $('#cmbResultView');
     var inputMaxAllowedFetchSize = $('#inputMaxAllowedFetchSize');
-    var inputMaxAllowedTimeInSeconds = $('#inputMaxAllowedTimeInSeconds');
+    var inputSocketTimeout = $('#inputSocketTimeout');
+    var inputConnectionTimeout = $('#inputConnectionTimeout');
 
     cmbScale.val(settings.scale);
     cmbScale.trigger("chosen:updated");
@@ -55,10 +57,16 @@ Template.settings.load = function () {
         inputMaxAllowedFetchSize.val(0);
     }
 
-    if (settings.maxAllowedTimeInSeconds) {
-        inputMaxAllowedTimeInSeconds.val(settings.maxAllowedTimeInSeconds);
+    if (settings.socketTimeoutInSeconds) {
+        inputSocketTimeout.val(settings.socketTimeoutInSeconds);
     } else {
-        inputMaxAllowedTimeInSeconds.val(0);
+        inputSocketTimeout.val(0);
+    }
+
+    if (settings.connectionTimeoutInSeconds) {
+        inputConnectionTimeout.val(settings.connectionTimeoutInSeconds);
+    } else {
+        inputConnectionTimeout.val(0);
     }
 
     if (settings.autoCompleteFields) {

@@ -4,11 +4,14 @@
 Meteor.methods({
     'connect': function (connection) {
         var connectionUrl = getConnectionUrl(connection);
-        console.log('connecting to : ' + connectionUrl);
+        var connectionOptions = getConnectionOptions();
+
+        console.log('connecting to : ' + connectionUrl + ' with options: ' + JSON.stringify(connectionOptions));
+
         var mongodbApi = Meteor.npmRequire('mongodb').MongoClient;
 
         return Async.runSync(function (done) {
-            mongodbApi.connect(connectionUrl, function (err, db) {
+            mongodbApi.connect(connectionUrl, connectionOptions, function (err, db) {
                 if (db == null || db == undefined) {
                     console.log('could not connect, db is null');
                     done(err, db);
@@ -183,7 +186,7 @@ Meteor.methods({
         return proceedQueryExecution(connection, selectedCollection, methodArray);
     },
 
-    'find': function (connection, selectedCollection, selector, cursorOptions, maxAllowedTimeInSeconds) {
+    'find': function (connection, selectedCollection, selector, cursorOptions) {
         var methodArray = [
             {
                 "find": [selector]
@@ -196,14 +199,6 @@ Meteor.methods({
                 methodArray.push(obj);
             }
         }
-
-        if (maxAllowedTimeInSeconds && maxAllowedTimeInSeconds > 0) {
-            var miliseconds = maxAllowedTimeInSeconds * 1000;
-            methodArray.push({
-                "maxTimeMS": [miliseconds]
-            });
-        }
-
         methodArray.push({'toArray': []});
 
         return proceedQueryExecution(connection, selectedCollection, methodArray);
@@ -256,10 +251,11 @@ Meteor.methods({
 
     'dropDB': function (connection) {
         var connectionUrl = getConnectionUrl(connection);
+        var connectionOptions = getConnectionOptions();
         var mongodbApi = Meteor.npmRequire('mongodb').MongoClient;
 
         return Async.runSync(function (done) {
-            mongodbApi.connect(connectionUrl, function (err, db) {
+            mongodbApi.connect(connectionUrl, connectionOptions, function (err, db) {
                 db.dropDatabase(function (err, result) {
                     db.close();
                     done(err, result);
@@ -271,13 +267,14 @@ Meteor.methods({
 
 var proceedMapReduceExecution = function (connection, selectedCollection, map, reduce, options) {
     var connectionUrl = getConnectionUrl(connection);
+    var connectionOptions = getConnectionOptions();
     var mongodbApi = Meteor.npmRequire('mongodb').MongoClient;
 
     convertJSONtoBSON(options);
 
     console.log('Connection: ' + connectionUrl + '/' + selectedCollection + ', Map: ' + map + ', Reduce: ' + reduce + ',Options: ' + JSON.stringify(options));
     var result = Async.runSync(function (done) {
-        mongodbApi.connect(connectionUrl, function (mainError, db) {
+        mongodbApi.connect(connectionUrl, connectionOptions, function (mainError, db) {
             if (mainError) {
                 done(mainError, null);
                 if (db) {
@@ -318,12 +315,13 @@ var proceedMapReduceExecution = function (connection, selectedCollection, map, r
 
 var proceedQueryExecution = function (connection, selectedCollection, methodArray) {
     var connectionUrl = getConnectionUrl(connection);
+    var connectionOptions = getConnectionOptions();
     var mongodbApi = Meteor.npmRequire('mongodb').MongoClient;
 
-    console.log('[Collection Query]', 'Connection: ' + connectionUrl + '/' + selectedCollection + ', MethodArray: ' + JSON.stringify(methodArray));
+    console.log('[Collection Query]', 'Connection: ' + connectionUrl + '/' + selectedCollection + ', ConnectionOptions: ' + JSON.stringify(connectionOptions) + ', MethodArray: ' + JSON.stringify(methodArray));
 
     var result = Async.runSync(function (done) {
-        mongodbApi.connect(connectionUrl, function (mainError, db) {
+        mongodbApi.connect(connectionUrl, connectionOptions, function (mainError, db) {
             if (mainError) {
                 done(mainError, null);
                 if (db) {
