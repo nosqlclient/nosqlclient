@@ -49,7 +49,7 @@ Template.browseDB.onRendered(function () {
     if (Settings.findOne().showDBStats) {
         interval = Meteor.setInterval(function () {
             Template.browseDB.fetchStatus();
-        }, 10000);
+        }, 5000);
 
         // fetch stats only once.
         Template.browseDB.fetchStats();
@@ -63,7 +63,45 @@ Template.browseDB.onDestroyed(function () {
 });
 
 Template.browseDB.initNetworkChart = function (data) {
-    
+    if (Session.get(Template.strSessionConnection)) {
+        if (data == undefined || data.length == 0) {
+            $('#divNetworkChart').html('This feature is not supported on this platform (OS)');
+            return;
+        }
+
+        if ($('#divNetworkChart .flot-base').length <= 0) {
+            var customLineOptions = jQuery.extend(true, {}, lineOptions);
+            customLineOptions.colors.push("#273be2");
+            networkChart = $.plot($("#divNetworkChart"), data, customLineOptions);
+        }
+        else {
+            var existingData = networkChart.getData();
+            if (existingData[0].data.length == 15) {
+                existingData[0].data = existingData[0].data.slice(1, 15);
+
+                if (existingData.length >= 2 && existingData[1].data) {
+                    existingData[1].data = existingData[1].data.slice(1, 15);
+                }
+
+                if (existingData.length >= 3 && existingData[2].data) {
+                    existingData[2].data = existingData[2].data.slice(1, 15);
+                }
+            }
+
+            existingData[0].data.push.apply(existingData[0].data, data[0].data);
+
+            if (existingData.length >= 2 && existingData[1].data && data[1].data) {
+                existingData[1].data.push.apply(existingData[1].data, data[1].data);
+            }
+            if (existingData.length >= 3 && existingData[2].data && data[2].data) {
+                existingData[2].data.push.apply(existingData[2].data, data[2].data);
+            }
+
+            networkChart.setData(existingData);
+            networkChart.setupGrid();
+            networkChart.draw();
+        }
+    }
 };
 
 Template.browseDB.initConnectionsChart = function (data, availableConnections) {
@@ -205,14 +243,17 @@ Template.browseDB.fetchStatus = function () {
             }
             else {
                 Session.set(Template.strSessionServerStatus, result.result);
-                var memoryData = [], connectionsData = [];
+                var memoryData = [], connectionsData = [], networkData = [];
+
                 var memoryText = Template.browseDB.populateMemoryData(result.result, memoryData);
                 var availableConnections = Template.browseDB.populateConnectionData(result.result, connectionsData);
+                Template.browseDB.populateNetworkData(result.result, networkData);
 
                 // make sure gui is rendered
                 Meteor.setTimeout(function () {
                     Template.browseDB.initMemoryChart(memoryData, memoryText);
                     Template.browseDB.initConnectionsChart(connectionsData, availableConnections);
+                    Template.browseDB.initNetworkChart(networkData);
                 }, 1500);
             }
         });
@@ -235,6 +276,43 @@ Template.browseDB.populateConnectionData = function (result, data) {
         data.push({data: totalCreatedData, label: "Total Created"});
 
         return result.connections.available;
+    }
+};
+
+Template.browseDB.populateNetworkData = function (result, data) {
+    if (result.network && result.network.bytesIn && result.network.bytesOut && result.network.numRequests) {
+        var bytesInData = [];
+        var bytesOutData = [];
+        var totalRequestsData = [];
+
+        var scale = 1;
+        var text = "MB";
+        var settings = Settings.findOne();
+        switch (settings.scale) {
+            case "KiloBytes":
+                scale = 1024;
+                text = "KB";
+                break;
+            case "MegaBytes":
+                scale = 1024 * 1024;
+                text = "MB";
+                break;
+            default:
+                scale = 1;
+                text = "Bytes";
+                break;
+        }
+
+
+        var time = new Date().getTime();
+
+        bytesInData.push([time, Math.round((result.network.bytesIn / scale) * 100) / 100]);
+        bytesOutData.push([time, Math.round((result.network.bytesOut / scale) * 100) / 100]);
+        totalRequestsData.push([time, result.network.numRequests]);
+
+        data.push({data: bytesInData, label: "Incoming " + text});
+        data.push({data: bytesOutData, label: "Outgoing " + text});
+        data.push({data: totalRequestsData, label: "Total Requests"});
     }
 };
 
