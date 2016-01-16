@@ -2,7 +2,48 @@
  * Created by RSercan on 26.12.2015.
  */
 var interval = null;
-var memoryChart = null;
+var memoryChart = null, connectionsChart = null, networkChart = null;
+
+var lineOptions = {
+    series: {
+        lines: {
+            show: true,
+            lineWidth: 3,
+            fill: true,
+            fillColor: {
+                colors: [{
+                    opacity: 0.0
+                }, {
+                    opacity: 0.0
+                }]
+            }
+        },
+        points: {
+            show: true
+        }
+    },
+    xaxis: {
+        show: true,
+        tickFormatter: function (val, axis) {
+            return moment(val).format('HH:mm:ss');
+        }
+    },
+    colors: ["#1ab394", "#ff0f0f"],
+    grid: {
+        color: "#999999",
+        hoverable: true,
+        clickable: true,
+        tickColor: "#D4D4D4",
+        borderWidth: 0
+    },
+    legend: {
+        position: "ne"
+    },
+    tooltip: true,
+    tooltipOpts: {
+        content: "%y"
+    }
+};
 
 Template.browseDB.onRendered(function () {
     if (Settings.findOne().showDBStats) {
@@ -21,7 +62,47 @@ Template.browseDB.onDestroyed(function () {
     }
 });
 
-Template.browseDB.initCharts = function (data, text) {
+Template.browseDB.initNetworkChart = function (data) {
+    
+};
+
+Template.browseDB.initConnectionsChart = function (data, availableConnections) {
+    if (Session.get(Template.strSessionConnection)) {
+        if (data == undefined || data.length == 0) {
+            $('#divHeapMemoryChart').html('This feature is not supported on this platform (OS)');
+            return;
+        }
+
+        $('#spanAvailableConnections').html(', Available: ' + availableConnections);
+
+        if ($('#divConnectionsChart .flot-base').length <= 0) {
+            connectionsChart = $.plot($("#divConnectionsChart"), data, lineOptions);
+        }
+        else {
+            var existingData = connectionsChart.getData();
+            if (existingData[0].data.length == 10) {
+                existingData[0].data = existingData[0].data.slice(1, 10);
+
+                if (existingData.length >= 2 && existingData[1].data) {
+                    existingData[1].data = existingData[1].data.slice(1, 10);
+                }
+            }
+
+            existingData[0].data.push.apply(existingData[0].data, data[0].data);
+
+            if (existingData.length >= 2 && existingData[1].data && data[1].data) {
+                existingData[1].data.push.apply(existingData[1].data, data[1].data);
+            }
+
+
+            connectionsChart.setData(existingData);
+            connectionsChart.setupGrid();
+            connectionsChart.draw();
+        }
+    }
+};
+
+Template.browseDB.initMemoryChart = function (data, text) {
     if (Session.get(Template.strSessionConnection)) {
         if (data == undefined || data.length == 0) {
             $('#divHeapMemoryChart').html('This feature is not supported on this platform (OS)');
@@ -29,53 +110,14 @@ Template.browseDB.initCharts = function (data, text) {
         }
 
         if ($('#divHeapMemoryChart .flot-base').length <= 0) {
-            var lineOptions = {
-                series: {
-                    lines: {
-                        show: true,
-                        lineWidth: 3,
-                        fill: true,
-                        fillColor: {
-                            colors: [{
-                                opacity: 0.0
-                            }, {
-                                opacity: 0.0
-                            }]
-                        }
-                    },
-                    points: {
-                        show: true
-                    }
-                },
-                xaxis: {
-                    show: true,
-                    tickFormatter: function (val, axis) {
-                        return moment(val).format('HH:mm:ss');
-                    }
-                },
-                colors: ["#1ab394", "#273be2", "#ff0f0f"],
-                grid: {
-                    color: "#999999",
-                    hoverable: true,
-                    clickable: true,
-                    tickColor: "#D4D4D4",
-                    borderWidth: 0
-                },
-                legend: {
-                    position: "ne"
-                },
-                tooltip: true,
-                tooltipOpts: {
-                    content: "%y"
-                },
-                yaxis: {
-                    tickFormatter: function (val, axis) {
-                        return val + " " + text;
-                    }
+            var customLineOptions = jQuery.extend(true, {}, lineOptions);
+            customLineOptions.colors.push("#273be2");
+            customLineOptions.yaxis = {
+                tickFormatter: function (val, axis) {
+                    return val + " " + text;
                 }
             };
-
-            memoryChart = $.plot($("#divHeapMemoryChart"), data, lineOptions);
+            memoryChart = $.plot($("#divHeapMemoryChart"), data, customLineOptions);
         }
         else {
             var existingData = memoryChart.getData();
@@ -163,15 +205,36 @@ Template.browseDB.fetchStatus = function () {
             }
             else {
                 Session.set(Template.strSessionServerStatus, result.result);
-                var data = [];
-                var text = Template.browseDB.populateMemoryData(result.result, data);
+                var memoryData = [], connectionsData = [];
+                var memoryText = Template.browseDB.populateMemoryData(result.result, memoryData);
+                var availableConnections = Template.browseDB.populateConnectionData(result.result, connectionsData);
 
                 // make sure gui is rendered
                 Meteor.setTimeout(function () {
-                    Template.browseDB.initCharts(data, text);
+                    Template.browseDB.initMemoryChart(memoryData, memoryText);
+                    Template.browseDB.initConnectionsChart(connectionsData, availableConnections);
                 }, 1500);
             }
         });
+    }
+};
+
+Template.browseDB.populateConnectionData = function (result, data) {
+    if (result.connections && result.connections.current && result.connections.totalCreated && result.connections.available) {
+        var currentData = [];
+        var totalCreatedData = [];
+
+
+        var time = new Date().getTime();
+
+        currentData.push([time, Math.round(result.connections.current * 100) / 100]);
+        totalCreatedData.push([time, Math.round(result.connections.totalCreated * 100) / 100]);
+
+
+        data.push({data: currentData, label: "Active"});
+        data.push({data: totalCreatedData, label: "Total Created"});
+
+        return result.connections.available;
     }
 };
 
