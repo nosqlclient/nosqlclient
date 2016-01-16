@@ -2,7 +2,7 @@
  * Created by RSercan on 26.12.2015.
  */
 var interval = null;
-var heapMemoryChart = null, heapMemoryChartIndex = 0;
+var memoryChart = null;
 
 Template.browseDB.onRendered(function () {
     if (Settings.findOne().showDBStats) {
@@ -21,37 +21,19 @@ Template.browseDB.onDestroyed(function () {
     }
 });
 
-Template.browseDB.initCharts = function (data) {
+Template.browseDB.initCharts = function (data, text) {
     if (Session.get(Template.strSessionConnection)) {
-        if (data == undefined) {
-            $('#divHeapMemoryChart').html('This feature is only supported for Linux systems');
+        if (data == undefined || data.length == 0) {
+            $('#divHeapMemoryChart').html('This feature is not supported on this platform (OS)');
             return;
         }
-        var scale = 1024;
-        var text = "Bytes";
-        var settings = Settings.findOne();
-        switch (settings.scale) {
-            case "MegaBytes":
-                scale = 1024 * 1024;
-                text = "MBs";
-                break;
-            case "KiloBytes":
-                scale = 1024;
-                text = "KBs";
-                break;
-            default:
-                scale = 1;
-                text = "Bytes";
-                break;
-        }
 
-        data[0][1] = Math.round((data[0][1] / scale) * 100) / 100;
-        if (heapMemoryChart == null) {
+        if ($('#divHeapMemoryChart .flot-base').length <= 0) {
             var lineOptions = {
                 series: {
                     lines: {
                         show: true,
-                        lineWidth: 2,
+                        lineWidth: 3,
                         fill: true,
                         fillColor: {
                             colors: [{
@@ -60,13 +42,18 @@ Template.browseDB.initCharts = function (data) {
                                 opacity: 0.0
                             }]
                         }
+                    },
+                    points: {
+                        show: true
                     }
                 },
                 xaxis: {
-                    tickDecimals: 0,
-                    show: false
+                    show: true,
+                    tickFormatter: function (val, axis) {
+                        return moment(val).format('HH:mm:ss');
+                    }
                 },
-                colors: ["#1ab394"],
+                colors: ["#1ab394", "#273be2", "#ff0f0f"],
                 grid: {
                     color: "#999999",
                     hoverable: true,
@@ -75,11 +62,11 @@ Template.browseDB.initCharts = function (data) {
                     borderWidth: 0
                 },
                 legend: {
-                    show: false
+                    position: "ne"
                 },
                 tooltip: true,
                 tooltipOpts: {
-                    content: "%y " + text
+                    content: "%y"
                 },
                 yaxis: {
                     tickFormatter: function (val, axis) {
@@ -88,17 +75,35 @@ Template.browseDB.initCharts = function (data) {
                 }
             };
 
-            heapMemoryChart = $.plot($("#divHeapMemoryChart"), [data], lineOptions);
+            memoryChart = $.plot($("#divHeapMemoryChart"), data, lineOptions);
         }
         else {
-            var existingData = heapMemoryChart.getData();
-            if (existingData[0].data.length == 3) {
-                existingData[0].data = existingData[0].data.slice(0, 2);
+            var existingData = memoryChart.getData();
+            if (existingData[0].data.length == 10) {
+                existingData[0].data = existingData[0].data.slice(1, 10);
+
+                if (existingData.length >= 2 && existingData[1].data) {
+                    existingData[1].data = existingData[1].data.slice(1, 10);
+                }
+
+                if (existingData.length >= 3 && existingData[2].data) {
+                    existingData[2].data = existingData[2].data.slice(1, 10);
+                }
             }
-            existingData[0].data.push.apply(existingData[0].data, data);
-            heapMemoryChart.setData(existingData);
-            heapMemoryChart.setupGrid();
-            heapMemoryChart.draw();
+
+            existingData[0].data.push.apply(existingData[0].data, data[0].data);
+
+            if (existingData.length >= 2 && existingData[1].data && data[1].data) {
+                existingData[1].data.push.apply(existingData[1].data, data[1].data);
+            }
+            if (existingData.length >= 3 && existingData[2].data && data[2].data) {
+                existingData[2].data.push.apply(existingData[2].data, data[2].data);
+            }
+
+
+            memoryChart.setData(existingData);
+            memoryChart.setupGrid();
+            memoryChart.draw();
         }
     }
 };
@@ -158,19 +163,55 @@ Template.browseDB.fetchStatus = function () {
             }
             else {
                 Session.set(Template.strSessionServerStatus, result.result);
-                var data;
-                //if (result.result.extra_info.heap_usage_bytes) {
-                //    data = [[++heapMemoryChartIndex, result.result.extra_info.heap_usage_bytes]];
-                //}
-
-                data = [[++heapMemoryChartIndex, (Math.random() * 1024 * 1024 * 1024)]];
+                var data = [];
+                var text = Template.browseDB.populateMemoryData(result.result, data);
 
                 // make sure gui is rendered
                 Meteor.setTimeout(function () {
-                    Template.browseDB.initCharts(data);
+                    Template.browseDB.initCharts(data, text);
                 }, 1500);
             }
         });
+    }
+};
+
+Template.browseDB.populateMemoryData = function (result, data) {
+    if (result.mem && result.mem.virtual && result.mem.mapped && result.mem.resident) {
+        var scale = 1;
+        var text = "MB";
+        var settings = Settings.findOne();
+        switch (settings.scale) {
+            case "KiloBytes":
+                scale = 1024;
+                text = "KB";
+                break;
+            case "Bytes":
+                scale = 1024 * 1024;
+                text = "Bytes";
+                break;
+            default:
+                scale = 1;
+                text = "MB";
+                break;
+        }
+
+        var virtualMemData = [];
+        var mappedMemData = [];
+        var residentMemData = [];
+
+
+        var time = new Date().getTime();
+
+        virtualMemData.push([time, Math.round((result.mem.virtual * scale) * 100) / 100]);
+        mappedMemData.push([time, Math.round((result.mem.mapped * scale) * 100) / 100]);
+        residentMemData.push([time, Math.round((result.mem.resident * scale) * 100) / 100]);
+
+
+        data.push({data: virtualMemData, label: "Virtual"});
+        data.push({data: mappedMemData, label: "Mapped"});
+        data.push({data: residentMemData, label: "Current"});
+
+        return text;
     }
 };
 
