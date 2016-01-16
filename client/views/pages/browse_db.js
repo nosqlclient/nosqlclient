@@ -79,15 +79,15 @@ Template.browseDB.initCharts = function (data, text) {
         }
         else {
             var existingData = memoryChart.getData();
-            if (existingData[0].data.length == 10) {
-                existingData[0].data = existingData[0].data.slice(1, 10);
+            if (existingData[0].data.length == 15) {
+                existingData[0].data = existingData[0].data.slice(1, 15);
 
                 if (existingData.length >= 2 && existingData[1].data) {
-                    existingData[1].data = existingData[1].data.slice(1, 10);
+                    existingData[1].data = existingData[1].data.slice(1, 15);
                 }
 
                 if (existingData.length >= 3 && existingData[2].data) {
-                    existingData[2].data = existingData[2].data.slice(1, 10);
+                    existingData[2].data = existingData[2].data.slice(1, 15);
                 }
             }
 
