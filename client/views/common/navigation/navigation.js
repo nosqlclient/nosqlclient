@@ -39,7 +39,7 @@ Template.navigation.events({
         Template.navigation.handleNavigationAndSessions();
     },
 
-    'click #aBrowseDB': function () {
+    'click #aDatabaseStats': function () {
         Template.navigation.handleNavigationAndSessions();
     },
 
@@ -65,7 +65,7 @@ Template.navigation.events({
             }
         });
 
-        /*$('#liBrowseDB').removeClass('active');
+        /*$('#liDatabaseStats').removeClass('active');
          $('#liAdminQueries').removeClass('active');*/
 
         $('#divJsonEditor').hide();

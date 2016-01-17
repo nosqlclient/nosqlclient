@@ -3,7 +3,7 @@
  */
 Template.adminQueries.onRendered(function () {
     if (!Session.get(Template.strSessionConnection)) {
-        Router.go('/browseDB');
+        Router.go('databaseStats');
         return;
     }
 

@@ -3,7 +3,7 @@
  */
 Template.browseCollection.onRendered(function () {
     if (!Session.get(Template.strSessionSelectedCollection)) {
-        Router.go('browseDB');
+        Router.go('databaseStats');
         return;
     }
 

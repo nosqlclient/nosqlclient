@@ -214,7 +214,7 @@ Template.topNavbar.events({
             type: "success"
         });
 
-        Router.go('browseDB');
+        Router.go('databaseStats');
     }
 });
 

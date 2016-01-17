@@ -1,9 +1,9 @@
 Template.pageHeading.helpers({
     // Route for Home link in breadcrumbs
-    'home': 'browseDB',
+    'home': 'databaseStats',
 
     'getCollectionInformation': function () {
-        if (Template.getParentTemplateName(1) == 'browseDB' || Template.getParentTemplateName(1) == 'settings' || Session.get(Template.strSessionSelectedCollection) == undefined) {
+        if (Template.getParentTemplateName(1) != 'browseCollection' || Session.get(Template.strSessionSelectedCollection) == undefined) {
             $('#divCollectionInfo').html("");
             return;
         }

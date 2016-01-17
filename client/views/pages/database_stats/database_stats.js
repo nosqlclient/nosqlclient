@@ -45,25 +45,25 @@ var lineOptions = {
     }
 };
 
-Template.browseDB.onRendered(function () {
+Template.databaseStats.onRendered(function () {
     if (Settings.findOne().showDBStats) {
         interval = Meteor.setInterval(function () {
-            Template.browseDB.fetchStatus();
+            Template.databaseStats.fetchStatus();
         }, 7000);
 
         // fetch stats only once.
-        Template.browseDB.fetchStats();
+        Template.databaseStats.fetchStats();
         toastr.info("It can take a few seconds to populate charts !");
     }
 });
 
-Template.browseDB.onDestroyed(function () {
+Template.databaseStats.onDestroyed(function () {
     if (interval) {
         clearInterval(interval);
     }
 });
 
-Template.browseDB.initOperationCountersChart = function (data) {
+Template.databaseStats.initOperationCountersChart = function (data) {
     if (Session.get(Template.strSessionConnection)) {
         if (data == undefined || data.length == 0) {
             $('#divOperationCountersChart').html('This feature is not supported on this platform (OS)');
@@ -100,7 +100,7 @@ Template.browseDB.initOperationCountersChart = function (data) {
     }
 };
 
-Template.browseDB.initNetworkChart = function (data) {
+Template.databaseStats.initNetworkChart = function (data) {
     if (Session.get(Template.strSessionConnection)) {
         if (data == undefined || data.length == 0) {
             $('#divNetworkChart').html('This feature is not supported on this platform (OS)');
@@ -142,7 +142,7 @@ Template.browseDB.initNetworkChart = function (data) {
     }
 };
 
-Template.browseDB.initConnectionsChart = function (data, availableConnections) {
+Template.databaseStats.initConnectionsChart = function (data, availableConnections) {
     if (Session.get(Template.strSessionConnection)) {
         if (data == undefined || data.length == 0) {
             $('#divHeapMemoryChart').html('This feature is not supported on this platform (OS)');
@@ -178,7 +178,7 @@ Template.browseDB.initConnectionsChart = function (data, availableConnections) {
     }
 };
 
-Template.browseDB.initMemoryChart = function (data, text) {
+Template.databaseStats.initMemoryChart = function (data, text) {
     if (Session.get(Template.strSessionConnection)) {
         if (data == undefined || data.length == 0) {
             $('#divHeapMemoryChart').html('This feature is not supported on this platform (OS)');
@@ -226,11 +226,11 @@ Template.browseDB.initMemoryChart = function (data, text) {
     }
 };
 
-Template.browseDB.helpers({
+Template.databaseStats.helpers({
     'getServerStatus': function () {
         if (Settings.findOne().showDBStats) {
             if (Session.get(Template.strSessionServerStatus) == undefined) {
-                Template.browseDB.fetchStatus();
+                Template.databaseStats.fetchStatus();
             }
 
             return Session.get(Template.strSessionServerStatus);
@@ -240,7 +240,7 @@ Template.browseDB.helpers({
     'getDBStats': function () {
         if (Settings.findOne().showDBStats) {
             if (Session.get(Template.strSessionDBStats) == undefined) {
-                Template.browseDB.fetchStats();
+                Template.databaseStats.fetchStats();
             }
 
             return Session.get(Template.strSessionDBStats);
@@ -248,7 +248,7 @@ Template.browseDB.helpers({
     }
 });
 
-Template.browseDB.fetchStats = function () {
+Template.databaseStats.fetchStats = function () {
     if (Session.get(Template.strSessionConnection)) {
         var connection = Connections.findOne({_id: Session.get(Template.strSessionConnection)});
         Meteor.call("dbStats", connection, function (err, result) {
@@ -256,14 +256,14 @@ Template.browseDB.fetchStats = function () {
                 Session.set(Template.strSessionDBStats, undefined);
             }
             else {
-                Template.browseDB.convertInformationsToKB(result.result);
+                Template.databaseStats.convertInformationsToKB(result.result);
                 Session.set(Template.strSessionDBStats, result.result);
             }
         });
     }
 };
 
-Template.browseDB.fetchStatus = function () {
+Template.databaseStats.fetchStatus = function () {
     if (Session.get(Template.strSessionConnection)) {
         var connection = Connections.findOne({_id: Session.get(Template.strSessionConnection)});
         Meteor.call("serverStatus", connection, function (err, result) {
@@ -283,24 +283,24 @@ Template.browseDB.fetchStatus = function () {
                 Session.set(Template.strSessionServerStatus, result.result);
                 var memoryData = [], connectionsData = [], networkData = [], opCountersData = [];
 
-                var memoryText = Template.browseDB.populateMemoryData(result.result, memoryData);
-                var availableConnections = Template.browseDB.populateConnectionData(result.result, connectionsData);
-                Template.browseDB.populateNetworkData(result.result, networkData);
-                Template.browseDB.populateOPCountersData(result.result, opCountersData);
+                var memoryText = Template.databaseStats.populateMemoryData(result.result, memoryData);
+                var availableConnections = Template.databaseStats.populateConnectionData(result.result, connectionsData);
+                Template.databaseStats.populateNetworkData(result.result, networkData);
+                Template.databaseStats.populateOPCountersData(result.result, opCountersData);
 
                 // make sure gui is rendered
                 Meteor.setTimeout(function () {
-                    Template.browseDB.initMemoryChart(memoryData, memoryText);
-                    Template.browseDB.initConnectionsChart(connectionsData, availableConnections);
-                    Template.browseDB.initNetworkChart(networkData);
-                    Template.browseDB.initOperationCountersChart(opCountersData)
+                    Template.databaseStats.initMemoryChart(memoryData, memoryText);
+                    Template.databaseStats.initConnectionsChart(connectionsData, availableConnections);
+                    Template.databaseStats.initNetworkChart(networkData);
+                    Template.databaseStats.initOperationCountersChart(opCountersData)
                 }, 1500);
             }
         });
     }
 };
 
-Template.browseDB.populateOPCountersData = function (result, data) {
+Template.databaseStats.populateOPCountersData = function (result, data) {
     if (result.opcounters) {
         var counts = [
             [0, result.opcounters.insert],
@@ -314,7 +314,7 @@ Template.browseDB.populateOPCountersData = function (result, data) {
     }
 };
 
-Template.browseDB.populateConnectionData = function (result, data) {
+Template.databaseStats.populateConnectionData = function (result, data) {
     if (result.connections) {
         var currentData = [];
         var totalCreatedData = [];
@@ -333,7 +333,7 @@ Template.browseDB.populateConnectionData = function (result, data) {
     }
 };
 
-Template.browseDB.populateNetworkData = function (result, data) {
+Template.databaseStats.populateNetworkData = function (result, data) {
     if (result.network) {
         var bytesInData = [];
         var bytesOutData = [];
@@ -370,7 +370,7 @@ Template.browseDB.populateNetworkData = function (result, data) {
     }
 };
 
-Template.browseDB.populateMemoryData = function (result, data) {
+Template.databaseStats.populateMemoryData = function (result, data) {
     if (result.mem) {
         var scale = 1;
         var text = "MB";
@@ -410,7 +410,7 @@ Template.browseDB.populateMemoryData = function (result, data) {
     }
 };
 
-Template.browseDB.convertInformationsToKB = function (stats) {
+Template.databaseStats.convertInformationsToKB = function (stats) {
     var scale = 1024;
     var text = "Bytes";
     var settings = Settings.findOne();
