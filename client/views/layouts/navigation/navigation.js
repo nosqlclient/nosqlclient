@@ -65,8 +65,6 @@ Template.navigation.events({
             }
         });
 
-        /*$('#liDatabaseStats').removeClass('active');
-         $('#liAdminQueries').removeClass('active');*/
 
         $('#divJsonEditor').hide();
         $('#divAceEditor').hide();
