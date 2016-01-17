@@ -53,6 +53,7 @@ Template.browseDB.onRendered(function () {
 
         // fetch stats only once.
         Template.browseDB.fetchStats();
+        toastr.info("It can take a few seconds to populate charts !");
     }
 });
 
@@ -74,7 +75,7 @@ Template.browseDB.initOperationCountersChart = function (data) {
             customOptions.colors = [];
             customOptions.bars = {
                 align: "center",
-                barWidth: 1
+                barWidth: 0.5
             };
             customOptions.series = {
                 bars: {
