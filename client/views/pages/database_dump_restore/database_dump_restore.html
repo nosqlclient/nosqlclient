@@ -1,8 +1,35 @@
 <template name="databaseDumpRestore">
-    {{> pageHeading title='Dump / Restore' }}
+    {{> pageHeading title='Dump - Restore' }}
 
     {{#if getCollectionNames}}
-
+        <div class="wrapper wrapper-content animated fadeInRight">
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="ibox float-e-margins">
+                        <div class="ibox-title">
+                            <h5>Dumps for {{getConnection.name}}</h5>
+                        </div>
+                        <div class="ibox-content">
+                            {{> ReactiveDatatable tableData=getDumps options=dumpsTableOptions }}
+                        </div>
+                        <div class="ibox-footer">
+                            <!--<span class="pull-right">
+                              The righ side of the footer
+                        </span>-->
+                            <div class="row">
+                                <div class="col-lg-12">
+                                    <button id="btnTakeDump"
+                                            class="btn btn-block btn-outline btn-primary ladda-button"
+                                            type="button"
+                                            data-style="contract">
+                                        <strong>Take Dump</strong></button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     {{/if}}
 
 </template>

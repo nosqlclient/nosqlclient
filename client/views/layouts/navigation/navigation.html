@@ -35,7 +35,7 @@
                     </div>
                 </li>
                 {{#if getCollectionNames}}
-                    <li class="{{isActiveRoute regex='databaseStats'}}">
+                    <li class="{{isActiveRoute regex='databaseStats|home'}}">
                         <a id="aDatabaseStats" href="{{pathFor route='databaseStats'}}"><i
                                 class="fa fa-eye"></i> <span
                                 class="nav-label">Database Stats</span>
@@ -44,7 +44,7 @@
 
                     <li class="{{isActiveRoute regex='databaseDumpRestore'}}">
                         <a id="aDatabaseDumpRestore" href="{{pathFor route='databaseDumpRestore'}}"><i
-                                class="fa fa-eye"></i> <span
+                                class="fa fa-download"></i> <span
                                 class="nav-label">Database Dump/Restore</span>
                         </a>
                     </li>

@@ -55,7 +55,7 @@
                             </div>
 
                             <div class="form-group">
-                                <label class="col-lg-3 control-label">Collection information in</label>
+                                <label class="col-lg-3 control-label">Size information in</label>
                                 <div class="col-lg-9">
                                     <select id="cmbScale"
                                             data-placeholder="Choose one..."
@@ -82,6 +82,20 @@
                             </div>
 
                             <div class="form-group">
+                                <label class="col-lg-3 control-label">Autocomplete feature for selectors</label>
+                                <div class="col-lg-9">
+                                    <div id="divAutoCompleteFields" class="i-checks">
+                                        <input id="inputAutoCompleteFields" type="checkbox" value=""
+                                               class="form-control"
+                                               checked=""
+                                               style="position: absolute; opacity: 0;"/>
+                                        <span class="help-block m-b-none">Enabling this feature significantly reduces performance on huge collections</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="hr-line-dashed"></div>
+                            <div class="form-group">
                                 <label class="col-lg-3 control-label">Show database statistics</label>
                                 <div class="col-lg-9">
                                     <div id="divShowDBStats" class="i-checks">
@@ -96,16 +110,16 @@
                                 </div>
                             </div>
 
+                            <div class="hr-line-dashed"></div>
+
                             <div class="form-group">
-                                <label class="col-lg-3 control-label">Autocomplete feature for selectors</label>
+                                <label class="col-lg-3 control-label">Local dump path</label>
                                 <div class="col-lg-9">
-                                    <div id="divAutoCompleteFields" class="i-checks">
-                                        <input id="inputAutoCompleteFields" type="checkbox" value=""
-                                               class="form-control"
-                                               checked=""
-                                               style="position: absolute; opacity: 0;"/>
-                                        <span class="help-block m-b-none">Enabling this feature significantly reduces performance on huge collections</span>
-                                    </div>
+                                    <input id="inputDumpPath" required="true" type="text"
+                                           class="form-control">
+                                    <span class="help-block m-b-none">
+                                         Database <strong>dumps</strong> will be placed under this directory
+                                    </span>
                                 </div>
                             </div>
 

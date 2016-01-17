@@ -65,13 +65,15 @@ Template.topNavbar.helpers({
                 title: 'Edit',
                 data: null,
                 className: 'center',
-                defaultContent: '<a href="" class="editor_edit">Edit</a>'
+                bSortable: false,
+                defaultContent: '<a href="" title="Edit" class="editor_edit"><i class="fa fa-edit text-navy"></i></a>'
             },
             {
                 title: 'Delete',
                 data: null,
                 className: 'center',
-                defaultContent: '<a href="" class="editor_remove">Delete</a>'
+                bSortable: false,
+                defaultContent: '<a href="" title="Delete" class="editor_remove"><i class="fa fa-remove text-navy"></i></a>'
             }
         ]
     }
@@ -148,8 +150,14 @@ Template.topNavbar.events({
         if (!Template.topNavbar.checkConnection(connection)) {
             return;
         }
-        Meteor.call('saveConnection', connection);
-        $('#connectionCreateModal').modal('hide');
+        Meteor.call('saveConnection', connection, function (err, result) {
+            if (err) {
+                toastr.error(err.message);
+            }
+            else {
+                $('#connectionCreateModal').modal('hide');
+            }
+        });
     },
 
     'click #btnEditConnection': function (e) {

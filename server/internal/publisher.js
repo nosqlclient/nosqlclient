@@ -9,3 +9,11 @@ Meteor.publish('settings', function () {
     return Settings.find();
 });
 
+Meteor.publish('dumps', function (connectionId) {
+    if (connectionId) {
+        var connection = Connections.findOne({_id: connectionId});
+        return Dumps.find({connectionName: connection.name});
+    }
+
+    return [];
+});

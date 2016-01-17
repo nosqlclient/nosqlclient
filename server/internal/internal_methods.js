@@ -1,21 +1,6 @@
 /**
  * Created by RSercan on 26.12.2015.
  */
-Meteor.startup(function () {
-    // create a setting if not exist
-    if (!Settings.findOne()) {
-        Settings.insert({
-            scale: "MegaBytes",
-            defaultResultView: "Jsoneditor",
-            maxAllowedFetchSize: 3,
-            autoCompleteFields: false,
-            socketTimeoutInSeconds: 5,
-            connectionTimeoutInSeconds: 3,
-            showDBStats: true
-        });
-    }
-});
-
 Meteor.methods({
     'updateSettings': function (settings) {
         Settings.update({}, {
@@ -26,12 +11,18 @@ Meteor.methods({
                 autoCompleteFields: settings.autoCompleteFields,
                 socketTimeoutInSeconds: settings.socketTimeoutInSeconds,
                 connectionTimeoutInSeconds: settings.connectionTimeoutInSeconds,
-                showDBStats: settings.showDBStats
+                showDBStats: settings.showDBStats,
+                dumpPath: settings.dumpPath
             }
         });
     },
 
     'saveConnection': function (connection) {
+        if (Connections.findOne({name: connection.name}) != null) {
+            console.log('Connection name already exist: ' + JSON.stringify(connection) + ' could not save it');
+            throw new Meteor.Error('Connection name already exist: ' + connection.name);
+        }
+
         Connections.insert(connection);
     },
 

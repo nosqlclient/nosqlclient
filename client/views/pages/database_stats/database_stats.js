@@ -53,6 +53,8 @@ Template.databaseStats.onRendered(function () {
 
         // fetch stats only once.
         Template.databaseStats.fetchStats();
+    }
+    if (Session.get(Template.strSessionConnection)) {
         toastr.info("It can take a few seconds to populate charts !");
     }
 });
@@ -294,7 +296,7 @@ Template.databaseStats.fetchStatus = function () {
                     Template.databaseStats.initConnectionsChart(connectionsData, availableConnections);
                     Template.databaseStats.initNetworkChart(networkData);
                     Template.databaseStats.initOperationCountersChart(opCountersData)
-                }, 1500);
+                }, 1000);
             }
         });
     }

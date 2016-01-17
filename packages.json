@@ -1,3 +1,4 @@
 {
-  "mongodb": "2.1.2"
+  "mongodb": "2.1.2",
+  "mongodb-backup": "1.5.1"
 }

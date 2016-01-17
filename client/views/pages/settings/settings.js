@@ -38,6 +38,7 @@ Template.settings.getSettingsFromForm = function () {
     settings.socketTimeoutInSeconds = $("#inputSocketTimeout").val();
     settings.connectionTimeoutInSeconds = $("#inputConnectionTimeout").val();
     settings.showDBStats = $('#divShowDBStats').iCheck('update')[0].checked;
+    settings.dumpPath = $('#divDumpPath').val();
     return settings;
 };
 
@@ -51,12 +52,17 @@ Template.settings.load = function () {
     var inputConnectionTimeout = $('#inputConnectionTimeout');
     var inputAutoCompleteFields = $('#inputAutoCompleteFields');
     var inputShowDBStats = $('#inputShowDBStats');
+    var inputDumpPath = $('#inputDumpPath');
 
     cmbScale.val(settings.scale);
     cmbScale.trigger("chosen:updated");
 
     cmbResultView.val(settings.defaultResultView);
     cmbResultView.trigger("chosen:updated");
+
+    if (settings.dumpPath) {
+        inputDumpPath.val(settings.dumpPath);
+    }
 
     if (settings.maxAllowedFetchSize) {
         inputMaxAllowedFetchSize.val(settings.maxAllowedFetchSize);
