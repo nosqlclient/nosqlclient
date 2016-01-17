@@ -2,7 +2,7 @@
  * Created by RSercan on 26.12.2015.
  */
 var interval = null;
-var memoryChart = null, connectionsChart = null, networkChart = null;
+var memoryChart = null, connectionsChart = null, networkChart = null, opCountersChart = null;
 
 var lineOptions = {
     series: {
@@ -49,7 +49,7 @@ Template.browseDB.onRendered(function () {
     if (Settings.findOne().showDBStats) {
         interval = Meteor.setInterval(function () {
             Template.browseDB.fetchStatus();
-        }, 5000);
+        }, 7000);
 
         // fetch stats only once.
         Template.browseDB.fetchStats();
@@ -61,6 +61,43 @@ Template.browseDB.onDestroyed(function () {
         clearInterval(interval);
     }
 });
+
+Template.browseDB.initOperationCountersChart = function (data) {
+    if (Session.get(Template.strSessionConnection)) {
+        if (data == undefined || data.length == 0) {
+            $('#divOperationCountersChart').html('This feature is not supported on this platform (OS)');
+            return;
+        }
+
+        if ($('#divOperationCountersChart .flot-base').length <= 0) {
+            var customOptions = jQuery.extend(true, {}, lineOptions);
+            customOptions.colors = [];
+            customOptions.bars = {
+                align: "center",
+                barWidth: 1
+            };
+            customOptions.series = {
+                bars: {
+                    show: true
+                },
+                points: {
+                    show: true
+                }
+            };
+            customOptions.xaxis = {
+                show: true,
+                ticks: [[0, "Insert"], [1, "Query"], [2, "Update"], [3, "Delete"], [4, "Getmore"]]
+            };
+
+            opCountersChart = $.plot($("#divOperationCountersChart"), data, customOptions);
+        }
+        else {
+            opCountersChart.setData(data);
+            opCountersChart.setupGrid();
+            opCountersChart.draw();
+        }
+    }
+};
 
 Template.browseDB.initNetworkChart = function (data) {
     if (Session.get(Template.strSessionConnection)) {
@@ -243,25 +280,41 @@ Template.browseDB.fetchStatus = function () {
             }
             else {
                 Session.set(Template.strSessionServerStatus, result.result);
-                var memoryData = [], connectionsData = [], networkData = [];
+                var memoryData = [], connectionsData = [], networkData = [], opCountersData = [];
 
                 var memoryText = Template.browseDB.populateMemoryData(result.result, memoryData);
                 var availableConnections = Template.browseDB.populateConnectionData(result.result, connectionsData);
                 Template.browseDB.populateNetworkData(result.result, networkData);
+                Template.browseDB.populateOPCountersData(result.result, opCountersData);
 
                 // make sure gui is rendered
                 Meteor.setTimeout(function () {
                     Template.browseDB.initMemoryChart(memoryData, memoryText);
                     Template.browseDB.initConnectionsChart(connectionsData, availableConnections);
                     Template.browseDB.initNetworkChart(networkData);
+                    Template.browseDB.initOperationCountersChart(opCountersData)
                 }, 1500);
             }
         });
     }
 };
 
+Template.browseDB.populateOPCountersData = function (result, data) {
+    if (result.opcounters) {
+        var counts = [
+            [0, result.opcounters.insert],
+            [1, result.opcounters.query],
+            [2, result.opcounters.update],
+            [3, result.opcounters.delete],
+            [4, result.opcounters.getmore]
+        ];
+
+        data.push({label: "Counts", data: counts, color: "#1ab394"});
+    }
+};
+
 Template.browseDB.populateConnectionData = function (result, data) {
-    if (result.connections && result.connections.current && result.connections.totalCreated && result.connections.available) {
+    if (result.connections) {
         var currentData = [];
         var totalCreatedData = [];
 
@@ -280,7 +333,7 @@ Template.browseDB.populateConnectionData = function (result, data) {
 };
 
 Template.browseDB.populateNetworkData = function (result, data) {
-    if (result.network && result.network.bytesIn && result.network.bytesOut && result.network.numRequests) {
+    if (result.network) {
         var bytesInData = [];
         var bytesOutData = [];
         var totalRequestsData = [];
@@ -317,7 +370,7 @@ Template.browseDB.populateNetworkData = function (result, data) {
 };
 
 Template.browseDB.populateMemoryData = function (result, data) {
-    if (result.mem && result.mem.virtual && result.mem.mapped && result.mem.resident) {
+    if (result.mem) {
         var scale = 1;
         var text = "MB";
         var settings = Settings.findOne();
