@@ -2,7 +2,7 @@
  * Created by RSercan on 17.1.2016.
  */
 Template.databaseDumpRestore.onRendered(function () {
-    if (!Session.get(Template.strSessionConnection)) {
+    if (!Session.get(Template.strSessionCollectionNames)) {
         Router.go('databaseStats');
         return;
     }

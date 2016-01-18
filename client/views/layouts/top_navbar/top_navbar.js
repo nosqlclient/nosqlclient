@@ -80,6 +80,15 @@ Template.topNavbar.helpers({
 });
 
 Template.topNavbar.events({
+    'click #btnCreateNewConnection': function (e) {
+        $('#inputConnectionName').val('');
+        $('#inputHost').val('');
+        $('#inputPort').val('27017');
+        $('#inputDatabaseName').val('');
+        $('#inputUser').val('');
+        $('#inputPassword').val('');
+    },
+
     'click #btnConnectionList': function (e) {
         if (!Session.get(Template.strSessionConnection)) {
             $('#DataTables_Table_0').DataTable().$('tr.selected').removeClass('selected');

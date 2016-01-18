@@ -54,7 +54,7 @@ Template.databaseStats.onRendered(function () {
         // fetch stats only once.
         Template.databaseStats.fetchStats();
     }
-    if (Session.get(Template.strSessionConnection)) {
+    if (Session.get(Template.strSessionCollectionNames)) {
         toastr.info("It can take a few seconds to populate charts !");
     }
 });
@@ -66,7 +66,7 @@ Template.databaseStats.onDestroyed(function () {
 });
 
 Template.databaseStats.initOperationCountersChart = function (data) {
-    if (Session.get(Template.strSessionConnection)) {
+    if (Session.get(Template.strSessionCollectionNames)) {
         if (data == undefined || data.length == 0) {
             $('#divOperationCountersChart').html('This feature is not supported on this platform (OS)');
             return;
@@ -103,7 +103,7 @@ Template.databaseStats.initOperationCountersChart = function (data) {
 };
 
 Template.databaseStats.initNetworkChart = function (data) {
-    if (Session.get(Template.strSessionConnection)) {
+    if (Session.get(Template.strSessionCollectionNames)) {
         if (data == undefined || data.length == 0) {
             $('#divNetworkChart').html('This feature is not supported on this platform (OS)');
             return;
@@ -145,7 +145,7 @@ Template.databaseStats.initNetworkChart = function (data) {
 };
 
 Template.databaseStats.initConnectionsChart = function (data, availableConnections) {
-    if (Session.get(Template.strSessionConnection)) {
+    if (Session.get(Template.strSessionCollectionNames)) {
         if (data == undefined || data.length == 0) {
             $('#divHeapMemoryChart').html('This feature is not supported on this platform (OS)');
             return;
@@ -181,7 +181,7 @@ Template.databaseStats.initConnectionsChart = function (data, availableConnectio
 };
 
 Template.databaseStats.initMemoryChart = function (data, text) {
-    if (Session.get(Template.strSessionConnection)) {
+    if (Session.get(Template.strSessionCollectionNames)) {
         if (data == undefined || data.length == 0) {
             $('#divHeapMemoryChart').html('This feature is not supported on this platform (OS)');
             return;
@@ -251,7 +251,7 @@ Template.databaseStats.helpers({
 });
 
 Template.databaseStats.fetchStats = function () {
-    if (Session.get(Template.strSessionConnection)) {
+    if (Session.get(Template.strSessionCollectionNames)) {
         var connection = Connections.findOne({_id: Session.get(Template.strSessionConnection)});
         Meteor.call("dbStats", connection, function (err, result) {
             if (err || result.error) {
@@ -266,7 +266,7 @@ Template.databaseStats.fetchStats = function () {
 };
 
 Template.databaseStats.fetchStatus = function () {
-    if (Session.get(Template.strSessionConnection)) {
+    if (Session.get(Template.strSessionCollectionNames)) {
         var connection = Connections.findOne({_id: Session.get(Template.strSessionConnection)});
         Meteor.call("serverStatus", connection, function (err, result) {
             if (err || result.error) {
@@ -278,8 +278,7 @@ Template.databaseStats.fetchStatus = function () {
                 }
 
                 Session.set(Template.strSessionServerStatus, undefined);
-                clearInterval(interval);
-                toastr.error("Couldn't fetch serverStatus, " + errorMessage);
+                $('#errorMessage').html("Couldn't fetch serverStatus, " + errorMessage);
             }
             else {
                 Session.set(Template.strSessionServerStatus, result.result);
