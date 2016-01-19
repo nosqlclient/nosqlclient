@@ -6,7 +6,7 @@
                     <div class="dropdown profile-element">
                         <a data-toggle="dropdown" class="dropdown-toggle" href="#">
                             <span class="clear">
-                                {{#if getCollectionNames}}
+                                {{#if isConnected}}
                                     <span class="block m-t-xs"> <strong
                                             class="font-bold">{{getConnection.name}}</strong>
                                 </span>
@@ -21,7 +21,7 @@
                                 {{/if}}
                             </span>
                         </a>
-                        {{#if getCollectionNames}}
+                        {{#if isConnected}}
                             <ul class="dropdown-menu animated fadeInRight m-t-xs">
                                 <li><a id="btnDropDatabase" href="#"><i class="fa fa-remove"></i> Drop database</a></li>
                                 <!--<li><a href="#">Item</a></li>
@@ -34,7 +34,7 @@
                         MC+
                     </div>
                 </li>
-                {{#if getCollectionNames}}
+                {{#if isConnected}}
                     <li class="{{isActiveRoute regex='databaseStats|home'}}">
                         <a id="aDatabaseStats" href="{{pathFor route='databaseStats'}}"><i
                                 class="fa fa-eye"></i> <span

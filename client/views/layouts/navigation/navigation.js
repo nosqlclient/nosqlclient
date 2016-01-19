@@ -78,6 +78,40 @@ Template.navigation.events({
     }
 });
 
+Template.navigation.helpers({
+    'getCollectionNames': function () {
+        var collectionNames = Session.get(Template.strSessionCollectionNames);
+        if (collectionNames != undefined) {
+            var result = [];
+            collectionNames.forEach(function (collectionName) {
+                if (!collectionName.name.startsWith('system')) {
+                    result.push(collectionName);
+                }
+            });
+
+            return result;
+        }
+
+        return collectionNames;
+    },
+
+    'getSystemCollectionNames': function () {
+        var collectionNames = Session.get(Template.strSessionCollectionNames);
+        if (collectionNames != undefined) {
+            var result = [];
+            collectionNames.forEach(function (collectionName) {
+                if (collectionName.name.startsWith('system')) {
+                    result.push(collectionName);
+                }
+            });
+
+            return result;
+        }
+
+        return collectionNames;
+    }
+});
+
 Template.navigation.handleNavigationAndSessions = function () {
     $('#listCollectionNames').find('li').each(function (index, li) {
         $(li).removeClass('active');

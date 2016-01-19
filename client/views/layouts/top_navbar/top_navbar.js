@@ -1,9 +1,10 @@
 Template.topNavbar.rendered = function () {
 
-    $('#DataTables_Table_0').addClass('table-striped table-bordered table-hover');
+    var selector = $('#DataTables_Table_0');
+    selector.addClass('table-striped table-bordered table-hover');
+    selector.find('tbody').on('click', 'tr', function () {
 
-    $('#DataTables_Table_0 tbody').on('click', 'tr', function () {
-        var table = $('#DataTables_Table_0').DataTable();
+        var table = selector.DataTable();
 
         if ($(this).hasClass('selected')) {
             $(this).removeClass('selected');
@@ -80,7 +81,7 @@ Template.topNavbar.helpers({
 });
 
 Template.topNavbar.events({
-    'click #btnCreateNewConnection': function (e) {
+    'click #btnCreateNewConnection': function () {
         $('#inputConnectionName').val('');
         $('#inputHost').val('');
         $('#inputPort').val('27017');
@@ -89,7 +90,7 @@ Template.topNavbar.events({
         $('#inputPassword').val('');
     },
 
-    'click #btnConnectionList': function (e) {
+    'click #btnConnectionList': function () {
         if (!Session.get(Template.strSessionConnection)) {
             $('#DataTables_Table_0').DataTable().$('tr.selected').removeClass('selected');
             $('#btnConnect').prop('disabled', true);
@@ -159,7 +160,7 @@ Template.topNavbar.events({
         if (!Template.topNavbar.checkConnection(connection)) {
             return;
         }
-        Meteor.call('saveConnection', connection, function (err, result) {
+        Meteor.call('saveConnection', connection, function (err) {
             if (err) {
                 toastr.error(err.message);
             }
@@ -188,10 +189,10 @@ Template.topNavbar.events({
         $('#connectionEditModal').modal('hide');
     },
 
-    'click #btnConnect': function (e) {
+    'click #btnConnect': function () {
         // loading button
-        var l = $('#btnConnect').ladda();
-        l.ladda('start');
+        var laddaButton = $('#btnConnect').ladda();
+        laddaButton.ladda('start');
 
         var connection = Connections.findOne({_id: Session.get(Template.strSessionConnection)});
         Meteor.call('connect', connection, function (err, result) {
@@ -204,11 +205,11 @@ Template.topNavbar.events({
                 }
 
                 toastr.error("Couldn't connect: " + errorMessage);
-                l.ladda('stop');
+                laddaButton.ladda('stop');
                 return;
             }
 
-            l.ladda('stop');
+            laddaButton.ladda('stop');
 
             Session.set(Template.strSessionCollectionNames, result.result);
             $('#connectionModal').modal('hide');
@@ -255,4 +256,4 @@ Template.topNavbar.checkConnection = function (connection) {
     }
 
     return true;
-}
+};

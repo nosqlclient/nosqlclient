@@ -158,40 +158,12 @@ Template.registerHelper('getConnection', function () {
     }
 });
 
-Template.registerHelper('getCollectionNames', function () {
-    var collectionNames = Session.get(Template.strSessionCollectionNames);
-    if (collectionNames) {
-        var result = [];
-        collectionNames.forEach(function (collectionName) {
-            if (!collectionName.name.startsWith('system')) {
-                result.push(collectionName);
-            }
-        });
-
-        return result;
-    }
-
-    return collectionNames;
-});
-
-Template.registerHelper('getSystemCollectionNames', function () {
-    var collectionNames = Session.get(Template.strSessionCollectionNames);
-    if (collectionNames) {
-        var result = [];
-        collectionNames.forEach(function (collectionName) {
-            if (collectionName.name.startsWith('system')) {
-                result.push(collectionName);
-            }
-        });
-
-        return result;
-    }
-
-    return collectionNames;
-});
-
 Template.registerHelper('getSelectedCollection', function () {
     return Session.get(Template.strSessionSelectedCollection);
+});
+
+Template.registerHelper('isConnected', function () {
+    return (Session.get(Template.strSessionCollectionNames) != undefined);
 });
 
 /**

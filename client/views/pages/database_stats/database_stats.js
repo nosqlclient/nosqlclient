@@ -24,7 +24,7 @@ var lineOptions = {
     },
     xaxis: {
         show: true,
-        tickFormatter: function (val, axis) {
+        tickFormatter: function (val) {
             return moment(val).format('HH:mm:ss');
         }
     },
@@ -54,7 +54,7 @@ Template.databaseStats.onRendered(function () {
         // fetch stats only once.
         Template.databaseStats.fetchStats();
     }
-    if (Session.get(Template.strSessionCollectionNames)) {
+    if (Session.get(Template.strSessionCollectionNames) != undefined) {
         toastr.info("It can take a few seconds to populate charts !");
     }
 });
@@ -66,13 +66,15 @@ Template.databaseStats.onDestroyed(function () {
 });
 
 Template.databaseStats.initOperationCountersChart = function (data) {
-    if (Session.get(Template.strSessionCollectionNames)) {
+    if (Session.get(Template.strSessionCollectionNames) != undefined) {
+        var divChart = $('#divOperationCountersChart');
+
         if (data == undefined || data.length == 0) {
-            $('#divOperationCountersChart').html('This feature is not supported on this platform (OS)');
+            divChart.html('This feature is not supported on this platform (OS)');
             return;
         }
 
-        if ($('#divOperationCountersChart .flot-base').length <= 0) {
+        if (divChart.find('.flot-base').length <= 0) {
             var customOptions = jQuery.extend(true, {}, lineOptions);
             customOptions.colors = [];
             customOptions.bars = {
@@ -92,7 +94,7 @@ Template.databaseStats.initOperationCountersChart = function (data) {
                 ticks: [[0, "Insert"], [1, "Query"], [2, "Update"], [3, "Delete"], [4, "Getmore"]]
             };
 
-            opCountersChart = $.plot($("#divOperationCountersChart"), data, customOptions);
+            opCountersChart = $.plot(divChart, data, customOptions);
         }
         else {
             opCountersChart.setData(data);
@@ -103,16 +105,17 @@ Template.databaseStats.initOperationCountersChart = function (data) {
 };
 
 Template.databaseStats.initNetworkChart = function (data) {
-    if (Session.get(Template.strSessionCollectionNames)) {
+    if (Session.get(Template.strSessionCollectionNames) != undefined) {
+        var divChart = $('#divNetworkChart');
         if (data == undefined || data.length == 0) {
-            $('#divNetworkChart').html('This feature is not supported on this platform (OS)');
+            divChart.html('This feature is not supported on this platform (OS)');
             return;
         }
 
-        if ($('#divNetworkChart .flot-base').length <= 0) {
+        if (divChart.find('.flot-base').length <= 0) {
             var customLineOptions = jQuery.extend(true, {}, lineOptions);
             customLineOptions.colors.push("#273be2");
-            networkChart = $.plot($("#divNetworkChart"), data, customLineOptions);
+            networkChart = $.plot(divChart, data, customLineOptions);
         }
         else {
             var existingData = networkChart.getData();
@@ -145,16 +148,17 @@ Template.databaseStats.initNetworkChart = function (data) {
 };
 
 Template.databaseStats.initConnectionsChart = function (data, availableConnections) {
-    if (Session.get(Template.strSessionCollectionNames)) {
+    if (Session.get(Template.strSessionCollectionNames) != undefined) {
+        var divChart = $('#divHeapMemoryChart');
         if (data == undefined || data.length == 0) {
-            $('#divHeapMemoryChart').html('This feature is not supported on this platform (OS)');
+            divChart.html('This feature is not supported on this platform (OS)');
             return;
         }
 
         $('#spanAvailableConnections').html(', Available: ' + availableConnections);
 
-        if ($('#divConnectionsChart .flot-base').length <= 0) {
-            connectionsChart = $.plot($("#divConnectionsChart"), data, lineOptions);
+        if (divChart.find('.flot-base').length <= 0) {
+            connectionsChart = $.plot(divChart, data, lineOptions);
         }
         else {
             var existingData = connectionsChart.getData();
@@ -181,21 +185,22 @@ Template.databaseStats.initConnectionsChart = function (data, availableConnectio
 };
 
 Template.databaseStats.initMemoryChart = function (data, text) {
-    if (Session.get(Template.strSessionCollectionNames)) {
+    if (Session.get(Template.strSessionCollectionNames) != undefined) {
+        var divChart = $('#divHeapMemoryChart');
         if (data == undefined || data.length == 0) {
-            $('#divHeapMemoryChart').html('This feature is not supported on this platform (OS)');
+            divChart.html('This feature is not supported on this platform (OS)');
             return;
         }
 
-        if ($('#divHeapMemoryChart .flot-base').length <= 0) {
+        if (divChart.find('.flot-base').length <= 0) {
             var customLineOptions = jQuery.extend(true, {}, lineOptions);
             customLineOptions.colors.push("#273be2");
             customLineOptions.yaxis = {
-                tickFormatter: function (val, axis) {
+                tickFormatter: function (val) {
                     return val + " " + text;
                 }
             };
-            memoryChart = $.plot($("#divHeapMemoryChart"), data, customLineOptions);
+            memoryChart = $.plot(divChart, data, customLineOptions);
         }
         else {
             var existingData = memoryChart.getData();
@@ -251,7 +256,7 @@ Template.databaseStats.helpers({
 });
 
 Template.databaseStats.fetchStats = function () {
-    if (Session.get(Template.strSessionCollectionNames)) {
+    if (Session.get(Template.strSessionCollectionNames) != undefined) {
         var connection = Connections.findOne({_id: Session.get(Template.strSessionConnection)});
         Meteor.call("dbStats", connection, function (err, result) {
             if (err || result.error) {
@@ -266,7 +271,7 @@ Template.databaseStats.fetchStats = function () {
 };
 
 Template.databaseStats.fetchStatus = function () {
-    if (Session.get(Template.strSessionCollectionNames)) {
+    if (Session.get(Template.strSessionCollectionNames) != undefined) {
         var connection = Connections.findOne({_id: Session.get(Template.strSessionConnection)});
         Meteor.call("serverStatus", connection, function (err, result) {
             if (err || result.error) {

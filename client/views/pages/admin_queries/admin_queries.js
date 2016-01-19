@@ -2,7 +2,7 @@
  * Created by RSercan on 10.1.2016.
  */
 Template.adminQueries.onRendered(function () {
-    if (!Session.get(Template.strSessionCollectionNames)) {
+    if (Session.get(Template.strSessionCollectionNames) == undefined) {
         Router.go('databaseStats');
         return;
     }

@@ -2,9 +2,8 @@
  * Created by RSercan on 17.1.2016.
  */
 Template.databaseDumpRestore.onRendered(function () {
-    if (!Session.get(Template.strSessionCollectionNames)) {
+    if (Session.get(Template.strSessionCollectionNames) == undefined) {
         Router.go('databaseStats');
-        return;
     }
 });
 
