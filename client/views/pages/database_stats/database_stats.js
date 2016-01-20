@@ -68,12 +68,10 @@ Template.databaseStats.onDestroyed(function () {
 Template.databaseStats.initOperationCountersChart = function (data) {
     if (Session.get(Template.strSessionCollectionNames) != undefined) {
         var divChart = $('#divOperationCountersChart');
-
         if (data == undefined || data.length == 0) {
             divChart.html('This feature is not supported on this platform (OS)');
             return;
         }
-
         if (divChart.find('.flot-base').length <= 0) {
             var customOptions = jQuery.extend(true, {}, lineOptions);
             customOptions.colors = [];
@@ -93,8 +91,12 @@ Template.databaseStats.initOperationCountersChart = function (data) {
                 show: true,
                 ticks: [[0, "Insert"], [1, "Query"], [2, "Update"], [3, "Delete"], [4, "Getmore"]]
             };
-
-            opCountersChart = $.plot(divChart, data, customOptions);
+            try {
+                opCountersChart = $.plot(divChart, data, customOptions);
+            }
+            catch (e) {
+                opCountersChart = null;
+            }
         }
         else {
             opCountersChart.setData(data);
@@ -115,7 +117,12 @@ Template.databaseStats.initNetworkChart = function (data) {
         if (divChart.find('.flot-base').length <= 0) {
             var customLineOptions = jQuery.extend(true, {}, lineOptions);
             customLineOptions.colors.push("#273be2");
-            networkChart = $.plot(divChart, data, customLineOptions);
+            try {
+                networkChart = $.plot(divChart, data, customLineOptions);
+            }
+            catch (e) {
+                networkChart = null;
+            }
         }
         else {
             var existingData = networkChart.getData();
@@ -158,7 +165,12 @@ Template.databaseStats.initConnectionsChart = function (data, availableConnectio
         $('#spanAvailableConnections').html(', Available: ' + availableConnections);
 
         if (divChart.find('.flot-base').length <= 0) {
-            connectionsChart = $.plot(divChart, data, lineOptions);
+            try {
+                connectionsChart = $.plot(divChart, data, lineOptions);
+            }
+            catch (e) {
+                connectionsChart = null;
+            }
         }
         else {
             var existingData = connectionsChart.getData();
@@ -200,7 +212,12 @@ Template.databaseStats.initMemoryChart = function (data, text) {
                     return val + " " + text;
                 }
             };
-            memoryChart = $.plot(divChart, data, customLineOptions);
+            try {
+                memoryChart = $.plot(divChart, data, customLineOptions);
+            }
+            catch (e) {
+                memoryChart = null;
+            }
         }
         else {
             var existingData = memoryChart.getData();
