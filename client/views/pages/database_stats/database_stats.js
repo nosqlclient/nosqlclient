@@ -149,7 +149,7 @@ Template.databaseStats.initNetworkChart = function (data) {
 
 Template.databaseStats.initConnectionsChart = function (data, availableConnections) {
     if (Session.get(Template.strSessionCollectionNames) != undefined) {
-        var divChart = $('#divHeapMemoryChart');
+        var divChart = $('#divConnectionsChart');
         if (data == undefined || data.length == 0) {
             divChart.html('This feature is not supported on this platform (OS)');
             return;

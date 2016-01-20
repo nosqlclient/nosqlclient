@@ -48,7 +48,7 @@ Template.navigation.events({
 
         $('#listCollectionNames').find('li').each(function (index, li) {
             var liObject = $(li);
-            if (liObject[0].innerText.substr(1).trim() == name) {
+            if (liObject[0].innerHTML.substr(1).trim() == name) {
                 liObject.addClass('active');
             }
             else {
@@ -58,7 +58,7 @@ Template.navigation.events({
 
         $('#listSystemCollections').find('li').each(function (index, li) {
             var liObject = $(li);
-            if (liObject[0].innerText.substr(1).trim() == name) {
+            if (liObject[0].innerHTML.substr(1).trim() == name) {
                 liObject.addClass('active');
             } else {
                 liObject.removeClass('active');
