@@ -22,9 +22,10 @@ zimme:active-route
 okgrow:router-autoscroll
 less
 twbs:bootstrap@3.3.6
-ephemer:reactive-datatables
 meteorhacks:npm
 npm-container
 momentjs:moment
 arch:ace-editor
 aldeed:collection2
+meteorhacks:kadira
+ephemer:reactive-datatables-modified

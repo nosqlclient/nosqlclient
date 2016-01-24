@@ -10,13 +10,9 @@ Template.strSessionServerStatus = "serverStatus";
 Template.strSessionDBStats = "dbStats";
 
 Template.clearSessions = function () {
-    Session.set(Template.strSessionCollectionNames, undefined);
-    Session.set(Template.strSessionConnection, undefined);
-    Session.set(Template.strSessionSelectedCollection, undefined);
-    Session.set(Template.strSessionSelectedQuery, undefined);
-    Session.set(Template.strSessionSelectedOptions, undefined);
-    Session.set(Template.strSessionServerStatus, undefined);
-    Session.set(Template.strSessionDBStats, undefined);
+    Object.keys(Session.keys).forEach(function (key) {
+        Session.set(key, undefined);
+    })
 };
 
 Template.renderAfterQueryExecution = function (err, result) {

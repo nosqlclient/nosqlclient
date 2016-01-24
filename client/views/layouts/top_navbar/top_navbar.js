@@ -1,6 +1,6 @@
 Template.topNavbar.rendered = function () {
 
-    var selector = $('#DataTables_Table_0');
+    var selector = $('#tblConnection');
     selector.addClass('table-striped table-bordered table-hover');
     selector.find('tbody').on('click', 'tr', function () {
 
@@ -92,7 +92,7 @@ Template.topNavbar.events({
 
     'click #btnConnectionList': function () {
         if (!Session.get(Template.strSessionConnection)) {
-            $('#DataTables_Table_0').DataTable().$('tr.selected').removeClass('selected');
+            $('#tblConnection').DataTable().$('tr.selected').removeClass('selected');
             $('#btnConnect').prop('disabled', true);
         }
     },
@@ -100,7 +100,7 @@ Template.topNavbar.events({
     'click .editor_remove': function (e) {
         e.preventDefault();
         // set rows not selected
-        $('#DataTables_Table_0').DataTable().$('tr.selected').removeClass('selected');
+        $('#tblConnection').DataTable().$('tr.selected').removeClass('selected');
         // disable connect button
         $('#btnConnect').prop('disabled', true);
         // remove connection

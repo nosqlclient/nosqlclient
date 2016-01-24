@@ -2,6 +2,22 @@
  * Created by RSercan on 26.12.2015.
  */
 Meteor.methods({
+    'updateDump': function (dump) {
+        Dumps.update({_id: dump._id}, {
+            $set: {
+                connectionName: dump.connectionName,
+                date: dump.date,
+                sizeInBytes: dump.sizeInBytes,
+                filePath: dump.filePath,
+                status: dump.status
+            }
+        });
+    },
+
+    'saveDump': function (dump) {
+        Dumps.insert(dump);
+    },
+
     'updateSettings': function (settings) {
         Settings.update({}, {
             $set: {
