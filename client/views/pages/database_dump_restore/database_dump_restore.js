@@ -51,21 +51,31 @@ Template.databaseDumpRestore.events({
         var table = $('#tblDumps').DataTable();
 
         if (table.row(this).data()) {
-            var laddaButton = $('#btnTakeDump').ladda();
-            laddaButton.ladda('start');
+            swal({
+                title: "Are you sure?",
+                text: "All collections will be dropped, and restored !",
+                type: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#DD6B55",
+                confirmButtonText: "Yes, do it!",
+                closeOnConfirm: false
+            }, function () {
+                var laddaButton = $('#btnTakeDump').ladda();
+                laddaButton.ladda('start');
 
-            var dumpInfo = table.row(this).data();
-            dumpInfo.status = DUMP_STATUS.IN_PROGRESS;
-            Meteor.call('updateDump', dumpInfo); // this is a simple update to notify user on UI
-            Meteor.call('restoreDump', connection, dumpInfo, function (err) {
-                if (err) {
-                    toastr.error("Couldn't restore dump, " + err.message);
-                }
-                else {
-                    toastr.success('A background process to restore the dump(' + dumpInfo.filePath + ') has started, whenever it finishes you can see the result on this page');
-                }
+                var dumpInfo = table.row(this).data();
+                dumpInfo.status = DUMP_STATUS.IN_PROGRESS;
+                Meteor.call('updateDump', dumpInfo); // this is a simple update to notify user on UI
+                Meteor.call('restoreDump', connection, dumpInfo, function (err) {
+                    if (err) {
+                        toastr.error("Couldn't restore dump, " + err.message);
+                    }
+                    else {
+                        toastr.success('A background process to restore the dump(' + dumpInfo.filePath + ') has started, whenever it finishes you can see the result on this page');
+                    }
 
-                Ladda.stopAll();
+                    Ladda.stopAll();
+                });
             });
         }
     }
@@ -74,7 +84,7 @@ Template.databaseDumpRestore.events({
 Template.databaseDumpRestore.helpers({
     'getDumps': function () {
         return function () {
-            return Dumps.find().fetch(); // or .map()
+            return Dumps.find({}, {sort: {date: -1}}).fetch(); // or .map()
         };
     },
 

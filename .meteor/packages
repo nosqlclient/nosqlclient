@@ -27,5 +27,4 @@ npm-container
 momentjs:moment
 arch:ace-editor
 aldeed:collection2
-meteorhacks:kadira
 ephemer:reactive-datatables-modified
