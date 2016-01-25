@@ -27,4 +27,4 @@ npm-container
 momentjs:moment
 arch:ace-editor
 aldeed:collection2
-ephemer:reactive-datatables-modified
+aldeed:tabular

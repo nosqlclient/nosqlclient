@@ -1,7 +1,6 @@
 Template.topNavbar.rendered = function () {
 
     var selector = $('#tblConnection');
-    selector.addClass('table-striped table-bordered table-hover');
     selector.find('tbody').on('click', 'tr', function () {
 
         var table = selector.DataTable();
@@ -26,59 +25,6 @@ Template.topNavbar.rendered = function () {
     // $(".navbar-static-top").removeClass('navbar-static-top').addClass('navbar-fixed-top');
 
 };
-
-
-Template.topNavbar.helpers({
-    reactiveDataFunction: function () {
-        return function () {
-            return Connections.find().fetch(); // or .map()
-        };
-    },
-    optionsObject: {
-        columns: [
-            {
-                title: '_id',
-                data: '_id',
-                className: 'center',
-                sClass: "hide_column"
-            },
-            {
-                title: 'Connection Name',
-                data: 'name',
-                className: 'center'
-            },
-            {
-                title: 'Hostname',
-                data: 'host',
-                className: 'center'
-            },
-            {
-                title: 'Port',
-                data: 'port',
-                className: 'center'
-            },
-            {
-                title: 'Database Name',
-                data: 'databaseName',
-                className: 'center'
-            },
-            {
-                title: 'Edit',
-                data: null,
-                className: 'center',
-                bSortable: false,
-                defaultContent: '<a href="" title="Edit" class="editor_edit"><i class="fa fa-edit text-navy"></i></a>'
-            },
-            {
-                title: 'Delete',
-                data: null,
-                className: 'center',
-                bSortable: false,
-                defaultContent: '<a href="" title="Delete" class="editor_remove"><i class="fa fa-remove text-navy"></i></a>'
-            }
-        ]
-    }
-});
 
 Template.topNavbar.events({
     'click #btnCreateNewConnection': function () {

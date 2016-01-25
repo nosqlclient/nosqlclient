@@ -10,7 +10,7 @@
                             <h5>Dumps for {{getConnection.name}}</h5>
                         </div>
                         <div class="ibox-content">
-                            {{> ReactiveDatatable tableData=getDumps options=dumpsTableOptions tableId="tblDumps" }}
+                            {{> tabular table=TabularTables.Dumps class="table table-striped table-bordered table-hover" id="tblDumps"}}
                         </div>
                         <div class="ibox-footer">
                             <!--<span class="pull-right">
