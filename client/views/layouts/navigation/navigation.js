@@ -35,6 +35,10 @@ Template.navigation.events({
         });
     },
 
+    'click #aDatabaseDumpRestore': function () {
+        Template.navigation.handleNavigationAndSessions();
+    },
+
     'click #aAdminQueries': function () {
         Template.navigation.handleNavigationAndSessions();
     },
