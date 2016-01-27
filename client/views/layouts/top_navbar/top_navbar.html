@@ -46,9 +46,7 @@
                     </small>
                 </div>
                 <div class="modal-body">
-                    <div class="datatables_wrapper">
-                        {{> tabular table=TabularTables.Connections class="table table-striped table-bordered table-hover" id="tblConnection"}}
-                    </div>
+                    {{> ReactiveDatatable tableData=reactiveDataFunction options=optionsObject tableId="tblConnection" }}
                     <button id="btnCreateNewConnection" type="button" class="btn btn-block btn-outline btn-primary"
                             data-toggle="modal"
                             data-target="#connectionCreateModal">Create New

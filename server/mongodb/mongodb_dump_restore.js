@@ -42,8 +42,8 @@ Meteor.methods({
             backup({
                 uri: connectionUrl,
                 root: path,
+                logger: true,
                 tar: fileName,
-                //stream :
                 callback: Meteor.bindEnvironment(function () {
                     var stats = fs.statSync(fullFilePath);
 

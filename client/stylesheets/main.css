@@ -9,11 +9,3 @@ tr.selected {
 .modal-dialog {
     width: 1000px !important;
 }
-
-.table.dataTable {
-    width: 100% !important;
-}
-
-div.dataTables_wrapper div.dataTables_processing {
-    visibility: hidden;
-}

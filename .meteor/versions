@@ -3,7 +3,6 @@ aldeed:collection2-core@1.0.0
 aldeed:schema-deny@1.0.1
 aldeed:schema-index@1.0.1
 aldeed:simple-schema@1.5.3
-aldeed:tabular@1.6.0
 arch:ace-editor@1.2.1
 autoupdate@1.2.4
 babel-compiler@5.8.24_1
@@ -29,6 +28,7 @@ ecmascript@0.1.6
 ecmascript-runtime@0.2.6
 ejson@1.0.7
 email@1.0.8
+ephemer:reactive-datatables-modified@1.1.0
 es5-shim@4.1.14
 fastclick@1.0.7
 fortawesome:fontawesome@4.5.0
