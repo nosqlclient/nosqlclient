@@ -254,11 +254,43 @@ Meteor.methods({
         var connectionOptions = getConnectionOptions();
         var mongodbApi = Meteor.npmRequire('mongodb').MongoClient;
 
+        console.log('Dropping database: ', connection);
         return Async.runSync(function (done) {
             mongodbApi.connect(connectionUrl, connectionOptions, function (err, db) {
                 db.dropDatabase(function (err, result) {
                     db.close();
                     done(err, result);
+                });
+            });
+        });
+    },
+
+    'dropAllCollections': function (connection) {
+        var connectionUrl = getConnectionUrl(connection);
+        var connectionOptions = getConnectionOptions();
+        var mongodbApi = Meteor.npmRequire('mongodb').MongoClient;
+
+        return Async.runSync(function (done) {
+            mongodbApi.connect(connectionUrl, connectionOptions, function (err, db) {
+                db.collections(function (err, collections) {
+                    collections.forEach(function (collection) {
+                        if (!collection.collectionName.startsWith('system')) {
+                            collection.drop(function (dropError, result) {
+                                if (dropError) {
+                                    console.log('[ERROR]', 'Could not drop collection: ' + collection.collectionName, dropError);
+                                }
+                                else {
+                                    console.log('[SUCCESS]', 'Dropped: ' + collection.collectionName);
+                                }
+                            });
+                        }
+                    });
+
+                    // TODO drop takes some time drop should be sync
+                    //if (db) {
+                    //    db.close();
+                    //}
+                    done(err, {});
                 });
             });
         });

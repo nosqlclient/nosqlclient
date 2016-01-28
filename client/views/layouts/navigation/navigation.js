@@ -4,6 +4,37 @@ Template.navigation.rendered = function () {
 };
 
 Template.navigation.events({
+    'click #btnDropAllCollections' : function (e) {
+        e.preventDefault();
+        swal({
+            title: "Are you sure?",
+            text: "All collections except system, will be dropped, are you sure ?",
+            type: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#DD6B55",
+            confirmButtonText: "Yes, drop them!",
+            closeOnConfirm: false
+        }, function () {
+            var connection = Connections.findOne({_id: Session.get(Template.strSessionConnection)});
+            Meteor.call('dropAllCollections', connection, function (err, result) {
+                if (err) {
+                    toastr.error("Couldn't drop collections: " + err.message);
+                    return;
+                }
+                if (result.error) {
+                    toastr.error("Couldn't drop collections: " + result.error.message);
+                    return;
+                }
+                Template.clearSessions();
+                swal({
+                    title: "Dropped!",
+                    text: "Successfuly dropped all collections for database " + connection.databaseName,
+                    type: "success"
+                });
+            });
+        });
+    },
+
     'click #btnDropDatabase': function (e) {
         e.preventDefault();
         swal({
