@@ -60,6 +60,6 @@ Template.findOneAndReplace.executeQuery = function () {
     }
 
     Meteor.call("findOneAndReplace", connection, selectedCollection, selector, replaceObject, options, function (err, result) {
-        Template.renderAfterQueryExecution(err, result);
+        Template.renderAfterQueryExecution(err, result, "findOneAndReplace");
     });
 };

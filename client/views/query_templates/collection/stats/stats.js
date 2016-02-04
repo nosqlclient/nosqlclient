@@ -30,7 +30,7 @@ Template.stats.executeQuery = function () {
     var options = Template.stats.getOptions();
 
     Meteor.call("stats", connection, selectedCollection, options, function (err, result) {
-        Template.renderAfterQueryExecution(err, result);
+        Template.renderAfterQueryExecution(err, result, "stats");
     });
 };
 

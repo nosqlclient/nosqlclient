@@ -17,6 +17,6 @@ Template.dropIndex.executeQuery = function () {
     var indexName = $('#inputIndexName').val();
 
     Meteor.call("dropIndex", connection, selectedCollection, indexName, function (err, result) {
-        Template.renderAfterQueryExecution(err, result);
+        Template.renderAfterQueryExecution(err, result, "dropIndex");
     });
 };

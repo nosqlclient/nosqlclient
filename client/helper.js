@@ -8,6 +8,7 @@ Template.strSessionSelectedQuery = 'selectedQuery';
 Template.strSessionSelectedOptions = "selectedOptions";
 Template.strSessionServerStatus = "serverStatus";
 Template.strSessionDBStats = "dbStats";
+Template.strSessionLastQueryInfo = "lastQueryInfo";
 
 Template.clearSessions = function () {
     Object.keys(Session.keys).forEach(function (key) {
@@ -15,7 +16,7 @@ Template.clearSessions = function () {
     })
 };
 
-Template.renderAfterQueryExecution = function (err, result) {
+Template.renderAfterQueryExecution = function (err, result, queryInfo) {
     if (err || result.error) {
         var errorMessage;
         if (err) {
@@ -29,7 +30,7 @@ Template.renderAfterQueryExecution = function (err, result) {
             toastr.error("Couldn't execute query, unknown reason ");
         }
     } else {
-        Template.browseCollection.setResult(result.result);
+        Template.browseCollection.setResult(result.result, queryInfo);
     }
 
     // stop loading animation

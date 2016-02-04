@@ -17,12 +17,14 @@ Template.pageHeading.helpers({
                 var errorMessage;
                 if (err) {
                     errorMessage = err.message;
-                } else {
+                }
+                else {
                     errorMessage = result.error.message;
                 }
                 if (errorMessage) {
                     toastr.error("Couldn't fetch connection information: " + errorMessage);
-                } else {
+                }
+                else {
                     toastr.error("Couldn't fetch connection information, unknown reason ");
                 }
                 // stop loading animation

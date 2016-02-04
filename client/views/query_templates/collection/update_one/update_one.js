@@ -48,7 +48,7 @@ Template.updateOne.executeQuery = function () {
     }
 
     Meteor.call("updateOne", connection, selectedCollection, selector, setObject, options, function (err, result) {
-        Template.renderAfterQueryExecution(err, result);
+        Template.renderAfterQueryExecution(err, result, "updateOne");
     });
 };
 

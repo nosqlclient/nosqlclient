@@ -275,7 +275,7 @@ Meteor.methods({
                 db.collections(function (err, collections) {
                     collections.forEach(function (collection) {
                         if (!collection.collectionName.startsWith('system')) {
-                            collection.drop(function (dropError, result) {
+                            collection.drop(function (dropError) {
                                 if (dropError) {
                                     console.log('[ERROR]', 'Could not drop collection: ' + collection.collectionName, dropError);
                                 }
@@ -286,7 +286,7 @@ Meteor.methods({
                         }
                     });
 
-                    // TODO drop takes some time drop should be sync
+                    // TODO drop takes some time it should be synced
                     //if (db) {
                     //    db.close();
                     //}

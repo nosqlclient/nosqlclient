@@ -23,9 +23,6 @@ Template.browseCollection.onRendered(function () {
 Template.browseCollection.events({
     'change #cmbQueries': function () {
         Session.set(Template.strSessionSelectedOptions, []);
-        $('#divJsonEditor').hide();
-        $('#divAceEditor').hide();
-
         var value = $('#cmbQueries').find(":selected").text();
         if (value) {
             Session.set(Template.strSessionSelectedQuery, value);
@@ -95,20 +92,22 @@ Template.browseCollection.helpers({
             default:
                 return '';
         }
+    },
+
+    'getLastQueryInfo': function () {
+        if (Session.get(Template.strSessionLastQueryInfo)) {
+            return Spacebars.SafeString(Session.get(Template.strSessionLastQueryInfo));
+        }
     }
 });
 
 Template.browseCollection.initExecuteQuery = function () {
-    // hide results
-    $('#divJsonEditor').hide();
-    $('#divAceEditor').hide();
-
     // loading button
     var l = $('#btnExecuteQuery').ladda();
     l.ladda('start');
 };
 
-Template.browseCollection.setResult = function (result) {
+Template.browseCollection.setResult = function (result, queryInfo) {
     // set json editor
     Template.browseCollection.getEditor().set(result);
 
@@ -125,12 +124,27 @@ Template.browseCollection.setResult = function (result) {
         editor.setValue(JSON.stringify(result, null, '\t'), -1);
     });
 
-    var settings = Settings.findOne();
-    if (settings.defaultResultView == 'Jsoneditor') {
-        $('#divJsonEditor').show('slow');
+    var jsonEditor = $('#divJsonEditor');
+    var aceEditor = $('#divAceEditor');
+    if (jsonEditor.css('display') == 'none' && aceEditor.css('display') == 'none') {
+        var settings = Settings.findOne();
+        if (settings.defaultResultView == 'Jsoneditor') {
+            jsonEditor.show('slow');
+        }
+        else {
+            aceEditor.show('slow');
+        }
     }
-    else {
-        $('#divAceEditor').show('slow');
+
+    if (queryInfo != undefined) {
+        var collectionName = "admin";
+        if (Session.get(Template.strSessionSelectedCollection)) {
+            collectionName = Session.get(Template.strSessionSelectedCollection);
+        }
+        var info = "<strong>" + queryInfo + "</strong>, it was ";
+        info += "<strong>on</strong> " + collectionName + " and ";
+        info += "<strong>at</strong> " + moment(new Date()).format('HH:mm:ss');
+        Session.set(Template.strSessionLastQueryInfo, info);
     }
 };
 

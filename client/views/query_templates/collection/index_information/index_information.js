@@ -14,6 +14,6 @@ Template.indexInformation.executeQuery = function () {
     var fullVal = $('#divFullInformation').iCheck('update')[0].checked;
 
     Meteor.call("indexInformation", connection, selectedCollection, fullVal, function (err, result) {
-        Template.renderAfterQueryExecution(err, result);
+        Template.renderAfterQueryExecution(err, result, "indexInformation");
     });
 };

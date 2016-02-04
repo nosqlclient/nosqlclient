@@ -7,6 +7,6 @@ Template.reIndex.executeQuery = function () {
     var selectedCollection = Session.get(Template.strSessionSelectedCollection);
 
     Meteor.call("reIndex", connection, selectedCollection, function (err, result) {
-        Template.renderAfterQueryExecution(err, result);
+        Template.renderAfterQueryExecution(err, result,"reIndex");
     });
 };

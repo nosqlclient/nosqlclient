@@ -40,6 +40,6 @@ Template.geoHaystackSearch.executeQuery = function () {
     }
 
     Meteor.call("geoHaystackSearch", connection, selectedCollection, xAxis, yAxis, options, function (err, result) {
-        Template.renderAfterQueryExecution(err, result);
+        Template.renderAfterQueryExecution(err, result,"geoHaystackSearch");
     });
 };

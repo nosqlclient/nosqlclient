@@ -13,6 +13,6 @@ Template.removeUser.executeQuery = function () {
     }
 
     Meteor.call("removeUser", connection, username, function (err, result) {
-        Template.renderAfterQueryExecution(err, result);
+        Template.renderAfterQueryExecution(err, result, "removeUser");
     });
 };

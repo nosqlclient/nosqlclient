@@ -15,6 +15,6 @@ Template.count.executeQuery = function () {
     }
 
     Meteor.call("count", connection, selectedCollection, selector, function (err, result) {
-        Template.renderAfterQueryExecution(err, result);
+        Template.renderAfterQueryExecution(err, result, "count");
     });
 };

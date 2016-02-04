@@ -61,6 +61,6 @@ Template.mapReduce.executeQuery = function () {
     }
 
     Meteor.call("mapReduce", connection, selectedCollection, map, reduce, options, function (err, result) {
-        Template.renderAfterQueryExecution(err, result);
+        Template.renderAfterQueryExecution(err, result, "mapReduce");
     });
 };

@@ -32,7 +32,7 @@ Template.rename.executeQuery = function () {
 
     if (newName) {
         Meteor.call("rename", connection, selectedCollection, newName, options, function (err, result) {
-            Template.renderAfterQueryExecution(err, result);
+            Template.renderAfterQueryExecution(err, result, "rename");
             if (err == undefined && result.error == undefined) {
                 Template.rename.renderCollectionnames(newName);
             }
@@ -41,7 +41,6 @@ Template.rename.executeQuery = function () {
     else {
         toastr.error("Please enter new name !");
         Ladda.stopAll();
-        return;
     }
 };
 
