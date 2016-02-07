@@ -23,8 +23,6 @@ Template.adminQueries.onRendered(function () {
 Template.adminQueries.events({
     'change #cmbAdminQueries': function () {
         Session.set(Template.strSessionSelectedOptions, []);
-        $('#divJsonEditor').hide();
-        $('#divAceEditor').hide();
 
         var value = $('#cmbAdminQueries').find(":selected").text();
         if (value) {
@@ -102,10 +100,6 @@ Template.adminQueries.helpers({
 });
 
 Template.adminQueries.initExecuteQuery = function () {
-    // hide results
-    $('#divJsonEditor').hide();
-    $('#divAceEditor').hide();
-
     // loading button
     var l = $('#btnExecuteAdminQuery').ladda();
     l.ladda('start');
@@ -128,17 +122,21 @@ Template.adminQueries.setResult = function (result) {
         editor.setValue(JSON.stringify(result, null, '\t'), -1);
     });
 
-    var settings = Settings.findOne();
-    if (settings.defaultResultView == 'Jsoneditor') {
-        $('#divJsonEditor').show('slow');
-    }
-    else {
-        $('#divAceEditor').show('slow');
+    var jsonEditor = $('#divJsonEditor');
+    var aceEditor = $('#divAceEditor');
+    if (jsonEditor.css('display') == 'none' && aceEditor.css('display') == 'none') {
+        var settings = Settings.findOne();
+        if (settings.defaultResultView == 'Jsoneditor') {
+            jsonEditor.show('slow');
+        }
+        else {
+            aceEditor.show('slow');
+        }
     }
 };
 
 var jsonEditor;
-Template.browseCollection.getEditor = function () {
+Template.adminQueries.getEditor = function () {
     if ($('.jsoneditor').length == 0) {
         jsonEditor = new JSONEditor(document.getElementById('jsoneditor'), {
             mode: 'tree',

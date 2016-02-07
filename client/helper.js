@@ -8,7 +8,8 @@ Template.strSessionSelectedQuery = 'selectedQuery';
 Template.strSessionSelectedOptions = "selectedOptions";
 Template.strSessionServerStatus = "serverStatus";
 Template.strSessionDBStats = "dbStats";
-Template.strSessionLastQueryInfo = "lastQueryInfo";
+Template.strSessionUsedTabIDs = "usedTabIDs";
+Template.strSessionActiveTabID = "activeTabID";
 
 Template.clearSessions = function () {
     Object.keys(Session.keys).forEach(function (key) {
@@ -16,7 +17,7 @@ Template.clearSessions = function () {
     })
 };
 
-Template.renderAfterQueryExecution = function (err, result, queryInfo) {
+Template.renderAfterQueryExecution = function (err, result, queryInfo, isAdmin) {
     if (err || result.error) {
         var errorMessage;
         if (err) {
@@ -30,7 +31,12 @@ Template.renderAfterQueryExecution = function (err, result, queryInfo) {
             toastr.error("Couldn't execute query, unknown reason ");
         }
     } else {
-        Template.browseCollection.setResult(result.result, queryInfo);
+        if (isAdmin) {
+            Template.adminQueries.setResult(result.result, queryInfo);
+        } else {
+            Template.browseCollection.setResult(result.result, queryInfo);
+        }
+
     }
 
     // stop loading animation

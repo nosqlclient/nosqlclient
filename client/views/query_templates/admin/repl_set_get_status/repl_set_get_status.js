@@ -6,6 +6,6 @@ Template.replSetGetStatus.executeQuery = function () {
     var connection = Connections.findOne({_id: Session.get(Template.strSessionConnection)});
 
     Meteor.call("replSetGetStatus", connection, function (err, result) {
-        Template.renderAfterQueryExecution(err, result, "replSetGetStatus");
+        Template.renderAfterQueryExecution(err, result, "replSetGetStatus", true);
     });
 };

@@ -23,6 +23,7 @@ Template.browseCollection.onRendered(function () {
 Template.browseCollection.events({
     'change #cmbQueries': function () {
         Session.set(Template.strSessionSelectedOptions, []);
+
         var value = $('#cmbQueries').find(":selected").text();
         if (value) {
             Session.set(Template.strSessionSelectedQuery, value);
@@ -30,21 +31,31 @@ Template.browseCollection.events({
     },
 
     'click #btnSwitchView': function () {
-        var jsonView = $('#divJsonEditor');
-        var aceView = $('#divAceEditor');
+        var jsonViews = $('div[id^="divActiveJsonEditor"]');
+        var aceViews = $('div[id^="divActiveAceEditor"]');
 
-        if (jsonView.css('display') == 'none' && aceView.css('display') == 'none') {
-            return;
-        }
+        var whichIsDisplayed = Template.browseCollection.getWhichResultViewShowing();
 
-        if (jsonView.css('display') == 'none') {
-            aceView.hide();
-            jsonView.show('slow');
-        } else {
-            jsonView.hide();
-            aceView.show('slow');
+        if (whichIsDisplayed != 'none') {
+            if (whichIsDisplayed == 'jsonEditor') {
+                aceViews.each(function () {
+                    $(this).show('slow');
+                });
+                jsonViews.each(function () {
+                    $(this).hide();
+                });
+            }
+            else {
+                jsonViews.each(function () {
+                    $(this).show('slow');
+                });
+                aceViews.each(function () {
+                    $(this).hide();
+                });
+            }
         }
     },
+
     'click #btnExecuteQuery': function () {
         var queryTemplate = Session.get(Template.strSessionSelectedQuery);
         if (queryTemplate) {
@@ -54,6 +65,26 @@ Template.browseCollection.events({
         }
     }
 });
+
+Template.browseCollection.getWhichResultViewShowing = function () {
+    var jsonViews = $('div[id^="divActiveJsonEditor"]');
+    var aceViews = $('div[id^="divActiveAceEditor"]');
+
+    var whichIsDisplayed = 'none';
+    jsonViews.each(function () {
+        if ($(this).css('display') != 'none') {
+            whichIsDisplayed = 'jsonEditor';
+        }
+    });
+
+    aceViews.each(function () {
+        if ($(this).css('display') != 'none') {
+            whichIsDisplayed = 'aceEditor';
+        }
+    });
+
+    return whichIsDisplayed;
+};
 
 Template.browseCollection.helpers({
     'getQueryTemplate': function () {
@@ -92,13 +123,8 @@ Template.browseCollection.helpers({
             default:
                 return '';
         }
-    },
-
-    'getLastQueryInfo': function () {
-        if (Session.get(Template.strSessionLastQueryInfo)) {
-            return Spacebars.SafeString(Session.get(Template.strSessionLastQueryInfo));
-        }
     }
+
 });
 
 Template.browseCollection.initExecuteQuery = function () {
@@ -108,11 +134,56 @@ Template.browseCollection.initExecuteQuery = function () {
 };
 
 Template.browseCollection.setResult = function (result, queryInfo) {
-    // set json editor
-    Template.browseCollection.getEditor().set(result);
+    var jsonEditor = $('#divActiveJsonEditor');
+    var aceEditor = $('#divActiveAceEditor');
+    var settings = Settings.findOne();
 
-    // set ace editor
-    AceEditor.instance('aceeditor', {
+    if (jsonEditor.css('display') == 'none' && aceEditor.css('display') == 'none') {
+        // there's only one tab, set results
+        if (settings.defaultResultView == 'Jsoneditor') {
+            jsonEditor.show('slow');
+        }
+        else {
+            aceEditor.show('slow');
+        }
+        Template.browseCollection.setResultToEditors(1, result);
+    }
+    else {
+        // open a new tab
+        var tabID = Template.browseCollection.clarifyTabID();
+        var tabContent = Template.browseCollection.getResultTabContent(tabID, settings.defaultResultView, queryInfo);
+        queryInfo = queryInfo + " - " + Session.get(Template.strSessionSelectedCollection);
+        Template.browseCollection.setAllTabsInactive();
+        var resultTabs = $('#resultTabs');
+
+        // set tab href
+        resultTabs.append(
+            $('<li><a href="#tab-' + tabID + '" data-toggle="tab"><i class="fa fa-book"></i>' + queryInfo +
+                '<button class="close" type="button" title="Close">×</button></a></li>'));
+
+        // set tab content
+        $('#resultTabContents').append(tabContent);
+
+        // set onclose
+        resultTabs.on('click', '.close', function () {
+            var tabID = $(this).parents('a').attr('href');
+            $(this).parents('li').remove();
+            $(tabID).remove();
+        });
+
+        // show last tab
+        var lastTab = $('#resultTabs a:last');
+        lastTab.tab('show');
+
+        Template.browseCollection.setResultToEditors(tabID, result);
+    }
+};
+
+Template.browseCollection.setResultToEditors = function (tabID, result) {
+    // set json editor
+    Template.browseCollection.getEditor(tabID).set(result);
+
+    AceEditor.instance('activeAceEditor', {
         mode: 'javascript',
         theme: 'dawn'
     }, function (editor) {
@@ -123,39 +194,92 @@ Template.browseCollection.setResult = function (result, queryInfo) {
         });
         editor.setValue(JSON.stringify(result, null, '\t'), -1);
     });
-
-    var jsonEditor = $('#divJsonEditor');
-    var aceEditor = $('#divAceEditor');
-    if (jsonEditor.css('display') == 'none' && aceEditor.css('display') == 'none') {
-        var settings = Settings.findOne();
-        if (settings.defaultResultView == 'Jsoneditor') {
-            jsonEditor.show('slow');
-        }
-        else {
-            aceEditor.show('slow');
-        }
-    }
-
-    if (queryInfo != undefined) {
-        var collectionName = "admin";
-        if (Session.get(Template.strSessionSelectedCollection)) {
-            collectionName = Session.get(Template.strSessionSelectedCollection);
-        }
-        var info = "<strong>" + queryInfo + "</strong>, it was ";
-        info += "<strong>on</strong> " + collectionName + " and ";
-        info += "<strong>at</strong> " + moment(new Date()).format('HH:mm:ss');
-        Session.set(Template.strSessionLastQueryInfo, info);
-    }
 };
 
-var jsonEditor;
-Template.browseCollection.getEditor = function () {
-    if ($('.jsoneditor').length == 0) {
-        jsonEditor = new JSONEditor(document.getElementById('jsoneditor'), {
+Template.browseCollection.clarifyTabID = function () {
+    var result = 1;
+    var tabIDArray = Session.get(Template.strSessionUsedTabIDs);
+    if (tabIDArray == undefined || tabIDArray.length == 0) {
+        tabIDArray = [result];
+        Session.set(Template.strSessionUsedTabIDs, tabIDArray);
+        return result;
+    }
+
+    result = tabIDArray[tabIDArray.length - 1] + 1;
+
+    tabIDArray.push(result);
+    Session.set(Template.strSessionUsedTabIDs, tabIDArray);
+    return result;
+};
+
+Template.browseCollection.setAllTabsInactive = function () {
+    $('#resultTabContents').each(function () {
+        var otherTab = $(this);
+        otherTab.removeClass('active');
+        if (otherTab.find('#divActiveJsonEditor').length != 0) {
+            // set all tabs different IDs to prevent setting result to existing editor.
+            var uniqueID = new Date().getTime();
+            otherTab.find('#divActiveJsonEditor').attr('id', 'divActiveJsonEditor-' + uniqueID);
+            otherTab.find('#activeJsonEditor').attr('id', 'activeJsonEditor-' + uniqueID);
+            otherTab.find('#divActiveAceEditor').attr('id', 'divActiveAceEditor-' + uniqueID);
+            otherTab.find('#activeAceEditor').attr('id', 'activeAceEditor-' + uniqueID);
+        }
+    });
+};
+
+Template.browseCollection.getResultTabContent = function (tabID, defaultView) {
+    var jsonEditorHtml = '<div class="tab-pane fade in active" id="tab-' + tabID + '">' +
+        '<div id="divActiveJsonEditor" class="form-group"> ' +
+        '<div id="activeJsonEditor" style="width: 100%;height:500px" class="col-lg-12"> ' +
+        '</div> </div> ' +
+        '<div id="divActiveAceEditor" class="form-group" style="display: none"> ' +
+        '<div class="col-lg-12"> ' +
+        '<pre id="activeAceEditor" style="height: 500px"></pre> ' +
+        '</div> </div> </div>';
+
+    var aceEditorHtml = '<div class="tab-pane fade in active" id="tab-' + tabID + '">' +
+        '<div id="divActiveJsonEditor" class="form-group" style="display:none;"> ' +
+        '<div id="activeJsonEditor" style="width: 100%;height:500px" class="col-lg-12"> ' +
+        '</div> </div> ' +
+        '<div id="divActiveAceEditor" class="form-group"> ' +
+        '<div class="col-lg-12"> ' +
+        '<pre id="activeAceEditor" style="height: 500px"></pre> ' +
+        '</div> </div> </div>';
+
+    var whichIsDisplayed = Template.browseCollection.getWhichResultViewShowing();
+    var result;
+
+    if (whichIsDisplayed == 'none') {
+        var defaultIsAce = (defaultView == 'Jsoneditor') ? false : true;
+        if (!defaultIsAce) {
+            result = jsonEditorHtml;
+        } else {
+            result = aceEditorHtml;
+        }
+    }
+    else {
+        if (whichIsDisplayed == 'jsonEditor') {
+            result = jsonEditorHtml;
+        }
+        else {
+            result = aceEditorHtml;
+        }
+    }
+
+    return result;
+};
+
+Template.browseCollection.getEditor = function (tabID) {
+    var tabView = $('#tab-' + tabID);
+    if (!tabView.data('jsoneditor')) {
+        var jsonEditor = new JSONEditor(document.getElementById('activeJsonEditor'), {
             mode: 'tree',
             modes: ['code', 'form', 'text', 'tree', 'view'],
             search: true
         });
+
+        tabView.data('jsoneditor', jsonEditor);
     }
-    return jsonEditor;
+
+    return tabView.data('jsoneditor');
 };

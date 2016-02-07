@@ -9,3 +9,13 @@ tr.selected {
 .modal-dialog {
     width: 1000px !important;
 }
+
+.tab-pane {
+    margin-top: 10px;
+}
+
+.close {
+    position: absolute;
+    right: 0;
+    top: 0;
+}
