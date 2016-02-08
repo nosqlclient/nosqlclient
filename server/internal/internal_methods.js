@@ -6,6 +6,7 @@ Meteor.methods({
         Dumps.update({_id: dump._id}, {
             $set: {
                 connectionName: dump.connectionName,
+                connectionId: dump.connectionId,
                 date: dump.date,
                 sizeInBytes: dump.sizeInBytes,
                 filePath: dump.filePath,

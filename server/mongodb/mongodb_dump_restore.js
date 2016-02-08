@@ -51,6 +51,7 @@ Meteor.methods({
                         filePath: fullFilePath,
                         date: date,
                         connectionName: connection.name,
+                        connectionId: connection._id,
                         sizeInBytes: stats["size"],
                         status: DUMP_STATUS.NOT_IMPORTED
                     };
