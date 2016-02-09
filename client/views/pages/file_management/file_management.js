@@ -7,4 +7,26 @@ Template.fileManagement.onRendered(function () {
         return;
     }
 
+    var selector = $('#tblFiles');
+    selector.addClass('table-bordered table-hover');
+    selector.find('tbody').on('click', 'tr', function () {
+
+        var table = selector.DataTable();
+
+        if ($(this).hasClass('selected')) {
+            $(this).removeClass('selected');
+        }
+        else {
+            table.$('tr.selected').removeClass('selected');
+            $(this).addClass('selected');
+        }
+    });
+});
+
+Template.fileManagement.helpers({
+    'getFiles': function () {
+        return function () {
+
+        };
+    },
 });
