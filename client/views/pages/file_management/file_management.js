@@ -33,7 +33,7 @@ Template.fileManagement.initFileInformations = function () {
     var l = $('#btnReloadFiles').ladda();
     l.ladda('start');
     var connection = Connections.findOne({_id: Session.get(Template.strSessionConnection)});
-    Meteor.call('getFileInfos', connection, 'fs', function (err, result) {
+    Meteor.call('getFileInfos', connection, $('#txtBucketName').val(), function (err, result) {
             if (err) {
                 toastr.error("Couldn't drop database: " + err.message);
                 Ladda.stopAll();
