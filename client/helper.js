@@ -1,10 +1,10 @@
 /**
  * Created by RSercan on 26.12.2015.
  */
-Template.strSessionConnection = 'connection';
-Template.strSessionCollectionNames = 'collectionNames';
-Template.strSessionSelectedCollection = 'selectedCollection';
-Template.strSessionSelectedQuery = 'selectedQuery';
+Template.strSessionConnection = "connection";
+Template.strSessionCollectionNames = "collectionNames";
+Template.strSessionSelectedCollection = "selectedCollection";
+Template.strSessionSelectedQuery = "selectedQuery";
 Template.strSessionSelectedOptions = "selectedOptions";
 Template.strSessionServerStatus = "serverStatus";
 Template.strSessionDBStats = "dbStats";
