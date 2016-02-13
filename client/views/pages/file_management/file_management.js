@@ -11,13 +11,18 @@ Template.fileManagement.onRendered(function () {
 
     var selector = $('#tblFiles');
     selector.find('tbody').on('click', 'tr', function () {
+        var table = selector.DataTable();
 
         if ($(this).hasClass('selected')) {
             $(this).removeClass('selected');
         }
         else {
-            selector.DataTable().$('tr.selected').removeClass('selected');
+            table.$('tr.selected').removeClass('selected');
             $(this).addClass('selected');
+        }
+
+        if (table.row(this).data()) {
+            Session.set(Template.strSessionSelectedFile, table.row(this).data());
         }
     });
 });
@@ -25,6 +30,19 @@ Template.fileManagement.onRendered(function () {
 Template.fileManagement.events({
     'click #btnReloadFiles': function () {
         Template.fileManagement.initFileInformations();
+    },
+
+    'click .editor_download': function (e) {
+        e.preventDefault();
+        var fileRow = Session.get(Template.strSessionSelectedFile);
+        if (fileRow) {
+            window.open(Router.url('download', {
+                fileId: fileRow._id,
+                connectionId: Session.get(Template.strSessionConnection),
+                bucketName: $('#txtBucketName').val(),
+                fileName: fileRow.filename
+            }));
+        }
     }
 });
 
@@ -45,12 +63,13 @@ Template.fileManagement.initFileInformations = function () {
                 return;
             }
 
+            var tblFiles = $('#tblFiles');
             // destroy jquery datatable to prevent reinitialization (https://datatables.net/manual/tech-notes/3)
             if ($.fn.dataTable.isDataTable('#tblFiles')) {
-                $('#tblFiles').DataTable().destroy();
+                tblFiles.DataTable().destroy();
             }
 
-            $('#tblFiles').DataTable({
+            tblFiles.DataTable({
                 data: result.result,
                 columns: [
                     {data: "_id", "width": "15%"},

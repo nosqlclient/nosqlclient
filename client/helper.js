@@ -10,6 +10,8 @@ Template.strSessionServerStatus = "serverStatus";
 Template.strSessionDBStats = "dbStats";
 Template.strSessionUsedTabIDs = "usedTabIDs";
 Template.strSessionActiveTabID = "activeTabID";
+Template.strSessionSelectedDump = "selectedDump";
+Template.strSessionSelectedFile = "selectedFile";
 
 Template.clearSessions = function () {
     Object.keys(Session.keys).forEach(function (key) {

@@ -20,6 +20,10 @@ Template.databaseDumpRestore.onRendered(function () {
             table.$('tr.selected').removeClass('selected');
             $(this).addClass('selected');
         }
+
+        if (table.row(this).data()) {
+            Session.set(Template.strSessionSelectedDump, table.row(this).data());
+        }
     });
 
 });
@@ -48,9 +52,7 @@ Template.databaseDumpRestore.events({
     'click .editor_import': function (e) {
         e.preventDefault();
         var connection = Connections.findOne({_id: Session.get(Template.strSessionConnection)});
-        var table = $('#tblDumps').DataTable();
-
-        if (table.row(this).data()) {
+        if (Session.get(Template.strSessionSelectedDump)) {
             swal({
                 title: "Are you sure?",
                 text: "All collections will be dropped, and restored !",
@@ -63,7 +65,7 @@ Template.databaseDumpRestore.events({
                 var laddaButton = $('#btnTakeDump').ladda();
                 laddaButton.ladda('start');
 
-                var dumpInfo = table.row(this).data();
+                var dumpInfo = Session.get(Template.strSessionSelectedDump);
                 dumpInfo.status = DUMP_STATUS.IN_PROGRESS;
                 Meteor.call('updateDump', dumpInfo); // this is a simple update to notify user on UI
                 Meteor.call('restoreDump', connection, dumpInfo, function (err) {
