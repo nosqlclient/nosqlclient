@@ -1,0 +1,61 @@
+<template name="fileInfo">
+    <div class="modal inmodal" id="fileInfoModal" tabindex="-1" role="dialog" aria-hidden="true"
+         style="display: none;">
+        <div class="modal-dialog">
+            <div class="modal-content animated flipInY">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span><span
+                            class="sr-only">Close</span></button>
+                    <h4 class="modal-title">Additional File Information</h4>
+                    <small class="font-bold">metadata,contenttype and aliases
+                    </small>
+                </div>
+                <div class="modal-body">
+                    <form method="get" class="form-horizontal">
+                        <div class="form-group">
+                            <label class="col-lg-2 control-label">Content Type</label>
+                            <div class="col-lg-10">
+                                <input id="inputContentType" type="text" class="form-control">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-lg-2 control-label">Metadata</label>
+                            <div class="col-lg-10">
+                                <pre class="form-control" id='aceMetaData'></pre>
+            <span class="help-block m-b-none">You can use <strong>string</strong> to keep <strong>ISODate</strong> and <strong>ObjectID</strong>, date format is <strong>YYYY-MM-DD
+                HH:mm:ss</strong></span>
+                            </div>
+                        </div>
+
+                        <div class="form-group"><label class="col-lg-2 control-label">Alias</label>
+                            <div class="col-lg-10">
+                                <div class="input-group m-b"><input id="inputAlias" type="text" class="form-control"> <span
+                                        class="input-group-btn"> <button id="btnAddAlias" type="button"
+                                                                         class="btn btn-primary">Add
+                                </button> </span></div>
+
+                                <div class="col-lg-4 m-l-n">
+                                    <select id="selectAliases" class="form-control" multiple="">
+                                    </select>
+                                </div>
+
+                                <div class="col-lg-2 m-l-n">
+                                    <button id="btnRemoveAlias" type="button"
+                                            class="btn btn-primary">Remove
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <div class="pull-left">
+                        <button type="button" class="btn btn-white" data-dismiss="modal">Close</button>
+                    </div>
+                    <button id="btnKeepUploading" type="button" class="btn btn-primary">Submit</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</template>

@@ -150,7 +150,6 @@ Template.initializeAceEditor = function (id, evt) {
             editor.commands.bindKey("Enter|Shift-Enter", evt);
         }
     });
-
 };
 
 Template.registerHelper('isOptionSelected', function (option) {
