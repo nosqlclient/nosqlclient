@@ -56,7 +56,7 @@ var convertDatesToString = function (obj) {
             }
             else {
                 if (Object.prototype.toString.call(obj[property]) === '[object Date]') {
-                    obj[property] = moment(obj[property]).format('YYYY-MM-DD HH:mm:ss.SSS');
+                    obj[property] = moment(obj[property]).format('YYYY-MM-DD HH:mm:ss');
                 }
             }
         }

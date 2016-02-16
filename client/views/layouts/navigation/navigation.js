@@ -4,7 +4,7 @@ Template.navigation.rendered = function () {
 };
 
 Template.navigation.events({
-    'click #btnDropAllCollections' : function (e) {
+    'click #btnDropAllCollections': function (e) {
         e.preventDefault();
         swal({
             title: "Are you sure?",
@@ -66,15 +66,8 @@ Template.navigation.events({
         });
     },
 
-    'click #aDatabaseDumpRestore': function () {
-        Template.navigation.handleNavigationAndSessions();
-    },
 
-    'click #aAdminQueries': function () {
-        Template.navigation.handleNavigationAndSessions();
-    },
-
-    'click #aDatabaseStats': function () {
+    'click .aNavigations': function () {
         Template.navigation.handleNavigationAndSessions();
     },
 

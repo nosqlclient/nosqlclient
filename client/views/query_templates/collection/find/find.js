@@ -22,8 +22,8 @@ Template.find.executeQuery = function () {
     var connection = Connections.findOne({_id: Session.get(Template.strSessionConnection)});
     var selectedCollection = Session.get(Template.strSessionSelectedCollection);
     var cursorOptions = Template.cursorOptions.getCursorOptions();
-    var selector = ace.edit("aceSelector").getSession().getValue();
     var maxAllowedFetchSize = Math.round(Settings.findOne().maxAllowedFetchSize * 100) / 100;
+    var selector = ace.edit("aceSelector").getSession().getValue();
 
     selector = Template.convertAndCheckJSON(selector);
     if (selector["ERROR"]) {

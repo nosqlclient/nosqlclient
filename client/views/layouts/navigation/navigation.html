@@ -38,14 +38,14 @@
                 </li>
                 {{#if isConnected}}
                     <li class="{{isActiveRoute regex='databaseStats|home'}}">
-                        <a id="aDatabaseStats" href="{{pathFor route='databaseStats'}}"><i
+                        <a class="aNavigations" href="{{pathFor route='databaseStats'}}"><i
                                 class="fa fa-eye"></i> <span
                                 class="nav-label">Database Stats</span>
                         </a>
                     </li>
 
                     <li class="{{isActiveRoute regex='databaseDumpRestore'}}">
-                        <a id="aDatabaseDumpRestore" href="{{pathFor route='databaseDumpRestore'}}"><i
+                        <a class="aNavigations" href="{{pathFor route='databaseDumpRestore'}}"><i
                                 class="fa fa-download"></i> <span
                                 class="nav-label">Database Dump/Restore</span>
                             <span class="pull-right label label-primary">BETA</span>
@@ -53,14 +53,21 @@
                     </li>
 
                     <li class="{{isActiveRoute regex='fileManagement'}}">
-                        <a id="aDatabaseDumpRestore" href="{{pathFor route='fileManagement'}}"><i
+                        <a class="aNavigations" href="{{pathFor route='fileManagement'}}"><i
                                 class="fa fa-file"></i> <span
                                 class="nav-label">File Management</span>
                         </a>
                     </li>
 
+                    <li class="{{isActiveRoute regex='editDocument'}}">
+                        <a class="aNavigations" href="{{pathFor route='editDocument'}}"><i
+                                class="fa fa-edit"></i> <span
+                                class="nav-label">Easy Edit</span>
+                        </a>
+                    </li>
+
                     <li class="{{isActiveRoute regex='adminQueries'}}">
-                        <a id="aAdminQueries" href="{{pathFor route='adminQueries'}}"><i
+                        <a class="aNavigations" href="{{pathFor route='adminQueries'}}"><i
                                 class="fa fa-key"></i> <span
                                 class="nav-label">Admin Queries</span>
                         </a>
