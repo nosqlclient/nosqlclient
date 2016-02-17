@@ -15,7 +15,25 @@ Template.editDocument.events({
     'click #btnFetchDocument': function (e) {
         e.preventDefault();
         Template.editDocument.fetchDocument();
+    },
+
+    'click #btnSaveDocument': function (e) {
+        e.preventDefault();
+        swal({
+            title: "Are you sure ?",
+            text: "This document will be overwritten, are you sure ?",
+            type: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#DD6B55",
+            confirmButtonText: "Yes!",
+            cancelButtonText: "No"
+        }, function (isConfirm) {
+            if (isConfirm) {
+                Template.editDocument.saveDocument();
+            }
+        });
     }
+
 });
 
 Template.editDocument.initializeCollectionsCombobox = function () {
@@ -37,6 +55,7 @@ Template.editDocument.initializeResultArea = function (result) {
 
     if (divResult.css('display') == 'none') {
         divResult.show();
+        $('#divFooter').show();
     }
 
     var codeMirror;
@@ -46,7 +65,7 @@ Template.editDocument.initializeResultArea = function (result) {
             theme: "neat",
             lineNumbers: true
         });
-        codeMirror.setSize('%100', 450);
+        codeMirror.setSize('%100', 400);
         divResult.data('editor', codeMirror);
     } else {
         codeMirror = divResult.data('editor');
@@ -55,13 +74,47 @@ Template.editDocument.initializeResultArea = function (result) {
     codeMirror.getDoc().setValue(result);
 };
 
+Template.editDocument.saveDocument = function () {
+    var l = $('#btnSaveDocument').ladda();
+    l.ladda('start');
+
+    var connection = Connections.findOne({_id: Session.get(Template.strSessionConnection)});
+    var collectionName = $('#cmbCollections').find(":selected").text();
+    var idQuery = {_id: Session.get(Template.strSessionEasyEditID)};
+    var setValue = $('#divResult').data('editor').getValue();
+
+    setValue = Template.convertAndCheckJSON(setValue);
+    if (setValue["ERROR"]) {
+        toastr.error("Syntax error on document: " + setValue["ERROR"]);
+        Ladda.stopAll();
+        return;
+    }
+    // remove id just in case
+    delete setValue._id;
+
+    setValue = {"$set": setValue};
+    Meteor.call('updateOne', connection, collectionName, idQuery, setValue, function (err) {
+        if (err) {
+            toastr.error("Couldn't update: " + err.message);
+        } else {
+            toastr.success('Successfuly updated !');
+        }
+
+        Ladda.stopAll();
+    });
+};
+
 Template.editDocument.fetchDocument = function () {
+    var l = $('#btnFetchDocument').ladda();
+    l.ladda('start');
+
     var collectionName = $('#cmbCollections').find(":selected").text();
     var selector = ace.edit("aceSelector").getSession().getValue();
     var connection = Connections.findOne({_id: Session.get(Template.strSessionConnection)});
 
     if (!collectionName) {
         toastr.warning('Please select a collection first !');
+        Ladda.stopAll();
         return;
     }
 
@@ -85,11 +138,27 @@ Template.editDocument.fetchDocument = function () {
             } else {
                 toastr.error("Couldn't fetch document, unknown reason ");
             }
+
+            var divResult = $('#divResult');
+            if (divResult.css('display') != 'none') {
+                divResult.hide();
+                $('#divFooter').hide();
+            }
+        }
+        else if (!result.result) {
+            toastr.error("There's no matched document");
+            var divResult = $('#divResult');
+            if (divResult.css('display') != 'none') {
+                divResult.hide();
+                $('#divFooter').hide();
+            }
         }
         else {
             Template.editDocument.initializeResultArea(JSON.stringify(result.result, null, '\t'));
+            Session.set(Template.strSessionEasyEditID, result.result._id);
         }
 
+        Ladda.stopAll();
     });
 
 };
