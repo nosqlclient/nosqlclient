@@ -9,6 +9,7 @@ Template.editDocument.onRendered(function () {
 
     Template.editDocument.initializeCollectionsCombobox();
     Template.initializeAceEditor('aceSelector', Template.editDocument.fetchDocument);
+    Session.set(Template.strSessionEasyEditID, undefined);
 });
 
 Template.editDocument.events({
@@ -30,6 +31,23 @@ Template.editDocument.events({
         }, function (isConfirm) {
             if (isConfirm) {
                 Template.editDocument.saveDocument();
+            }
+        });
+    },
+
+    'click #btnDeleteDocument': function (e) {
+        e.preventDefault();
+        swal({
+            title: "Are you sure ?",
+            text: "This document will be deleted, are you sure ?",
+            type: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#DD6B55",
+            confirmButtonText: "Yes!",
+            cancelButtonText: "No"
+        }, function (isConfirm) {
+            if (isConfirm) {
+                Template.editDocument.deleteDocument();
             }
         });
     }
@@ -63,7 +81,16 @@ Template.editDocument.initializeResultArea = function (result) {
         codeMirror = CodeMirror.fromTextArea(document.getElementById('txtDocument'), {
             mode: "javascript",
             theme: "neat",
-            lineNumbers: true
+            styleActiveLine: true,
+            lineNumbers: true,
+            lineWrapping: false,
+            extraKeys: {
+                "Ctrl-Q": function (cm) {
+                    cm.foldCode(cm.getCursor());
+                }
+            },
+            foldGutter: true,
+            gutters: ["CodeMirror-linenumbers", "CodeMirror-foldgutter"]
         });
         codeMirror.setSize('%100', 400);
         divResult.data('editor', codeMirror);
@@ -72,6 +99,35 @@ Template.editDocument.initializeResultArea = function (result) {
     }
 
     codeMirror.getDoc().setValue(result);
+};
+
+Template.editDocument.deleteDocument = function () {
+    var l = $('#btnDeleteDocument').ladda();
+    l.ladda('start');
+
+    var connection = Connections.findOne({_id: Session.get(Template.strSessionConnection)});
+    var collectionName = $('#cmbCollections').find(":selected").text();
+    var idQuery = {_id: Session.get(Template.strSessionEasyEditID)};
+
+    Meteor.call('delete', connection, collectionName, idQuery, function (err, result) {
+        if (err) {
+            toastr.error("Couldn't delete: " + err.message);
+        }
+        else if (result.result.result.ok == 1) {
+            toastr.success('Successfuly deleted!');
+            var divResult = $('#divResult');
+            if (divResult.css('display') != 'none') {
+                divResult.hide();
+                $('#divFooter').hide();
+            }
+
+        }
+        else {
+            toastr.error("Couldn't delete: " + JSON.stringify(result));
+        }
+
+        Ladda.stopAll();
+    });
 };
 
 Template.editDocument.saveDocument = function () {
@@ -126,6 +182,8 @@ Template.editDocument.fetchDocument = function () {
     }
 
     Meteor.call("findOne", connection, collectionName, selector, function (err, result) {
+        var divResult = $('#divResult');
+
         if (err || result.error) {
             var errorMessage;
             if (err) {
@@ -139,7 +197,6 @@ Template.editDocument.fetchDocument = function () {
                 toastr.error("Couldn't fetch document, unknown reason ");
             }
 
-            var divResult = $('#divResult');
             if (divResult.css('display') != 'none') {
                 divResult.hide();
                 $('#divFooter').hide();
@@ -147,7 +204,6 @@ Template.editDocument.fetchDocument = function () {
         }
         else if (!result.result) {
             toastr.error("There's no matched document");
-            var divResult = $('#divResult');
             if (divResult.css('display') != 'none') {
                 divResult.hide();
                 $('#divFooter').hide();
