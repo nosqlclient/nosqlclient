@@ -76,6 +76,7 @@
                     <li>
                         <a href=""><i class="fa fa-dashboard"></i> <span
                                 class="nav-label">Collections</span>
+                            <span id="btnAddCollection" class="pull-right label label-info">Add</span>
                         </a>
                     </li>
                     <ul id="listCollectionNames" class="nav nav-second-level collapse in">
@@ -84,6 +85,7 @@
                                 <a class="navCollection" href="{{pathFor route='browseCollection'}}"><i
                                         class="fa fa-book"></i> <span
                                         class="nav-label">{{name}}</span>
+                                    <span id="btnDropCollection" class="pull-right label label-danger">Drop</span>
                                 </a>
                             </li>
                         {{/each}}
@@ -107,8 +109,9 @@
                         {{/each}}
                     </ul>
                 {{/if}}
-
             </ul>
         </div>
     </nav>
+
+    {{>addCollection}}
 </template>

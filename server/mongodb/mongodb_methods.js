@@ -265,6 +265,39 @@ Meteor.methods({
         });
     },
 
+    'dropCollection': function (connection, collectionName) {
+        var connectionUrl = getConnectionUrl(connection);
+        var connectionOptions = getConnectionOptions();
+        var mongodbApi = Meteor.npmRequire('mongodb').MongoClient;
+
+        console.log('Dropping collection: ' + collectionName + ' for connection: ' + connectionUrl);
+        return Async.runSync(function (done) {
+            mongodbApi.connect(connectionUrl, connectionOptions, function (err, db) {
+                var collection = db.collection(collectionName);
+                try {
+                    collection.drop(function (dropError) {
+                        if (dropError) {
+                            console.log('[ERROR]', 'Could not drop collection: ' + collection.collectionName, dropError);
+                        }
+                        else {
+                            console.log('[SUCCESS]', 'Dropped: ' + collection.collectionName);
+                        }
+                        done(dropError, null);
+                        if (db) {
+                            db.close();
+                        }
+                    });
+                }
+                catch (ex) {
+                    done(new Meteor.Error(ex.message), null);
+                    if (db) {
+                        db.close();
+                    }
+                }
+            });
+        });
+    },
+
     'dropAllCollections': function (connection) {
         var connectionUrl = getConnectionUrl(connection);
         var connectionOptions = getConnectionOptions();
@@ -292,6 +325,39 @@ Meteor.methods({
                     //}
                     done(err, {});
                 });
+            });
+        });
+    },
+
+    'createCollection': function (connection, collectionName, options) {
+        var connectionUrl = getConnectionUrl(connection);
+        var connectionOptions = getConnectionOptions();
+        var mongodbApi = Meteor.npmRequire('mongodb').MongoClient;
+
+        console.log('Creating collection: ' + collectionName + ' for connection: ' + connectionUrl + " with options: " + JSON.stringify(options));
+        return Async.runSync(function (done) {
+            mongodbApi.connect(connectionUrl, connectionOptions, function (err, db) {
+                try {
+                    var collection = db.createCollection(collectionName, options, function (err, result) {
+                        if (err) {
+                            console.error('[ERROR]', 'Could not create collection: ', err);
+                        } else {
+                            console.log('[SUCCESS]', 'Created: ' + collectionName);
+                        }
+
+                        done(err, result);
+                        if (db) {
+                            db.close();
+                        }
+                    });
+
+                }
+                catch (ex) {
+                    done(new Meteor.Error(ex.message), null);
+                    if (db) {
+                        db.close();
+                    }
+                }
             });
         });
     }
