@@ -165,7 +165,7 @@ Template.editDocument.fetchDocument = function () {
     l.ladda('start');
 
     var collectionName = $('#cmbCollections').find(":selected").text();
-    var selector = ace.edit("aceSelector").getSession().getValue();
+    var selector = Template.selector.getValue();
     var connection = Connections.findOne({_id: Session.get(Template.strSessionConnection)});
 
     if (!collectionName) {

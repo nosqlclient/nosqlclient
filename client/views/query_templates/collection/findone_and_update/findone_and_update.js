@@ -22,7 +22,7 @@ Template.findOneAndUpdate.executeQuery = function () {
     var connection = Connections.findOne({_id: Session.get(Template.strSessionConnection)});
     var selectedCollection = Session.get(Template.strSessionSelectedCollection);
     var options = Template.findOneModifyOptions.getOptions();
-    var selector = ace.edit("aceSelector").getSession().getValue();
+    var selector = Template.selector.getValue();
     var setObject = ace.edit("aceSet").getSession().getValue();
 
     selector = Template.convertAndCheckJSON(selector);
@@ -47,6 +47,6 @@ Template.findOneAndUpdate.executeQuery = function () {
     }
 
     Meteor.call("findOneAndUpdate", connection, selectedCollection, selector, setObject, options, function (err, result) {
-        Template.renderAfterQueryExecution(err, result,"findOneAndUpdate");
+        Template.renderAfterQueryExecution(err, result, "findOneAndUpdate");
     });
 };

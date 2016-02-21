@@ -23,7 +23,7 @@ Template.find.executeQuery = function () {
     var selectedCollection = Session.get(Template.strSessionSelectedCollection);
     var cursorOptions = Template.cursorOptions.getCursorOptions();
     var maxAllowedFetchSize = Math.round(Settings.findOne().maxAllowedFetchSize * 100) / 100;
-    var selector = ace.edit("aceSelector").getSession().getValue();
+    var selector = Template.selector.getValue();
 
     selector = Template.convertAndCheckJSON(selector);
     if (selector["ERROR"]) {

@@ -36,7 +36,7 @@ Template.findOneAndReplace.executeQuery = function () {
     var connection = Connections.findOne({_id: Session.get(Template.strSessionConnection)});
     var selectedCollection = Session.get(Template.strSessionSelectedCollection);
     var options = Template.findOneModifyOptions.getOptions();
-    var selector = ace.edit("aceSelector").getSession().getValue();
+    var selector = Template.selector.getValue();
     var replaceObject = ace.edit("aceReplacement").getSession().getValue();
 
     selector = Template.convertAndCheckJSON(selector);

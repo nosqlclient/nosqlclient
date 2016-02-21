@@ -79,6 +79,23 @@ Template.convertAndCheckJSON = function (json) {
     return result;
 };
 
+Template.checkCodeMirrorSelectorForOption = function (option, result, optionEnum) {
+    if ($.inArray(option, Session.get(Template.strSessionSelectedOptions)) != -1) {
+        var val = Template.selector.getValue();
+
+        if (val == "") result[optionEnum[option]] = {};
+        else {
+            try {
+                val = JSON.parse(val);
+                result[optionEnum[option]] = val;
+            }
+            catch (err) {
+                result["ERROR"] = "Syntax Error on " + optionEnum[option] + ": " + err.message;
+            }
+        }
+    }
+};
+
 Template.checkAceEditorOption = function (option, editorId, result, optionEnum) {
     if ($.inArray(option, Session.get(Template.strSessionSelectedOptions)) != -1) {
         var val = ace.edit(editorId).getSession().getValue();

@@ -5,7 +5,7 @@ Template.count.executeQuery = function () {
     Template.browseCollection.initExecuteQuery();
     var connection = Connections.findOne({_id: Session.get(Template.strSessionConnection)});
     var selectedCollection = Session.get(Template.strSessionSelectedCollection);
-    var selector = ace.edit("aceSelector").getSession().getValue();
+    var selector = Template.selector.getValue();
 
     selector = Template.convertAndCheckJSON(selector);
     if (selector["ERROR"]) {
