@@ -45,16 +45,16 @@
       }
     },
     "mongodb-backup": {
-      "version": "1.5.1",
+      "version": "1.5.4",
       "dependencies": {
         "bson": {
-          "version": "0.4.20"
+          "version": "0.4.21"
         },
         "fstream": {
           "version": "1.0.8",
           "dependencies": {
             "graceful-fs": {
-              "version": "4.1.2"
+              "version": "4.1.3"
             },
             "inherits": {
               "version": "2.0.1"
@@ -68,10 +68,10 @@
               }
             },
             "rimraf": {
-              "version": "2.5.0",
+              "version": "2.5.2",
               "dependencies": {
                 "glob": {
-                  "version": "6.0.4",
+                  "version": "7.0.0",
                   "dependencies": {
                     "inflight": {
                       "version": "1.0.4",
@@ -85,7 +85,7 @@
                       "version": "3.0.0",
                       "dependencies": {
                         "brace-expansion": {
-                          "version": "1.1.2",
+                          "version": "1.1.3",
                           "dependencies": {
                             "balanced-match": {
                               "version": "0.3.0"
@@ -109,42 +109,6 @@
                       "version": "1.0.0"
                     }
                   }
-                }
-              }
-            }
-          }
-        },
-        "mongodb": {
-          "version": "2.1.3",
-          "dependencies": {
-            "mongodb-core": {
-              "version": "1.2.31"
-            },
-            "readable-stream": {
-              "version": "1.0.31",
-              "dependencies": {
-                "core-util-is": {
-                  "version": "1.0.2"
-                },
-                "isarray": {
-                  "version": "0.0.1"
-                },
-                "string_decoder": {
-                  "version": "0.10.31"
-                },
-                "inherits": {
-                  "version": "2.0.1"
-                }
-              }
-            },
-            "es6-promise": {
-              "version": "3.0.2"
-            },
-            "kerberos": {
-              "version": "0.0.17",
-              "dependencies": {
-                "nan": {
-                  "version": "2.0.9"
                 }
               }
             }
@@ -214,16 +178,32 @@
       }
     },
     "mongodb-restore": {
-      "version": "1.5.1",
+      "version": "1.5.2",
       "dependencies": {
         "bson": {
-          "version": "0.4.20"
+          "version": "0.4.21"
         },
         "mongodb": {
-          "version": "2.1.3",
+          "version": "2.1.6",
           "dependencies": {
+            "es6-promise": {
+              "version": "3.0.2"
+            },
             "mongodb-core": {
-              "version": "1.2.31"
+              "version": "1.3.1",
+              "dependencies": {
+                "require_optional": {
+                  "version": "1.0.0",
+                  "dependencies": {
+                    "semver": {
+                      "version": "5.1.0"
+                    },
+                    "resolve-from": {
+                      "version": "2.0.0"
+                    }
+                  }
+                }
+              }
             },
             "readable-stream": {
               "version": "1.0.31",
@@ -239,17 +219,6 @@
                 },
                 "inherits": {
                   "version": "2.0.1"
-                }
-              }
-            },
-            "es6-promise": {
-              "version": "3.0.2"
-            },
-            "kerberos": {
-              "version": "0.0.18",
-              "dependencies": {
-                "nan": {
-                  "version": "2.0.9"
                 }
               }
             }
@@ -315,7 +284,7 @@
               "version": "1.0.8",
               "dependencies": {
                 "graceful-fs": {
-                  "version": "4.1.2"
+                  "version": "4.1.3"
                 },
                 "mkdirp": {
                   "version": "0.5.1",
@@ -326,10 +295,10 @@
                   }
                 },
                 "rimraf": {
-                  "version": "2.5.1",
+                  "version": "2.5.2",
                   "dependencies": {
                     "glob": {
-                      "version": "6.0.4",
+                      "version": "7.0.0",
                       "dependencies": {
                         "inflight": {
                           "version": "1.0.4",
@@ -343,7 +312,7 @@
                           "version": "3.0.0",
                           "dependencies": {
                             "brace-expansion": {
-                              "version": "1.1.2",
+                              "version": "1.1.3",
                               "dependencies": {
                                 "balanced-match": {
                                   "version": "0.3.0"
