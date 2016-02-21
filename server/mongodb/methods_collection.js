@@ -390,12 +390,17 @@ var proceedMapReduceExecution = function (connection, selectedCollection, map, r
                         }
                         return;
                     }
-                    resultCollection.find().toArray(function (err, result) {
-                        done(err, result);
-                        if (db) {
-                            db.close();
-                        }
-                    });
+                    if ((typeof options.out) == 'string') {
+                        resultCollection.find().toArray(function (err, result) {
+                            done(err, result);
+                        });
+                    }
+                    else {
+                        done(err, resultCollection);
+                    }
+                    if (db) {
+                        db.close();
+                    }
                 });
             }
             catch (ex) {

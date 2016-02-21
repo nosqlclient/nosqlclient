@@ -13,6 +13,7 @@ Template.strSessionActiveTabID = "activeTabID";
 Template.strSessionSelectedDump = "selectedDump";
 Template.strSessionSelectedFile = "selectedFile";
 Template.strSessionEasyEditID = "easyEditID";
+Template.strSessionDistinctFields = "distinctFields";
 
 Template.clearSessions = function () {
     Object.keys(Session.keys).forEach(function (key) {

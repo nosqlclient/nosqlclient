@@ -20,16 +20,20 @@ Template.mapReduce.initializeOptions = function () {
 };
 
 Template.mapReduce.initializeAceEditor = function (id) {
-    AceEditor.instance(id, {
-        mode: "javascript",
-        theme: 'dawn'
-    }, function (editor) {
-        editor.$blockScrolling = Infinity;
-        editor.getSession().setOption("useWorker", false);
-        editor.setOptions({
-            fontSize: "11pt",
-            showPrintMargin: false
+    Tracker.autorun(function (e) {
+        var editor = AceEditor.instance(id, {
+            mode: "javascript",
+            theme: 'dawn'
         });
+        if (editor.loaded !== undefined) {
+            e.stop();
+            editor.$blockScrolling = Infinity;
+            editor.getSession().setOption("useWorker", false);
+            editor.setOptions({
+                fontSize: "11pt",
+                showPrintMargin: false
+            });
+        }
     });
 };
 
