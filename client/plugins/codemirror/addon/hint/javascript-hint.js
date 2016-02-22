@@ -16,9 +16,8 @@
         var token = getToken(editor, cur);
         token.state = CodeMirror.innerMode(editor.getMode(), token.state).state;
 
-        //TODO
         if (token.string.startsWith('\'') || token.string.startsWith('"')) {
-            token.start = token.string.length + 1;
+            token.start = token.start + 1;
         }
 
         var keys = Session.get(Template.strSessionDistinctFields) ? Session.get(Template.strSessionDistinctFields) : [];
