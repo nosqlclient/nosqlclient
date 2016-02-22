@@ -12,8 +12,14 @@
     var Pos = CodeMirror.Pos;
 
     function scriptHint(editor, getToken) {
-        var cur = editor.getCursor(), token = getToken(editor, cur);
+        var cur = editor.getCursor();
+        var token = getToken(editor, cur);
         token.state = CodeMirror.innerMode(editor.getMode(), token.state).state;
+
+        //TODO
+        if (token.string.startsWith('\'') || token.string.startsWith('"')) {
+            token.start = token.string.length + 1;
+        }
 
         var keys = Session.get(Template.strSessionDistinctFields) ? Session.get(Template.strSessionDistinctFields) : [];
         return {
@@ -29,6 +35,7 @@
                 return e.getTokenAt(cur);
             });
     };
+
     CodeMirror.registerHelper("hint", "javascript", javascriptHint);
 
     function getCompletions(token, keywords) {
@@ -40,7 +47,7 @@
                 continue;
             }
 
-            // replace everything that's not a letter
+            // replace everything that's not a letter to check
             start = start.trim().replace(/[^a-zA-Z]+/g, '');
             if (keywords[i].indexOf(start) > -1) {
                 found.push(keywords[i]);

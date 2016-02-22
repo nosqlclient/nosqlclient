@@ -83,12 +83,10 @@
         },
 
         pick: function (data, i) {
-            console.log(data);
             var completion = data.list[i];
             if (completion.hint) completion.hint(this.cm, data, completion);
             else this.cm.replaceRange(getText(completion), completion.from || data.from,
                 completion.to || data.to, "complete");
-            console.log(completion);
             CodeMirror.signal(data, "pick", completion);
             this.close();
         },
