@@ -86,6 +86,11 @@ Template.pageHeading.getDistinctKeysForAutoComplete = function () {
     var connection = Connections.findOne({_id: Session.get(Template.strSessionConnection)});
     var selectedCollection = Session.get(Template.strSessionSelectedCollection);
 
+    if (selectedCollection.endsWith('.chunks')) {
+        // ignore chunks
+        return;
+    }
+
     var mapFunc = "function () {for (var key in this) {emit(key, null);}};";
     var reduceFunc = "function (key, stuff) {return null;};";
     var options = {
