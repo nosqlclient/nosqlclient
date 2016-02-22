@@ -139,6 +139,53 @@ Template.getParentTemplateName = function (levels) {
     }
 };
 
+Template.getDistinctKeysForAutoComplete = function (selectedCollection) {
+    var settings = Settings.findOne();
+    if (!settings.autoCompleteFields) {
+        return;
+    }
+    var connection = Connections.findOne({_id: Session.get(Template.strSessionConnection)});
+
+    if (selectedCollection.endsWith('.chunks')) {
+        // ignore chunks
+        return;
+    }
+
+    var mapFunc = "function () {for (var key in this) {emit(key, null);}};";
+    var reduceFunc = "function (key, stuff) {return null;};";
+    var options = {
+        out: {inline: 1}
+    };
+
+    Meteor.call("mapReduce", connection, selectedCollection, mapFunc, reduceFunc, options, function (err, result) {
+        if (err || result.error) {
+            var errorMessage;
+            if (err) {
+                errorMessage = err.message;
+            }
+            else {
+                errorMessage = result.error.message;
+            }
+            if (errorMessage) {
+                toastr.warning("Couldn't fetch distinct fields for autocomplete: " + errorMessage);
+            }
+            else {
+                toastr.warning("Couldn't fetch distinct fields for autocomplete, unknown reason ");
+            }
+        }
+        else {
+            var nameArray = [];
+            result.result.forEach(function (entry) {
+                nameArray.push(entry._id);
+            });
+            Session.set(Template.strSessionDistinctFields, nameArray);
+        }
+
+        // stop loading animation
+        Ladda.stopAll();
+    });
+};
+
 Template.initializeAceEditor = function (id, evt) {
     Tracker.autorun(function (e) {
         var editor = AceEditor.instance(id, {

@@ -8,7 +8,6 @@ Template.editDocument.onRendered(function () {
     }
 
     Template.editDocument.initializeCollectionsCombobox();
-    Template.initializeAceEditor('aceSelector', Template.editDocument.fetchDocument);
     Session.set(Template.strSessionEasyEditID, undefined);
 });
 
@@ -66,6 +65,13 @@ Template.editDocument.initializeCollectionsCombobox = function () {
             .text(value.name));
     });
     cmb.chosen();
+
+    cmb.on('change', function (evt, params) {
+        var selectedCollection = params.selected;
+        if (selectedCollection) {
+            Template.getDistinctKeysForAutoComplete(selectedCollection);
+        }
+    });
 };
 
 Template.editDocument.initializeResultArea = function (result) {
