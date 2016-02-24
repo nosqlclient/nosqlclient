@@ -59,5 +59,6 @@ Meteor.methods({
     'removeConnection': function (connectionId) {
         Connections.remove(connectionId);
         Dumps.remove({connectionId: connectionId});
+        QueryHistory.remove({connectionId: connectionId});
     }
 });
