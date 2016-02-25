@@ -12,13 +12,27 @@
                     </small>
                 </div>
                 <div class="modal-body">
-
+                    <div class="dataTables_wrapper form-inline dt-bootstrap">
+                        <table id="tblQueryHistories"
+                               class="table table-striped table-bordered table-hover dataTables-example dataTable" width="100%">
+                            <thead>
+                            <tr>
+                                <th>Query</th>
+                                <th>Date</th>
+                                <th>Parameters</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
                 <div class="modal-footer">
                     <div class="pull-left">
                         <button type="button" class="btn btn-white" data-dismiss="modal">Close</button>
                     </div>
-                    <button id="btnExecuteAgain" type="button" class="btn btn-primary">Execute Again</button>
+                    <button id="btnExecuteAgain" disabled="true" type="button" class="btn btn-primary">Execute Again
+                    </button>
                 </div>
             </div>
         </div>

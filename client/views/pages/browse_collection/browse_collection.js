@@ -21,6 +21,10 @@ Template.browseCollection.onRendered(function () {
 });
 
 Template.browseCollection.events({
+    'click #btnShowQueryHistories': function () {
+        $('#queryHistoriesModal').modal('show');
+    },
+
     'change #cmbQueries': function () {
         Session.set(Template.strSessionSelectedOptions, []);
 
