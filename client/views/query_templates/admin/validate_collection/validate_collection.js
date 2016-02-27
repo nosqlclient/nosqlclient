@@ -25,6 +25,6 @@ Template.validateCollection.executeQuery = function () {
     }
 
     Meteor.call("validateCollection", connection, collectionName, options, function (err, result) {
-        Template.renderAfterQueryExecution(err, result, "validateCollection", true);
+        Template.renderAfterQueryExecution(err, result, true);
     });
 };

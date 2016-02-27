@@ -137,7 +137,7 @@ Template.browseCollection.initExecuteQuery = function () {
     l.ladda('start');
 };
 
-Template.browseCollection.setResult = function (result, queryInfo) {
+Template.browseCollection.setResult = function (result, queryInfo, queryParams) {
     var jsonEditor = $('#divActiveJsonEditor');
     var aceEditor = $('#divActiveAceEditor');
     var settings = Settings.findOne();

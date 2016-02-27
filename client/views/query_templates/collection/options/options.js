@@ -7,6 +7,6 @@ Template.options.executeQuery = function () {
     var selectedCollection = Session.get(Template.strSessionSelectedCollection);
 
     Meteor.call("options", connection, selectedCollection, function (err, result) {
-        Template.renderAfterQueryExecution(err, result, "options");
+        Template.renderAfterQueryExecution(err, result, false, "options");
     });
 };

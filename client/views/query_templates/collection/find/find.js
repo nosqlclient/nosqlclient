@@ -76,8 +76,12 @@ Template.find.executeQuery = function () {
 };
 
 Template.find.proceedFindQuery = function (connection, selectedCollection, selector, cursorOptions) {
+    var params = {
+        selector: selector,
+        cursorOptions: cursorOptions
+    };
     Meteor.call("find", connection, selectedCollection, selector, cursorOptions, function (err, result) {
-        Template.renderAfterQueryExecution(err, result, "find");
+        Template.renderAfterQueryExecution(err, result, false, "find", params);
     });
 };
 

@@ -38,7 +38,12 @@ Template.createIndex.executeQuery = function () {
         return;
     }
 
+    var params = {
+        fields: fields,
+        options: options
+    };
+
     Meteor.call("createIndex", connection, selectedCollection, fields, options, function (err, result) {
-        Template.renderAfterQueryExecution(err, result,"createIndex");
+        Template.renderAfterQueryExecution(err, result, false, "createIndex", params);
     });
 };

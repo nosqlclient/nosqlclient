@@ -18,6 +18,6 @@ Template.command.executeQuery = function () {
     }
 
     Meteor.call("command", connection, command, function (err, result) {
-        Template.renderAfterQueryExecution(err, result, "command", true);
+        Template.renderAfterQueryExecution(err, result, true);
     });
 };

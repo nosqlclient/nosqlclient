@@ -37,7 +37,11 @@ Template.insertMany.executeQuery = function () {
         docs = newArray;
     }
 
+    var params = {
+        docs: docs
+    };
+
     Meteor.call("insertMany", connection, selectedCollection, docs, function (err, result) {
-        Template.renderAfterQueryExecution(err, result,"insertMany");
+        Template.renderAfterQueryExecution(err, result, false, "insertMany", params);
     });
 };

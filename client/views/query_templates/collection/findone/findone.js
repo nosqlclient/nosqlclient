@@ -40,7 +40,12 @@ Template.findOne.executeQuery = function () {
         return;
     }
 
+    var params = {
+        selector: selector,
+        cursorOptions: cursorOptions
+    };
+
     Meteor.call("findOne", connection, selectedCollection, selector, cursorOptions, function (err, result) {
-        Template.renderAfterQueryExecution(err, result, "findOne");
+        Template.renderAfterQueryExecution(err, result, false, "findOne", params);
     });
 };

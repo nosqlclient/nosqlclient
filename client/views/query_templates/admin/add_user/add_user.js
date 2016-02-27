@@ -43,6 +43,6 @@ Template.addUser.executeQuery = function () {
     }
 
     Meteor.call("addUser", connection, username, password, options, function (err, result) {
-        Template.renderAfterQueryExecution(err, result, "addUser", true);
+        Template.renderAfterQueryExecution(err, result, true);
     });
 };

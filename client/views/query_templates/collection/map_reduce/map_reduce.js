@@ -64,7 +64,13 @@ Template.mapReduce.executeQuery = function () {
         return;
     }
 
+    var params = {
+        map: map,
+        reduce: reduce,
+        options: options
+    };
+
     Meteor.call("mapReduce", connection, selectedCollection, map, reduce, options, function (err, result) {
-        Template.renderAfterQueryExecution(err, result, "mapReduce");
+        Template.renderAfterQueryExecution(err, result, false, "mapReduce", params);
     });
 };

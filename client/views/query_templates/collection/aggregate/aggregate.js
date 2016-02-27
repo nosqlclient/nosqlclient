@@ -31,7 +31,11 @@ Template.aggregate.executeQuery = function () {
         return;
     }
 
+    var params = {
+        pipeline: pipeline
+    };
+
     Meteor.call("aggregate", connection, selectedCollection, pipeline, function (err, result) {
-        Template.renderAfterQueryExecution(err, result, "aggregate");
+        Template.renderAfterQueryExecution(err, result, false, "aggregate", params);
     });
 };

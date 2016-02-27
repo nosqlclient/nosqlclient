@@ -14,7 +14,11 @@ Template.count.executeQuery = function () {
         return;
     }
 
+    var params = {
+        selector: selector
+    };
+
     Meteor.call("count", connection, selectedCollection, selector, function (err, result) {
-        Template.renderAfterQueryExecution(err, result, "count");
+        Template.renderAfterQueryExecution(err, result, false, "count", params);
     });
 };

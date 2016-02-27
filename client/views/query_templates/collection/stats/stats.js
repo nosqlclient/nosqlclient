@@ -29,8 +29,12 @@ Template.stats.executeQuery = function () {
     var selectedCollection = Session.get(Template.strSessionSelectedCollection);
     var options = Template.stats.getOptions();
 
+    var params = {
+        options: options
+    };
+
     Meteor.call("stats", connection, selectedCollection, options, function (err, result) {
-        Template.renderAfterQueryExecution(err, result, "stats");
+        Template.renderAfterQueryExecution(err, result, false, "stats", params);
     });
 };
 

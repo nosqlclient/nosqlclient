@@ -32,7 +32,7 @@ Template.rename.executeQuery = function () {
 
     if (newName) {
         Meteor.call("rename", connection, selectedCollection, newName, options, function (err, result) {
-            Template.renderAfterQueryExecution(err, result, "rename");
+            Template.renderAfterQueryExecution(err, result, false, "rename");
             if (err == undefined && result.error == undefined) {
                 Template.rename.renderCollectionnames(newName);
             }

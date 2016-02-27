@@ -47,8 +47,14 @@ Template.updateMany.executeQuery = function () {
         return;
     }
 
+    var params = {
+        selector: selector,
+        setObject: setObject,
+        options: options
+    };
+
     Meteor.call("updateMany", connection, selectedCollection, selector, setObject, options, function (err, result) {
-        Template.renderAfterQueryExecution(err, result, "updateMany");
+        Template.renderAfterQueryExecution(err, result, false, "updateMany", params);
     });
 };
 

@@ -6,6 +6,6 @@ Template.profilingInfo.executeQuery = function () {
     var connection = Connections.findOne({_id: Session.get(Template.strSessionConnection)});
 
     Meteor.call("profilingInfo", connection, function (err, result) {
-        Template.renderAfterQueryExecution(err, result, "profilingInfo", true);
+        Template.renderAfterQueryExecution(err, result, true);
     });
 };

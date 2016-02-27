@@ -40,7 +40,12 @@ Template.findOneAndDelete.executeQuery = function () {
         return;
     }
 
+    var params = {
+        selector: selector,
+        options: options
+    };
+
     Meteor.call("findOneAndDelete", connection, selectedCollection, selector, options, function (err, result) {
-        Template.renderAfterQueryExecution(err, result, "findOneAndDelete");
+        Template.renderAfterQueryExecution(err, result, false, "findOneAndDelete", params);
     });
 };

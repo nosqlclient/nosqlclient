@@ -14,7 +14,7 @@ Template.strSessionSelectedDump = "selectedDump";
 Template.strSessionSelectedFile = "selectedFile";
 Template.strSessionEasyEditID = "easyEditID";
 Template.strSessionDistinctFields = "distinctFields";
-Template.strSessionSelectedQueryHistory= "selectedQueryHistory";
+Template.strSessionSelectedQueryHistory = "selectedQueryHistory";
 
 Template.clearSessions = function () {
     Object.keys(Session.keys).forEach(function (key) {
@@ -22,7 +22,7 @@ Template.clearSessions = function () {
     })
 };
 
-Template.renderAfterQueryExecution = function (err, result, queryInfo, isAdmin) {
+Template.renderAfterQueryExecution = function (err, result, isAdmin, queryInfo, queryParams) {
     if (err || result.error) {
         var errorMessage;
         if (err) {
@@ -37,7 +37,7 @@ Template.renderAfterQueryExecution = function (err, result, queryInfo, isAdmin) 
         }
     } else {
         if (isAdmin) {
-            Template.adminQueries.setResult(result.result, queryInfo);
+            Template.adminQueries.setResult(result.result);
         } else {
             Template.browseCollection.setResult(result.result, queryInfo);
         }

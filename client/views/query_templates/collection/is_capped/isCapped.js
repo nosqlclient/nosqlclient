@@ -10,6 +10,6 @@ Template.isCapped.executeQuery = function () {
         if (!result.result) {
             result.result = false;
         }
-        Template.renderAfterQueryExecution(err, result,"isCapped");
+        Template.renderAfterQueryExecution(err, result, false, "isCapped");
     });
 };

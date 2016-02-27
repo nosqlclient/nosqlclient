@@ -14,7 +14,11 @@ Template.delete.executeQuery = function () {
         return;
     }
 
+    var params = {
+        selector: selector
+    };
+
     Meteor.call("delete", connection, selectedCollection, selector, function (err, result) {
-        Template.renderAfterQueryExecution(err, result, "delete");
+        Template.renderAfterQueryExecution(err, result, false, "delete", params);
     });
 };

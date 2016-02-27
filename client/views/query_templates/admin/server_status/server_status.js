@@ -6,6 +6,6 @@ Template.serverStatus.executeQuery = function () {
     var connection = Connections.findOne({_id: Session.get(Template.strSessionConnection)});
 
     Meteor.call("serverStatus", connection, function (err, result) {
-        Template.renderAfterQueryExecution(err, result, "serverStatus", true);
+        Template.renderAfterQueryExecution(err, result, true);
     });
 };

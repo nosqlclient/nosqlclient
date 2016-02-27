@@ -59,7 +59,13 @@ Template.findOneAndReplace.executeQuery = function () {
         return;
     }
 
+    var params = {
+        selector: selector,
+        replaceObject: replaceObject,
+        options: options
+    };
+
     Meteor.call("findOneAndReplace", connection, selectedCollection, selector, replaceObject, options, function (err, result) {
-        Template.renderAfterQueryExecution(err, result, "findOneAndReplace");
+        Template.renderAfterQueryExecution(err, result, false, "findOneAndReplace", params);
     });
 };

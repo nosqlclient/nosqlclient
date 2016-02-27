@@ -24,7 +24,12 @@ Template.distinct.executeQuery = function () {
         return;
     }
 
+    var params = {
+        selector: selector,
+        fieldName: fieldName
+    };
+
     Meteor.call("distinct", connection, selectedCollection, selector, fieldName, function (err, result) {
-        Template.renderAfterQueryExecution(err, result, "distinct");
+        Template.renderAfterQueryExecution(err, result, false, "distinct", params);
     });
 };

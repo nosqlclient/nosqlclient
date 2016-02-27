@@ -38,7 +38,13 @@ Template.geoNear.executeQuery = function () {
         return;
     }
 
+    var params = {
+        xAxis: xAxis,
+        yAxis: yAxis,
+        options: options
+    };
+
     Meteor.call("geoNear", connection, selectedCollection, xAxis, yAxis, options, function (err, result) {
-        Template.renderAfterQueryExecution(err, result, "geoNear");
+        Template.renderAfterQueryExecution(err, result, false, "geoNear", params);
     });
 };

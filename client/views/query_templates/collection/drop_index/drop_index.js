@@ -16,7 +16,11 @@ Template.dropIndex.executeQuery = function () {
     var selectedCollection = Session.get(Template.strSessionSelectedCollection);
     var indexName = $('#inputIndexName').val();
 
+    var params = {
+        indexName: indexName
+    };
+
     Meteor.call("dropIndex", connection, selectedCollection, indexName, function (err, result) {
-        Template.renderAfterQueryExecution(err, result, "dropIndex");
+        Template.renderAfterQueryExecution(err, result, false, "dropIndex", params);
     });
 };

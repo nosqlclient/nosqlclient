@@ -6,6 +6,6 @@ Template.listDatabases.executeQuery = function () {
     var connection = Connections.findOne({_id: Session.get(Template.strSessionConnection)});
 
     Meteor.call("listDatabases", connection, function (err, result) {
-        Template.renderAfterQueryExecution(err, result, "listDatabases", true);
+        Template.renderAfterQueryExecution(err, result, true);
     });
 };
