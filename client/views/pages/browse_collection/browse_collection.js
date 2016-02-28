@@ -18,6 +18,9 @@ Template.browseCollection.onRendered(function () {
     });
     cmb.chosen();
 
+    $('#queryHistoriesModal').on('show.bs.modal', function () {
+        Template.queryHistories.initQueryHistories();
+    });
 });
 
 Template.browseCollection.events({
@@ -137,7 +140,7 @@ Template.browseCollection.initExecuteQuery = function () {
     l.ladda('start');
 };
 
-Template.browseCollection.setResult = function (result, queryInfo, queryParams) {
+Template.browseCollection.setResult = function (result, queryInfo, queryParams, saveHistory) {
     var jsonEditor = $('#divActiveJsonEditor');
     var aceEditor = $('#divActiveAceEditor');
     var settings = Settings.findOne();
@@ -156,13 +159,13 @@ Template.browseCollection.setResult = function (result, queryInfo, queryParams) 
         // open a new tab
         var tabID = Template.browseCollection.clarifyTabID();
         var tabContent = Template.browseCollection.getResultTabContent(tabID, settings.defaultResultView, queryInfo);
-        queryInfo = queryInfo + " - " + Session.get(Template.strSessionSelectedCollection);
+        var tabTitle = queryInfo + " - " + Session.get(Template.strSessionSelectedCollection);
         Template.browseCollection.setAllTabsInactive();
         var resultTabs = $('#resultTabs');
 
         // set tab href
         resultTabs.append(
-            $('<li><a href="#tab-' + tabID + '" data-toggle="tab"><i class="fa fa-book"></i>' + queryInfo +
+            $('<li><a href="#tab-' + tabID + '" data-toggle="tab"><i class="fa fa-book"></i>' + tabTitle +
                 '<button class="close" type="button" title="Close">×</button></a></li>'));
 
         // set tab content
@@ -176,12 +179,33 @@ Template.browseCollection.setResult = function (result, queryInfo, queryParams) 
         });
 
         // show last tab
-        var lastTab = $('#resultTabs a:last');
+        var lastTab = $('#resultTabs').find('a:last');
         lastTab.tab('show');
 
         Template.browseCollection.setResultToEditors(tabID, result);
     }
+
+    if (saveHistory) {
+        Template.browseCollection.saveQueryHistory(queryInfo, queryParams);
+    }
 };
+
+Template.browseCollection.saveQueryHistory = function (queryInfo, queryParams) {
+    if (!queryParams) {
+        queryParams = {};
+    }
+
+    var history = {
+        connectionId: Session.get(Template.strSessionConnection),
+        collectionName: Session.get(Template.strSessionSelectedCollection),
+        queryName: queryInfo,
+        params: JSON.stringify(queryParams),
+        date: new Date()
+    };
+
+    Meteor.call('saveQueryHistory', history);
+};
+
 
 Template.browseCollection.setResultToEditors = function (tabID, result) {
     // set json editor
@@ -254,7 +278,7 @@ Template.browseCollection.getResultTabContent = function (tabID, defaultView) {
     var result;
 
     if (whichIsDisplayed == 'none') {
-        var defaultIsAce = (defaultView == 'Jsoneditor') ? false : true;
+        var defaultIsAce = (defaultView != 'Jsoneditor');
         if (!defaultIsAce) {
             result = jsonEditorHtml;
         } else {

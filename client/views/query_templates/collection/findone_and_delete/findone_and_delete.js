@@ -20,12 +20,12 @@ Template.findOneAndDelete.initializeOptions = function () {
     Template.setOptionsComboboxChangeEvent(cmb);
 };
 
-Template.findOneAndDelete.executeQuery = function () {
+Template.findOneAndDelete.executeQuery = function (historyParams) {
     Template.browseCollection.initExecuteQuery();
     var connection = Connections.findOne({_id: Session.get(Template.strSessionConnection)});
     var selectedCollection = Session.get(Template.strSessionSelectedCollection);
-    var options = Template.findOneModifyOptions.getOptions();
-    var selector = Template.selector.getValue();
+    var options = historyParams ? historyParams.options : Template.findOneModifyOptions.getOptions();
+    var selector = historyParams ? JSON.stringify(historyParams.selector) : Template.selector.getValue();
 
     selector = Template.convertAndCheckJSON(selector);
     if (selector["ERROR"]) {
@@ -46,6 +46,6 @@ Template.findOneAndDelete.executeQuery = function () {
     };
 
     Meteor.call("findOneAndDelete", connection, selectedCollection, selector, options, function (err, result) {
-        Template.renderAfterQueryExecution(err, result, false, "findOneAndDelete", params);
+        Template.renderAfterQueryExecution(err, result, false, "findOneAndDelete", params, (historyParams ? false : true));
     });
 };

@@ -2,6 +2,21 @@
  * Created by RSercan on 26.12.2015.
  */
 Meteor.methods({
+    'saveQueryHistory': function (history) {
+        console.log('[QUERY_HISTORY]', 'trying to save history: ' + JSON.stringify(history));
+        var queryHistoryCount = QueryHistory.find().count({
+            connectionId: history.connectionId,
+            collectionName: history.collectionName
+        });
+
+        if (queryHistoryCount >= 20) {
+            var idToRemove = QueryHistory.findOne({}, {sort: {date: 1}})._id;
+            QueryHistory.remove(idToRemove);
+        }
+
+        QueryHistory.insert(history);
+    },
+
     'updateDump': function (dump) {
         Dumps.update({_id: dump._id}, {
             $set: {

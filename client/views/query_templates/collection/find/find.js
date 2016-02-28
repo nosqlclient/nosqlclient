@@ -17,13 +17,13 @@ Template.find.initializeOptions = function () {
     Template.setOptionsComboboxChangeEvent(cmb);
 };
 
-Template.find.executeQuery = function () {
+Template.find.executeQuery = function (historyParams) {
     Template.browseCollection.initExecuteQuery();
     var connection = Connections.findOne({_id: Session.get(Template.strSessionConnection)});
     var selectedCollection = Session.get(Template.strSessionSelectedCollection);
-    var cursorOptions = Template.cursorOptions.getCursorOptions();
     var maxAllowedFetchSize = Math.round(Settings.findOne().maxAllowedFetchSize * 100) / 100;
-    var selector = Template.selector.getValue();
+    var cursorOptions = historyParams ? historyParams.cursorOptions : Template.cursorOptions.getCursorOptions();
+    var selector = historyParams ? JSON.stringify(historyParams.selector) : Template.selector.getValue();
 
     selector = Template.convertAndCheckJSON(selector);
     if (selector["ERROR"]) {
@@ -45,24 +45,24 @@ Template.find.executeQuery = function () {
         Meteor.call("stats", connection, selectedCollection, {}, function (statsError, statsResult) {
             if (statsError || statsResult.error || !(statsResult.result.avgObjSize)) {
                 // if there's an error, nothing we can do
-                Template.find.proceedFindQuery(connection, selectedCollection, selector, cursorOptions);
+                Template.find.proceedFindQuery(connection, selectedCollection, selector, cursorOptions, (historyParams ? false : true));
             }
             else {
                 if (CURSOR_OPTIONS.LIMIT in cursorOptions) {
                     var count = cursorOptions.limit;
                     if (Template.find.checkAverageSize(count, statsResult.result.avgObjSize, maxAllowedFetchSize)) {
-                        Template.find.proceedFindQuery(connection, selectedCollection, selector, cursorOptions);
+                        Template.find.proceedFindQuery(connection, selectedCollection, selector, cursorOptions, (historyParams ? false : true));
                     }
                 }
                 else {
                     Meteor.call("count", connection, selectedCollection, selector, function (err, result) {
                         if (err || result.error) {
-                            Template.find.proceedFindQuery(connection, selectedCollection, selector, cursorOptions);
+                            Template.find.proceedFindQuery(connection, selectedCollection, selector, cursorOptions, (historyParams ? false : true));
                         }
                         else {
                             var count = result.result;
                             if (Template.find.checkAverageSize(count, statsResult.result.avgObjSize, maxAllowedFetchSize)) {
-                                Template.find.proceedFindQuery(connection, selectedCollection, selector, cursorOptions);
+                                Template.find.proceedFindQuery(connection, selectedCollection, selector, cursorOptions, (historyParams ? false : true));
                             }
                         }
                     });
@@ -75,13 +75,13 @@ Template.find.executeQuery = function () {
     }
 };
 
-Template.find.proceedFindQuery = function (connection, selectedCollection, selector, cursorOptions) {
+Template.find.proceedFindQuery = function (connection, selectedCollection, selector, cursorOptions, saveHistory) {
     var params = {
         selector: selector,
         cursorOptions: cursorOptions
     };
     Meteor.call("find", connection, selectedCollection, selector, cursorOptions, function (err, result) {
-        Template.renderAfterQueryExecution(err, result, false, "find", params);
+        Template.renderAfterQueryExecution(err, result, false, "find", params, saveHistory);
     });
 };
 

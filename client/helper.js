@@ -22,7 +22,7 @@ Template.clearSessions = function () {
     })
 };
 
-Template.renderAfterQueryExecution = function (err, result, isAdmin, queryInfo, queryParams) {
+Template.renderAfterQueryExecution = function (err, result, isAdmin, queryInfo, queryParams, saveHistory) {
     if (err || result.error) {
         var errorMessage;
         if (err) {
@@ -39,7 +39,7 @@ Template.renderAfterQueryExecution = function (err, result, isAdmin, queryInfo, 
         if (isAdmin) {
             Template.adminQueries.setResult(result.result);
         } else {
-            Template.browseCollection.setResult(result.result, queryInfo);
+            Template.browseCollection.setResult(result.result, queryInfo, queryParams, saveHistory);
         }
 
     }

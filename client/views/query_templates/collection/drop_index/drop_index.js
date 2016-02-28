@@ -10,17 +10,17 @@ Template.dropIndex.events({
     }
 });
 
-Template.dropIndex.executeQuery = function () {
+Template.dropIndex.executeQuery = function (historyParams) {
     Template.browseCollection.initExecuteQuery();
     var connection = Connections.findOne({_id: Session.get(Template.strSessionConnection)});
     var selectedCollection = Session.get(Template.strSessionSelectedCollection);
-    var indexName = $('#inputIndexName').val();
+    var indexName = historyParams ? historyParams.indexName : $('#inputIndexName').val();
 
     var params = {
         indexName: indexName
     };
 
     Meteor.call("dropIndex", connection, selectedCollection, indexName, function (err, result) {
-        Template.renderAfterQueryExecution(err, result, false, "dropIndex", params);
+        Template.renderAfterQueryExecution(err, result, false, "dropIndex", params, (historyParams ? false : true));
     });
 };

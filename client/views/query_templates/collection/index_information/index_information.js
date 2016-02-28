@@ -7,17 +7,17 @@ Template.indexInformation.onRendered(function () {
     });
 });
 
-Template.indexInformation.executeQuery = function () {
+Template.indexInformation.executeQuery = function (historyParams) {
     Template.browseCollection.initExecuteQuery();
     var connection = Connections.findOne({_id: Session.get(Template.strSessionConnection)});
     var selectedCollection = Session.get(Template.strSessionSelectedCollection);
-    var fullVal = $('#divFullInformation').iCheck('update')[0].checked;
+    var fullVal = historyParams ? historyParams.full : $('#divFullInformation').iCheck('update')[0].checked;
 
     var params = {
         full: fullVal
     };
 
     Meteor.call("indexInformation", connection, selectedCollection, fullVal, function (err, result) {
-        Template.renderAfterQueryExecution(err, result, false, "indexInformation", params);
+        Template.renderAfterQueryExecution(err, result, false, "indexInformation", params, (historyParams ? false : true));
     });
 };

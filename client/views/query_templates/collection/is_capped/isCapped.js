@@ -1,7 +1,7 @@
 /**
  * Created by RSercan on 3.1.2016.
  */
-Template.isCapped.executeQuery = function () {
+Template.isCapped.executeQuery = function (historyParams) {
     Template.browseCollection.initExecuteQuery();
     var connection = Connections.findOne({_id: Session.get(Template.strSessionConnection)});
     var selectedCollection = Session.get(Template.strSessionSelectedCollection);
@@ -10,6 +10,6 @@ Template.isCapped.executeQuery = function () {
         if (!result.result) {
             result.result = false;
         }
-        Template.renderAfterQueryExecution(err, result, false, "isCapped");
+        Template.renderAfterQueryExecution(err, result, false, "isCapped", {}, (historyParams ? false : true));
     });
 };

@@ -18,12 +18,12 @@ Template.createIndex.initializeOptions = function () {
     Template.setOptionsComboboxChangeEvent(cmb);
 };
 
-Template.createIndex.executeQuery = function () {
+Template.createIndex.executeQuery = function (historyParams) {
     Template.browseCollection.initExecuteQuery();
     var connection = Connections.findOne({_id: Session.get(Template.strSessionConnection)});
     var selectedCollection = Session.get(Template.strSessionSelectedCollection);
-    var options = Template.createIndexOptions.getOptions();
-    var fields = ace.edit("aceFields").getSession().getValue();
+    var options = historyParams ? historyParams.options : Template.createIndexOptions.getOptions();
+    var fields = historyParams ? JSON.stringify(historyParams.fields) : ace.edit("aceFields").getSession().getValue();
 
     fields = Template.convertAndCheckJSON(fields);
     if (fields["ERROR"]) {
@@ -44,6 +44,6 @@ Template.createIndex.executeQuery = function () {
     };
 
     Meteor.call("createIndex", connection, selectedCollection, fields, options, function (err, result) {
-        Template.renderAfterQueryExecution(err, result, false, "createIndex", params);
+        Template.renderAfterQueryExecution(err, result, false, "createIndex", params, (historyParams ? false : true));
     });
 };

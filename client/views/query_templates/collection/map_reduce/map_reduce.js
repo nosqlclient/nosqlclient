@@ -37,13 +37,13 @@ Template.mapReduce.initializeAceEditor = function (id) {
     });
 };
 
-Template.mapReduce.executeQuery = function () {
+Template.mapReduce.executeQuery = function (historyParams) {
     Template.browseCollection.initExecuteQuery();
     var connection = Connections.findOne({_id: Session.get(Template.strSessionConnection)});
     var selectedCollection = Session.get(Template.strSessionSelectedCollection);
-    var options = Template.mapReduceOptions.getOptions();
-    var map = ace.edit("aceMap").getSession().getValue();
-    var reduce = ace.edit("aceReduce").getSession().getValue();
+    var options = historyParams ? historyParams.options : Template.mapReduceOptions.getOptions();
+    var map = historyParams ? JSON.stringify(historyParams.map) : ace.edit("aceMap").getSession().getValue();
+    var reduce = historyParams ? JSON.stringify(historyParams.reduce) : ace.edit("aceReduce").getSession().getValue();
 
 
     if (map.parseFunction() == null) {
@@ -71,6 +71,6 @@ Template.mapReduce.executeQuery = function () {
     };
 
     Meteor.call("mapReduce", connection, selectedCollection, map, reduce, options, function (err, result) {
-        Template.renderAfterQueryExecution(err, result, false, "mapReduce", params);
+        Template.renderAfterQueryExecution(err, result, false, "mapReduce", params, (historyParams ? false : true));
     });
 };

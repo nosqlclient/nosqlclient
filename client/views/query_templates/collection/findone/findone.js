@@ -20,12 +20,12 @@ Template.findOne.initializeOptions = function () {
     Template.setOptionsComboboxChangeEvent(cmb);
 };
 
-Template.findOne.executeQuery = function () {
+Template.findOne.executeQuery = function (historyParams) {
     Template.browseCollection.initExecuteQuery();
     var connection = Connections.findOne({_id: Session.get(Template.strSessionConnection)});
     var selectedCollection = Session.get(Template.strSessionSelectedCollection);
-    var cursorOptions = Template.cursorOptions.getCursorOptions();
-    var selector = Template.selector.getValue();
+    var cursorOptions = historyParams ? historyParams.cursorOptions : Template.cursorOptions.getCursorOptions();
+    var selector = historyParams ? JSON.stringify(historyParams.selector) : Template.selector.getValue();
 
     selector = Template.convertAndCheckJSON(selector);
     if (selector["ERROR"]) {
@@ -46,6 +46,6 @@ Template.findOne.executeQuery = function () {
     };
 
     Meteor.call("findOne", connection, selectedCollection, selector, cursorOptions, function (err, result) {
-        Template.renderAfterQueryExecution(err, result, false, "findOne", params);
+        Template.renderAfterQueryExecution(err, result, false, "findOne", params, (historyParams ? false : true));
     });
 };

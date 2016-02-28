@@ -17,21 +17,21 @@ Template.geoNear.initializeOptions = function () {
     Template.setOptionsComboboxChangeEvent(cmb);
 };
 
-Template.geoNear.executeQuery = function () {
+Template.geoNear.executeQuery = function (historyParams) {
     Template.browseCollection.initExecuteQuery();
     var connection = Connections.findOne({_id: Session.get(Template.strSessionConnection)});
     var selectedCollection = Session.get(Template.strSessionSelectedCollection);
-    var xAxis = $('#inputXAxis').val();
+    var xAxis = historyParams ? historyParams.xAxis : $('#inputXAxis').val();
     if (xAxis) {
         xAxis = parseInt(xAxis);
     }
 
-    var yAxis = $('#inputYAxis').val();
+    var yAxis = historyParams ? historyParams.yAxis : $('#inputYAxis').val();
     if (yAxis) {
         yAxis = parseInt(yAxis);
     }
 
-    var options = Template.geoNearOptions.getOptions();
+    var options = historyParams ? historyParams.options : Template.geoNearOptions.getOptions();
     if (options["ERROR"]) {
         toastr.error("Syntax error: " + options["ERROR"]);
         Ladda.stopAll();
@@ -45,6 +45,6 @@ Template.geoNear.executeQuery = function () {
     };
 
     Meteor.call("geoNear", connection, selectedCollection, xAxis, yAxis, options, function (err, result) {
-        Template.renderAfterQueryExecution(err, result, false, "geoNear", params);
+        Template.renderAfterQueryExecution(err, result, false, "geoNear", params, (historyParams ? false : true));
     });
 };

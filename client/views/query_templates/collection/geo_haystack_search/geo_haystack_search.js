@@ -17,21 +17,21 @@ Template.geoHaystackSearch.initializeOptions = function () {
     Template.setOptionsComboboxChangeEvent(cmb);
 };
 
-Template.geoHaystackSearch.executeQuery = function () {
+Template.geoHaystackSearch.executeQuery = function (historyParams) {
     Template.browseCollection.initExecuteQuery();
     var connection = Connections.findOne({_id: Session.get(Template.strSessionConnection)});
     var selectedCollection = Session.get(Template.strSessionSelectedCollection);
-    var xAxis = $('#inputXAxis').val();
+    var xAxis = historyParams ? historyParams.xAxis : $('#inputXAxis').val();
     if (xAxis) {
         xAxis = parseInt(xAxis);
     }
 
-    var yAxis = $('#inputYAxis').val();
+    var yAxis = historyParams ? historyParams.yAxis : $('#inputYAxis').val();
     if (yAxis) {
         yAxis = parseInt(yAxis);
     }
 
-    var options = Template.geoHaystackSearchOptions.getOptions();
+    var options = historyParams ? historyParams.options : Template.geoHaystackSearchOptions.getOptions();
 
     if (options["ERROR"]) {
         toastr.error("Syntax error: " + options["ERROR"]);
@@ -46,6 +46,6 @@ Template.geoHaystackSearch.executeQuery = function () {
     };
 
     Meteor.call("geoHaystackSearch", connection, selectedCollection, xAxis, yAxis, options, function (err, result) {
-        Template.renderAfterQueryExecution(err, result, false, "geoHaystackSearch", params);
+        Template.renderAfterQueryExecution(err, result, false, "geoHaystackSearch", params, (historyParams ? false : true));
     });
 };

@@ -18,11 +18,11 @@ Template.aggregate.initializeAceEditor = function () {
     });
 };
 
-Template.aggregate.executeQuery = function () {
+Template.aggregate.executeQuery = function (historyParams) {
     Template.browseCollection.initExecuteQuery();
     var connection = Connections.findOne({_id: Session.get(Template.strSessionConnection)});
     var selectedCollection = Session.get(Template.strSessionSelectedCollection);
-    var pipeline = ace.edit("acePipeline").getSession().getValue();
+    var pipeline = historyParams ? JSON.stringify(historyParams.pipeline) : ace.edit("acePipeline").getSession().getValue();
 
     pipeline = Template.convertAndCheckJSON(pipeline);
     if (pipeline["ERROR"]) {
@@ -36,6 +36,6 @@ Template.aggregate.executeQuery = function () {
     };
 
     Meteor.call("aggregate", connection, selectedCollection, pipeline, function (err, result) {
-        Template.renderAfterQueryExecution(err, result, false, "aggregate", params);
+        Template.renderAfterQueryExecution(err, result, false, "aggregate", params, (historyParams ? false : true));
     });
 };

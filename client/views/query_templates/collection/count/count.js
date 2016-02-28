@@ -1,11 +1,11 @@
 /**
  * Created by RSercan on 2.1.2016.
  */
-Template.count.executeQuery = function () {
+Template.count.executeQuery = function (historyParams) {
     Template.browseCollection.initExecuteQuery();
     var connection = Connections.findOne({_id: Session.get(Template.strSessionConnection)});
     var selectedCollection = Session.get(Template.strSessionSelectedCollection);
-    var selector = Template.selector.getValue();
+    var selector = historyParams ? JSON.stringify(historyParams.selector) : Template.selector.getValue();
 
     selector = Template.convertAndCheckJSON(selector);
     if (selector["ERROR"]) {
@@ -19,6 +19,6 @@ Template.count.executeQuery = function () {
     };
 
     Meteor.call("count", connection, selectedCollection, selector, function (err, result) {
-        Template.renderAfterQueryExecution(err, result, false, "count", params);
+        Template.renderAfterQueryExecution(err, result, false, "count", params, (historyParams ? false : true));
     });
 };

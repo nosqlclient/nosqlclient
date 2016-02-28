@@ -18,11 +18,11 @@ Template.insertMany.initializeAceEditor = function () {
     });
 };
 
-Template.insertMany.executeQuery = function () {
+Template.insertMany.executeQuery = function (historyParams) {
     Template.browseCollection.initExecuteQuery();
     var connection = Connections.findOne({_id: Session.get(Template.strSessionConnection)});
     var selectedCollection = Session.get(Template.strSessionSelectedCollection);
-    var docs = ace.edit("aceDocs").getSession().getValue();
+    var docs = historyParams ? JSON.stringify(historyParams.docs) : ace.edit("aceDocs").getSession().getValue();
 
     docs = Template.convertAndCheckJSON(docs);
     if (docs["ERROR"]) {
@@ -42,6 +42,6 @@ Template.insertMany.executeQuery = function () {
     };
 
     Meteor.call("insertMany", connection, selectedCollection, docs, function (err, result) {
-        Template.renderAfterQueryExecution(err, result, false, "insertMany", params);
+        Template.renderAfterQueryExecution(err, result, false, "insertMany", params, (historyParams ? false : true));
     });
 };

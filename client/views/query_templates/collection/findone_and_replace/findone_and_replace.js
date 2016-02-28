@@ -31,13 +31,13 @@ Template.findOneAndReplace.initializeOptions = function () {
     Template.setOptionsComboboxChangeEvent(cmb);
 };
 
-Template.findOneAndReplace.executeQuery = function () {
+Template.findOneAndReplace.executeQuery = function (historyParams) {
     Template.browseCollection.initExecuteQuery();
     var connection = Connections.findOne({_id: Session.get(Template.strSessionConnection)});
     var selectedCollection = Session.get(Template.strSessionSelectedCollection);
-    var options = Template.findOneModifyOptions.getOptions();
-    var selector = Template.selector.getValue();
-    var replaceObject = ace.edit("aceReplacement").getSession().getValue();
+    var options = historyParams ? historyParams.options : Template.findOneModifyOptions.getOptions();
+    var selector = historyParams ? JSON.stringify(historyParams.selector) : Template.selector.getValue();
+    var replaceObject = historyParams ? JSON.stringify(historyParams.replaceObject) : ace.edit("aceReplacement").getSession().getValue();
 
     selector = Template.convertAndCheckJSON(selector);
     if (selector["ERROR"]) {
@@ -66,6 +66,6 @@ Template.findOneAndReplace.executeQuery = function () {
     };
 
     Meteor.call("findOneAndReplace", connection, selectedCollection, selector, replaceObject, options, function (err, result) {
-        Template.renderAfterQueryExecution(err, result, false, "findOneAndReplace", params);
+        Template.renderAfterQueryExecution(err, result, false, "findOneAndReplace", params, (historyParams ? false : true));
     });
 };

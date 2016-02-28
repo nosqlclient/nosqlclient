@@ -10,12 +10,12 @@ Template.distinct.events({
     }
 });
 
-Template.distinct.executeQuery = function () {
+Template.distinct.executeQuery = function (historyParams) {
     Template.browseCollection.initExecuteQuery();
     var connection = Connections.findOne({_id: Session.get(Template.strSessionConnection)});
     var selectedCollection = Session.get(Template.strSessionSelectedCollection);
-    var selector = Template.selector.getValue();
-    var fieldName = $('#inputField').val();
+    var selector = historyParams ? JSON.stringify(historyParams.selector) : Template.selector.getValue();
+    var fieldName = historyParams ? historyParams.fieldName : $('#inputField').val();
 
     selector = Template.convertAndCheckJSON(selector);
     if (selector["ERROR"]) {
@@ -30,6 +30,6 @@ Template.distinct.executeQuery = function () {
     };
 
     Meteor.call("distinct", connection, selectedCollection, selector, fieldName, function (err, result) {
-        Template.renderAfterQueryExecution(err, result, false, "distinct", params);
+        Template.renderAfterQueryExecution(err, result, false, "distinct", params, (historyParams ? false : true));
     });
 };

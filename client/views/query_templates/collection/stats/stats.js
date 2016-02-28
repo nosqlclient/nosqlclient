@@ -23,18 +23,18 @@ Template.stats.initializeOptions = function () {
     Template.setOptionsComboboxChangeEvent(cmb);
 };
 
-Template.stats.executeQuery = function () {
+Template.stats.executeQuery = function (historyParams) {
     Template.browseCollection.initExecuteQuery();
     var connection = Connections.findOne({_id: Session.get(Template.strSessionConnection)});
     var selectedCollection = Session.get(Template.strSessionSelectedCollection);
-    var options = Template.stats.getOptions();
+    var options = historyParams ? historyParams.options : Template.stats.getOptions();
 
     var params = {
         options: options
     };
 
     Meteor.call("stats", connection, selectedCollection, options, function (err, result) {
-        Template.renderAfterQueryExecution(err, result, false, "stats", params);
+        Template.renderAfterQueryExecution(err, result, false, "stats", params, (historyParams ? false : true));
     });
 };
 
