@@ -1,11 +1,13 @@
 sudo: required
 language: node_js
 node_js: 
-  - "0.12"
+  - 0.12
 install: 
-  - "curl https://install.meteor.com | /bin/sh"
-  - "meteor update"
+  - curl https://install.meteor.com | /bin/sh
+  - meteor update
+  - npm install -g chimp
 script: 
-  - "meteor"
+  - meteor
+  - chimp --ddp=http://localhost:3000 --watch --path=tests
 env:
-  - "SELENIUM_BROWSER=phantomjs"
+  - SELENIUM_BROWSER=phantomjs
