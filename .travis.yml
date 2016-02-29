@@ -1,8 +1,10 @@
 language: node_js
-node_js:
+node_js: 
   - "0.12"
-before_install:
-  - wget https://raw.github.com/arunoda/travis-ci-laika/master/Makefile
-  - curl https://install.meteor.com | /bin/sh
-services:
-  - mongodb
+install: 
+  - "curl https://install.meteor.com | /bin/sh"
+  - "meteor update"
+script: 
+  - "meteor --test --once"
+env:
+  - "SELENIUM_BROWSER=phantomjs"
