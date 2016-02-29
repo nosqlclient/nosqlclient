@@ -2,7 +2,11 @@ language: node_js
 node_js:
   - "0.12"
 before_install:
-  - "curl -L https://raw.githubusercontent.com/arunoda/travis-ci-laika/master/configure.sh | /bin/sh"
+  - wget https://raw.github.com/arunoda/travis-ci-laika/master/Makefile
+  - curl https://install.meteor.com | /bin/sh
+  - npm install -g phantomjs
+  - npm install -g meteorite
+  - npm install -g laika
 services:
   - mongodb
 env:
