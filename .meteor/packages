@@ -22,7 +22,7 @@ zimme:active-route
 okgrow:router-autoscroll
 less
 twbs:bootstrap@3.3.6
-meteorhacks:npm
+#meteorhacks:npm
 npm-container
 momentjs:moment
 arch:ace-editor
