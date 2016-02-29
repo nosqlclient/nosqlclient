@@ -6,6 +6,6 @@ install:
   - "curl https://install.meteor.com | /bin/sh"
   - "meteor update"
 script: 
-  - "meteor --test --once"
+  - "meteor"
 env:
   - "SELENIUM_BROWSER=phantomjs"
