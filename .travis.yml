@@ -1,10 +1,11 @@
+sudo: required
 language: node_js
 node_js: 
   - "0.12"
 install: 
   - "curl https://install.meteor.com | /bin/sh"
-  - "~/.meteor/bin/meteor update"
+  - "meteor update"
 script: 
-  - "~/.meteor/bin/meteor --test --once"
+  - "meteor --test --once"
 env:
   - "SELENIUM_BROWSER=phantomjs"
