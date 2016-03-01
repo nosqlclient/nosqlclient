@@ -1,6 +1,3 @@
-/**
- * Created by sercan on 01.03.2016.
- */
 Feature: Create a Connection
 
 As a visitor to the mongoclient.com, I can manage connections.
