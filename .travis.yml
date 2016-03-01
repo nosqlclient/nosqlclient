@@ -30,8 +30,8 @@ cache:
     - "src/.meteor/local/mirrors"
 
 before_cache:
-  - rm -rf $HOME/build/xolvio/automated-testing-best-practices/.meteor/local/log
-  - rm -rf $HOME/build/xolvio/automated-testing-best-practices/.meteor/local/run
+  - rm -rf $HOME/build/rsercano/mongoclient/.meteor/local/log
+  - rm -rf $HOME/build/rsercano/mongoclient/.meteor/local/run
 
 before_install:
   # Download Meteor
@@ -50,7 +50,7 @@ before_install:
   - export PATH=$MONGO_HOME/bin:$PATH
   - mkdir -p $HOME/data/db
   - $MONGO_HOME/bin/mongod --dbpath $HOME/data/db > $HOME/mongo.log 2>&1 &
-  - cd $HOME/build/xolvio/automated-testing-best-practices
+  - cd $HOME/build/rsercano/mongoclient
 
   # Install NPM dependencies
   - npm install
@@ -59,7 +59,7 @@ before_install:
   - .scripts/cache-velocity.js
 
   # Cache Selenium & ChromeDriver
-  - ./node_modules/.bin/chimp --path=content # there are no tests in content
+  - ./node_modules/.bin/chimp --path=tests
 
   # Make sure Mongo has started
   - until nc -z localhost 27017 ; do echo Waiting for MongoDB; sleep 1; done
