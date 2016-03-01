@@ -7,7 +7,7 @@ install:
   - meteor update
   - npm install -g chimp
 script: 
-  - meteor &
+  - meteor
   - chimp --ddp=http://localhost:3000 --watch --path=tests
 env:
   - SELENIUM_BROWSER=phantomjs
