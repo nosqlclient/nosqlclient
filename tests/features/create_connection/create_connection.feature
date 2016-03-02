@@ -7,6 +7,6 @@ Background:
   Given I am on the site
 
 Scenario: Visitor creates a connection
-  When I name a widget "myConnection"
+  When I name a connection "myConnection"
   And submit the form
   Then I should see a list of connections names containing "myConnection"
