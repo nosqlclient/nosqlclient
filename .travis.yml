@@ -55,6 +55,8 @@ before_install:
   # Install NPM dependencies
   - npm install
 
+  - npm install chimp
+
   # Cache Velocity Meteor Release
   #- .scripts/cache-velocity.js
 
