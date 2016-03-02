@@ -56,10 +56,10 @@ before_install:
   - npm install
 
   # Cache Velocity Meteor Release
-  #- .scripts/cache-velocity.js
+  - .scripts/cache-velocity.js
 
   # Cache Selenium & ChromeDriver
-  - ./node_modules/.bin/chimp --path=tests
+  - ./node_modules/.bin/chimp --path=content # there are no tests in content
 
   # Make sure Mongo has started
   - until nc -z localhost 27017 ; do echo Waiting for MongoDB; sleep 1; done
