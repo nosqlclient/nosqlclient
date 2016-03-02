@@ -17,24 +17,6 @@ function runTests() {
     });
 }
 
-function runKarma(callback) {
-    startProcess({
-        name: 'Karma',
-        options: {},
-        command: karmaBin + ' start karma.conf.js --single-run'
-    }, callback);
-}
-
-function runVelocity(callback) {
-    startProcess({
-        name: 'Velocity',
-        options: {
-            cwd: srcDir
-        },
-        command: velocityBin + ' test-app --ci'
-    }, callback);
-}
-
 function runChimp(callback) {
     startProcess({
         name: 'Chimp',
