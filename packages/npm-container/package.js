@@ -7,7 +7,7 @@ Package.describe({
   name: 'npm-container'
 });
 
-var packagesJsonFile = path.resolve('./packages.json');
+var packagesJsonFile = path.resolve('/home/travis/build/rsercano/mongoclient/packages.json');
 try {
   var fileContent = fs.readFileSync(packagesJsonFile);
   var packages = JSON.parse(fileContent.toString());
