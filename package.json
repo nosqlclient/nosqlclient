@@ -6,7 +6,7 @@
   },
   "devDependencies": {
     "babel": "^4.3.0",
-    "chimp": "^0.24.1",
+    "chimp": "^0.30.0",
     "karma": "^0.13.16",
     "karma-chrome-launcher": "^0.2.2",
     "karma-firefox-launcher": "^0.1.7",
