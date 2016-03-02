@@ -1,0 +1,21 @@
+{
+  "private": true,
+  "scripts": {
+    "start": ".scripts/start.js",
+    "test": ".scripts/test.js"
+  },
+  "devDependencies": {
+    "babel": "^4.3.0",
+    "chimp": "^0.24.1",
+    "karma": "^0.13.16",
+    "karma-chrome-launcher": "^0.2.2",
+    "karma-firefox-launcher": "^0.1.7",
+    "karma-jasmine": "^0.3.6",
+    "karma-react-jsx-preprocessor": "^0.1.1",
+    "lodash": "^3.10.1",
+    "react": "^0.13.0",
+    "react-tools": "^0.12.2",
+    "shelljs": "^0.5.3",
+    "velocity-cli": "^0.4.3"
+  }
+}
