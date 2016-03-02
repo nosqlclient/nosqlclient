@@ -3,11 +3,7 @@ var path = require('path'),
     extend = require('util')._extend,
     exec = require('child_process').exec;
 
-var baseDir = path.resolve(__dirname, '..'),
-    srcDir = path.resolve(baseDir, 'src'),
-    karmaBin = path.resolve(baseDir, 'node_modules/.bin/karma'),
-    velocityBin = path.resolve(baseDir, 'node_modules/.bin/velocity'),
-    chimpScript = path.resolve(__dirname, 'start.js');
+var chimpScript = path.resolve(__dirname, 'start.js');
 
 runTests();
 

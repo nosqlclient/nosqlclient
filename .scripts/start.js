@@ -6,7 +6,7 @@ var path = require('path'),
    processes = [];
 
 var baseDir = path.resolve(__dirname, '..'),
-   srcDir = path.resolve(baseDir, 'src'),
+   srcDir = path.resolve(baseDir, ''),
    chimpBin = path.resolve(baseDir, 'node_modules/.bin/chimp');
 
 var appOptions = {
