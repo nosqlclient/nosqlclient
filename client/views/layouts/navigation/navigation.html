@@ -44,33 +44,42 @@
                         </a>
                     </li>
 
-                    <li class="{{isActiveRoute regex='databaseDumpRestore'}}">
-                        <a class="aNavigations" href="{{pathFor route='databaseDumpRestore'}}"><i
-                                class="fa fa-download"></i> <span
-                                class="nav-label">Database Dump/Restore</span>
-                            <span class="pull-right label label-primary">BETA</span>
+                    <li>
+                        <a href=""><i
+                                class="fa fa-wrench"></i> <span
+                                class="nav-label">Management</span>
                         </a>
-                    </li>
 
-                    <li class="{{isActiveRoute regex='fileManagement'}}">
-                        <a class="aNavigations" href="{{pathFor route='fileManagement'}}"><i
-                                class="fa fa-file"></i> <span
-                                class="nav-label">File Management</span>
-                        </a>
-                    </li>
+                        <ul class="nav nav-second-level collapse in">
+                            <li class="{{isActiveRoute regex='databaseDumpRestore'}}">
+                                <a class="aNavigations" href="{{pathFor route='databaseDumpRestore'}}"><i
+                                        class="fa fa-download"></i> <span
+                                        class="nav-label">Database Dump/Restore</span>
+                                    <span class="pull-right label label-primary">BETA</span>
+                                </a>
+                            </li>
 
-                    <li class="{{isActiveRoute regex='editDocument'}}">
-                        <a class="aNavigations" href="{{pathFor route='editDocument'}}"><i
-                                class="fa fa-edit"></i> <span
-                                class="nav-label">Easy Edit</span>
-                        </a>
-                    </li>
+                            <li class="{{isActiveRoute regex='fileManagement'}}">
+                                <a class="aNavigations" href="{{pathFor route='fileManagement'}}"><i
+                                        class="fa fa-file"></i> <span
+                                        class="nav-label">File Management</span>
+                                </a>
+                            </li>
 
-                    <li class="{{isActiveRoute regex='adminQueries'}}">
-                        <a class="aNavigations" href="{{pathFor route='adminQueries'}}"><i
-                                class="fa fa-key"></i> <span
-                                class="nav-label">Admin Queries</span>
-                        </a>
+                            <li class="{{isActiveRoute regex='adminQueries'}}">
+                                <a class="aNavigations" href="{{pathFor route='adminQueries'}}"><i
+                                        class="fa fa-key"></i> <span
+                                        class="nav-label">Admin Queries</span>
+                                </a>
+                            </li>
+
+                            <li class="{{isActiveRoute regex='editDocument'}}">
+                                <a class="aNavigations" href="{{pathFor route='editDocument'}}"><i
+                                        class="fa fa-edit"></i> <span
+                                        class="nav-label">Easy Edit</span>
+                                </a>
+                            </li>
+                        </ul>
                     </li>
 
                     <li>
@@ -78,18 +87,19 @@
                                 class="nav-label">Collections</span>
                             <span id="btnAddCollection" class="pull-right label label-info">Add</span>
                         </a>
+
+                        <ul id="listCollectionNames" class="nav nav-second-level">
+                            {{#each getCollectionNames}}
+                                <li>
+                                    <a class="navCollection" href="{{pathFor route='browseCollection'}}"><i
+                                            class="fa fa-book"></i> <span
+                                            class="nav-label">{{name}}</span>
+                                        <span id="btnDropCollection" class="pull-right label label-danger">Drop</span>
+                                    </a>
+                                </li>
+                            {{/each}}
+                        </ul>
                     </li>
-                    <ul id="listCollectionNames" class="nav nav-second-level collapse in">
-                        {{#each getCollectionNames}}
-                            <li>
-                                <a class="navCollection" href="{{pathFor route='browseCollection'}}"><i
-                                        class="fa fa-book"></i> <span
-                                        class="nav-label">{{name}}</span>
-                                    <span id="btnDropCollection" class="pull-right label label-danger">Drop</span>
-                                </a>
-                            </li>
-                        {{/each}}
-                    </ul>
                 {{/if}}
 
                 {{#if getSystemCollectionNames}}
@@ -97,17 +107,18 @@
                         <a href="#"><i class="fa fa-server"></i> <span
                                 class="nav-label">System</span>
                         </a>
+
+                        <ul id="listSystemCollections" class="nav nav-second-level collapse in">
+                            {{#each getSystemCollectionNames}}
+                                <li>
+                                    <a class="navCollection" href="{{pathFor route='browseCollection'}}"><i
+                                            class="fa fa-book"></i> <span
+                                            class="nav-label">{{name}}</span>
+                                    </a>
+                                </li>
+                            {{/each}}
+                        </ul>
                     </li>
-                    <ul id="listSystemCollections" class="nav nav-second-level collapse in">
-                        {{#each getSystemCollectionNames}}
-                            <li>
-                                <a class="navCollection" href="{{pathFor route='browseCollection'}}"><i
-                                        class="fa fa-book"></i> <span
-                                        class="nav-label">{{name}}</span>
-                                </a>
-                            </li>
-                        {{/each}}
-                    </ul>
                 {{/if}}
             </ul>
         </div>
