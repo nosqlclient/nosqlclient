@@ -1,7 +1,7 @@
 <template name="navigation">
     <nav class="navbar-default navbar-static-side " role="navigation">
         <div class="sidebar-collapse">
-            <ul class="nav" id="side-menu">
+            <ul class="nav metismenu" id="side-menu">
                 <li class="nav-header">
                     <div class="dropdown profile-element">
                         <a data-toggle="dropdown" class="dropdown-toggle" href="#">
@@ -48,9 +48,10 @@
                         <a href=""><i
                                 class="fa fa-wrench"></i> <span
                                 class="nav-label">Management</span>
+                            <span class="fa arrow"></span>
                         </a>
 
-                        <ul class="nav nav-second-level collapse in">
+                        <ul class="nav nav-second-level collapse out">
                             <li class="{{isActiveRoute regex='databaseDumpRestore'}}">
                                 <a class="aNavigations" href="{{pathFor route='databaseDumpRestore'}}"><i
                                         class="fa fa-download"></i> <span
@@ -85,7 +86,8 @@
                     <li>
                         <a href=""><i class="fa fa-dashboard"></i> <span
                                 class="nav-label">Collections</span>
-                            <span id="btnAddCollection" class="pull-right label label-info">Add</span>
+                            <span id="btnAddCollection" class="label label-info" style="margin-left: 90px;">Add</span>
+                            <span class="fa arrow pull-right"></span>
                         </a>
 
                         <ul id="listCollectionNames" class="nav nav-second-level">
@@ -100,25 +102,28 @@
                             {{/each}}
                         </ul>
                     </li>
-                {{/if}}
 
-                {{#if getSystemCollectionNames}}
-                    <li>
-                        <a href="#"><i class="fa fa-server"></i> <span
-                                class="nav-label">System</span>
-                        </a>
+                    {{#if getSystemCollectionNames}}
+                        <li>
+                            <a href="#"><i class="fa fa-server"></i> <span
+                                    class="nav-label">System</span>
+                                <span class="fa arrow pull-right"></span>
+                            </a>
 
-                        <ul id="listSystemCollections" class="nav nav-second-level collapse in">
-                            {{#each getSystemCollectionNames}}
-                                <li>
-                                    <a class="navCollection" href="{{pathFor route='browseCollection'}}"><i
-                                            class="fa fa-book"></i> <span
-                                            class="nav-label">{{name}}</span>
-                                    </a>
-                                </li>
-                            {{/each}}
-                        </ul>
-                    </li>
+                            <ul id="listSystemCollections" class="nav nav-second-level collapse out">
+                                {{#each getSystemCollectionNames}}
+                                    <li>
+                                        <a class="navCollection" href="{{pathFor route='browseCollection'}}"><i
+                                                class="fa fa-book"></i> <span
+                                                class="nav-label">{{name}}</span>
+                                        </a>
+                                    </li>
+                                {{/each}}
+                            </ul>
+                        </li>
+                    {{/if}}
+
+                    {{initializeMetisMenu}}
                 {{/if}}
             </ul>
         </div>

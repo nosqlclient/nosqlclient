@@ -220,6 +220,7 @@ Template.topNavbar.events({
                 text: "Successfuly connected to " + connection.name,
                 type: "success"
             });
+
         });
     },
 

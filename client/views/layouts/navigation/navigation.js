@@ -1,8 +1,3 @@
-Template.navigation.rendered = function () {
-    // Initialize metisMenu
-    $('#side-menu').metisMenu();
-};
-
 Template.navigation.events({
     'click #btnAddCollection': function (e) {
         e.preventDefault();
@@ -127,6 +122,12 @@ Template.navigation.events({
 });
 
 Template.navigation.helpers({
+    'initializeMetisMenu': function () {
+        Meteor.setTimeout(function () {
+            $('#side-menu').metisMenu();
+        });
+    },
+
     'getCollectionNames': function () {
         var collectionNames = Session.get(Template.strSessionCollectionNames);
         if (collectionNames != undefined) {
