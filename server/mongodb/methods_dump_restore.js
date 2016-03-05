@@ -8,7 +8,7 @@ Meteor.methods({
         var path = dumpInfo.filePath.substring(0, dumpInfo.filePath.indexOf('/'));
         var fileName = dumpInfo.filePath.substring(dumpInfo.filePath.indexOf('/') + 1);
 
-        console.log('[DUMP]', 'Restoring dump ' + JSON.stringify(dumpInfo) + ' to the ' + connectionUrl);
+        LOGGER.info('[restoreDump]', connectionUrl, dumpInfo);
         try {
             restore({
                 uri: connectionUrl,
@@ -17,13 +17,12 @@ Meteor.methods({
                 drop: true,
                 callback: Meteor.bindEnvironment(function () {
                     dumpInfo.status = DUMP_STATUS.FINISHED;
-                    console.log("[DUMP]','Dump has successfuly restored: " + JSON.stringify(dumpInfo));
                     Meteor.call('updateDump', dumpInfo);
                 })
             });
         }
         catch (ex) {
-            console.log('[DUMP]', 'Unexpected exception during dump process: ', ex);
+            LOGGER.error('[restoreDump]', ex);
             dumpInfo.status = DUMP_STATUS.ERROR;
             Meteor.call('updateDump', dumpInfo);
         }
@@ -37,7 +36,7 @@ Meteor.methods({
         var backup = Meteor.npmRequire('mongodb-backup');
         var fs = Meteor.npmRequire('fs');
 
-        console.log('[DUMP]', 'Taking dump to the path: ' + path + " with fileName: " + fileName);
+        LOGGER.info('[takeDump]', connectionUrl, path);
         try {
             backup({
                 uri: connectionUrl,
@@ -56,14 +55,12 @@ Meteor.methods({
                         status: DUMP_STATUS.NOT_IMPORTED
                     };
 
-                    console.log("[DUMP]','Trying to save dump: " + JSON.stringify(dump));
                     Meteor.call('saveDump', dump);
-                    console.log('[DUMP]', 'Dump process has finished');
                 })
             });
         }
         catch (ex) {
-            console.log('[DUMP]', 'Unexpected exception during dump process: ', ex);
+            LOGGER.error('[takeDump]', ex);
         }
 
     }

@@ -7,8 +7,7 @@ Meteor.methods({
         var connectionOptions = getConnectionOptions();
 
         var mongodbApi = Meteor.npmRequire('mongodb').MongoClient;
-
-        console.log('[Admin Query]', 'Connection: ' + connectionUrl + ', ConnectionOptions: ' + JSON.stringify(connectionOptions) + ', MethodArray: [stats]');
+        LOGGER.info('[stats]', connectionUrl, connectionOptions);
 
         var result = Async.runSync(function (done) {
             mongodbApi.connect(connectionUrl, connectionOptions, function (mainError, db) {
@@ -28,6 +27,7 @@ Meteor.methods({
                     });
                 }
                 catch (ex) {
+                    LOGGER.error('[stats]', ex);
                     done(new Meteor.Error(ex.message), null);
                     if (db) {
                         db.close();
@@ -156,7 +156,7 @@ var proceedQueryExecution = function (connection, methodArray) {
 
     var mongodbApi = Meteor.npmRequire('mongodb').MongoClient;
 
-    console.log('[Admin Query]', 'Connection: ' + connectionUrl + ', ConnectionOptions: ' + JSON.stringify(connectionOptions) + ', MethodArray: ' + JSON.stringify(methodArray));
+    LOGGER.info(methodArray, connectionUrl, connectionOptions);
 
     var result = Async.runSync(function (done) {
         mongodbApi.connect(connectionUrl, connectionOptions, function (mainError, db) {
@@ -170,7 +170,7 @@ var proceedQueryExecution = function (connection, methodArray) {
             try {
                 var execution = db.admin();
                 if (connection.user && connection.password) {
-                    execution.authenticate(connection.user, connection.password, function (authError, result) {
+                    execution.authenticate(connection.user, connection.password, function (authError) {
                         if (authError) {
                             done(authError, null);
                             if (db) {
@@ -229,6 +229,7 @@ var proceedQueryExecution = function (connection, methodArray) {
                 }
             }
             catch (ex) {
+                LOGGER.error(methodArray, ex);
                 done(new Meteor.Error(ex.message), null);
                 if (db) {
                     db.close();

@@ -2,29 +2,6 @@
  * Created by RSercan on 27.12.2015.
  */
 Meteor.methods({
-    'connect': function (connection) {
-        var connectionUrl = getConnectionUrl(connection);
-        var connectionOptions = getConnectionOptions();
-
-        console.log('connecting to : ' + connectionUrl + ' with options: ' + JSON.stringify(connectionOptions));
-
-        var mongodbApi = Meteor.npmRequire('mongodb').MongoClient;
-
-        return Async.runSync(function (done) {
-            mongodbApi.connect(connectionUrl, connectionOptions, function (err, db) {
-                if (err || db == null || db == undefined) {
-                    console.log('could not connect, err: ' + err);
-                    done(err, db);
-                } else {
-                    db.listCollections().toArray(function (err, collections) {
-                        db.close();
-                        done(err, collections);
-                    });
-                }
-            });
-        });
-    },
-
     'updateOne': function (connection, selectedCollection, selector, setObject, options) {
         var methodArray = [
             {
@@ -247,119 +224,6 @@ Meteor.methods({
             }
         ];
         return proceedQueryExecution(connection, selectedCollection, methodArray);
-    },
-
-    'dropDB': function (connection) {
-        var connectionUrl = getConnectionUrl(connection);
-        var connectionOptions = getConnectionOptions();
-        var mongodbApi = Meteor.npmRequire('mongodb').MongoClient;
-
-        console.log('Dropping database: ', connection);
-        return Async.runSync(function (done) {
-            mongodbApi.connect(connectionUrl, connectionOptions, function (err, db) {
-                db.dropDatabase(function (err, result) {
-                    db.close();
-                    done(err, result);
-                });
-            });
-        });
-    },
-
-    'dropCollection': function (connection, collectionName) {
-        var connectionUrl = getConnectionUrl(connection);
-        var connectionOptions = getConnectionOptions();
-        var mongodbApi = Meteor.npmRequire('mongodb').MongoClient;
-
-        console.log('Dropping collection: ' + collectionName + ' for connection: ' + connectionUrl);
-        return Async.runSync(function (done) {
-            mongodbApi.connect(connectionUrl, connectionOptions, function (err, db) {
-                var collection = db.collection(collectionName);
-                try {
-                    collection.drop(function (dropError) {
-                        if (dropError) {
-                            console.log('[ERROR]', 'Could not drop collection: ' + collection.collectionName, dropError);
-                        }
-                        else {
-                            console.log('[SUCCESS]', 'Dropped: ' + collection.collectionName);
-                        }
-                        done(dropError, null);
-                        if (db) {
-                            db.close();
-                        }
-                    });
-                }
-                catch (ex) {
-                    done(new Meteor.Error(ex.message), null);
-                    if (db) {
-                        db.close();
-                    }
-                }
-            });
-        });
-    },
-
-    'dropAllCollections': function (connection) {
-        var connectionUrl = getConnectionUrl(connection);
-        var connectionOptions = getConnectionOptions();
-        var mongodbApi = Meteor.npmRequire('mongodb').MongoClient;
-
-        return Async.runSync(function (done) {
-            mongodbApi.connect(connectionUrl, connectionOptions, function (err, db) {
-                db.collections(function (err, collections) {
-                    collections.forEach(function (collection) {
-                        if (!collection.collectionName.startsWith('system')) {
-                            collection.drop(function (dropError) {
-                                if (dropError) {
-                                    console.log('[ERROR]', 'Could not drop collection: ' + collection.collectionName, dropError);
-                                }
-                                else {
-                                    console.log('[SUCCESS]', 'Dropped: ' + collection.collectionName);
-                                }
-                            });
-                        }
-                    });
-
-                    // TODO drop takes some time it should be synced
-                    //if (db) {
-                    //    db.close();
-                    //}
-                    done(err, {});
-                });
-            });
-        });
-    },
-
-    'createCollection': function (connection, collectionName, options) {
-        var connectionUrl = getConnectionUrl(connection);
-        var connectionOptions = getConnectionOptions();
-        var mongodbApi = Meteor.npmRequire('mongodb').MongoClient;
-
-        console.log('Creating collection: ' + collectionName + ' for connection: ' + connectionUrl + " with options: " + JSON.stringify(options));
-        return Async.runSync(function (done) {
-            mongodbApi.connect(connectionUrl, connectionOptions, function (err, db) {
-                try {
-                    var collection = db.createCollection(collectionName, options, function (err, result) {
-                        if (err) {
-                            console.error('[ERROR]', 'Could not create collection: ', err);
-                        } else {
-                            console.log('[SUCCESS]', 'Created: ' + collectionName);
-                        }
-
-                        done(err, result);
-                        if (db) {
-                            db.close();
-                        }
-                    });
-
-                }
-                catch (ex) {
-                    done(new Meteor.Error(ex.message), null);
-                    if (db) {
-                        db.close();
-                    }
-                }
-            });
-        });
     }
 });
 
@@ -370,7 +234,8 @@ var proceedMapReduceExecution = function (connection, selectedCollection, map, r
 
     convertJSONtoBSON(options);
 
-    console.log('Connection: ' + connectionUrl + '/' + selectedCollection + ', Map: ' + map + ', Reduce: ' + reduce + ',Options: ' + JSON.stringify(options));
+    LOGGER.info('[mapReduce]', connectionUrl, connectionOptions, selectedCollection, map, reduce, options);
+
     var result = Async.runSync(function (done) {
         mongodbApi.connect(connectionUrl, connectionOptions, function (mainError, db) {
             if (mainError) {
@@ -404,6 +269,7 @@ var proceedMapReduceExecution = function (connection, selectedCollection, map, r
                 });
             }
             catch (ex) {
+                LOGGER.error('[mapReduce]', ex);
                 done(new Meteor.Error(ex.message), null);
                 if (db) {
                     db.close();
@@ -421,7 +287,7 @@ var proceedQueryExecution = function (connection, selectedCollection, methodArra
     var connectionOptions = getConnectionOptions();
     var mongodbApi = Meteor.npmRequire('mongodb').MongoClient;
 
-    console.log('[Collection Query]', 'Connection: ' + connectionUrl + '/' + selectedCollection + ', ConnectionOptions: ' + JSON.stringify(connectionOptions) + ', MethodArray: ' + JSON.stringify(methodArray));
+    LOGGER.info(methodArray, connectionUrl, connectionOptions, selectedCollection);
 
     var result = Async.runSync(function (done) {
         mongodbApi.connect(connectionUrl, connectionOptions, function (mainError, db) {
@@ -458,6 +324,7 @@ var proceedQueryExecution = function (connection, selectedCollection, methodArra
                 }
             }
             catch (ex) {
+                LOGGER.error(methodArray, ex);
                 done(new Meteor.Error(ex.message), null);
                 if (db) {
                     db.close();

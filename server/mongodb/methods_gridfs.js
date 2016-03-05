@@ -7,7 +7,8 @@ Meteor.methods({
         var connectionOptions = getConnectionOptions();
         var mongodbApi = Meteor.npmRequire('mongodb');
 
-        console.log('[GridFS Query]', 'Connection: ' + connectionUrl + ', deleting file ' + fileId + ' from bucket: ' + bucketName);
+        LOGGER.info('[deleteFile]', connectionUrl, connectionOptions, bucketName, fileId);
+
         var result = Async.runSync(function (done) {
             mongodbApi.MongoClient.connect(connectionUrl, connectionOptions, function (mainError, db) {
                 if (mainError) {
@@ -27,7 +28,7 @@ Meteor.methods({
                     });
                 }
                 catch (ex) {
-                    console.error('Unexpected exception during fetching file informations', ex);
+                    LOGGER.error('[deleteFile]', ex);
                     done(new Meteor.Error(ex.message), null);
                     if (db) {
                         db.close();
@@ -45,7 +46,8 @@ Meteor.methods({
         var connectionOptions = getConnectionOptions();
         var mongodbApi = Meteor.npmRequire('mongodb');
 
-        console.log('[GridFS Query]', 'Connection: ' + connectionUrl + ', getting file informations');
+        LOGGER.info('[getFileInfos]', connectionUrl, connectionOptions, bucketName);
+
         var result = Async.runSync(function (done) {
             mongodbApi.MongoClient.connect(connectionUrl, connectionOptions, function (mainError, db) {
                 if (mainError) {
@@ -66,7 +68,7 @@ Meteor.methods({
 
                 }
                 catch (ex) {
-                    console.error('Unexpected exception during fetching file informations', ex);
+                    LOGGER.error('[getFileInfos]', ex);
                     done(new Meteor.Error(ex.message), null);
                     if (db) {
                         db.close();
@@ -88,7 +90,9 @@ Meteor.methods({
         }
 
         blob = new Buffer(blob);
-        console.log('[GridFS Query]', 'Connection: ' + connectionUrl + ', getting file informations');
+
+        LOGGER.info('[uploadFile]', connectionUrl, connectionOptions, bucketName, fileName, contentType, metaData, aliases);
+
         return Async.runSync(function (done) {
             mongodbApi.MongoClient.connect(connectionUrl, connectionOptions, function (mainError, db) {
                 if (mainError) {
@@ -107,7 +111,6 @@ Meteor.methods({
                     });
                     uploadStream.end(blob);
                     uploadStream.once('finish', function () {
-                        console.log('[GridFS Query]', 'Successfuly uploaded file: ' + fileName);
                         done(null, null);
                         if (db) {
                             db.close();
@@ -115,7 +118,7 @@ Meteor.methods({
                     });
                 }
                 catch (ex) {
-                    console.error('Unexpected exception during fetching file informations', ex);
+                    LOGGER.error('[uploadFile]', ex);
                     done(new Meteor.Error(ex.message), null);
                     if (db) {
                         db.close();
@@ -130,7 +133,8 @@ Meteor.methods({
         var connectionOptions = getConnectionOptions();
         var mongodbApi = Meteor.npmRequire('mongodb');
 
-        console.log('[GridFS Query]', 'Connection: ' + connectionUrl + ', getting file information: ' + fileId + ' on bucket: ' + bucketName);
+        LOGGER.info('[getFile]', connectionUrl, connectionOptions, bucketName, fileId);
+
         var result = Async.runSync(function (done) {
             mongodbApi.MongoClient.connect(connectionUrl, connectionOptions, function (mainError, db) {
                 if (mainError) {
@@ -146,8 +150,7 @@ Meteor.methods({
                         if (doc) {
                             done(null, doc);
                         } else {
-                            console.log('[GridFS Query]', 'No file found for: ' + fileId + ' on bucket: ' + bucketName);
-                            done(new Meteor.Error(ex.message), null);
+                            done(new Meteor.Error('No file found for given ID'), null);
                         }
                         if (db) {
                             db.close();
@@ -155,7 +158,7 @@ Meteor.methods({
                     });
                 }
                 catch (ex) {
-                    console.error('Unexpected exception during fetching file informations', ex);
+                    LOGGER.error('[getFile]', ex);
                     done(new Meteor.Error(ex.message), null);
                     if (db) {
                         db.close();

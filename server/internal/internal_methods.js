@@ -3,7 +3,6 @@
  */
 Meteor.methods({
     'saveQueryHistory': function (history) {
-        console.log('[QUERY_HISTORY]', 'trying to save history: ' + JSON.stringify(history));
         var queryHistoryCount = QueryHistory.find().count({
             connectionId: history.connectionId,
             collectionName: history.collectionName
@@ -51,7 +50,6 @@ Meteor.methods({
 
     'saveConnection': function (connection) {
         if (Connections.findOne({name: connection.name}) != null) {
-            console.log('Connection name already exist: ' + JSON.stringify(connection) + ' could not save it');
             throw new Meteor.Error('Connection name already exist: ' + connection.name);
         }
 

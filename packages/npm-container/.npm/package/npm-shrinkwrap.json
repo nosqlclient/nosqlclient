@@ -347,6 +347,32 @@
           }
         }
       }
+    },
+    "winston": {
+      "version": "2.2.0",
+      "dependencies": {
+        "async": {
+          "version": "1.0.0"
+        },
+        "colors": {
+          "version": "1.0.3"
+        },
+        "cycle": {
+          "version": "1.0.3"
+        },
+        "eyes": {
+          "version": "0.1.8"
+        },
+        "isstream": {
+          "version": "0.1.2"
+        },
+        "pkginfo": {
+          "version": "0.3.1"
+        },
+        "stack-trace": {
+          "version": "0.0.9"
+        }
+      }
     }
   }
 }
