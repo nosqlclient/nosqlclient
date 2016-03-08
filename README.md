@@ -3,4 +3,4 @@
 
 <a href="https://d3js.org"><img src="http://www.mongoclient.com/img/logo/head_only_small.png" align="left" hspace="10" vspace="6"></a>
 
-Upcoming release is at 15th March. Untill then, to learn more simply send me a mail, ozdemirsercan27@gmail.com
+Upcoming first release is at 15th March. Untill then, to learn more you can browse [wiki](https://github.com/rsercano/mongoclient/wiki) page.
