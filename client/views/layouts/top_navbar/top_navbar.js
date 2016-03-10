@@ -82,6 +82,12 @@ Template.topNavbar.helpers({
 
 
 Template.topNavbar.events({
+    'click #btnRefreshCollections': function (e) {
+        e.preventDefault();
+
+        Template.topNavbar.connect(true);
+    },
+
     'click #btnCreateNewConnection': function () {
         $('#inputConnectionName').val('');
         $('#inputHost').val('');
@@ -195,33 +201,7 @@ Template.topNavbar.events({
         var laddaButton = $('#btnConnect').ladda();
         laddaButton.ladda('start');
 
-        var connection = Connections.findOne({_id: Session.get(Template.strSessionConnection)});
-        Meteor.call('connect', connection, function (err, result) {
-            if (err || result.error) {
-                var errorMessage;
-                if (err) {
-                    errorMessage = err.message;
-                } else {
-                    errorMessage = result.error.message;
-                }
-
-                toastr.error("Couldn't connect: " + errorMessage);
-                laddaButton.ladda('stop');
-                return;
-            }
-
-            laddaButton.ladda('stop');
-
-            Session.set(Template.strSessionCollectionNames, result.result);
-            $('#connectionModal').modal('hide');
-
-            swal({
-                title: "Connected!",
-                text: "Successfuly connected to " + connection.name,
-                type: "success"
-            });
-
-        });
+        Template.topNavbar.connect(false);
     },
 
     'click #btnDisconnect': function (e) {
@@ -259,3 +239,36 @@ Template.topNavbar.checkConnection = function (connection) {
 
     return true;
 };
+
+Template.topNavbar.connect = function (isRefresh) {
+    var connection = Connections.findOne({_id: Session.get(Template.strSessionConnection)});
+    Meteor.call('connect', connection, function (err, result) {
+        if (err || result.error) {
+            var errorMessage;
+            if (err) {
+                errorMessage = err.message;
+            } else {
+                errorMessage = result.error.message;
+            }
+
+            toastr.error("Couldn't connect: " + errorMessage);
+            Ladda.stopAll();
+            return;
+        }
+
+        Ladda.stopAll();
+
+        Session.set(Template.strSessionCollectionNames, result.result);
+        if (!isRefresh) {
+            $('#connectionModal').modal('hide');
+            swal({
+                title: "Connected!",
+                text: "Successfuly connected to " + connection.name,
+                type: "success"
+            });
+        }
+        else {
+            toastr.success("Successfuly refreshed collections");
+        }
+    });
+}

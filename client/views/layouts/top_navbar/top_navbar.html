@@ -12,6 +12,13 @@
                 </form>
             </div>
             <ul class="nav navbar-top-links navbar-right">
+                {{#if isConnected}}
+                    <li>
+                        <a id="btnRefreshCollections" href="">
+                            <i class="fa fa-refresh"></i> Refresh Collections
+                        </a>
+                    </li>
+                {{/if}}
                 <li>
                     <a href="{{pathFor route="settings"}}">
                         <i class="fa fa-archive"></i> Settings
