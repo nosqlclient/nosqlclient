@@ -2,21 +2,6 @@
  * Created by RSercan on 26.12.2015.
  */
 Meteor.methods({
-    'sendEmail': function (from, text) {
-        check([from, text], [String]);
-
-        // Let other method calls from the same client start running,
-        // without waiting for the email sending to complete.
-        this.unblock();
-
-        Email.send({
-            to: 'ozdemirsercan27@gmail.com',
-            from: from,
-            subject: 'Mongoclient.com Feedback',
-            text: text
-        });
-    },
-
     'saveQueryHistory': function (history) {
         var queryHistoryCount = QueryHistory.find().count({
             connectionId: history.connectionId,
