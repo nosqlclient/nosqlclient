@@ -4,7 +4,7 @@
 <a href="http://www.mongoclient.com"><img src="http://www.mongoclient.com/img/logo/head_only_medium.png" align="left" hspace="10" vspace="6"></a>
 
 ## Download
-Version 1.0.0 has been released ! You can simply download below portables to work on Windows, Linux or Mac as a desktop application.
+Version 1.0.0 has been released ! 
 
 ### Distributions
 
