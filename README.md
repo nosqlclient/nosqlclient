@@ -15,3 +15,6 @@ Version 1.0.0 has been released !
 * [OSx](https://github.com/rsercano/mongoclient/releases/download/1.0.0/osx-portable.zip)
 
 To learn more see the [wiki](https://github.com/rsercano/mongoclient/wiki) page.
+
+## License
+Project is licensed under [MIT](https://en.wikipedia.org/wiki/MIT_License), which means you are free to do anything with full of my work as long as you provide attribution back to me. Thanks !
