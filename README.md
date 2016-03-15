@@ -6,7 +6,7 @@
 ## Download
 Version 1.0.0 has been released ! You can simply download below portables to work on Windows, Linux or Mac as a desktop application.
 
-<div>
+<br/><br/><br/>
 ### Distributions
 
 * [Linux x86](https://github.com/rsercano/mongoclient/releases/download/1.0.0/linux-portable-x86.32-bit.zip)
@@ -19,4 +19,3 @@ Version 1.0.0 has been released ! You can simply download below portables to wor
 
 
 To learn more see the [wiki](https://github.com/rsercano/mongoclient/wiki) page.
-</div>
