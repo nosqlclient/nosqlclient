@@ -124,7 +124,9 @@ Template.navigation.events({
 Template.navigation.helpers({
     'initializeMetisMenu': function () {
         Meteor.setTimeout(function () {
-            $('#side-menu').metisMenu();
+            var sideMenu = $('#side-menu');
+            sideMenu.removeData("mm");
+            sideMenu.metisMenu();
         });
     },
 
