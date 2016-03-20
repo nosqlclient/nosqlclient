@@ -4,6 +4,7 @@
 Template.findOneAndReplace.onRendered(function () {
     Template.findOneAndReplace.initializeAceEditor();
     Template.findOneAndReplace.initializeOptions();
+    Template.changeConvertOptionsVisibility(true);
 });
 
 Template.findOneAndReplace.initializeAceEditor = function () {
@@ -65,7 +66,12 @@ Template.findOneAndReplace.executeQuery = function (historyParams) {
         options: options
     };
 
-    Meteor.call("findOneAndReplace", connection, selectedCollection, selector, replaceObject, options, function (err, result) {
-        Template.renderAfterQueryExecution(err, result, false, "findOneAndReplace", params, (historyParams ? false : true));
-    });
+    var convertIds = $('#aConvertObjectIds').iCheck('update')[0].checked;
+    var convertDates = $('#aConvertIsoDates').iCheck('update')[0].checked;
+
+    Meteor.call("findOneAndReplace", connection, selectedCollection, selector, replaceObject, options, convertIds, convertDates,
+        function (err, result) {
+            Template.renderAfterQueryExecution(err, result, false, "findOneAndReplace", params, (historyParams ? false : true));
+        }
+    );
 };

@@ -3,6 +3,7 @@
  */
 Template.geoNear.onRendered(function () {
     Template.geoNear.initializeOptions();
+    Template.changeConvertOptionsVisibility(false);
 });
 
 Template.geoNear.initializeOptions = function () {

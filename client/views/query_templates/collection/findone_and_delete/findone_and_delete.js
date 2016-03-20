@@ -3,6 +3,7 @@
  */
 Template.findOneAndDelete.onRendered(function () {
     Template.findOneAndDelete.initializeOptions();
+    Template.changeConvertOptionsVisibility(true);
 });
 
 Template.findOneAndDelete.initializeOptions = function () {
@@ -45,7 +46,12 @@ Template.findOneAndDelete.executeQuery = function (historyParams) {
         options: options
     };
 
-    Meteor.call("findOneAndDelete", connection, selectedCollection, selector, options, function (err, result) {
-        Template.renderAfterQueryExecution(err, result, false, "findOneAndDelete", params, (historyParams ? false : true));
-    });
+    var convertIds = $('#aConvertObjectIds').iCheck('update')[0].checked;
+    var convertDates = $('#aConvertIsoDates').iCheck('update')[0].checked;
+
+    Meteor.call("findOneAndDelete", connection, selectedCollection, selector, options , convertIds, convertDates,
+        function (err, result) {
+            Template.renderAfterQueryExecution(err, result, false, "findOneAndDelete", params, (historyParams ? false : true));
+        }
+    );
 };

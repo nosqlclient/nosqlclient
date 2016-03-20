@@ -1,6 +1,10 @@
 /**
  * Created by RSercan on 2.1.2016.
  */
+Template.distinct.onRendered(function () {
+    Template.changeConvertOptionsVisibility(true);
+});
+
 Template.distinct.events({
     'keypress #inputField': function (event) {
         if (event.keyCode == 13) {
@@ -29,7 +33,12 @@ Template.distinct.executeQuery = function (historyParams) {
         fieldName: fieldName
     };
 
-    Meteor.call("distinct", connection, selectedCollection, selector, fieldName, function (err, result) {
-        Template.renderAfterQueryExecution(err, result, false, "distinct", params, (historyParams ? false : true));
-    });
+    var convertIds = $('#aConvertObjectIds').iCheck('update')[0].checked;
+    var convertDates = $('#aConvertIsoDates').iCheck('update')[0].checked;
+
+    Meteor.call("distinct", connection, selectedCollection, selector, fieldName, convertIds, convertDates,
+        function (err, result) {
+            Template.renderAfterQueryExecution(err, result, false, "distinct", params, (historyParams ? false : true));
+        }
+    );
 };

@@ -3,6 +3,7 @@
  */
 Template.geoHaystackSearch.onRendered(function () {
     Template.geoHaystackSearch.initializeOptions();
+    Template.changeConvertOptionsVisibility(false);
 });
 
 Template.geoHaystackSearch.initializeOptions = function () {

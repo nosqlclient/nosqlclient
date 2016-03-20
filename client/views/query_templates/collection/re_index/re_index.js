@@ -1,6 +1,10 @@
 /**
  * Created by RSercan on 5.1.2016.
  */
+Template.reIndex.onRendered(function () {
+    Template.changeConvertOptionsVisibility(false);
+});
+
 Template.reIndex.executeQuery = function (historyParams) {
     Template.browseCollection.initExecuteQuery();
     var connection = Connections.findOne({_id: Session.get(Template.strSessionConnection)});

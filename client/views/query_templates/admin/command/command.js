@@ -3,10 +3,11 @@
  */
 Template.command.onRendered(function () {
     Template.initializeAceEditor('aceCommand', Template.command.executeQuery);
+    Template.changeConvertOptionsVisibility(true);
 });
 
 Template.command.executeQuery = function () {
-    Template.browseCollection.initExecuteQuery();
+    Template.adminQueries.initExecuteQuery();
     var connection = Connections.findOne({_id: Session.get(Template.strSessionConnection)});
     var command = ace.edit("aceCommand").getSession().getValue();
 
@@ -17,7 +18,12 @@ Template.command.executeQuery = function () {
         return;
     }
 
-    Meteor.call("command", connection, command, function (err, result) {
-        Template.renderAfterQueryExecution(err, result, true);
-    });
+    var convertIds = $('#aConvertObjectIds').iCheck('update')[0].checked;
+    var convertDates = $('#aConvertIsoDates').iCheck('update')[0].checked;
+
+    Meteor.call("command", connection, command, convertIds, convertDates,
+        function (err, result) {
+            Template.renderAfterQueryExecution(err, result, true);
+        }
+    );
 };

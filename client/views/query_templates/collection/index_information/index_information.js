@@ -5,6 +5,7 @@ Template.indexInformation.onRendered(function () {
     $('#divFullInformation').iCheck({
         checkboxClass: 'icheckbox_square-green'
     });
+    Template.changeConvertOptionsVisibility(false);
 });
 
 Template.indexInformation.executeQuery = function (historyParams) {

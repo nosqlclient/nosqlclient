@@ -3,6 +3,7 @@
  */
 Template.aggregate.onRendered(function () {
     Template.aggregate.initializeAceEditor();
+    Template.changeConvertOptionsVisibility(true);
 });
 
 Template.aggregate.initializeAceEditor = function () {
@@ -35,7 +36,12 @@ Template.aggregate.executeQuery = function (historyParams) {
         pipeline: pipeline
     };
 
-    Meteor.call("aggregate", connection, selectedCollection, pipeline, function (err, result) {
-        Template.renderAfterQueryExecution(err, result, false, "aggregate", params, (historyParams ? false : true));
-    });
+    var convertIds = $('#aConvertObjectIds').iCheck('update')[0].checked;
+    var convertDates = $('#aConvertIsoDates').iCheck('update')[0].checked;
+
+    Meteor.call("aggregate", connection, selectedCollection, pipeline, convertIds, convertDates,
+        function (err, result) {
+            Template.renderAfterQueryExecution(err, result, false, "aggregate", params, (historyParams ? false : true));
+        }
+    );
 };

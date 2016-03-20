@@ -3,6 +3,7 @@
  */
 Template.setProfilingLevel.onRendered(function () {
     Template.setProfilingLevel.initializeOptions();
+    Template.changeConvertOptionsVisibility(false);
 });
 
 Template.setProfilingLevel.initializeOptions = function () {
@@ -17,7 +18,7 @@ Template.setProfilingLevel.initializeOptions = function () {
 };
 
 Template.setProfilingLevel.executeQuery = function () {
-    Template.browseCollection.initExecuteQuery();
+    Template.adminQueries.initExecuteQuery();
     var connection = Connections.findOne({_id: Session.get(Template.strSessionConnection)});
     var level = $('#cmbLevel').val();
 

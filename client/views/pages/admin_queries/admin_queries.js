@@ -17,6 +17,17 @@ Template.adminQueries.onRendered(function () {
             .text(value));
     });
     cmb.chosen();
+
+    $('#aConvertIsoDates').iCheck({
+        checkboxClass: 'icheckbox_square-green'
+    });
+
+    $('#aConvertObjectIds').iCheck({
+        checkboxClass: 'icheckbox_square-green'
+    });
+
+    $('[data-toggle="tooltip"]').tooltip({trigger: 'hover'});
+    Template.changeConvertOptionsVisibility(false);
 });
 
 

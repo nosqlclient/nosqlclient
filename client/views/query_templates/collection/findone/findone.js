@@ -3,6 +3,7 @@
  */
 Template.findOne.onRendered(function () {
     Template.findOne.initializeOptions();
+    Template.changeConvertOptionsVisibility(true);
 });
 
 Template.findOne.initializeOptions = function () {
@@ -45,7 +46,12 @@ Template.findOne.executeQuery = function (historyParams) {
         cursorOptions: cursorOptions
     };
 
-    Meteor.call("findOne", connection, selectedCollection, selector, cursorOptions, function (err, result) {
-        Template.renderAfterQueryExecution(err, result, false, "findOne", params, (historyParams ? false : true));
-    });
+    var convertIds = $('#aConvertObjectIds').iCheck('update')[0].checked;
+    var convertDates = $('#aConvertIsoDates').iCheck('update')[0].checked;
+
+    Meteor.call("findOne", connection, selectedCollection, selector, cursorOptions, convertIds, convertDates,
+        function (err, result) {
+            Template.renderAfterQueryExecution(err, result, false, "findOne", params, (historyParams ? false : true));
+        }
+    );
 };

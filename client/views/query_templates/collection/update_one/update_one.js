@@ -3,6 +3,7 @@
  */
 Template.updateOne.onRendered(function () {
     Template.updateOne.initializeOptions();
+    Template.changeConvertOptionsVisibility(true);
 });
 
 Template.updateOne.initializeOptions = function () {
@@ -53,7 +54,10 @@ Template.updateOne.executeQuery = function (historyParams) {
         options: options
     };
 
-    Meteor.call("updateOne", connection, selectedCollection, selector, setObject, options, function (err, result) {
+    var convertIds = $('#aConvertObjectIds').iCheck('update')[0].checked;
+    var convertDates = $('#aConvertIsoDates').iCheck('update')[0].checked;
+
+    Meteor.call("updateOne", connection, selectedCollection, selector, setObject, options, convertIds, convertDates, function (err, result) {
         Template.renderAfterQueryExecution(err, result, false, "updateOne", params, (historyParams ? false : true));
     });
 };

@@ -3,6 +3,7 @@
  */
 Template.stats.onRendered(function () {
     Template.stats.initializeOptions();
+    Template.changeConvertOptionsVisibility(false);
 });
 
 Template.scale.onRendered(function () {

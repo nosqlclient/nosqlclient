@@ -3,6 +3,7 @@
  */
 Template.insertMany.onRendered(function () {
     Template.insertMany.initializeAceEditor();
+    Template.changeConvertOptionsVisibility(true);
 });
 
 Template.insertMany.initializeAceEditor = function () {
@@ -41,7 +42,10 @@ Template.insertMany.executeQuery = function (historyParams) {
         docs: docs
     };
 
-    Meteor.call("insertMany", connection, selectedCollection, docs, function (err, result) {
+    var convertIds = $('#aConvertObjectIds').iCheck('update')[0].checked;
+    var convertDates = $('#aConvertIsoDates').iCheck('update')[0].checked;
+
+    Meteor.call("insertMany", connection, selectedCollection, docs, convertIds, convertDates, function (err, result) {
         Template.renderAfterQueryExecution(err, result, false, "insertMany", params, (historyParams ? false : true));
     });
 };

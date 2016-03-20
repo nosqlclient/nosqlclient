@@ -3,6 +3,7 @@
  */
 Template.find.onRendered(function () {
     Template.find.initializeOptions();
+    Template.changeConvertOptionsVisibility(true);
 });
 
 Template.find.initializeOptions = function () {
@@ -37,7 +38,6 @@ Template.find.executeQuery = function (historyParams) {
         Ladda.stopAll();
         return;
     }
-
 
     // max allowed fetch size  != 0 and there's no project option, check for size
     if (maxAllowedFetchSize && maxAllowedFetchSize != 0 && !(CURSOR_OPTIONS.PROJECT in cursorOptions)) {
@@ -80,7 +80,11 @@ Template.find.proceedFindQuery = function (connection, selectedCollection, selec
         selector: selector,
         cursorOptions: cursorOptions
     };
-    Meteor.call("find", connection, selectedCollection, selector, cursorOptions, function (err, result) {
+
+    var convertIds = $('#aConvertObjectIds').iCheck('update')[0].checked;
+    var convertDates = $('#aConvertIsoDates').iCheck('update')[0].checked;
+
+    Meteor.call("find", connection, selectedCollection, selector, cursorOptions, convertIds, convertDates, function (err, result) {
         Template.renderAfterQueryExecution(err, result, false, "find", params, saveHistory);
     });
 };

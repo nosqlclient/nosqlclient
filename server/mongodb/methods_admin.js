@@ -40,13 +40,13 @@ Meteor.methods({
         return result;
     },
 
-    'validateCollection': function (connection, collectionName, options) {
+    'validateCollection': function (connection, collectionName, options, convertIds, convertDates) {
         var methodArray = [
             {
                 "validateCollection": [collectionName, options]
             }
         ];
-        return proceedQueryExecution(connection, methodArray);
+        return proceedQueryExecution(connection, methodArray, convertIds, convertDates);
     },
 
     'setProfilingLevel': function (connection, level) {
@@ -121,13 +121,13 @@ Meteor.methods({
         return proceedQueryExecution(connection, methodArray);
     },
 
-    'command': function (connection, command) {
+    'command': function (connection, command, convertIds, convertDates) {
         var methodArray = [
             {
                 "command": [command]
             }
         ];
-        return proceedQueryExecution(connection, methodArray);
+        return proceedQueryExecution(connection, methodArray, convertIds, convertDates);
     },
 
     'addUser': function (connection, username, password, options) {
@@ -150,13 +150,24 @@ Meteor.methods({
 });
 
 
-var proceedQueryExecution = function (connection, methodArray) {
+var proceedQueryExecution = function (connection, methodArray, convertIds, convertDates) {
     var connectionUrl = getConnectionUrl(connection);
     var connectionOptions = getConnectionOptions();
 
     var mongodbApi = Meteor.npmRequire('mongodb').MongoClient;
 
     LOGGER.info(methodArray, connectionUrl, connectionOptions);
+
+    var convertObjectId = true;
+    var convertIsoDates = true;
+
+    if (convertIds !== undefined && !convertIds) {
+        convertObjectId = false;
+    }
+
+    if (convertDates !== undefined && !convertDates) {
+        convertIsoDates = false;
+    }
 
     var result = Async.runSync(function (done) {
         mongodbApi.connect(connectionUrl, connectionOptions, function (mainError, db) {
@@ -182,7 +193,7 @@ var proceedQueryExecution = function (connection, methodArray) {
                         for (var i = 0; i < methodArray.length; i++) {
                             var last = i == (methodArray.length - 1);
                             var entry = methodArray[i];
-                            convertJSONtoBSON(entry);
+                            convertJSONtoBSON(entry, convertObjectId, convertIsoDates);
 
                             for (var key in entry) {
                                 if (entry.hasOwnProperty(key)) {
@@ -207,7 +218,7 @@ var proceedQueryExecution = function (connection, methodArray) {
                     for (var i = 0; i < methodArray.length; i++) {
                         var last = i == (methodArray.length - 1);
                         var entry = methodArray[i];
-                        convertJSONtoBSON(entry);
+                        convertJSONtoBSON(entry, convertObjectId, convertIsoDates);
 
                         for (var key in entry) {
                             if (entry.hasOwnProperty(key)) {

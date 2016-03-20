@@ -21,6 +21,19 @@ Template.browseCollection.onRendered(function () {
     $('#queryHistoriesModal').on('show.bs.modal', function () {
         Template.queryHistories.initQueryHistories();
     });
+
+    $('#aConvertIsoDates').iCheck({
+        checkboxClass: 'icheckbox_square-green'
+    });
+
+    $('#aConvertObjectIds').iCheck({
+        checkboxClass: 'icheckbox_square-green'
+    });
+
+    $('[data-toggle="tooltip"]').tooltip({trigger: 'hover'});
+
+    Template.changeConvertOptionsVisibility(false);
+    Template.browseCollection.clearQueryIfAdmin();
 });
 
 Template.browseCollection.events({
@@ -134,6 +147,15 @@ Template.browseCollection.helpers({
 
 });
 
+Template.browseCollection.clearQueryIfAdmin = function () {
+    $.each(ADMIN_QUERY_TYPES, function (key, value) {
+        if (value == Session.get(Template.strSessionSelectedQuery)) {
+            Session.set(Template.strSessionSelectedQuery, undefined);
+            Session.set(Template.strSessionSelectedOptions, undefined);
+        }
+    });
+};
+
 Template.browseCollection.initExecuteQuery = function () {
     // loading button
     var l = $('#btnExecuteQuery').ladda();
@@ -179,7 +201,7 @@ Template.browseCollection.setResult = function (result, queryInfo, queryParams, 
         });
 
         // show last tab
-        var lastTab = $('#resultTabs').find('a:last');
+        var lastTab = resultTabs.find('a:last');
         lastTab.tab('show');
 
         Template.browseCollection.setResultToEditors(tabID, result);

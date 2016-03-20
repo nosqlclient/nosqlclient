@@ -9,6 +9,17 @@ Template.editDocument.onRendered(function () {
 
     Template.editDocument.initializeCollectionsCombobox();
     Session.set(Template.strSessionEasyEditID, undefined);
+
+    $('#aConvertIsoDates').iCheck({
+        checkboxClass: 'icheckbox_square-green'
+    });
+
+    $('#aConvertObjectIds').iCheck({
+        checkboxClass: 'icheckbox_square-green'
+    });
+
+    $('[data-toggle="tooltip"]').tooltip({trigger: 'hover'});
+    Template.changeConvertOptionsVisibility(false);
 });
 
 Template.editDocument.events({
@@ -155,15 +166,21 @@ Template.editDocument.saveDocument = function () {
     delete setValue._id;
 
     setValue = {"$set": setValue};
-    Meteor.call('updateOne', connection, collectionName, idQuery, setValue, function (err) {
-        if (err) {
-            toastr.error("Couldn't update: " + err.message);
-        } else {
-            toastr.success('Successfuly updated !');
-        }
 
-        Ladda.stopAll();
-    });
+    var convertIds = $('#aConvertObjectIds').iCheck('update')[0].checked;
+    var convertDates = $('#aConvertIsoDates').iCheck('update')[0].checked;
+
+    Meteor.call('updateOne', connection, collectionName, idQuery, setValue, convertIds, convertDates,
+        function (err) {
+            if (err) {
+                toastr.error("Couldn't update: " + err.message);
+            } else {
+                toastr.success('Successfuly updated !');
+            }
+
+            Ladda.stopAll();
+        }
+    );
 };
 
 Template.editDocument.fetchDocument = function () {
@@ -187,41 +204,46 @@ Template.editDocument.fetchDocument = function () {
         return;
     }
 
-    Meteor.call("findOne", connection, collectionName, selector, function (err, result) {
-        var divResult = $('#divResult');
+    var convertIds = $('#aConvertObjectIds').iCheck('update')[0].checked;
+    var convertDates = $('#aConvertIsoDates').iCheck('update')[0].checked;
 
-        if (err || result.error) {
-            var errorMessage;
-            if (err) {
-                errorMessage = err.message;
-            } else {
-                errorMessage = result.error.message;
+    Meteor.call("findOne", connection, collectionName, selector, {}, convertIds, convertDates,
+        function (err, result) {
+            var divResult = $('#divResult');
+
+            if (err || result.error) {
+                var errorMessage;
+                if (err) {
+                    errorMessage = err.message;
+                } else {
+                    errorMessage = result.error.message;
+                }
+                if (errorMessage) {
+                    toastr.error("Couldn't fetch document: " + errorMessage);
+                } else {
+                    toastr.error("Couldn't fetch document, unknown reason ");
+                }
+
+                if (divResult.css('display') != 'none') {
+                    divResult.hide();
+                    $('#divFooter').hide();
+                }
             }
-            if (errorMessage) {
-                toastr.error("Couldn't fetch document: " + errorMessage);
-            } else {
-                toastr.error("Couldn't fetch document, unknown reason ");
+            else if (!result.result) {
+                toastr.error("There's no matched document");
+                if (divResult.css('display') != 'none') {
+                    divResult.hide();
+                    $('#divFooter').hide();
+                }
+            }
+            else {
+                Template.editDocument.initializeResultArea(JSON.stringify(result.result, null, '\t'));
+                Session.set(Template.strSessionEasyEditID, result.result._id);
             }
 
-            if (divResult.css('display') != 'none') {
-                divResult.hide();
-                $('#divFooter').hide();
-            }
+            Ladda.stopAll();
         }
-        else if (!result.result) {
-            toastr.error("There's no matched document");
-            if (divResult.css('display') != 'none') {
-                divResult.hide();
-                $('#divFooter').hide();
-            }
-        }
-        else {
-            Template.editDocument.initializeResultArea(JSON.stringify(result.result, null, '\t'));
-            Session.set(Template.strSessionEasyEditID, result.result._id);
-        }
-
-        Ladda.stopAll();
-    });
+    );
 
 };
 

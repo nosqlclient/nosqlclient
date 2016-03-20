@@ -3,6 +3,7 @@
  */
 Template.addUser.onRendered(function () {
     Template.addUser.initializeOptions();
+    Template.changeConvertOptionsVisibility(false);
 });
 
 Template.addUser.initializeOptions = function () {
@@ -18,7 +19,7 @@ Template.addUser.initializeOptions = function () {
 };
 
 Template.addUser.executeQuery = function () {
-    Template.browseCollection.initExecuteQuery();
+    Template.adminQueries.initExecuteQuery();
     var connection = Connections.findOne({_id: Session.get(Template.strSessionConnection)});
     var options = Template.addUserOptions.getOptions();
     var username = $('#inputAddUserUsername').val();

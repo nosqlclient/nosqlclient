@@ -12,6 +12,35 @@
                                     query
                                 </small>
                             </h5>
+                            <div class="ibox-tools">
+                                <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                                    <i class="fa fa-wrench"></i>
+                                </a>
+                                <ul class="dropdown-menu dropdown-user">
+                                    <li><a href="#"><i class="fa fa-check"></i> Mongodb Queries</a>
+                                    </li>
+                                    <li><a href="#">SQL Queries</a>
+                                    </li>
+                                </ul>
+                                <a id="aConvertIsoDates" class="i-checks"
+                                   style="display: none;"
+                                   data-toggle="tooltip"
+                                   title="Enable/Disable YYYY-MM-DD HH:MM:ss formatted strings to ISODate conversion">
+                                    <input id="inputConvertIsoDates" type="checkbox" value=""
+                                           class="form-control"
+                                           checked=""
+                                           style="position: absolute; opacity: 0;"/>
+                                </a>
+                                <a id="aConvertObjectIds" class="i-checks"
+                                   style="display: none;"
+                                   data-toggle="tooltip"
+                                   title="Enable/Disable valid ObjectID strings to ObjectID conversion">
+                                    <input id="inputConvertObjectIDs" type="checkbox" value=""
+                                           class="form-control"
+                                           checked=""
+                                           style="position: absolute; opacity: 0;"/>
+                                </a>
+                            </div>
                         </div>
                         <div class="ibox-content">
                             <form class="form-horizontal">

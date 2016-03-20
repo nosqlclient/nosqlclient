@@ -4,6 +4,7 @@
 Template.createIndex.onRendered(function () {
     Template.initializeAceEditor('aceFields', Template.createIndex.executeQuery);
     Template.createIndex.initializeOptions();
+    Template.changeConvertOptionsVisibility(false);
 });
 
 Template.createIndex.initializeOptions = function () {

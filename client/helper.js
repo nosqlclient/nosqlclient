@@ -140,6 +140,16 @@ Template.getParentTemplateName = function (levels) {
     }
 };
 
+Template.changeConvertOptionsVisibility = function (show) {
+    if (show) {
+        $('#aConvertIsoDates').show();
+        $('#aConvertObjectIds').show();
+    } else {
+        $('#aConvertIsoDates').hide();
+        $('#aConvertObjectIds').hide();
+    }
+};
+
 Template.getDistinctKeysForAutoComplete = function (selectedCollection) {
     var settings = Settings.findOne();
     if (!settings.autoCompleteFields) {

@@ -1,8 +1,12 @@
 /**
  * Created by RSercan on 10.1.2016.
  */
+Template.removeUser.onRendered(function () {
+    Template.changeConvertOptionsVisibility(false);
+});
+
 Template.removeUser.executeQuery = function () {
-    Template.browseCollection.initExecuteQuery();
+    Template.adminQueries.initExecuteQuery();
     var connection = Connections.findOne({_id: Session.get(Template.strSessionConnection)});
     var username = $('#inputAddUserUsername').val();
 

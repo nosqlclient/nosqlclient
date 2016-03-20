@@ -2,22 +2,22 @@
  * Created by RSercan on 27.12.2015.
  */
 Meteor.methods({
-    'updateOne': function (connection, selectedCollection, selector, setObject, options) {
+    'updateOne': function (connection, selectedCollection, selector, setObject, options, convertIds, convertDates) {
         var methodArray = [
             {
                 "updateOne": [selector, setObject, options]
             }
         ];
-        return proceedQueryExecution(connection, selectedCollection, methodArray);
+        return proceedQueryExecution(connection, selectedCollection, methodArray, convertIds, convertDates);
     },
 
-    'updateMany': function (connection, selectedCollection, selector, setObject, options) {
+    'updateMany': function (connection, selectedCollection, selector, setObject, options, convertIds, convertDates) {
         var methodArray = [
             {
                 "updateMany": [selector, setObject, options]
             }
         ];
-        return proceedQueryExecution(connection, selectedCollection, methodArray);
+        return proceedQueryExecution(connection, selectedCollection, methodArray, convertIds, convertDates);
     },
 
     'stats': function (connection, selectedCollection, options) {
@@ -69,13 +69,13 @@ Meteor.methods({
         return proceedQueryExecution(connection, selectedCollection, methodArray);
     },
 
-    'insertMany': function (connection, selectedCollection, docs) {
+    'insertMany': function (connection, selectedCollection, docs, convertIds, convertDates) {
         var methodArray = [
             {
                 "insertMany": [docs]
             }
         ];
-        return proceedQueryExecution(connection, selectedCollection, methodArray);
+        return proceedQueryExecution(connection, selectedCollection, methodArray, convertIds, convertDates);
     },
 
     'indexInformation': function (connection, selectedCollection, isFull) {
@@ -115,24 +115,24 @@ Meteor.methods({
         return proceedQueryExecution(connection, selectedCollection, methodArray);
     },
 
-    'distinct': function (connection, selectedCollection, selector, fieldName) {
+    'distinct': function (connection, selectedCollection, selector, fieldName, convertIds, convertDates) {
         var methodArray = [
             {
                 "distinct": [fieldName, selector]
             }
         ];
 
-        return proceedQueryExecution(connection, selectedCollection, methodArray);
+        return proceedQueryExecution(connection, selectedCollection, methodArray, convertIds, convertDates);
     },
 
-    'delete': function (connection, selectedCollection, selector) {
+    'delete': function (connection, selectedCollection, selector, convertIds, convertDates) {
         var methodArray = [
             {
                 "deleteMany": [selector]
             }
         ];
 
-        return proceedQueryExecution(connection, selectedCollection, methodArray);
+        return proceedQueryExecution(connection, selectedCollection, methodArray, convertIds, convertDates);
     },
 
     'createIndex': function (connection, selectedCollection, fields, options) {
@@ -145,7 +145,7 @@ Meteor.methods({
         return proceedQueryExecution(connection, selectedCollection, methodArray);
     },
 
-    'findOne': function (connection, selectedCollection, selector, cursorOptions) {
+    'findOne': function (connection, selectedCollection, selector, cursorOptions, convertIds, convertDates) {
         var methodArray = [
             {
                 "find": [selector]
@@ -160,10 +160,10 @@ Meteor.methods({
         }
         methodArray.push({'limit': [1]});
         methodArray.push({'next': []});
-        return proceedQueryExecution(connection, selectedCollection, methodArray);
+        return proceedQueryExecution(connection, selectedCollection, methodArray, convertIds, convertDates);
     },
 
-    'find': function (connection, selectedCollection, selector, cursorOptions) {
+    'find': function (connection, selectedCollection, selector, cursorOptions, convertIds, convertDates) {
         var methodArray = [
             {
                 "find": [selector]
@@ -178,52 +178,52 @@ Meteor.methods({
         }
         methodArray.push({'toArray': []});
 
-        return proceedQueryExecution(connection, selectedCollection, methodArray);
+        return proceedQueryExecution(connection, selectedCollection, methodArray, convertIds, convertDates);
     },
 
-    'findOneAndUpdate': function (connection, selectedCollection, selector, setObject, options) {
+    'findOneAndUpdate': function (connection, selectedCollection, selector, setObject, options, convertIds, convertDates) {
         var methodArray = [
             {
                 "findOneAndUpdate": [selector, setObject, options]
             }
         ];
-        return proceedQueryExecution(connection, selectedCollection, methodArray);
+        return proceedQueryExecution(connection, selectedCollection, methodArray, convertIds, convertDates);
     },
 
-    'findOneAndReplace': function (connection, selectedCollection, selector, setObject, options) {
+    'findOneAndReplace': function (connection, selectedCollection, selector, setObject, options, convertIds, convertDates) {
         var methodArray = [
             {
                 "findOneAndReplace": [selector, setObject, options]
             }
         ];
-        return proceedQueryExecution(connection, selectedCollection, methodArray);
+        return proceedQueryExecution(connection, selectedCollection, methodArray, convertIds, convertDates);
     },
 
-    'findOneAndDelete': function (connection, selectedCollection, selector, options) {
+    'findOneAndDelete': function (connection, selectedCollection, selector, options, convertIds, convertIsoDates) {
         var methodArray = [
             {
                 "findOneAndDelete": [selector, options]
             }
         ];
-        return proceedQueryExecution(connection, selectedCollection, methodArray);
+        return proceedQueryExecution(connection, selectedCollection, methodArray, convertIds, convertIsoDates);
     },
 
-    'aggregate': function (connection, selectedCollection, pipeline) {
+    'aggregate': function (connection, selectedCollection, pipeline, convertIds, convertDates) {
         var methodArray = [
             {
                 "aggregate": [pipeline]
             }
         ];
-        return proceedQueryExecution(connection, selectedCollection, methodArray);
+        return proceedQueryExecution(connection, selectedCollection, methodArray, convertIds, convertDates);
     },
 
-    'count': function (connection, selectedCollection, selector) {
+    'count': function (connection, selectedCollection, selector, convertIds, convertDates) {
         var methodArray = [
             {
                 "count": [selector]
             }
         ];
-        return proceedQueryExecution(connection, selectedCollection, methodArray);
+        return proceedQueryExecution(connection, selectedCollection, methodArray, convertIds, convertDates);
     }
 });
 
@@ -282,12 +282,22 @@ var proceedMapReduceExecution = function (connection, selectedCollection, map, r
     return result;
 };
 
-var proceedQueryExecution = function (connection, selectedCollection, methodArray) {
+var proceedQueryExecution = function (connection, selectedCollection, methodArray, convertIds, convertDates) {
     var connectionUrl = getConnectionUrl(connection);
     var connectionOptions = getConnectionOptions();
     var mongodbApi = Meteor.npmRequire('mongodb').MongoClient;
+    var convertObjectId = true;
+    var convertIsoDates = true;
 
-    LOGGER.info(methodArray, connectionUrl, connectionOptions, selectedCollection);
+    if (convertIds !== undefined && !convertIds) {
+        convertObjectId = false;
+    }
+
+    if (convertDates !== undefined && !convertDates) {
+        convertIsoDates = false;
+    }
+
+    LOGGER.info(methodArray, 'convertIds: ' + convertObjectId, 'convertDates: ' + convertIsoDates, connectionUrl, connectionOptions, selectedCollection);
 
     var result = Async.runSync(function (done) {
         mongodbApi.connect(connectionUrl, connectionOptions, function (mainError, db) {
@@ -303,7 +313,7 @@ var proceedQueryExecution = function (connection, selectedCollection, methodArra
                 for (var i = 0; i < methodArray.length; i++) {
                     var last = i == (methodArray.length - 1);
                     var entry = methodArray[i];
-                    convertJSONtoBSON(entry);
+                    convertJSONtoBSON(entry, convertObjectId, convertIsoDates);
 
                     for (var key in entry) {
                         if (entry.hasOwnProperty(key)) {

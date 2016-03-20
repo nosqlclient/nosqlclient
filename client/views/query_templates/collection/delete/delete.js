@@ -1,6 +1,10 @@
 /**
  * Created by RSercan on 2.1.2016.
  */
+Template.delete.onRendered(function () {
+    Template.changeConvertOptionsVisibility(true);
+});
+
 Template.delete.executeQuery = function (historyParams) {
     Template.browseCollection.initExecuteQuery();
     var connection = Connections.findOne({_id: Session.get(Template.strSessionConnection)});
@@ -18,7 +22,12 @@ Template.delete.executeQuery = function (historyParams) {
         selector: selector
     };
 
-    Meteor.call("delete", connection, selectedCollection, selector, function (err, result) {
-        Template.renderAfterQueryExecution(err, result, false, "delete", params, (historyParams ? false : true));
-    });
+    var convertIds = $('#aConvertObjectIds').iCheck('update')[0].checked;
+    var convertDates = $('#aConvertIsoDates').iCheck('update')[0].checked;
+
+    Meteor.call("delete", connection, selectedCollection, selector, convertIds, convertDates,
+        function (err, result) {
+            Template.renderAfterQueryExecution(err, result, false, "delete", params, (historyParams ? false : true));
+        }
+    );
 };

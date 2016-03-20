@@ -3,6 +3,7 @@
  */
 Template.rename.onRendered(function () {
     Template.rename.initializeOptions();
+    Template.changeConvertOptionsVisibility(false);
 });
 
 Template.dropTarget.onRendered(function () {

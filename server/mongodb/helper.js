@@ -37,9 +37,13 @@ convertBSONtoJSON = function (obj) {
     convertDatesToString(obj);
 };
 
-convertJSONtoBSON = function (obj) {
-    convertValidObjectIds(obj);
-    convertValidDates(obj);
+convertJSONtoBSON = function (obj, convertObjectId, convertIsoDates) {
+    if (convertObjectId) {
+        convertValidObjectIds(obj);
+    }
+    if (convertIsoDates) {
+        convertValidDates(obj);
+    }
 };
 
 

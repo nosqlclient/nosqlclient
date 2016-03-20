@@ -5,6 +5,7 @@ Template.mapReduce.onRendered(function () {
     Template.mapReduce.initializeAceEditor('aceMap');
     Template.mapReduce.initializeAceEditor('aceReduce');
     Template.mapReduce.initializeOptions();
+    Template.changeConvertOptionsVisibility(false);
 });
 
 Template.mapReduce.initializeOptions = function () {
