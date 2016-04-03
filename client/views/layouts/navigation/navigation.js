@@ -4,6 +4,11 @@ Template.navigation.events({
         $('#collectionAddModal').modal('show');
     },
 
+    'click #btnRefreshCollections2': function(e){
+        e.preventDefault();
+        Template.topNavbar.connect(true);
+    },
+
     'click #btnDropCollection': function (e) {
         e.preventDefault();
 
