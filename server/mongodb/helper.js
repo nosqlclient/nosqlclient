@@ -55,7 +55,13 @@ var convertDatesToString = function (obj) {
             }
             else if (obj[property].constructor == Array) {
                 for (var i = 0; i < obj[property].length; i++) {
-                    convertDatesToString(obj[property][i]);
+
+                    if (Object.prototype.toString.call(obj[property][i]) === '[object Date]') {
+                        obj[property][i] = moment(obj[property][i]).format('YYYY-MM-DD HH:mm:ss');
+                    }
+                    else {
+                        convertDatesToString(obj[property][i]);
+                    }
                 }
             }
             else {
@@ -77,7 +83,13 @@ var convertObjectIDsToString = function (obj) {
             }
             else if (obj[property].constructor == Array) {
                 for (var i = 0; i < obj[property].length; i++) {
-                    convertObjectIDsToString(obj[property][i]);
+
+                    if (objectID.isValid(obj[property][i].toString())) {
+                        obj[property][i] = obj[property][i].toString();
+                    }
+                    else {
+                        convertObjectIDsToString(obj[property][i]);
+                    }
                 }
             }
             else {
@@ -99,7 +111,14 @@ var convertValidObjectIds = function (obj) {
             }
             else if (obj[property].constructor == Array) {
                 for (var i = 0; i < obj[property].length; i++) {
-                    convertValidObjectIds(obj[property][i]);
+
+                    if (objectID.isValid(obj[property][i].toString())) {
+                        obj[property][i] = new objectID(obj[property][i].toString());
+                    }
+                    else {
+                        convertValidObjectIds(obj[property][i]);
+                    }
+
                 }
             }
             else {
@@ -119,7 +138,13 @@ var convertValidDates = function (obj) {
             }
             else if (obj[property].constructor == Array) {
                 for (var i = 0; i < obj[property].length; i++) {
-                    convertValidDates(obj[property][i]);
+
+                    if (moment(obj[property][i].toString(), 'YYYY-MM-DD HH:mm:ss', true).isValid()) {
+                        obj[property][i] = moment(obj[property][i].toString(), 'YYYY-MM-DD HH:mm:ss', true).toDate();
+                    }
+                    else {
+                        convertValidDates(obj[property][i]);
+                    }
                 }
             }
             else {
