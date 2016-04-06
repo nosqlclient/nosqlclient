@@ -15,6 +15,7 @@ Template.strSessionSelectedFile = "selectedFile";
 Template.strSessionEasyEditID = "easyEditID";
 Template.strSessionDistinctFields = "distinctFields";
 Template.strSessionSelectedQueryHistory = "selectedQueryHistory";
+Template.strSessionSelectorValue = "selectorValue";
 
 Template.clearSessions = function () {
     Object.keys(Session.keys).forEach(function (key) {

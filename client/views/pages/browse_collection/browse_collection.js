@@ -138,7 +138,7 @@ Template.browseCollection.helpers({
                 return Spacebars.SafeString('Reindex all indexes on the collection <strong>Warning:</strong> reIndex is a blocking operation <i>(indexes are rebuilt in the foreground)</i> and will be slow for large collections');
 
             case QUERY_TYPES.UPDATE_MANY:
-                return Spacebars.SafeString('Updates all documents which matched by <strong>Selector</strong');
+                return Spacebars.SafeString('Updates all documents which matched by <strong>Selector</strong>');
 
             default:
                 return '';

@@ -4,8 +4,9 @@
 Template.selector.onRendered(function () {
     var divSelector = $('#divSelector');
 
+    var codeMirror;
     if (!divSelector.data('editor')) {
-        var codeMirror = CodeMirror.fromTextArea(document.getElementById('txtSelector'), {
+        codeMirror = CodeMirror.fromTextArea(document.getElementById('txtSelector'), {
             mode: "javascript",
             theme: "neat",
             styleActiveLine: true,
@@ -20,6 +21,11 @@ Template.selector.onRendered(function () {
             foldGutter: true,
             gutters: ["CodeMirror-linenumbers", "CodeMirror-foldgutter"]
         });
+
+        codeMirror.on("change", function () {
+            Session.set(Template.strSessionSelectorValue, codeMirror.getValue());
+        });
+
         codeMirror.setSize('%100', 100);
         //codeMirror.on("keyup", function (cm, event) {
         //    if (!cm.state.completionActive && event.keyCode != 13) {
@@ -27,6 +33,13 @@ Template.selector.onRendered(function () {
         //    }
         //});
         divSelector.data('editor', codeMirror);
+    }
+    else {
+        codeMirror = divSelector.data('editor');
+    }
+
+    if (Session.get(Template.strSessionSelectorValue)) {
+        codeMirror.setValue(Session.get(Template.strSessionSelectorValue));
     }
 });
 
