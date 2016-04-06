@@ -1,5 +1,5 @@
 ## Mongoclient, Featured MongoDB Management Tool
-Cross-platform, MongoDB 3.2 support and more features!
+Cross-platform, MongoDB 3.2+ support and more features!
 
 [![Join the chat at https://gitter.im/rsercano/mongoclient](https://badges.gitter.im/rsercano/mongoclient.svg)](https://gitter.im/rsercano/mongoclient?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)                                          [![Build Status](https://travis-ci.org/rsercano/mongoclient.svg?branch=master)](https://travis-ci.org/rsercano/mongoclient)
 
