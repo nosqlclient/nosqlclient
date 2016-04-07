@@ -191,6 +191,10 @@ Template.changeConvertOptionsVisibility = function (show) {
     }
 };
 
+Template.warnDemoApp = function () {
+    toastr.info('This feature is not usable in demo application !');
+};
+
 Template.getDistinctKeysForAutoComplete = function (selectedCollection) {
     var settings = Settings.findOne();
     if (!settings.autoCompleteFields) {

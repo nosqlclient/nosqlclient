@@ -1,7 +1,7 @@
 Template.navigation.events({
     'click #btnAddCollection': function (e) {
         e.preventDefault();
-        $('#collectionAddModal').modal('show');
+        Template.warnDemoApp();
     },
 
     'click #btnRefreshCollections2': function (e) {
@@ -11,75 +11,17 @@ Template.navigation.events({
 
     'click #btnDropCollection': function (e) {
         e.preventDefault();
-
-        var collectionName = this.name;
-        swal({
-            title: "Are you sure?",
-            text: this.name + " collection will be dropped, are you sure ?",
-            type: "warning",
-            showCancelButton: true,
-            confirmButtonColor: "#DD6B55",
-            confirmButtonText: "Yes, drop it!",
-            closeOnConfirm: true
-        }, function (isConfirm) {
-            if (isConfirm) {
-                Template.navigation.dropCollection(collectionName);
-            }
-        });
+        Template.warnDemoApp();
     },
 
     'click #btnDropAllCollections': function (e) {
         e.preventDefault();
-        swal({
-            title: "Are you sure?",
-            text: "All collections except system, will be dropped, are you sure ?",
-            type: "warning",
-            showCancelButton: true,
-            confirmButtonColor: "#DD6B55",
-            confirmButtonText: "Yes, drop them!",
-            closeOnConfirm: false
-        }, function () {
-            Meteor.call('dropAllCollections', Session.get(Template.strSessionConnection), function (err, result) {
-                if (err || result.error) {
-                    Template.showMeteorFuncError(err, result, "Couldn't drop all collections");
-                }
-                else {
-                    Template.clearSessions();
-                    swal({
-                        title: "Dropped!",
-                        text: "Successfuly dropped all collections database ",
-                        type: "success"
-                    });
-                }
-            });
-        });
+        Template.warnDemoApp();
     },
 
     'click #btnDropDatabase': function (e) {
         e.preventDefault();
-        swal({
-            title: "Are you sure?",
-            text: "You will not be able to recover this database!",
-            type: "warning",
-            showCancelButton: true,
-            confirmButtonColor: "#DD6B55",
-            confirmButtonText: "Yes, drop it!",
-            closeOnConfirm: false
-        }, function () {
-            Meteor.call('dropDB', Session.get(Template.strSessionConnection), function (err, result) {
-                if (err || result.error) {
-                    Template.showMeteorFuncError(err, result, "Couldn't drop database");
-                }
-                else {
-                    Template.clearSessions();
-                    swal({
-                        title: "Dropped!",
-                        text: "Successfuly dropped database ",
-                        type: "success"
-                    });
-                }
-            });
-        });
+        Template.warnDemoApp();
     },
 
 
@@ -178,30 +120,42 @@ Template.navigation.handleNavigationAndSessions = function () {
 };
 
 Template.navigation.dropCollection = function (collectionName) {
-    Meteor.call('dropCollection', Session.get(Template.strSessionConnection), collectionName, function (err, result) {
-        if (err || result.error) {
-            Template.showMeteorFuncError(err, result, "Couldn't drop collection");
+    var connection = Connections.findOne({_id: Session.get(Template.strSessionConnection)});
+    Meteor.call('dropCollection', connection, collectionName, function (err, result) {
+        if (err) {
+            toastr.error("Couldn't drop collection: " + err.message);
+            return;
         }
-        else {
-            Template.navigation.renderCollectionNames();
-            toastr.success('Successfuly dropped collection: ' + collectionName);
+        if (result.error) {
+            toastr.error("Couldn't drop collection: " + result.error.message);
+            return;
         }
+        Template.navigation.renderCollectionNames();
+        toastr.success('Successfuly dropped collection: ' + collectionName);
     });
 };
 
 Template.navigation.renderCollectionNames = function () {
-    Meteor.call('connect', Session.get(Template.strSessionConnection), function (err, result) {
+    var connection = Connections.findOne({_id: Session.get(Template.strSessionConnection)});
+    Meteor.call('connect', connection, function (err, result) {
         if (err || result.error) {
-            Template.showMeteorFuncError(err, result, "Couldn't connect");
+            var errorMessage;
+            if (err) {
+                errorMessage = err.message;
+            } else {
+                errorMessage = result.error.message;
+            }
+
+            toastr.error("Couldn't connect: " + errorMessage);
+            return;
         }
-        else {
-            // re-set collection names
-            Session.set(Template.strSessionCollectionNames, result.result);
-            // set all session values undefined except connection
-            Session.set(Template.strSessionSelectedQuery, undefined);
-            Session.set(Template.strSessionSelectedOptions, undefined);
-            Session.set(Template.strSessionSelectedCollection, undefined);
-            Router.go('databaseStats');
-        }
+
+        // re-set collection names
+        Session.set(Template.strSessionCollectionNames, result.result);
+        // set all session values undefined except connection
+        Session.set(Template.strSessionSelectedQuery, undefined);
+        Session.set(Template.strSessionSelectedOptions, undefined);
+        Session.set(Template.strSessionSelectedCollection, undefined);
+        Router.go('databaseStats');
     });
 };

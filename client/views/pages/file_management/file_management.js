@@ -8,7 +8,23 @@ Template.fileManagement.onRendered(function () {
     }
 
     Template.fileManagement.initFileInformations();
-    Template.initiateDatatable($('#tblFiles'),Template.strSessionSelectedFile);
+
+    var selector = $('#tblFiles');
+    selector.find('tbody').on('click', 'tr', function () {
+        var table = selector.DataTable();
+
+        if ($(this).hasClass('selected')) {
+            $(this).removeClass('selected');
+        }
+        else {
+            table.$('tr.selected').removeClass('selected');
+            $(this).addClass('selected');
+        }
+
+        if (table.row(this).data()) {
+            Session.set(Template.strSessionSelectedFile, table.row(this).data());
+        }
+    });
 });
 
 Template.fileManagement.events({
@@ -31,31 +47,7 @@ Template.fileManagement.events({
 
     'click .editor_delete': function (e) {
         e.preventDefault();
-        var fileRow = Session.get(Template.strSessionSelectedFile);
-        if (fileRow) {
-            swal({
-                title: "Are you sure ?",
-                text: "You can NOT recover this file afterwards, are you sure ?",
-                type: "warning",
-                showCancelButton: true,
-                confirmButtonColor: "#DD6B55",
-                confirmButtonText: "Yes!",
-                cancelButtonText: "No"
-            }, function (isConfirm) {
-                if (isConfirm) {
-                    var l = $('#btnReloadFiles').ladda();
-                    l.ladda('start');
-                    Meteor.call('deleteFile', Session.get(Template.strSessionConnection), $('#txtBucketName').val(), fileRow._id, function (err) {
-                        if (err) {
-                            toastr.error("Couldn't delete: " + err.message);
-                        } else {
-                            toastr.success('Successfuly deleted !');
-                            Template.fileManagement.initFileInformations();
-                        }
-                    });
-                }
-            });
-        }
+        Template.warnDemoApp();
     },
 
     'click .editor_show_metadata': function (e) {
@@ -78,13 +70,19 @@ Template.fileManagement.events({
             }
 
             $('#metaDataModal').modal('show');
-            Meteor.call('getFile', Session.get(Template.strSessionConnection), $('#txtBucketName').val(), fileRow._id, function (err, result) {
-                if(err || result.error){
-                    Template.showMeteorFuncError(err, result, "Couldn't find file");
+            var connection = Connections.findOne({_id: Session.get(Template.strSessionConnection)});
+            Meteor.call('getFile', connection, $('#txtBucketName').val(), fileRow._id, function (err, result) {
+                if (err) {
+                    toastr.error("Couldn't find: " + err.message);
+                    Ladda.stopAll();
+                    return;
                 }
-                else{
-                    jsonEditor.set(result.result);
+                if (result.error) {
+                    toastr.error("Couldn't find: " + result.error.message);
+                    Ladda.stopAll();
+                    return;
                 }
+                jsonEditor.set(result.result);
                 Ladda.stopAll();
             });
         }
@@ -97,12 +95,19 @@ Template.fileManagement.initFileInformations = function () {
     var l = $('#btnReloadFiles').ladda();
     l.ladda('start');
 
-    Meteor.call('getFileInfos', Session.get(Template.strSessionConnection), $('#txtBucketName').val(), function (err, result) {
-            if(err || result.error){
-                Template.showMeteorFuncError(err, result, "Couldn't get file informations");
+    var connection = Connections.findOne({_id: Session.get(Template.strSessionConnection)});
+    Meteor.call('getFileInfos', connection, $('#txtBucketName').val(), function (err, result) {
+            if (err) {
+                toastr.error("Couldn't get file informations: " + err.message);
+                Ladda.stopAll();
                 return;
             }
-        
+            if (result.error) {
+                toastr.error("Couldn't get file informations: " + result.error.message);
+                Ladda.stopAll();
+                return;
+            }
+
             var tblFiles = $('#tblFiles');
             // destroy jquery datatable to prevent reinitialization (https://datatables.net/manual/tech-notes/3)
             if ($.fn.dataTable.isDataTable('#tblFiles')) {

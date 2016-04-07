@@ -12,25 +12,7 @@ Template.uploadFile.onRendered(function () {
 Template.uploadFile.events({
     'click #btnUpload': function (e) {
         e.preventDefault();
-        var blob = $('#inputFile')[0].files[0];
-        if (blob) {
-            swal({
-                title: "Additional Information",
-                text: "Do you want to add additional information to your file ?",
-                type: "info",
-                showCancelButton: true,
-                confirmButtonColor: "#DD6B55",
-                confirmButtonText: "Yes!",
-                cancelButtonText: "No"
-            }, function (isConfirm) {
-                if (!isConfirm) {
-                    Template.uploadFile.proceedUploading(blob);
-                }
-                else {
-                    $('#fileInfoModal').modal('show');
-                }
-            });
-        }
+        Template.warnDemoApp();
     }
 });
 

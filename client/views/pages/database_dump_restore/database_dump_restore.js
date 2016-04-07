@@ -7,59 +7,36 @@ Template.databaseDumpRestore.onRendered(function () {
         return;
     }
 
-    Template.initiateDatatable($('#tblDumps'), Template.strSessionSelectedDump);
+    var selector = $('#tblDumps');
+    selector.addClass('table-bordered table-hover');
+    selector.find('tbody').on('click', 'tr', function () {
+
+        var table = selector.DataTable();
+
+        if ($(this).hasClass('selected')) {
+            $(this).removeClass('selected');
+        }
+        else {
+            table.$('tr.selected').removeClass('selected');
+            $(this).addClass('selected');
+        }
+
+        if (table.row(this).data()) {
+            Session.set(Template.strSessionSelectedDump, table.row(this).data());
+        }
+    });
+
 });
 
 Template.databaseDumpRestore.events({
     'click #btnTakeDump': function (e) {
         e.preventDefault();
-        var settings = Settings.findOne();
-
-        var laddaButton = $('#btnTakeDump').ladda();
-        laddaButton.ladda('start');
-
-        Meteor.call('takeDump', Session.get(Template.strSessionConnection), settings.dumpPath, function (err) {
-            if (err) {
-                toastr.error("Couldn't take dump, " + err.message);
-            }
-            else {
-                toastr.success('A background process to take a dump has started, whenever it finishes you can see the dump on this page');
-            }
-
-            Ladda.stopAll();
-        });
+        Template.warnDemoApp();
     },
 
     'click .editor_import': function (e) {
         e.preventDefault();
-        if (Session.get(Template.strSessionSelectedDump)) {
-            swal({
-                title: "Are you sure?",
-                text: "All collections will be dropped, and restored !",
-                type: "warning",
-                showCancelButton: true,
-                confirmButtonColor: "#DD6B55",
-                confirmButtonText: "Yes, do it!",
-                closeOnConfirm: true
-            }, function () {
-                var laddaButton = $('#btnTakeDump').ladda();
-                laddaButton.ladda('start');
-
-                var dumpInfo = Session.get(Template.strSessionSelectedDump);
-                dumpInfo.status = DUMP_STATUS.IN_PROGRESS;
-                Meteor.call('updateDump', dumpInfo); // this is a simple update to notify user on UI
-                Meteor.call('restoreDump', Session.get(Template.strSessionConnection), dumpInfo, function (err) {
-                    if (err) {
-                        toastr.error("Couldn't restore dump, " + err.message);
-                    }
-                    else {
-                        toastr.success('A background process to restore the dump(' + dumpInfo.filePath + ') has started, whenever it finishes you can see the result on this page');
-                    }
-
-                    Ladda.stopAll();
-                });
-            });
-        }
+        Template.warnDemoApp();
     }
 });
 

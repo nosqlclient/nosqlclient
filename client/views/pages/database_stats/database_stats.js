@@ -53,9 +53,10 @@ Template.databaseStats.onRendered(function () {
 
         // fetch stats only once.
         Template.databaseStats.fetchStats();
-    }
-    if (Session.get(Template.strSessionCollectionNames) != undefined) {
-        toastr.info("It can take a few seconds to populate charts !");
+
+        if (Session.get(Template.strSessionCollectionNames) != undefined) {
+            toastr.info("It can take a few seconds to populate charts !");
+        }
     }
 });
 
