@@ -9,7 +9,7 @@ Template.validateCollection.onRendered(function () {
 Template.validateCollection.executeQuery = function () {
     Template.adminQueries.initExecuteQuery();
     var connection = Connections.findOne({_id: Session.get(Template.strSessionConnection)});
-    var collectionName = $('#inputCollectionName').val();
+    var collectionName = $('#inputValidateCollection').val();
     var options = ace.edit("aceOptions").getSession().getValue();
 
     if (collectionName == null || collectionName.length === 0) {
