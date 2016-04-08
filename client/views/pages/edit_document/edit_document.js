@@ -30,36 +30,12 @@ Template.editDocument.events({
 
     'click #btnSaveDocument': function (e) {
         e.preventDefault();
-        swal({
-            title: "Are you sure ?",
-            text: "This document will be overwritten, are you sure ?",
-            type: "warning",
-            showCancelButton: true,
-            confirmButtonColor: "#DD6B55",
-            confirmButtonText: "Yes!",
-            cancelButtonText: "No"
-        }, function (isConfirm) {
-            if (isConfirm) {
-                Template.editDocument.saveDocument();
-            }
-        });
+        Template.warnDemoApp();
     },
 
     'click #btnDeleteDocument': function (e) {
         e.preventDefault();
-        swal({
-            title: "Are you sure ?",
-            text: "This document will be deleted, are you sure ?",
-            type: "warning",
-            showCancelButton: true,
-            confirmButtonColor: "#DD6B55",
-            confirmButtonText: "Yes!",
-            cancelButtonText: "No"
-        }, function (isConfirm) {
-            if (isConfirm) {
-                Template.editDocument.deleteDocument();
-            }
-        });
+        Template.warnDemoApp();
     }
 
 });

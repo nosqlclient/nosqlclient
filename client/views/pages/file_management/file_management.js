@@ -34,15 +34,7 @@ Template.fileManagement.events({
 
     'click .editor_download': function (e) {
         e.preventDefault();
-        var fileRow = Session.get(Template.strSessionSelectedFile);
-        if (fileRow) {
-            window.open(Router.url('download', {
-                fileId: fileRow._id,
-                connectionId: Session.get(Template.strSessionConnection),
-                bucketName: $('#txtBucketName').val(),
-                fileName: fileRow.filename
-            }));
-        }
+        Template.warnDemoApp();
     },
 
     'click .editor_delete': function (e) {
