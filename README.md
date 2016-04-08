@@ -3,6 +3,10 @@ Cross-platform, MongoDB 3.2+ support and more features!
 
 [![Join the chat at https://gitter.im/rsercano/mongoclient](https://badges.gitter.im/rsercano/mongoclient.svg)](https://gitter.im/rsercano/mongoclient?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)                                          [![Build Status](https://travis-ci.org/rsercano/mongoclient.svg?branch=master)](https://travis-ci.org/rsercano/mongoclient)
 
+<pre align="center">
+  <a href="http://www.mongoclient.com:3000">Try the Demo Application</a>
+</pre>
+
    Database Monitoring     | Easy GridFS, Dump/Restore Management
 :-------------------------:|:-------------------------:
 ![](http://mongoclient.com/img/ss/main_view.png)  |  ![](http://mongoclient.com/img/ss/file.png)
