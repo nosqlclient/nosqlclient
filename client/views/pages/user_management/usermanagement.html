@@ -1,0 +1,40 @@
+<template name="userManagement">
+    {{> pageHeading title='User Management' }}
+
+    {{#if isConnected}}
+        <div class="wrapper wrapper-content animated fadeInRight">
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="ibox float-e-margins">
+                        <div class="ibox-title">
+                            <h5>Users</h5>
+
+                            <div class="ibox-tools">
+                                <a id="aRunOnAdminDBToFetchUsers" class="i-checks"
+                                   data-toggle="tooltip"
+                                   title="If checked, users will be fetched from admin DB, otherwise on current DB">
+                                    <input id="inputRunOnAdminDBToFetchUsers" type="checkbox" value=""
+                                           class="form-control"
+                                           checked=""
+                                           style="position: absolute; opacity: 0;"/>
+                                </a>
+                            </div>
+                        </div>
+
+                        <div class="ibox-content">
+                            <div id="userTree"></div>
+                        </div>
+
+                        <div class="ibox-footer">
+                            <button id="btnRefreshUsers"
+                                    class="btn btn-block btn-outline btn-primary ladda-button"
+                                    type="button"
+                                    data-style="contract">
+                                <strong>Refresh</strong></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {{/if}}
+</template>

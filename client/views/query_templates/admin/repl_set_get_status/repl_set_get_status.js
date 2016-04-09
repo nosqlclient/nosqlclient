@@ -3,6 +3,7 @@
  */
 Template.replSetGetStatus.onRendered(function () {
     Template.changeConvertOptionsVisibility(false);
+    Template.changeRunOnAdminOptionVisibility(false);
 });
 
 Template.replSetGetStatus.executeQuery = function () {

@@ -3,6 +3,7 @@
  */
 Template.profilingInfo.onRendered(function () {
     Template.changeConvertOptionsVisibility(false);
+    Template.changeRunOnAdminOptionVisibility(false);
 });
 
 Template.profilingInfo.executeQuery = function () {

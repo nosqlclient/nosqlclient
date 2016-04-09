@@ -4,6 +4,7 @@
 Template.command.onRendered(function () {
     Template.initializeAceEditor('aceCommand', Template.command.executeQuery);
     Template.changeConvertOptionsVisibility(true);
+    Template.changeRunOnAdminOptionVisibility(true);
 });
 
 Template.command.executeQuery = function () {
@@ -20,8 +21,9 @@ Template.command.executeQuery = function () {
 
     var convertIds = $('#aConvertObjectIds').iCheck('update')[0].checked;
     var convertDates = $('#aConvertIsoDates').iCheck('update')[0].checked;
+    var runOnAdminDB = $('#aRunOnAdminDB').iCheck('update')[0].checked;
 
-    Meteor.call("command", connection, command, convertIds, convertDates,
+    Meteor.call("command", connection, command, convertIds, convertDates, runOnAdminDB,
         function (err, result) {
             Template.renderAfterQueryExecution(err, result, true);
         }

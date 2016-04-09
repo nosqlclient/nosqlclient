@@ -4,6 +4,7 @@
 Template.validateCollection.onRendered(function () {
     Template.initializeAceEditor('aceOptions', Template.validateCollection.executeQuery);
     Template.changeConvertOptionsVisibility(true);
+    Template.changeRunOnAdminOptionVisibility(false);
 });
 
 Template.validateCollection.executeQuery = function () {

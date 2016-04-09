@@ -1,5 +1,6 @@
 Template.buildInfo.onRendered(function () {
     Template.changeConvertOptionsVisibility(false);
+    Template.changeRunOnAdminOptionVisibility(false);
 });
 
 Template.buildInfo.executeQuery = function () {

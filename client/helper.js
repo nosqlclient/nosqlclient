@@ -141,6 +141,14 @@ Template.getParentTemplateName = function (levels) {
     }
 };
 
+Template.changeRunOnAdminOptionVisibility = function (show) {
+    if (show) {
+        $('#aRunOnAdminDB').show();
+    } else {
+        $('#aRunOnAdminDB').hide();
+    }
+
+};
 Template.changeConvertOptionsVisibility = function (show) {
     if (show) {
         $('#aConvertIsoDates').show();

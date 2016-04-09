@@ -19,7 +19,7 @@ Template.editDocument.onRendered(function () {
     });
 
     $('[data-toggle="tooltip"]').tooltip({trigger: 'hover'});
-    Template.changeConvertOptionsVisibility(false);
+    Template.changeConvertOptionsVisibility(true);
 });
 
 Template.editDocument.events({
