@@ -61,29 +61,33 @@ Template.userManagement.initUserTree = function () {
             var children = Template.userManagement.populateTreeChildrenForUsers(result.result.users);
             var finalObject = {
                 'core': {
-                    'data': [
-                        {
-                            'text': root,
-                            'icon': 'fa fa-database',
-                            'state': {
-                                'opened': true
-                            },
-                            'children': children
+                    'data': function (node, callback) {
+                        if (node.id === "#") {
+                            callback([
+                                {
+                                    'text': root,
+                                    'icon': 'fa fa-database',
+                                    'state': {
+                                        'opened': true
+                                    },
+                                    'children': children
+                                }
+                            ]);
+                        } else {
+                            //TODO
+                            callback([{'text': node.text}]);
                         }
-                    ]
+                    }
                 }
             };
 
-            var tree= $('#userTree');
-            tree.jstree(finalObject);
-            tree.on('open_node.jstree', function (event, data) {
-                console.log(data);
-            });
+            $('#userTree').jstree(finalObject);
 
             Ladda.stopAll();
         }
     });
 };
+
 
 Template.userManagement.populateTreeChildrenForUsers = function (users) {
     var result = [];
@@ -92,7 +96,7 @@ Template.userManagement.populateTreeChildrenForUsers = function (users) {
             id: users[i]._id,
             text: users[i].user,
             icon: "fa fa-user",
-            children: []
+            children: true
         })
     }
 
