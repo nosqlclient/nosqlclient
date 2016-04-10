@@ -20,6 +20,12 @@ Template.userManagement.onRendered(function () {
     Template.userManagement.initUserTree();
 });
 
+Template.userManagement.helpers({
+    'information': function () {
+        return Session.get(Template.strSessionSelectionUserManagement);
+    }
+});
+
 Template.userManagement.events({
     'click #btnRefreshUsers': function (e) {
         e.preventDefault();
@@ -43,21 +49,10 @@ Template.userManagement.initUserTree = function () {
 
     Meteor.call('command', connection, command, false, false, runOnAdminDB, function (err, result) {
         if (err || result.error) {
-            var errorMessage;
-            if (err) {
-                errorMessage = err.message;
-            } else {
-                errorMessage = result.error.message;
-            }
-            if (errorMessage) {
-                toastr.error("Couldn't fetch users: " + errorMessage);
-            } else {
-                toastr.error("Couldn't fetch users");
-            }
-            Ladda.stopAll();
+            Template.showMeteorFuncError(err, result, "Couldn't fetch users");
         }
         else {
-            var root = runOnAdminDB ? 'admin' : connection.databaseName;
+            var dbName = runOnAdminDB ? 'admin' : connection.databaseName;
             var children = Template.userManagement.populateTreeChildrenForUsers(result.result.users);
             var finalObject = {
                 'core': {
@@ -65,29 +60,213 @@ Template.userManagement.initUserTree = function () {
                         if (node.id === "#") {
                             callback([
                                 {
-                                    'text': root,
+                                    'text': dbName,
                                     'icon': 'fa fa-database',
+                                    'data': [{'db': true}],
                                     'state': {
                                         'opened': true
                                     },
                                     'children': children
                                 }
                             ]);
-                        } else {
-                            //TODO
-                            callback([{'text': node.text}]);
+                        }
+                        else if (node.data[0].user) {
+                            var userInfoCommand = {
+                                usersInfo: {user: node.text, db: dbName},
+                                showCredentials: true,
+                                showPrivileges: true
+                            };
+
+                            Meteor.call('command', connection, userInfoCommand, false, false, runOnAdminDB, function (err, result) {
+                                if (err || result.error) {
+                                    Template.showMeteorFuncError(err, result, "Couldn't fetch userInfo");
+                                }
+                                else {
+                                    callback(Template.userManagement.populateTreeChildrenForRoles(result.result.users[0]));
+                                }
+                            });
+                        }
+                        else if (node.data[0].role) {
+                            var roleInfoCommand = {
+                                rolesInfo: {role: node.text, db: dbName},
+                                showPrivileges: true,
+                                showBuiltinRoles: true
+                            };
+
+                            Meteor.call('command', connection, roleInfoCommand, false, false, runOnAdminDB, function (err, result) {
+                                if (err || result.error) {
+                                    Template.showMeteorFuncError(err, result, "Couldn't fetch roleInfo");
+                                }
+                                else {
+                                    callback(Template.userManagement.populateTreeChildrenForPrivileges(result.result.roles[0]));
+                                }
+                            });
                         }
                     }
                 }
             };
 
-            $('#userTree').jstree(finalObject);
-
+            var tree = $('#userTree');
+            tree.jstree(finalObject);
+            tree.bind("select_node.jstree", function (evt, data) {
+                    var node = data.instance.get_node(data.selected[0]);
+                    //TODO
+                    Session.set(Template.strSessionSelectionUserManagement, {
+                        title: '',
+                        body: ''
+                    });
+                }
+            );
             Ladda.stopAll();
         }
     });
 };
 
+Template.userManagement.populateTreeChildrenForPrivileges = function (privilege) {
+    if (!privilege) {
+        return [];
+    }
+
+    var result = [];
+    result.push({
+        'text': 'Privileges',
+        'icon': 'fa fa-list-ul',
+        'children': []
+    });
+    result.push({
+        'text': 'Inherited Privileges',
+        'icon': 'fa fa-list-ul',
+        'children': []
+    });
+
+    if (privilege.privileges) {
+        for (var i = 0; i < privilege.privileges.length; i++) {
+            result[0].children.push({
+                data: [
+                    {
+                        privilege: true
+                    }
+                ],
+                text: Template.userManagement.getPrivilegeText(privilege.privileges[i].resource),
+                icon: "fa fa-gears",
+                children: Template.userManagement.getPrivilegeActions(privilege.privileges[i].actions)
+            });
+        }
+    }
+
+    if (privilege.inheritedPrivileges) {
+        for (i = 0; i < privilege.inheritedPrivileges.length; i++) {
+            result[1].children.push({
+                data: [
+                    {
+                        privilege: true
+                    }
+                ],
+                text: Template.userManagement.getPrivilegeText(privilege.inheritedPrivileges[i].resource),
+                icon: "fa fa-gears",
+                children: Template.userManagement.getPrivilegeActions(privilege.inheritedPrivileges[i].actions)
+            });
+        }
+    }
+
+    return result;
+};
+
+Template.userManagement.getPrivilegeActions = function (actions) {
+    if (!actions) {
+        return [];
+    }
+
+    var result = [];
+    for (var i = 0; i < actions.length; i++) {
+        result.push({
+            data: [
+                {
+                    action: true
+                }
+            ],
+            text: actions[i],
+            icon: "fa fa-bolt",
+            children: false
+        });
+    }
+
+    return result;
+};
+
+Template.userManagement.getPrivilegeText = function (resource) {
+    if (!resource) {
+        return "";
+    }
+
+    if (resource.anyResource) {
+        return "anyResource";
+    }
+
+    if (resource.cluster) {
+        return "cluster";
+    }
+
+    if (resource.db && resource.collection) {
+        return resource.db + " " + resource.collection;
+    }
+    if (resource.db) {
+        return resource.db;
+    }
+    if (resource.collection) {
+        return resource.collection;
+    }
+
+    return "";
+};
+
+Template.userManagement.populateTreeChildrenForRoles = function (user) {
+    if (!user) {
+        return [];
+    }
+    var result = [];
+    result.push({
+        'text': 'Roles',
+        'icon': 'fa fa-list-alt',
+        'children': []
+    });
+    result.push({
+        'text': 'Inherited Roles',
+        'icon': 'fa fa-list-alt',
+        'children': []
+    });
+
+    if (user.roles) {
+        for (var i = 0; i < user.roles.length; i++) {
+            result[0].children.push({
+                data: [
+                    {
+                        role: true
+                    }
+                ],
+                text: user.roles[i].role,
+                icon: "fa fa-bars",
+                children: true
+            });
+        }
+    }
+
+    if (user.inheritedRoles) {
+        for (i = 0; i < user.inheritedRoles.length; i++) {
+            result[1].children.push({
+                data: [
+                    {
+                        role: true
+                    }
+                ],
+                text: user.inheritedRoles[i].role,
+                icon: "fa fa-bars",
+                children: true
+            });
+        }
+    }
+    return result;
+};
 
 Template.userManagement.populateTreeChildrenForUsers = function (users) {
     var result = [];
@@ -96,6 +275,11 @@ Template.userManagement.populateTreeChildrenForUsers = function (users) {
             id: users[i]._id,
             text: users[i].user,
             icon: "fa fa-user",
+            data: [
+                {
+                    user: true
+                }
+            ],
             children: true
         })
     }

@@ -40,24 +40,13 @@ Template.uploadFile.proceedUploading = function (blob, contentType, metaData, al
         var connection = Connections.findOne({_id: Session.get(Template.strSessionConnection)});
         Meteor.call('uploadFile', connection, $('#txtBucketName').val(), new Uint8Array(file.target.result), blob.name, contentType, metaData, aliases, function (err, result) {
             if (err || result.error) {
-                var errorMessage;
-                if (err) {
-                    errorMessage = err.message;
-                } else {
-                    errorMessage = result.error.message;
-                }
-                if (errorMessage) {
-                    toastr.error("Couldn't upload file: " + errorMessage);
-                } else {
-                    toastr.error("Couldn't upload file, unknown reason ");
-                }
+                Template.showMeteorFuncError(err, result, "Couldn't upload file");
             }
             else {
                 toastr.success('Successfuly uploaded file');
                 Template.fileManagement.initFileInformations();
+                Ladda.stopAll();
             }
-
-            Ladda.stopAll();
         });
     };
     fileReader.readAsArrayBuffer(blob);

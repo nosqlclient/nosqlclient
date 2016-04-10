@@ -242,33 +242,26 @@ Template.topNavbar.checkConnection = function (connection) {
 
 Template.topNavbar.connect = function (isRefresh) {
     var connection = Connections.findOne({_id: Session.get(Template.strSessionConnection)});
+    
     Meteor.call('connect', connection, function (err, result) {
         if (err || result.error) {
-            var errorMessage;
-            if (err) {
-                errorMessage = err.message;
-            } else {
-                errorMessage = result.error.message;
-            }
-
-            toastr.error("Couldn't connect: " + errorMessage);
-            Ladda.stopAll();
-            return;
-        }
-
-        Ladda.stopAll();
-
-        Session.set(Template.strSessionCollectionNames, result.result);
-        if (!isRefresh) {
-            $('#connectionModal').modal('hide');
-            swal({
-                title: "Connected!",
-                text: "Successfuly connected to " + connection.name,
-                type: "success"
-            });
+            Template.showMeteorFuncError(err, result, "Couldn't connect");
         }
         else {
-            toastr.success("Successfuly refreshed collections");
+            Session.set(Template.strSessionCollectionNames, result.result);
+
+            if (!isRefresh) {
+                $('#connectionModal').modal('hide');
+                swal({
+                    title: "Connected!",
+                    text: "Successfuly connected to " + connection.name,
+                    type: "success"
+                });
+            }
+            else {
+                toastr.success("Successfuly refreshed collections");
+            }
+            Ladda.stopAll();
         }
     });
 }

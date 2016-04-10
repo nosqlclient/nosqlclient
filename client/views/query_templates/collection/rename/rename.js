@@ -49,24 +49,17 @@ Template.rename.renderCollectionnames = function (newName) {
     var connection = Connections.findOne({_id: Session.get(Template.strSessionConnection)});
     Meteor.call('connect', connection, function (err, result) {
         if (err || result.error) {
-            var errorMessage;
-            if (err) {
-                errorMessage = err.message;
-            } else {
-                errorMessage = result.error.message;
-            }
+            Template.showMeteorFuncError(err, result, "Couldn't connect");
+        } else {
+            // re-set collection names and selected collection
+            Session.set(Template.strSessionCollectionNames, result.result);
+            Session.set(Template.strSessionSelectedCollection, newName);
 
-            toastr.error("Couldn't connect: " + errorMessage);
-            return;
+            // set all session values undefined except connection and collection
+            Session.set(Template.strSessionSelectedQuery, undefined);
+            Session.set(Template.strSessionSelectedOptions, undefined);
         }
 
-        // re-set collection names and selected collection
-        Session.set(Template.strSessionCollectionNames, result.result);
-        Session.set(Template.strSessionSelectedCollection, newName);
-
-        // set all session values undefined except connection and collection
-        Session.set(Template.strSessionSelectedQuery, undefined);
-        Session.set(Template.strSessionSelectedOptions, undefined);
     });
 };
 
