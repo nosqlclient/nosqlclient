@@ -1,6 +1,7 @@
 /**
  * Created by RSercan on 9.4.2016.
  */
+//TODO cache mechanism
 Template.userManagement.onRendered(function () {
     if (Session.get(Template.strSessionCollectionNames) == undefined) {
         Router.go('databaseStats');
@@ -18,15 +19,26 @@ Template.userManagement.onRendered(function () {
     chckRunOnAdminDB.iCheck('uncheck');
 
     Template.userManagement.initUserTree();
+    new Clipboard('.reference');
 });
 
 Template.userManagement.helpers({
-    'information': function () {
+    'informationTitle': function () {
         return Session.get(Template.strSessionSelectionUserManagement);
+    },
+    'informationBody': function () {
+        return Session.get(Template.strSessionUsermanagementInfo);
     }
 });
 
 Template.userManagement.events({
+    'click a': function (e) {
+        e.preventDefault();
+        if (e.currentTarget && e.currentTarget.host && e.currentTarget.host.indexOf('docs.mongodb.org') != -1) {
+            toastr.success('Link has been copied to clipboard !');
+        }
+    },
+
     'click #btnRefreshUsers': function (e) {
         e.preventDefault();
 
@@ -39,6 +51,9 @@ Template.userManagement.events({
 });
 
 Template.userManagement.initUserTree = function () {
+    Session.set(Template.strSessionUsermanagementInfo, '');
+    Session.set(Template.strSessionSelectionUserManagement, '');
+
     var connection = Connections.findOne({_id: Session.get(Template.strSessionConnection)});
     var command = {
         usersInfo: 1,
@@ -109,18 +124,72 @@ Template.userManagement.initUserTree = function () {
             var tree = $('#userTree');
             tree.jstree(finalObject);
             tree.bind("select_node.jstree", function (evt, data) {
+                    // clear texts
+                    Session.set(Template.strSessionUsermanagementInfo, '');
+                    Session.set(Template.strSessionSelectionUserManagement, '');
+
                     var node = data.instance.get_node(data.selected[0]);
-                    //TODO
-                    Session.set(Template.strSessionSelectionUserManagement, {
-                        title: '',
-                        body: ''
-                    });
+                    Session.set(Template.strSessionSelectionUserManagement, Template.userManagement.getNodeInformation(node));
                 }
             );
             Ladda.stopAll();
         }
     });
 };
+
+Template.userManagement.getNodeInformation = function (node) {
+    var result = '';
+    if (!node.data) {
+        return result;
+    }
+
+    if (node.data[0].db) {
+        result = 'Database ';
+    }
+    else if (node.data[0].user) {
+        result = 'User ';
+    }
+    else if (node.data[0].role) {
+        Template.userManagement.getRoleInfo(node.text);
+        result = 'Role ';
+    }
+    else if (node.data[0].privilege) {
+        Template.userManagement.getResourceInfo(node.text);
+        result = 'Resource ';
+    }
+    else {
+        Template.userManagement.getActionInfo(node.text);
+        result = 'Action ';
+    }
+
+    result += node.text;
+
+    return result;
+};
+
+Template.userManagement.getActionInfo = function (action) {
+//TODO
+};
+
+Template.userManagement.getResourceInfo = function (resource) {
+//TODO
+};
+
+Template.userManagement.getRoleInfo = function (role) {
+    var l = $('#btnRefreshUsers').ladda();
+    l.ladda('start');
+
+    Meteor.call('getRoleInfo', role, function (err, result) {
+        if (err) {
+            Session.set(Template.strSessionUsermanagementInfo, err.message);
+        } else {
+            Session.set(Template.strSessionUsermanagementInfo, result);
+        }
+
+        Ladda.stopAll();
+    });
+};
+
 
 Template.userManagement.populateTreeChildrenForPrivileges = function (privilege) {
     if (!privilege) {
