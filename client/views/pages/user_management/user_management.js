@@ -1,7 +1,6 @@
 /**
  * Created by RSercan on 9.4.2016.
  */
-//TODO cache mechanism
 Template.userManagement.onRendered(function () {
     if (Session.get(Template.strSessionCollectionNames) == undefined) {
         Router.go('databaseStats');
@@ -124,11 +123,16 @@ Template.userManagement.initUserTree = function () {
             var tree = $('#userTree');
             tree.jstree(finalObject);
             tree.bind("select_node.jstree", function (evt, data) {
+                    var node = data.instance.get_node(data.selected[0]);
+
+                    if (node.text == Session.get(Template.strSessionSelectionUserManagement)) {
+                        return;
+                    }
+
                     // clear texts
                     Session.set(Template.strSessionUsermanagementInfo, '');
                     Session.set(Template.strSessionSelectionUserManagement, '');
 
-                    var node = data.instance.get_node(data.selected[0]);
                     Session.set(Template.strSessionSelectionUserManagement, Template.userManagement.getNodeInformation(node));
                 }
             );
@@ -138,33 +142,25 @@ Template.userManagement.initUserTree = function () {
 };
 
 Template.userManagement.getNodeInformation = function (node) {
-    var result = '';
     if (!node.data) {
-        return result;
+        return '';
     }
 
-    if (node.data[0].db) {
-        result = 'Database ';
-    }
-    else if (node.data[0].user) {
-        result = 'User ';
-    }
-    else if (node.data[0].role) {
+    if (node.data[0].role) {
         Template.userManagement.getRoleInfo(node.text);
-        result = 'Role ';
     }
     else if (node.data[0].privilege) {
         Template.userManagement.getResourceInfo(node.text);
-        result = 'Resource ';
+    }
+    else if (node.data[0].action) {
+        Template.userManagement.getActionInfo(node.text);
     }
     else {
-        Template.userManagement.getActionInfo(node.text);
-        result = 'Action ';
+        return '';
     }
 
-    result += node.text;
 
-    return result;
+    return node.text;
 };
 
 Template.userManagement.getActionInfo = function (action) {
