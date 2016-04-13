@@ -1,6 +1,9 @@
 /**
  * Created by RSercan on 9.4.2016.
  */
+var defaultInformationText = 'Select a role or resource or privilege to see the details';
+var loading = false;
+var last_selected_node;
 Template.userManagement.onRendered(function () {
     if (Session.get(Template.strSessionCollectionNames) == undefined) {
         Router.go('databaseStats');
@@ -51,7 +54,7 @@ Template.userManagement.events({
 
 Template.userManagement.initUserTree = function () {
     Session.set(Template.strSessionUsermanagementInfo, '');
-    Session.set(Template.strSessionSelectionUserManagement, '');
+    Session.set(Template.strSessionSelectionUserManagement, defaultInformationText);
 
     var connection = Connections.findOne({_id: Session.get(Template.strSessionConnection)});
     var command = {
@@ -102,7 +105,7 @@ Template.userManagement.initUserTree = function () {
                         }
                         else if (node.data[0].role) {
                             var roleInfoCommand = {
-                                rolesInfo: {role: node.text, db: dbName},
+                                rolesInfo: {role: node.data[0].text, db: dbName},
                                 showPrivileges: true,
                                 showBuiltinRoles: true
                             };
@@ -122,7 +125,13 @@ Template.userManagement.initUserTree = function () {
 
             var tree = $('#userTree');
             tree.jstree(finalObject);
+
             tree.bind("select_node.jstree", function (evt, data) {
+                    if (loading) {
+                        tree.jstree(true).deselect_node(data.node);
+                        return;
+                    }
+
                     var node = data.instance.get_node(data.selected[0]);
 
                     if (node.text == Session.get(Template.strSessionSelectionUserManagement)) {
@@ -131,7 +140,7 @@ Template.userManagement.initUserTree = function () {
 
                     // clear texts
                     Session.set(Template.strSessionUsermanagementInfo, '');
-                    Session.set(Template.strSessionSelectionUserManagement, '');
+                    Session.set(Template.strSessionSelectionUserManagement, defaultInformationText);
 
                     Session.set(Template.strSessionSelectionUserManagement, Template.userManagement.getNodeInformation(node));
                 }
@@ -142,24 +151,19 @@ Template.userManagement.initUserTree = function () {
 };
 
 Template.userManagement.getNodeInformation = function (node) {
-    if (!node.data) {
-        return '';
+    if (!node.data || node.data[0].db || node.data[0].user) {
+        return defaultInformationText;
     }
 
     if (node.data[0].role) {
-        Template.userManagement.getRoleInfo(node.text);
+        Template.userManagement.getRoleInfo(node.data[0].text);
     }
     else if (node.data[0].privilege) {
         Template.userManagement.getResourceInfo(node.data[0].privilegeType);
-        return '';
     }
     else if (node.data[0].action) {
         Template.userManagement.getActionInfo(node.text);
     }
-    else {
-        return '';
-    }
-
 
     return node.text;
 };
@@ -167,6 +171,7 @@ Template.userManagement.getNodeInformation = function (node) {
 Template.userManagement.getActionInfo = function (action) {
     var l = $('#btnRefreshUsers').ladda();
     l.ladda('start');
+    loading = true;
 
     Meteor.call('getActionInfo', action, function (err, result) {
         if (err) {
@@ -175,6 +180,7 @@ Template.userManagement.getActionInfo = function (action) {
             Session.set(Template.strSessionUsermanagementInfo, result);
         }
 
+        loading = false;
         Ladda.stopAll();
     });
 };
@@ -182,6 +188,7 @@ Template.userManagement.getActionInfo = function (action) {
 Template.userManagement.getResourceInfo = function (resourceType) {
     var l = $('#btnRefreshUsers').ladda();
     l.ladda('start');
+    loading = true;
 
     Meteor.call('getResourceInfo', resourceType, function (err, result) {
         if (err) {
@@ -190,6 +197,7 @@ Template.userManagement.getResourceInfo = function (resourceType) {
             Session.set(Template.strSessionUsermanagementInfo, result);
         }
 
+        loading = false;
         Ladda.stopAll();
     });
 };
@@ -197,6 +205,7 @@ Template.userManagement.getResourceInfo = function (resourceType) {
 Template.userManagement.getRoleInfo = function (role) {
     var l = $('#btnRefreshUsers').ladda();
     l.ladda('start');
+    loading = true;
 
     Meteor.call('getRoleInfo', role, function (err, result) {
         if (err) {
@@ -205,6 +214,7 @@ Template.userManagement.getRoleInfo = function (role) {
             Session.set(Template.strSessionUsermanagementInfo, result);
         }
 
+        loading = false;
         Ladda.stopAll();
     });
 };
@@ -359,10 +369,11 @@ Template.userManagement.populateTreeChildrenForRoles = function (user) {
             result[0].children.push({
                 data: [
                     {
-                        role: true
+                        role: true,
+                        text: user.roles[i].role
                     }
                 ],
-                text: user.roles[i].role,
+                text: user.roles[i].role + '@' + user.roles[i].db,
                 icon: "fa fa-bars",
                 children: true
             });
@@ -374,10 +385,11 @@ Template.userManagement.populateTreeChildrenForRoles = function (user) {
             result[1].children.push({
                 data: [
                     {
-                        role: true
+                        role: true,
+                        text: user.inheritedRoles[i].role
                     }
                 ],
-                text: user.inheritedRoles[i].role,
+                text: user.inheritedRoles[i].role + '@' + user.inheritedRoles[i].db,
                 icon: "fa fa-bars",
                 children: true
             });

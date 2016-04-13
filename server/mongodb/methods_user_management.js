@@ -5,7 +5,7 @@ Meteor.methods({
     'getActionInfo': function (action) {
         LOGGER.info('[crawl]', 'getAction', action);
 
-        var url = "https://docs.mongodb.org/manual/reference/privilege-actions/";
+        var url = "https://docs.mongodb.org/manual/reference/privilege-actions";
         $ = load(url);
 
         fixHrefs(url, $);
@@ -16,12 +16,12 @@ Meteor.methods({
     'getRoleInfo': function (roleName) {
         LOGGER.info('[crawl]', 'getRoleInfo', roleName);
 
-        var url = "https://docs.mongodb.org/manual/reference/built-in-roles/";
+        var url = "https://docs.mongodb.org/manual/reference/built-in-roles";
 
-        $ = load(url + "#" + roleName);
+        $ = load(url + "/#" + roleName);
         var result = 'It looks like a user-defined role';
 
-        $('.authrole').each(function (i, elem) {
+        $('.authrole').each(function () {
             if ($(this).children('dt').attr('id') == roleName) {
                 fixHrefs(url, $);
                 result = $(this).children('dd').html();
@@ -34,7 +34,7 @@ Meteor.methods({
     'getResourceInfo': function (resource) {
         LOGGER.info('[crawl]', 'getResourceInfo', resource);
 
-        var url = "https://docs.mongodb.org/manual/reference/resource-document/";
+        var url = "https://docs.mongodb.org/manual/reference/resource-document";
         $ = load(url);
 
         fixHrefs(url, $);
@@ -73,17 +73,19 @@ var fixHrefs = function (url, $) {
 
     // fix all hrefs
     hrefs.attr('href', function (i, href) {
-        if (href.indexOf('..') != -1) {
+        var tmpUrl = url;
+        while (href.indexOf('..') != -1) {
             href = href.substring(3);
+            tmpUrl = tmpUrl.substring(0, tmpUrl.lastIndexOf('/'));
         }
-        return url + href;
+        return tmpUrl + '/' + href;
     });
 
-    hrefs.each(function (i, elem) {
+    hrefs.each(function () {
         $(this).attr('data-clipboard-text', $(this).attr('href'));
         $(this).replaceWith($(this).not('.headerlink'));
     });
-}
+};
 
 var load = function (url) {
     var cheerio = Meteor.npmRequire('cheerio');
