@@ -150,7 +150,8 @@ Template.userManagement.getNodeInformation = function (node) {
         Template.userManagement.getRoleInfo(node.text);
     }
     else if (node.data[0].privilege) {
-        Template.userManagement.getResourceInfo(node.text);
+        Template.userManagement.getResourceInfo(node.data[0].privilegeType);
+        return '';
     }
     else if (node.data[0].action) {
         Template.userManagement.getActionInfo(node.text);
@@ -164,11 +165,33 @@ Template.userManagement.getNodeInformation = function (node) {
 };
 
 Template.userManagement.getActionInfo = function (action) {
-//TODO
+    var l = $('#btnRefreshUsers').ladda();
+    l.ladda('start');
+
+    Meteor.call('getActionInfo', action, function (err, result) {
+        if (err) {
+            Session.set(Template.strSessionUsermanagementInfo, err.message);
+        } else {
+            Session.set(Template.strSessionUsermanagementInfo, result);
+        }
+
+        Ladda.stopAll();
+    });
 };
 
-Template.userManagement.getResourceInfo = function (resource) {
-//TODO
+Template.userManagement.getResourceInfo = function (resourceType) {
+    var l = $('#btnRefreshUsers').ladda();
+    l.ladda('start');
+
+    Meteor.call('getResourceInfo', resourceType, function (err, result) {
+        if (err) {
+            Session.set(Template.strSessionUsermanagementInfo, err.message);
+        } else {
+            Session.set(Template.strSessionUsermanagementInfo, result);
+        }
+
+        Ladda.stopAll();
+    });
 };
 
 Template.userManagement.getRoleInfo = function (role) {
@@ -209,7 +232,8 @@ Template.userManagement.populateTreeChildrenForPrivileges = function (privilege)
             result[0].children.push({
                 data: [
                     {
-                        privilege: true
+                        privilege: true,
+                        privilegeType: Template.userManagement.getPrivilegeType(privilege.privileges[i].resource)
                     }
                 ],
                 text: Template.userManagement.getPrivilegeText(privilege.privileges[i].resource),
@@ -224,7 +248,8 @@ Template.userManagement.populateTreeChildrenForPrivileges = function (privilege)
             result[1].children.push({
                 data: [
                     {
-                        privilege: true
+                        privilege: true,
+                        privilegeType: Template.userManagement.getPrivilegeType(privilege.privileges[i].resource)
                     }
                 ],
                 text: Template.userManagement.getPrivilegeText(privilege.inheritedPrivileges[i].resource),
@@ -259,7 +284,7 @@ Template.userManagement.getPrivilegeActions = function (actions) {
     return result;
 };
 
-Template.userManagement.getPrivilegeText = function (resource) {
+Template.userManagement.getPrivilegeType = function (resource) {
     if (!resource) {
         return "";
     }
@@ -273,16 +298,44 @@ Template.userManagement.getPrivilegeText = function (resource) {
     }
 
     if (resource.db && resource.collection) {
-        return resource.db + " " + resource.collection;
+        return 'db+collection';
     }
     if (resource.db) {
-        return resource.db;
+        return 'db';
     }
     if (resource.collection) {
+        return 'collection';
+    }
+
+    return "non-system"
+
+};
+
+Template.userManagement.getPrivilegeText = function (resource) {
+    if (!resource) {
+        return "";
+    }
+
+    var type = Template.userManagement.getPrivilegeType(resource);
+
+    if (type == 'db+collection') {
+        return resource.db + " " + resource.collection;
+    }
+
+    if (type == 'db') {
+        return resource.db;
+    }
+
+    if (type == 'collection') {
         return resource.collection;
     }
 
-    return "";
+    if (type == 'non-system') {
+        return 'all non-system collections';
+    }
+
+
+    return type;
 };
 
 Template.userManagement.populateTreeChildrenForRoles = function (user) {
