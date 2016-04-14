@@ -127,6 +127,10 @@ Template.userManagement.initUserTree = function () {
             tree.jstree(finalObject);
 
             tree.bind("select_node.jstree", function (evt, data) {
+                    $('#btnManageRole').hide();
+                    $('#btnManagePrivilege').hide();
+                    $('#btnManageUsers').hide();
+
                     if (loading) {
                         tree.jstree(true).deselect_node(data.node);
                         return;
@@ -152,10 +156,18 @@ Template.userManagement.initUserTree = function () {
 
 Template.userManagement.getNodeInformation = function (node) {
     if (!node.data || node.data[0].db || node.data[0].user) {
+        if (node.data[0].user) {
+            $('#btnManageRole').show();
+        }
+        else if(node.data[0].db){
+            $('#btnManageUsers').show();
+        }
+
         return defaultInformationText;
     }
 
     if (node.data[0].role) {
+        $('#btnManagePrivilege').show();
         Template.userManagement.getRoleInfo(node.data[0].text);
     }
     else if (node.data[0].privilege) {
@@ -220,51 +232,57 @@ Template.userManagement.getRoleInfo = function (role) {
 };
 
 
-Template.userManagement.populateTreeChildrenForPrivileges = function (privilege) {
-    if (!privilege) {
+Template.userManagement.populateTreeChildrenForPrivileges = function (role) {
+    if (!role) {
         return [];
     }
 
     var result = [];
     result.push({
         'text': 'Privileges',
+        'data': [{
+            isBuiltin: role.isBuiltin
+        }],
         'icon': 'fa fa-list-ul',
         'children': []
     });
     result.push({
         'text': 'Inherited Privileges',
+        'data': [{
+            isBuiltin: role.isBuiltin
+        }],
         'icon': 'fa fa-list-ul',
         'children': []
     });
 
-    if (privilege.privileges) {
-        for (var i = 0; i < privilege.privileges.length; i++) {
+    if (role.privileges) {
+        for (var i = 0; i < role.privileges.length; i++) {
             result[0].children.push({
                 data: [
                     {
                         privilege: true,
-                        privilegeType: Template.userManagement.getPrivilegeType(privilege.privileges[i].resource)
+                        privilegeType: Template.userManagement.getPrivilegeType(role.privileges[i].resource)
                     }
                 ],
-                text: Template.userManagement.getPrivilegeText(privilege.privileges[i].resource),
+                text: Template.userManagement.getPrivilegeText(role.privileges[i].resource),
                 icon: "fa fa-gears",
-                children: Template.userManagement.getPrivilegeActions(privilege.privileges[i].actions)
+                children: Template.userManagement.getPrivilegeActions(role.privileges[i].actions)
             });
         }
     }
 
-    if (privilege.inheritedPrivileges) {
-        for (i = 0; i < privilege.inheritedPrivileges.length; i++) {
+    if (role.inheritedPrivileges) {
+        for (i = 0; i < role.inheritedPrivileges.length; i++) {
             result[1].children.push({
                 data: [
                     {
                         privilege: true,
-                        privilegeType: Template.userManagement.getPrivilegeType(privilege.privileges[i].resource)
+                        privilegeType: Template.userManagement.getPrivilegeType(role.inheritedPrivileges[i].resource)
                     }
                 ],
-                text: Template.userManagement.getPrivilegeText(privilege.inheritedPrivileges[i].resource),
+                text: Template.userManagement.getPrivilegeText(role.inheritedPrivileges[i].resource),
                 icon: "fa fa-gears",
-                children: Template.userManagement.getPrivilegeActions(privilege.inheritedPrivileges[i].actions)
+                children: Template.userManagement.getPrivilegeActions(role.inheritedPrivileges[i].actions)
             });
         }
     }
