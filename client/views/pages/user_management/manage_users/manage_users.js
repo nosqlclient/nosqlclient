@@ -57,7 +57,13 @@ Template.manageUsers.initUsers = function () {
                 ],
                 columnDefs: [
                     {
-                        targets: [2],
+                        targets: [3],
+                        data: null,
+                        width: "5%",
+                        defaultContent: '<a href="" title="Edit" class="editor_edit"><i class="fa fa-edit text-navy"></i></a>'
+                    },
+                    {
+                        targets: [3],
                         data: null,
                         width: "5%",
                         defaultContent: '<a href="" title="Delete" class="editor_delete"><i class="fa fa-remove text-navy"></i></a>'
