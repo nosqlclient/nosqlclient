@@ -18,6 +18,8 @@ Template.strSessionSelectedQueryHistory = "selectedQueryHistory";
 Template.strSessionSelectorValue = "selectorValue";
 Template.strSessionSelectionUserManagement = "userManagementValue";
 Template.strSessionUsermanagementInfo = "userManagementInfo";
+Template.strSessionUsermanagementManageSelection = "userManagementManageSelection";
+Template.strSessionTemp = "temp";
 
 Template.clearSessions = function () {
     Object.keys(Session.keys).forEach(function (key) {

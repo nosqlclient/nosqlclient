@@ -3,6 +3,6 @@
  */
 Template.managePrivileges.helpers({
     'getRole': function () {
-        //TODO
+        return Session.get(Template.strSessionUsermanagementManageSelection);
     }
 });

@@ -49,12 +49,20 @@ Template.userManagement.events({
 
         $("#userTree").jstree('destroy');
         Template.userManagement.initUserTree();
+    },
+
+    'click #btnManageUsers': function (e) {
+        e.preventDefault();
+        Template.manageUsers.initUsers();
     }
 });
 
 Template.userManagement.initUserTree = function () {
     Session.set(Template.strSessionUsermanagementInfo, '');
     Session.set(Template.strSessionSelectionUserManagement, defaultInformationText);
+    $('#btnManageRole').hide();
+    $('#btnManagePrivilege').hide();
+    $('#btnManageUsers').hide();
 
     var connection = Connections.findOne({_id: Session.get(Template.strSessionConnection)});
     var command = {
@@ -157,9 +165,11 @@ Template.userManagement.initUserTree = function () {
 Template.userManagement.getNodeInformation = function (node) {
     if (!node.data || node.data[0].db || node.data[0].user) {
         if (node.data[0].user) {
+            Session.set(Template.strSessionUsermanagementManageSelection, node.text);
             $('#btnManageRole').show();
         }
-        else if(node.data[0].db){
+        else if (node.data[0].db) {
+            Session.set(Template.strSessionUsermanagementManageSelection, node.text);
             $('#btnManageUsers').show();
         }
 
@@ -168,6 +178,8 @@ Template.userManagement.getNodeInformation = function (node) {
 
     if (node.data[0].role) {
         $('#btnManagePrivilege').show();
+
+        Session.set(Template.strSessionUsermanagementManageSelection, node.data[0].text);
         Template.userManagement.getRoleInfo(node.data[0].text);
     }
     else if (node.data[0].privilege) {
