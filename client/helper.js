@@ -19,7 +19,8 @@ Template.strSessionSelectorValue = "selectorValue";
 Template.strSessionSelectionUserManagement = "userManagementValue";
 Template.strSessionUsermanagementInfo = "userManagementInfo";
 Template.strSessionUsermanagementManageSelection = "userManagementManageSelection";
-Template.strSessionTemp = "temp";
+Template.strSessionUsermanagementUser = "userManagementUser";
+Template.strSessionUsermanagementRole = "userManagementRole";
 
 Template.clearSessions = function () {
     Object.keys(Session.keys).forEach(function (key) {
