@@ -8,23 +8,7 @@ Template.fileManagement.onRendered(function () {
     }
 
     Template.fileManagement.initFileInformations();
-
-    var selector = $('#tblFiles');
-    selector.find('tbody').on('click', 'tr', function () {
-        var table = selector.DataTable();
-
-        if ($(this).hasClass('selected')) {
-            $(this).removeClass('selected');
-        }
-        else {
-            table.$('tr.selected').removeClass('selected');
-            $(this).addClass('selected');
-        }
-
-        if (table.row(this).data()) {
-            Session.set(Template.strSessionSelectedFile, table.row(this).data());
-        }
-    });
+    Template.initiateDatatable($('#tblFiles'),Template.strSessionSelectedFile);
 });
 
 Template.fileManagement.events({
@@ -102,8 +86,8 @@ Template.fileManagement.events({
                 }
                 else{
                     jsonEditor.set(result.result);
-                    Ladda.stopAll();
                 }
+                Ladda.stopAll();
             });
         }
     }

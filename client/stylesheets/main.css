@@ -23,3 +23,7 @@ tr.selected {
 #btnManageRole, #btnManagePrivilege, #btnManageUsers {
     margin-bottom: 0 !important;
 }
+
+.modal-background {
+    background: #f8fafb !important;
+}

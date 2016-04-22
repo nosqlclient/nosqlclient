@@ -7,25 +7,7 @@ Template.databaseDumpRestore.onRendered(function () {
         return;
     }
 
-    var selector = $('#tblDumps');
-    selector.addClass('table-bordered table-hover');
-    selector.find('tbody').on('click', 'tr', function () {
-
-        var table = selector.DataTable();
-
-        if ($(this).hasClass('selected')) {
-            $(this).removeClass('selected');
-        }
-        else {
-            table.$('tr.selected').removeClass('selected');
-            $(this).addClass('selected');
-        }
-
-        if (table.row(this).data()) {
-            Session.set(Template.strSessionSelectedDump, table.row(this).data());
-        }
-    });
-
+    Template.initiateDatatable($('#tblDumps'), Template.strSessionSelectedDump);
 });
 
 Template.databaseDumpRestore.events({

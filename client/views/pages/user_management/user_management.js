@@ -3,7 +3,6 @@
  */
 var defaultInformationText = 'Select a role or resource or privilege to see the details';
 var loading = false;
-var last_selected_node;
 Template.userManagement.onRendered(function () {
     if (Session.get(Template.strSessionCollectionNames) == undefined) {
         Router.go('databaseStats');
@@ -54,15 +53,28 @@ Template.userManagement.events({
     'click #btnManageUsers': function (e) {
         e.preventDefault();
         Template.manageUsers.initUsers();
+    },
+
+    'click #btnManageRoles': function (e) {
+        e.preventDefault();
+        //TODO Template.manageRoles.initRoles();
+    },
+
+    'click #btnEditUser': function (e) {
+        e.preventDefault();
+        if (Session.get(Template.strSessionUsermanagementManageSelection)) {
+            Template.manageUsers.popEditUserModal(Session.get(Template.strSessionUsermanagementManageSelection));
+        }
     }
 });
 
 Template.userManagement.initUserTree = function () {
     Session.set(Template.strSessionUsermanagementInfo, '');
     Session.set(Template.strSessionSelectionUserManagement, defaultInformationText);
-    $('#btnManageRole').hide();
-    $('#btnManagePrivilege').hide();
+    $('#btnEditUser').hide();
     $('#btnManageUsers').hide();
+    $('#btnManageRoles').hide();
+
 
     var connection = Connections.findOne({_id: Session.get(Template.strSessionConnection)});
     var command = {
@@ -135,9 +147,9 @@ Template.userManagement.initUserTree = function () {
             tree.jstree(finalObject);
 
             tree.bind("select_node.jstree", function (evt, data) {
-                    $('#btnManageRole').hide();
-                    $('#btnManagePrivilege').hide();
+                    $('#btnEditUser').hide();
                     $('#btnManageUsers').hide();
+                    $('#btnManageRoles').hide();
 
                     if (loading) {
                         tree.jstree(true).deselect_node(data.node);
@@ -166,19 +178,18 @@ Template.userManagement.getNodeInformation = function (node) {
     if (!node.data || node.data[0].db || node.data[0].user) {
         if (node.data[0].user) {
             Session.set(Template.strSessionUsermanagementManageSelection, node.text);
-            $('#btnManageRole').show();
+            $('#btnEditUser').show();
         }
         else if (node.data[0].db) {
             Session.set(Template.strSessionUsermanagementManageSelection, node.text);
             $('#btnManageUsers').show();
+            $('#btnManageRoles').show();
         }
 
         return defaultInformationText;
     }
 
     if (node.data[0].role) {
-        $('#btnManagePrivilege').show();
-
         Session.set(Template.strSessionUsermanagementManageSelection, node.data[0].text);
         Template.userManagement.getRoleInfo(node.data[0].text);
     }

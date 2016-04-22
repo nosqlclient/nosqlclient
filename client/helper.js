@@ -28,6 +28,27 @@ Template.clearSessions = function () {
     })
 };
 
+Template.initiateDatatable = function (selector, sessionKey) {
+    selector.find('tbody').on('click', 'tr', function () {
+        var table = selector.DataTable();
+        if ($(this).hasClass('selected')) {
+            $(this).removeClass('selected');
+        }
+        else {
+            table.$('tr.selected').removeClass('selected');
+            $(this).addClass('selected');
+        }
+
+        if (table.row(this).data() && sessionKey) {
+            Session.set(sessionKey, table.row(this).data());
+        }
+    });
+
+    selector.find('tbody').on('click', 'a.editor_delete', function () {
+        selector.DataTable().row($(this).parents('tr')).remove().draw();
+    });
+};
+
 Template.renderAfterQueryExecution = function (err, result, isAdmin, queryInfo, queryParams, saveHistory) {
     if (err || result.error) {
         Template.showMeteorFuncError(err, result, "Couldn't execute query");

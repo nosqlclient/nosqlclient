@@ -12,15 +12,14 @@
                             </h5>
 
                             <div class="ibox-tools">
-                                <button id="btnManageRole" type="button" class="btn btn-sm btn-primary"
-                                        data-toggle="modal" data-target="#manageRolesModal"
-                                        style="display: none">Manage Roles
+                                <button id="btnEditUser" type="button" class="btn btn-sm btn-primary"
+                                        style="display: none">Edit User
                                 </button>
 
-                                <button id="btnManagePrivilege" type="button" class="btn btn-sm btn-primary"
-                                        data-toggle="modal" data-target="#managePrivilegesModal"
+                                <button id="btnManageRoles" type="button" class="btn btn-sm btn-primary"
+                                        data-toggle="modal" data-target="#manageRolesModal"
                                         style="display: none">Manage
-                                    Privileges
+                                    Roles
                                 </button>
 
                                 <button id="btnManageUsers" type="button" class="btn btn-sm btn-primary"
@@ -68,7 +67,6 @@
         </div>
     {{/if}}
 
-    {{> managePrivileges}}
     {{> manageRoles}}
     {{> manageUsers}}
 </template>

@@ -20,6 +20,7 @@
                                 <tr>
                                     <th>User</th>
                                     <th>Roles</th>
+                                    <th>Custom Data</th>
                                     <th>Edit</th>
                                     <th>Delete</th>
                                 </tr>
@@ -27,21 +28,30 @@
                                 <tbody>
                                 </tbody>
                             </table>
+
+                            <button id="btnAddNewUser" type="button"
+                                    class="btn btn-block btn-outline btn-primary"
+                                    style="margin-top: 10px"
+                                    data-toggle="modal"
+                                    data-target="#editUserModal">Add User
+                            </button>
                         </div>
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <div class="pull-left">
-                        <button type="button" class="btn btn-white" data-dismiss="modal">Close</button>
-                    </div>
-                    <button id="btnAddUser" type="button" class="btn btn-outline btn-primary">Add</button>
+                    <button id="btnCloseUMDB" type="button"
+                            data-style="contract"
+                            class="btn btn-outline btn-primary ladda-button"
+                            data-dismiss="modal">
+                        Close
+                    </button>
                 </div>
             </div>
         </div>
     </div>
 
 
-    <!-- EDIT MODAL -->
+    <!-- ADD/EDIT USER MODAL -->
     <div class="modal inmodal" id="editUserModal" tabindex="-1" role="dialog" aria-hidden="true"
          style="display: none;">
         <div class="modal-dialog">
@@ -49,7 +59,7 @@
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span><span
                             class="sr-only">Close</span></button>
-                    <h4 class="modal-title">Edit User</h4>
+                    <h4 id="addEditUserModalTitle" class="modal-title">Edit User</h4>
                 </div>
                 <div class="modal-body">
                     <form class="form-horizontal">
@@ -63,7 +73,8 @@
 
                         <div class="form-group"><label class="col-lg-2 control-label">Password</label>
                             <div class="col-lg-10">
-                                <input id="inputPasswordUM" type="password" placeholder="Password"
+                                <input id="inputPasswordUM" type="password"
+                                       placeholder="Leave this blank to keep old one"
                                        class="form-control">
                             </div>
                         </div>
@@ -78,7 +89,7 @@
                         </ul>
                         <div class="tab-content">
                             <div id="tab-1" class="tab-pane active">
-                                <div class="panel-body no-borders">
+                                <div class="panel-body no-borders modal-background">
                                     <table id="tblUserRoles"
                                            class="table table-striped table-bordered table-hover dataTables-example dataTable"
                                            style="width: 100%">
@@ -92,11 +103,22 @@
                                         <tbody>
                                         </tbody>
                                     </table>
+
+                                    <button id="btnAddNewRoleToUser" type="button"
+                                            class="btn btn-block btn-outline btn-primary"
+                                            style="margin-bottom: 10px"
+                                            data-toggle="modal"
+                                            data-target="#addRoleToUserModal">Add Role
+                                    </button>
                                 </div>
                             </div>
                             <div id="tab-2" class="tab-pane">
-                                <div class="panel-body no-borders">
-
+                                <div class="panel-body no-borders modal-background">
+                                    <pre style="height: 250px;width: 100%" id='aceCustomDataUM'></pre>
+                                    <span class="help-block m-b-none">Custom data associated with the user <strong>(only Mongodb 2.6 or
+                                        higher)</strong><br/>
+                                        You can use <strong>string</strong> to query <strong>ISODate</strong> and <strong>ObjectID</strong>, date format is <strong>YYYY-MM-DD
+                                            HH:mm:ss</strong></span>
                                 </div>
                             </div>
                         </div>
@@ -106,11 +128,110 @@
                     <div class="pull-left">
                         <button type="button" class="btn btn-white" data-dismiss="modal">Close</button>
                     </div>
-                    <button id="btnSaveEditUser" type="button" class="btn btn-outline btn-primary">Save</button>
+                    <button id="btnApplyAddEditUser" type="button"
+                            data-style="contract"
+                            class="btn btn-outline btn-primary ladda-button">
+                        Save
+                    </button>
                 </div>
             </div>
         </div>
     </div>
 
+    <!-- ADD USER ROLE MODAL-->
+    <div class="modal inmodal" id="addRoleToUserModal" tabindex="-1" role="dialog" aria-hidden="true"
+         style="display: none;">
+        <div class="modal-dialog">
+            <div class="modal-content animated flipInY">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span><span
+                            class="sr-only">Close</span></button>
+                    <h4 class="modal-title">Add Role</h4>
+                </div>
+                <div class="modal-body">
+                    <form class="form-horizontal">
+                        <div class="form-group">
+                            <label class="col-lg-1 control-label">Database</label>
+                            <div class="col-lg-11">
+                                <select id="cmbDatabasesForAddRoleToUser"
+                                        data-placeholder="Choose a database..."
+                                        class="chosen-select form-control"
+                                        tabindex="-1">
+                                    <option></option>
+                                </select>
+                            </div>
+                        </div>
 
+                        <div class="form-group"><label class="col-lg-1 control-label">Role</label>
+                            <div class="col-lg-11">
+                                <input id="inputAddRoleToUserRolename" required="true"
+                                       type="text"
+                                       placeholder="Role" class="form-control">
+                            </div>
+                        </div>
+                    </form>
+
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <table id="tblCurrentRoles"
+                                   class="table table-striped table-bordered table-hover dataTables-example dataTable"
+                                   style="width: 100%">
+                                <thead>
+                                <tr>
+                                    <th>Role</th>
+                                    <th>Database</th>
+                                    <th>Builtin Role</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <div class="pull-left">
+                        <button type="button" class="btn btn-white" data-dismiss="modal">Close</button>
+                    </div>
+                    <button id="btnApplyAddRoleToUser"
+                            type="button"
+                            data-style="contract"
+                            class="btn btn-outline btn-primary ladda-button">
+                        Add
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL show custom  data-->
+    <div class="modal inmodal" id="customDataModal" tabindex="-1" role="dialog" aria-hidden="true"
+         style="display: none;">
+        <div class="modal-dialog">
+            <div class="modal-content animated flipInY">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span><span
+                            class="sr-only">Close</span></button>
+                    <h4 class="modal-title">Custom Data</h4>
+                    <small class="font-bold">
+                        {{getUser.user}}
+                    </small>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div id="jsonEditorOfCustomData" style="width: 100%;height:500px" class="col-lg-12">
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button
+                            class="btn btn-block btn-outline btn-primary ladda-button"
+                            type="button"
+                            data-style="contract"
+                            data-dismiss="modal">
+                        <strong>Close</strong></button>
+                </div>
+            </div>
+        </div>
+    </div>
 </template>
