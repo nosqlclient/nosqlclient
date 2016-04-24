@@ -57,7 +57,7 @@ Template.userManagement.events({
 
     'click #btnManageRoles': function (e) {
         e.preventDefault();
-        //TODO Template.manageRoles.initRoles();
+        Template.manageRoles.initRoles();
     },
 
     'click #btnEditUser': function (e) {

@@ -20,7 +20,7 @@ tr.selected {
     top: 0;
 }
 
-#btnManageRole, #btnManagePrivilege, #btnManageUsers {
+#btnManageRoles, #btnEditUser, #btnManageUsers {
     margin-bottom: 0 !important;
 }
 

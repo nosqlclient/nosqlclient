@@ -104,6 +104,20 @@ Template.manageUsers.events({
     'click #btnApplyAddEditUser': function (e) {
         e.preventDefault();
 
+        var usernameSelector = $('#inputUsernameUM');
+        var passwordSelector = $('#inputPasswordUM');
+        var titleSelector = $('#addEditUserModalTitle');
+
+        if (!usernameSelector.val()) {
+            toastr.warning('Username is required !');
+            return;
+        }
+
+        if (!passwordSelector.val() && titleSelector.text() == 'Add User') {
+            toastr.warning('Password is required !');
+            return;
+        }
+
         var customData = ace.edit("aceCustomDataUM").getSession().getValue();
         if (customData) {
             try {
@@ -116,10 +130,10 @@ Template.manageUsers.events({
         }
 
         var command = {};
-        if ($('#addEditUserModalTitle').text() == 'Edit User') {
-            command.updateUser = $('#inputUsernameUM').val();
+        if (titleSelector.text() == 'Edit User') {
+            command.updateUser = usernameSelector.val();
         } else {
-            command.createUser = $('#inputUsernameUM').val();
+            command.createUser = usernameSelector.val();
         }
 
         command.roles = Template.manageUsers.populateUserRolesToSave();
@@ -128,9 +142,8 @@ Template.manageUsers.events({
             command.customData = customData;
         }
 
-        var inputPassword = $('#inputPasswordUM');
-        if (inputPassword.val()) {
-            command.pwd = inputPassword.val();
+        if (passwordSelector.val()) {
+            command.pwd = passwordSelector.val();
         }
 
         var l = $('#btnApplyAddEditUser').ladda();
@@ -145,7 +158,7 @@ Template.manageUsers.events({
             }
             else {
                 Template.manageUsers.initUsers();
-                if ($('#addEditUserModalTitle').text() == 'Edit User') {
+                if (titleSelector.text() == 'Edit User') {
                     toastr.success('Successfuly updated user !');
                 }
                 else {
@@ -172,8 +185,8 @@ Template.manageUsers.events({
             return;
         }
 
-        var tableSelector = $('#tblUserRoles');
-        var currentDatas = tableSelector.DataTable().rows().data();
+        var tableSelector = $('#tblUserRoles').DataTable();
+        var currentDatas = tableSelector.rows().data();
         for (var i = 0; i < currentDatas.length; i++) {
             if (currentDatas[i].db == db && currentDatas[i].role == roleName) {
                 toastr.error('<b>' + roleName + '</b>@' + db + ' already exists !');
@@ -181,10 +194,13 @@ Template.manageUsers.events({
             }
         }
 
-        tableSelector.DataTable().row.add({
-            db: db,
-            role: roleName
-        }).draw();
+        var objectToAdd = {db: db, role: roleName};
+        if (tableSelector.rows().data().length == 0) {
+            Template.manageUsers.populateUserRolesTable(null, [objectToAdd]);
+        }
+        else {
+            tableSelector.row.add(objectToAdd).draw();
+        }
 
         toastr.success('<b>' + roleName + '</b>@' + db + ' successfuly added');
     },
@@ -410,26 +426,7 @@ Template.manageUsers.popEditUserModal = function (user) {
         }
         else {
             var user = result.result.users[0];
-            var tblUserRoles = $('#tblUserRoles');
-            // destroy jquery datatable to prevent reinitialization (https://datatables.net/manual/tech-notes/3)
-            if ($.fn.dataTable.isDataTable('#tblUserRoles')) {
-                tblUserRoles.DataTable().destroy();
-            }
-            tblUserRoles.DataTable({
-                data: user.roles,
-                columns: [
-                    {data: "role", "width": "50%"},
-                    {data: "db", "width": "50%"}
-                ],
-                columnDefs: [
-                    {
-                        targets: [2],
-                        data: null,
-                        width: "5%",
-                        defaultContent: '<a href="" title="Delete" class="editor_delete"><i class="fa fa-remove text-navy"></i></a>'
-                    }
-                ]
-            });
+            Template.manageUsers.populateUserRolesTable(user.roles);
 
             var inputUsernameSelector = $('#inputUsernameUM');
             inputUsernameSelector.val(user.user);
@@ -449,5 +446,28 @@ Template.manageUsers.popEditUserModal = function (user) {
         }
 
         Ladda.stopAll();
+    });
+};
+
+Template.manageUsers.populateUserRolesTable = function (roles, dataArray) {
+    var tblUserRoles = $('#tblUserRoles');
+    // destroy jquery datatable to prevent reinitialization (https://datatables.net/manual/tech-notes/3)
+    if ($.fn.dataTable.isDataTable('#tblUserRoles')) {
+        tblUserRoles.DataTable().destroy();
+    }
+    tblUserRoles.DataTable({
+        data: dataArray ? dataArray : roles,
+        columns: [
+            {data: "role", "width": "50%"},
+            {data: "db", "width": "50%"}
+        ],
+        columnDefs: [
+            {
+                targets: [2],
+                data: null,
+                width: "5%",
+                defaultContent: '<a href="" title="Delete" class="editor_delete"><i class="fa fa-remove text-navy"></i></a>'
+            }
+        ]
     });
 };

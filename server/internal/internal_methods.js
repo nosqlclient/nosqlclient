@@ -2,6 +2,10 @@
  * Created by RSercan on 26.12.2015.
  */
 Meteor.methods({
+    'saveActions': function (action) {
+        Actions.insert(action);
+    },
+
     'saveQueryHistory': function (history) {
         var queryHistoryCount = QueryHistory.find().count({
             connectionId: history.connectionId,

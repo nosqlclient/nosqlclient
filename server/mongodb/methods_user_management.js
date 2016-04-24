@@ -2,12 +2,33 @@
  * Created by RSercan on 10.1.2016.
  */
 Meteor.methods({
+    'getAllActions': function () {
+        var action = Actions.findOne();
+        if (action && action.actionList) {
+            return action.actionList;
+        }
+
+        LOGGER.info('[crawl]', 'getAllActions');
+
+        var url = "https://docs.mongodb.org/manual/reference/privilege-actions";
+        $ = load(url);
+        fixHrefs(url, $);
+
+        var result = [];
+
+        $("dl[class='authaction']").children('dt').each(function () {
+            result.push($(this).attr('id').replace('authr.', ''));
+        });
+
+        Meteor.call('saveActions', {actionList: result});
+        return result;
+    },
+
     'getActionInfo': function (action) {
         LOGGER.info('[crawl]', 'getAction', action);
 
         var url = "https://docs.mongodb.org/manual/reference/privilege-actions";
         $ = load(url);
-
         fixHrefs(url, $);
 
         return $("dt[id='authr." + action + "']").parent('dl[class=authaction]').children('dd').html();
