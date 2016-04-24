@@ -8,23 +8,7 @@ Template.fileManagement.onRendered(function () {
     }
 
     Template.fileManagement.initFileInformations();
-
-    var selector = $('#tblFiles');
-    selector.find('tbody').on('click', 'tr', function () {
-        var table = selector.DataTable();
-
-        if ($(this).hasClass('selected')) {
-            $(this).removeClass('selected');
-        }
-        else {
-            table.$('tr.selected').removeClass('selected');
-            $(this).addClass('selected');
-        }
-
-        if (table.row(this).data()) {
-            Session.set(Template.strSessionSelectedFile, table.row(this).data());
-        }
-    });
+    Template.initiateDatatable($('#tblFiles'),Template.strSessionSelectedFile);
 });
 
 Template.fileManagement.events({
@@ -97,17 +81,12 @@ Template.fileManagement.events({
             $('#metaDataModal').modal('show');
             var connection = Connections.findOne({_id: Session.get(Template.strSessionConnection)});
             Meteor.call('getFile', connection, $('#txtBucketName').val(), fileRow._id, function (err, result) {
-                if (err) {
-                    toastr.error("Couldn't find: " + err.message);
-                    Ladda.stopAll();
-                    return;
+                if(err || result.error){
+                    Template.showMeteorFuncError(err, result, "Couldn't find file");
                 }
-                if (result.error) {
-                    toastr.error("Couldn't find: " + result.error.message);
-                    Ladda.stopAll();
-                    return;
+                else{
+                    jsonEditor.set(result.result);
                 }
-                jsonEditor.set(result.result);
                 Ladda.stopAll();
             });
         }
@@ -122,17 +101,11 @@ Template.fileManagement.initFileInformations = function () {
 
     var connection = Connections.findOne({_id: Session.get(Template.strSessionConnection)});
     Meteor.call('getFileInfos', connection, $('#txtBucketName').val(), function (err, result) {
-            if (err) {
-                toastr.error("Couldn't get file informations: " + err.message);
-                Ladda.stopAll();
+            if(err || result.error){
+                Template.showMeteorFuncError(err, result, "Couldn't get file informations");
                 return;
             }
-            if (result.error) {
-                toastr.error("Couldn't get file informations: " + result.error.message);
-                Ladda.stopAll();
-                return;
-            }
-
+        
             var tblFiles = $('#tblFiles');
             // destroy jquery datatable to prevent reinitialization (https://datatables.net/manual/tech-notes/3)
             if ($.fn.dataTable.isDataTable('#tblFiles')) {

@@ -19,7 +19,7 @@ Template.editDocument.onRendered(function () {
     });
 
     $('[data-toggle="tooltip"]').tooltip({trigger: 'hover'});
-    Template.changeConvertOptionsVisibility(false);
+    Template.changeConvertOptionsVisibility(true);
 });
 
 Template.editDocument.events({
@@ -212,18 +212,7 @@ Template.editDocument.fetchDocument = function () {
             var divResult = $('#divResult');
 
             if (err || result.error) {
-                var errorMessage;
-                if (err) {
-                    errorMessage = err.message;
-                } else {
-                    errorMessage = result.error.message;
-                }
-                if (errorMessage) {
-                    toastr.error("Couldn't fetch document: " + errorMessage);
-                } else {
-                    toastr.error("Couldn't fetch document, unknown reason ");
-                }
-
+                Template.showMeteorFuncError(err, result, "Couldn't fetch document");
                 if (divResult.css('display') != 'none') {
                     divResult.hide();
                     $('#divFooter').hide();

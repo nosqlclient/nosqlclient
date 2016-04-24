@@ -55,6 +55,13 @@
                         </a>
 
                         <ul class="nav nav-second-level collapse out">
+                            <li class="{{isActiveRoute regex='userManagement'}}">
+                                <a class="aNavigations" href="{{pathFor route='userManagement'}}"><i
+                                        class="fa fa-user"></i> <span
+                                        class="nav-label">User Management</span>
+                                </a>
+                            </li>
+
                             <li class="{{isActiveRoute regex='databaseDumpRestore'}}">
                                 <a class="aNavigations" href="{{pathFor route='databaseDumpRestore'}}"><i
                                         class="fa fa-download"></i> <span

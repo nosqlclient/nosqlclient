@@ -3,6 +3,7 @@
  */
 Template.removeUser.onRendered(function () {
     Template.changeConvertOptionsVisibility(false);
+    Template.changeRunOnAdminOptionVisibility(true);
 });
 
 Template.removeUser.executeQuery = function () {
@@ -16,7 +17,9 @@ Template.removeUser.executeQuery = function () {
         return;
     }
 
-    Meteor.call("removeUser", connection, username, function (err, result) {
+    var runOnAdminDB = $('#aRunOnAdminDB').iCheck('update')[0].checked;
+
+    Meteor.call("removeUser", connection, username, runOnAdminDB, function (err, result) {
         Template.renderAfterQueryExecution(err, result, true);
     });
 };

@@ -2,6 +2,76 @@
  * Created by RSercan on 5.3.2016.
  */
 Meteor.methods({
+    'listCollectionNames': function (connection, dbName) {
+        var connectionUrl = getConnectionUrl(connection);
+        var connectionOptions = getConnectionOptions();
+        var mongodbApi = Meteor.npmRequire('mongodb').MongoClient;
+
+        LOGGER.info('[listCollectionNames]', dbName, connectionUrl, connectionOptions);
+
+        return Async.runSync(function (done) {
+            mongodbApi.connect(connectionUrl, connectionOptions, function (mainError, db) {
+                if (mainError) {
+                    done(mainError, null);
+                    if (db) {
+                        db.close();
+                    }
+                    return;
+                }
+                try {
+                    var wishedDB = db.db(dbName);
+                    wishedDB.listCollections().toArray(function (err, collections) {
+                        db.close();
+                        done(err, collections);
+                    });
+
+                }
+                catch (ex) {
+                    LOGGER.error('[dropCollection]', ex);
+                    done(new Meteor.Error(ex.message), null);
+                    if (db) {
+                        db.close();
+                    }
+                }
+            });
+        });
+
+    },
+
+    'getDatabases': function (connection) {
+        var connectionUrl = getConnectionUrl(connection);
+        var connectionOptions = getConnectionOptions();
+
+        LOGGER.info('[getDatabases]', connectionUrl, connectionOptions);
+
+        var mongodbApi = Meteor.npmRequire('mongodb').MongoClient;
+        return Async.runSync(function (done) {
+            mongodbApi.connect(connectionUrl, connectionOptions, function (mainError, db) {
+                if (mainError || db == null || db == undefined) {
+                    done(mainError, db);
+                    if (db) {
+                        db.close();
+                    }
+                    return;
+                }
+                try {
+                    db.admin().listDatabases(function (err, dbs) {
+                        db.close();
+                        done(err, dbs.databases);
+                    });
+                }
+                catch (ex) {
+                    LOGGER.error('[getDatabases]', ex);
+                    done(new Meteor.Error(ex.message), null);
+                    if (db) {
+                        db.close();
+                    }
+                }
+            });
+        });
+
+    },
+
     'connect': function (connection) {
         var connectionUrl = getConnectionUrl(connection);
         var connectionOptions = getConnectionOptions();

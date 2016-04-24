@@ -3,6 +3,7 @@
  */
 Template.serverStatus.onRendered(function () {
     Template.changeConvertOptionsVisibility(false);
+    Template.changeRunOnAdminOptionVisibility(false);
 });
 
 Template.serverStatus.executeQuery = function () {

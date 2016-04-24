@@ -1,0 +1,72 @@
+<template name="userManagement">
+    {{> pageHeading title='User Management' }}
+
+    {{#if isConnected}}
+        <div class="wrapper wrapper-content animated fadeInRight">
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="ibox float-e-margins">
+                        <div class="ibox-title">
+                            <h5>Users
+                                <small>You need to have necessary privileges</small>
+                            </h5>
+
+                            <div class="ibox-tools">
+                                <button id="btnEditUser" type="button" class="btn btn-sm btn-primary"
+                                        style="display: none">Edit User
+                                </button>
+
+                                <button id="btnManageRoles" type="button" class="btn btn-sm btn-primary"
+                                        data-toggle="modal" data-target="#manageRolesModal"
+                                        style="display: none">Manage
+                                    Roles
+                                </button>
+
+                                <button id="btnManageUsers" type="button" class="btn btn-sm btn-primary"
+                                        data-toggle="modal" data-target="#manageUsersModal"
+                                        style="display: none">Manage
+                                    Users
+                                </button>
+
+
+                                <a id="aRunOnAdminDBToFetchUsers" class="i-checks"
+                                   data-toggle="tooltip"
+                                   title="If checked, users will be fetched from admin DB, otherwise on current DB">
+                                    <input id="inputRunOnAdminDBToFetchUsers" type="checkbox" value=""
+                                           class="form-control"
+                                           checked=""
+                                           style="position: absolute; opacity: 0;"/>
+                                </a>
+
+
+                            </div>
+                        </div>
+
+                        <div class="ibox-content">
+                            <div class="row">
+                                <div class="col-lg-5">
+                                    <div id="userTree"></div>
+                                </div>
+                                <div class="col-lg-7">
+                                    <h3>{{informationTitle}}</h3>
+                                    {{{informationBody}}}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="ibox-footer">
+                            <button id="btnRefreshUsers"
+                                    class="btn btn-block btn-outline btn-primary ladda-button"
+                                    type="button"
+                                    data-style="contract">
+                                <strong>Refresh</strong></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {{/if}}
+
+    {{> manageRoles}}
+    {{> manageUsers}}
+</template>
