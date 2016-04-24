@@ -4,6 +4,7 @@
 Template.addUser.onRendered(function () {
     Template.addUser.initializeOptions();
     Template.changeConvertOptionsVisibility(false);
+    Template.changeRunOnAdminOptionVisibility(true);
 });
 
 Template.addUser.initializeOptions = function () {
@@ -43,7 +44,9 @@ Template.addUser.executeQuery = function () {
         return;
     }
 
-    Meteor.call("addUser", connection, username, password, options, function (err, result) {
+    var runOnAdminDB = $('#aRunOnAdminDB').iCheck('update')[0].checked;
+
+    Meteor.call("addUser", connection, username, password, options, runOnAdminDB, function (err, result) {
         Template.renderAfterQueryExecution(err, result, true);
     });
 };

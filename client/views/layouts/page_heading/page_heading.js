@@ -17,26 +17,11 @@ Template.pageHeading.helpers({
 
         Meteor.call("stats", connection, selectedCollection, {}, function (err, result) {
             if (err || result.error) {
-                var errorMessage;
-                if (err) {
-                    errorMessage = err.message;
-                }
-                else {
-                    errorMessage = result.error.message;
-                }
-                if (errorMessage) {
-                    toastr.error("Couldn't fetch connection information: " + errorMessage);
-                }
-                else {
-                    toastr.error("Couldn't fetch connection information, unknown reason ");
-                }
-                // stop loading animation
-                Ladda.stopAll();
+                Template.showMeteorFuncError(err, result, "Couldn't fetch connection informations");
             }
             else {
-                // stop loading animation
-                Ladda.stopAll();
                 Template.pageHeading.populateCollectionInfo(result.result);
+                Ladda.stopAll();
             }
         });
     }

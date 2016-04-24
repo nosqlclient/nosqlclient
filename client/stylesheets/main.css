@@ -19,3 +19,11 @@ tr.selected {
     right: 0;
     top: 0;
 }
+
+#btnManageRoles, #btnEditUser, #btnManageUsers {
+    margin-bottom: 0 !important;
+}
+
+.modal-background {
+    background: #f8fafb !important;
+}

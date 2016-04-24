@@ -26,6 +26,10 @@ Template.adminQueries.onRendered(function () {
         checkboxClass: 'icheckbox_square-green'
     });
 
+    $('#aRunOnAdminDB').iCheck({
+        checkboxClass: 'icheckbox_square-green'
+    });
+
     $('[data-toggle="tooltip"]').tooltip({trigger: 'hover'});
     Template.changeConvertOptionsVisibility(false);
 });

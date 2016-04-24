@@ -1,6 +1,7 @@
 <template name="adminQueries">
     {{#if getConnection}}
         {{> pageHeading title='Admin Queries'}}
+
         <div class="wrapper wrapper-content animated fadeInRight">
             <div class="row">
                 <div class="col-lg-12">
@@ -13,6 +14,15 @@
                                 <a id="btnSwitchView" href="#"
                                    title="Switch Result View">
                                     <i class="fa fa-exchange"></i>
+                                </a>
+                                <a id="aRunOnAdminDB" class="i-checks"
+                                   style="display: none;"
+                                   data-toggle="tooltip"
+                                   title="If checked, this command will be executed on admin DB, otherwise on current DB">
+                                    <input id="inputRunOnAdminDB" type="checkbox" value=""
+                                           class="form-control"
+                                           checked=""
+                                           style="position: absolute; opacity: 0;"/>
                                 </a>
                                 <a id="aConvertIsoDates" class="i-checks"
                                    style="display: none;"

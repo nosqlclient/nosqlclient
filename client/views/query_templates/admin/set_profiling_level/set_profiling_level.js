@@ -4,6 +4,7 @@
 Template.setProfilingLevel.onRendered(function () {
     Template.setProfilingLevel.initializeOptions();
     Template.changeConvertOptionsVisibility(false);
+    Template.changeRunOnAdminOptionVisibility(false);
 });
 
 Template.setProfilingLevel.initializeOptions = function () {

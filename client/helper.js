@@ -16,6 +16,13 @@ Template.strSessionEasyEditID = "easyEditID";
 Template.strSessionDistinctFields = "distinctFields";
 Template.strSessionSelectedQueryHistory = "selectedQueryHistory";
 Template.strSessionSelectorValue = "selectorValue";
+Template.strSessionSelectionUserManagement = "userManagementValue";
+Template.strSessionUsermanagementInfo = "userManagementInfo";
+Template.strSessionUsermanagementManageSelection = "userManagementManageSelection";
+Template.strSessionUsermanagementUser = "userManagementUser";
+Template.strSessionUsermanagementRole = "userManagementRole";
+Template.strSessionUsermanagementPrivilege = "userManagementPrivilege";
+
 
 Template.clearSessions = function () {
     Object.keys(Session.keys).forEach(function (key) {
@@ -23,32 +30,57 @@ Template.clearSessions = function () {
     })
 };
 
+Template.initiateDatatable = function (selector, sessionKey) {
+    selector.find('tbody').on('click', 'tr', function () {
+        var table = selector.DataTable();
+        if ($(this).hasClass('selected')) {
+            $(this).removeClass('selected');
+        }
+        else {
+            table.$('tr.selected').removeClass('selected');
+            $(this).addClass('selected');
+        }
+
+        if (table.row(this).data() && sessionKey) {
+            Session.set(sessionKey, table.row(this).data());
+        }
+    });
+
+    selector.find('tbody').on('click', 'a.editor_delete', function () {
+        selector.DataTable().row($(this).parents('tr')).remove().draw();
+    });
+};
+
 Template.renderAfterQueryExecution = function (err, result, isAdmin, queryInfo, queryParams, saveHistory) {
     if (err || result.error) {
-        var errorMessage;
-        if (err) {
-            errorMessage = err.message;
-        } else {
-            errorMessage = result.error.message;
-        }
-        if (errorMessage) {
-            toastr.error("Couldn't execute query: " + errorMessage);
-        } else {
-            toastr.error("Couldn't execute query, unknown reason ");
-        }
-    } else {
+        Template.showMeteorFuncError(err, result, "Couldn't execute query");
+    }
+    else {
         if (isAdmin) {
             Template.adminQueries.setResult(result.result);
         } else {
             Template.browseCollection.setResult(result.result, queryInfo, queryParams, saveHistory);
         }
-
+        Ladda.stopAll();
     }
 
-    // stop loading animation
-    Ladda.stopAll();
 };
 
+Template.showMeteorFuncError = function (err, result, message) {
+    var errorMessage;
+    if (err) {
+        errorMessage = err.message;
+    } else {
+        errorMessage = result.error.message;
+    }
+    if (errorMessage) {
+        toastr.error(message + ": " + errorMessage);
+    } else {
+        toastr.error(message);
+    }
+
+    Ladda.stopAll();
+};
 
 Template.sortObjectByKey = function (obj) {
     var keys = [];
@@ -141,6 +173,14 @@ Template.getParentTemplateName = function (levels) {
     }
 };
 
+Template.changeRunOnAdminOptionVisibility = function (show) {
+    if (show) {
+        $('#aRunOnAdminDB').show();
+    } else {
+        $('#aRunOnAdminDB').hide();
+    }
+
+};
 Template.changeConvertOptionsVisibility = function (show) {
     if (show) {
         $('#aConvertIsoDates').show();
@@ -171,19 +211,7 @@ Template.getDistinctKeysForAutoComplete = function (selectedCollection) {
 
     Meteor.call("mapReduce", connection, selectedCollection, mapFunc, reduceFunc, options, function (err, result) {
         if (err || result.error) {
-            var errorMessage;
-            if (err) {
-                errorMessage = err.message;
-            }
-            else {
-                errorMessage = result.error.message;
-            }
-            if (errorMessage) {
-                toastr.warning("Couldn't fetch distinct fields for autocomplete: " + errorMessage);
-            }
-            else {
-                toastr.warning("Couldn't fetch distinct fields for autocomplete, unknown reason ");
-            }
+            Template.showMeteorFuncError(err, result, "Couldn't fetch distinct fields for autocomplete");
         }
         else {
             var nameArray = [];
@@ -191,10 +219,9 @@ Template.getDistinctKeysForAutoComplete = function (selectedCollection) {
                 nameArray.push(entry._id);
             });
             Session.set(Template.strSessionDistinctFields, nameArray);
+            Ladda.stopAll();
         }
 
-        // stop loading animation
-        Ladda.stopAll();
     });
 };
 

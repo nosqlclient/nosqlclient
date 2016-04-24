@@ -3,6 +3,7 @@
  */
 Template.ping.onRendered(function () {
     Template.changeConvertOptionsVisibility(false);
+    Template.changeRunOnAdminOptionVisibility(false);
 });
 
 Template.ping.executeQuery = function () {

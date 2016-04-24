@@ -46,7 +46,7 @@ Meteor.methods({
                 "validateCollection": [collectionName, options]
             }
         ];
-        return proceedQueryExecution(connection, methodArray, convertIds, convertDates);
+        return proceedQueryExecution(connection, methodArray, convertIds, convertDates, true);
     },
 
     'setProfilingLevel': function (connection, level) {
@@ -55,7 +55,7 @@ Meteor.methods({
                 "setProfilingLevel": [level]
             }
         ];
-        return proceedQueryExecution(connection, methodArray);
+        return proceedQueryExecution(connection, methodArray, false, false, true);
     },
 
     'serverStatus': function (connection) {
@@ -64,7 +64,7 @@ Meteor.methods({
                 "serverStatus": []
             }
         ];
-        return proceedQueryExecution(connection, methodArray);
+        return proceedQueryExecution(connection, methodArray, false, false, true);
     },
 
     'serverInfo': function (connection) {
@@ -73,7 +73,7 @@ Meteor.methods({
                 "serverInfo": []
             }
         ];
-        return proceedQueryExecution(connection, methodArray);
+        return proceedQueryExecution(connection, methodArray, false, false, true);
     },
 
     'replSetGetStatus': function (connection) {
@@ -82,16 +82,16 @@ Meteor.methods({
                 "replSetGetStatus": []
             }
         ];
-        return proceedQueryExecution(connection, methodArray);
+        return proceedQueryExecution(connection, methodArray, false, false, true);
     },
 
-    'removeUser': function (connection, username) {
+    'removeUser': function (connection, username, runOnAdminDB) {
         var methodArray = [
             {
                 "removeUser": [username]
             }
         ];
-        return proceedQueryExecution(connection, methodArray);
+        return proceedQueryExecution(connection, methodArray, false, false, runOnAdminDB);
     },
 
     'profilingInfo': function (connection) {
@@ -100,7 +100,7 @@ Meteor.methods({
                 "profilingInfo": []
             }
         ];
-        return proceedQueryExecution(connection, methodArray);
+        return proceedQueryExecution(connection, methodArray, false, false, true);
     },
 
     'ping': function (connection) {
@@ -109,7 +109,7 @@ Meteor.methods({
                 "ping": []
             }
         ];
-        return proceedQueryExecution(connection, methodArray);
+        return proceedQueryExecution(connection, methodArray, false, false, true);
     },
 
     'listDatabases': function (connection) {
@@ -118,25 +118,25 @@ Meteor.methods({
                 "listDatabases": []
             }
         ];
-        return proceedQueryExecution(connection, methodArray);
+        return proceedQueryExecution(connection, methodArray, false, false, true);
     },
 
-    'command': function (connection, command, convertIds, convertDates) {
+    'command': function (connection, command, convertIds, convertDates, runOnAdminDB) {
         var methodArray = [
             {
                 "command": [command]
             }
         ];
-        return proceedQueryExecution(connection, methodArray, convertIds, convertDates);
+        return proceedQueryExecution(connection, methodArray, convertIds, convertDates, runOnAdminDB);
     },
 
-    'addUser': function (connection, username, password, options) {
+    'addUser': function (connection, username, password, options, runOnAdminDB) {
         var methodArray = [
             {
                 "addUser": [username, password, options]
             }
         ];
-        return proceedQueryExecution(connection, methodArray);
+        return proceedQueryExecution(connection, methodArray, false, false, runOnAdminDB);
     },
 
     'buildInfo': function (connection) {
@@ -145,18 +145,18 @@ Meteor.methods({
                 "buildInfo": []
             }
         ];
-        return proceedQueryExecution(connection, methodArray);
+        return proceedQueryExecution(connection, methodArray, false, false, true);
     }
 });
 
 
-var proceedQueryExecution = function (connection, methodArray, convertIds, convertDates) {
+var proceedQueryExecution = function (connection, methodArray, convertIds, convertDates, runOnAdminDB) {
     var connectionUrl = getConnectionUrl(connection);
     var connectionOptions = getConnectionOptions();
 
     var mongodbApi = Meteor.npmRequire('mongodb').MongoClient;
 
-    LOGGER.info(methodArray, connectionUrl, connectionOptions);
+    LOGGER.info(methodArray, convertIds, convertDates, runOnAdminDB, connectionUrl, connectionOptions);
 
     var convertObjectId = true;
     var convertIsoDates = true;
@@ -179,7 +179,7 @@ var proceedQueryExecution = function (connection, methodArray, convertIds, conve
                 return;
             }
             try {
-                var execution = db.admin();
+                var execution = runOnAdminDB ? db.admin() : db;
                 if (connection.user && connection.password) {
                     execution.authenticate(connection.user, connection.password, function (authError) {
                         if (authError) {

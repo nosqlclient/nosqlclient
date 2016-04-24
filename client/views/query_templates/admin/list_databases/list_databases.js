@@ -3,6 +3,7 @@
  */
 Template.listDatabases.onRendered(function () {
     Template.changeConvertOptionsVisibility(false);
+    Template.changeRunOnAdminOptionVisibility(false);
 });
 
 Template.listDatabases.executeQuery = function () {
