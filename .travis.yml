@@ -1,4 +1,5 @@
-sudo: false
+sudo: true
+dist: trusty
 
 language: node_js
 
