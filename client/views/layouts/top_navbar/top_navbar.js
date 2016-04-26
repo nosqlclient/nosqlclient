@@ -1,7 +1,6 @@
 Template.topNavbar.rendered = function () {
 
     var selector = $('#tblConnection');
-    selector.addClass('table-striped table-bordered table-hover');
     selector.find('tbody').on('click', 'tr', function () {
 
         var table = selector.DataTable();
@@ -25,60 +24,10 @@ Template.topNavbar.rendered = function () {
     // $('body').addClass('fixed-nav');
     // $(".navbar-static-top").removeClass('navbar-static-top').addClass('navbar-fixed-top');
 
+    $(":file").filestyle({icon: false});
+    Template.topNavbar.initIChecks();
+    Template.topNavbar.populateConnectionsTable();
 };
-
-
-Template.topNavbar.helpers({
-    reactiveDataFunction: function () {
-        return function () {
-            return Connections.find().fetch(); // or .map()
-        };
-    },
-    optionsObject: {
-        columns: [
-            {
-                title: '_id',
-                data: '_id',
-                className: 'center',
-                sClass: "hide_column"
-            },
-            {
-                title: 'Connection Name',
-                data: 'name',
-                className: 'center'
-            },
-            {
-                title: 'Hostname',
-                data: 'host',
-                className: 'center'
-            },
-            {
-                title: 'Port',
-                data: 'port',
-                className: 'center'
-            },
-            {
-                title: 'Database Name',
-                data: 'databaseName',
-                className: 'center'
-            },
-            {
-                title: 'Edit',
-                data: null,
-                className: 'center',
-                bSortable: false,
-                defaultContent: '<a href="" title="Edit" class="editor_edit"><i class="fa fa-edit text-navy"></i></a>'
-            },
-            {
-                title: 'Delete',
-                data: null,
-                className: 'center',
-                bSortable: false,
-                defaultContent: '<a href="" title="Delete" class="editor_remove"><i class="fa fa-remove text-navy"></i></a>'
-            }
-        ]
-    }
-});
 
 
 Template.topNavbar.events({
@@ -215,6 +164,18 @@ Template.topNavbar.events({
         });
 
         Router.go('databaseStats');
+    },
+
+    'click #anchorTab1': function () {
+        if (!$('#anchorTab1').attr('data-toggle')) {
+            toastr.warning('Disable URI connection to use this tab');
+        }
+    },
+
+    'click #anchorTab2': function (e) {
+        if (!$('#anchorTab2').attr('data-toggle')) {
+            toastr.warning('Disable URI connection to use this tab');
+        }
     }
 });
 
@@ -242,7 +203,7 @@ Template.topNavbar.checkConnection = function (connection) {
 
 Template.topNavbar.connect = function (isRefresh) {
     var connection = Connections.findOne({_id: Session.get(Template.strSessionConnection)});
-    
+
     Meteor.call('connect', connection, function (err, result) {
         if (err || result.error) {
             Template.showMeteorFuncError(err, result, "Couldn't connect");
@@ -264,4 +225,91 @@ Template.topNavbar.connect = function (isRefresh) {
             Ladda.stopAll();
         }
     });
-}
+};
+
+Template.topNavbar.initIChecks = function () {
+    var selector = $('#divAuthType');
+    selector.iCheck({
+        radioClass: 'iradio_square-green'
+    });
+
+    var inputAuthStandardSelector = $('#inputAuthStandard');
+    var formStandardAuthSelector = $('#formStandardAuth');
+    var formCertificateAuthSelector = $('#formCertificateAuth');
+    var anchorTab1Selector = $('#anchorTab1');
+    var anchorTab2Selector = $('#anchorTab2');
+    var inputUseUriSelector = $("#inputUseUrl");
+
+    inputAuthStandardSelector.iCheck('check');
+
+    $('#divUseSSL').iCheck({
+        checkboxClass: 'icheckbox_square-green'
+    });
+
+    $('#divUseUrl').iCheck({
+        checkboxClass: 'icheckbox_square-green'
+    });
+
+    inputAuthStandardSelector.on('ifChecked', function (event) {
+        formStandardAuthSelector.show();
+        formCertificateAuthSelector.hide();
+    });
+
+    $('#inputAuthCertificate').on('ifChecked', function (event) {
+        formStandardAuthSelector.hide();
+        formCertificateAuthSelector.show();
+    });
+
+
+    inputUseUriSelector.iCheck('uncheck');
+    inputUseUriSelector.on('ifChanged', function (event) {
+        var inputUriSelector = $('#inputUrl');
+        var inputConnectionNameForUrl = $('#inputConnectionNameForUrl');
+
+        var isChecked = event.currentTarget.checked;
+        if (isChecked) {
+            inputUriSelector.prop('disabled', false);
+            inputConnectionNameForUrl.prop('disabled', false);
+            anchorTab1Selector.removeAttr("data-toggle");
+            anchorTab2Selector.removeAttr("data-toggle");
+        } else {
+            inputUriSelector.prop('disabled', true);
+            inputConnectionNameForUrl.prop('disabled', true);
+            anchorTab1Selector.attr('data-toggle', 'tab');
+            anchorTab2Selector.attr('data-toggle', 'tab');
+        }
+    });
+};
+
+Template.topNavbar.populateConnectionsTable = function () {
+    var tblConnections = $('#tblConnection');
+    // destroy jquery datatable to prevent reinitialization (https://datatables.net/manual/tech-notes/3)
+    if ($.fn.dataTable.isDataTable('#tblConnection')) {
+        tblConnections.DataTable().destroy();
+    }
+    tblConnections.DataTable({
+        data: Connections.find().fetch(),
+        columns: [
+            {data: "_id", sClass: "hide_column"},
+            {data: "name"},
+            {data: "url"},
+            {data: "useSsl"},
+            {data: "host"},
+            {data: "port"}
+        ],
+        columnDefs: [
+            {
+                targets: [6],
+                data: null,
+                bSortable: false,
+                defaultContent: '<a href="" title="Edit" class="editor_edit"><i class="fa fa-edit text-navy"></i></a>'
+            },
+            {
+                targets: [7],
+                data: null,
+                bSortable: false,
+                defaultContent: '<a href="" title="Delete" class="editor_remove"><i class="fa fa-remove text-navy"></i></a>'
+            }
+        ]
+    });
+};

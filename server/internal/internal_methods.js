@@ -65,6 +65,10 @@ Meteor.methods({
             $set: {
                 name: connection.name,
                 host: connection.host,
+                authDatabaseName: connection.authDatabaseName,
+                url: connection.url,
+                useSsl: connection.useSsl,
+                sslCertificatePath: connection.sslCertificatePath,
                 port: connection.port,
                 databaseName: connection.databaseName,
                 user: connection.user,

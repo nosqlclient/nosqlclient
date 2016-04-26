@@ -5,6 +5,8 @@ Template.uploadFile.onRendered(function () {
     if (Session.get(Template.strSessionCollectionNames) == undefined) {
         Router.go('databaseStats');
     }
+
+    $(":file").filestyle({icon: false, buttonBefore: true});
 });
 
 Template.uploadFile.events({
