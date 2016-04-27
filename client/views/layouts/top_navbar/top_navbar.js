@@ -39,11 +39,20 @@ Template.topNavbar.events({
 
     'click #btnCreateNewConnection': function () {
         $('#inputConnectionName').val('');
+        $('#inputConnectionNameForUrl').val('');
+        $('#inputUrl').val('');
         $('#inputHost').val('');
         $('#inputPort').val('27017');
         $('#inputDatabaseName').val('');
         $('#inputUser').val('');
         $('#inputPassword').val('');
+        $('#inputAuthenticationDB').val('');
+        $('#inputPassphrase').val('');
+        $(":file").filestyle('clear');
+        $('#inputUseUrl').iCheck('uncheck');
+        $('#inputUseSSL').iCheck('uncheck');
+        $('#inputAuthStandard').iCheck('check');
+
     },
 
     'click #btnConnectionList': function () {
@@ -68,8 +77,45 @@ Template.topNavbar.events({
 
     'click .editor_edit': function (e) {
         e.preventDefault();
-        $('#connectionEditModal').modal('show');
+        var connection = Connections.findOne({_id: Session.get(Template.strSessionConnection)});
 
+        $('#inputConnectionName').val(connection.name);
+        $('#inputHost').val(connection.host);
+        $('#inputPort').val(connection.port);
+        $('#inputDatabaseName').val(connection.databaseName);
+        $('#inputUser').val(connection.user);
+        $('#inputPassword').val(connection.password);
+        $('#inputAuthenticationDB').val(connection.authDatabaseName);
+        $('#inputPassphrase').val(connection.passphrase);
+
+        if (connection.useSsl) {
+            $('#inputUseSSL').iCheck('check');
+        } else {
+            $('#inputUseSSL').iCheck('uncheck');
+        }
+
+        if (connection.sslCertificatePath) {
+            $('#inputAuthStandard').iCheck('uncheck');
+            $('#inputAuthCertificate').iCheck('check');
+            $("#inputCertificatePath").find(":file").filestyle('input', connection.sslCertificatePath);
+            $("#inputRootCa :file").filestyle('input', connection.rootCACertificatePath);
+        } else {
+            $('#inputAuthStandard').iCheck('check');
+            $('#inputAuthCertificate').iCheck('uncheck');
+            $(":file").filestyle('clear');
+        }
+
+        if (connection.url) {
+            $('#inputUseUrl').iCheck('check');
+            $('#inputUrl').val(connection.url);
+            $('#inputConnectionNameForUrl').val(connection.name);
+        } else {
+            $('#inputUseUrl').iCheck('uncheck');
+            $('#inputUrl').val('');
+            $('#inputConnectionNameForUrl').val('');
+        }
+
+        $('#connectionModal').modal('show');
     },
 
     // Toggle left navigation
@@ -172,7 +218,7 @@ Template.topNavbar.events({
         }
     },
 
-    'click #anchorTab2': function (e) {
+    'click #anchorTab2': function () {
         if (!$('#anchorTab2').attr('data-toggle')) {
             toastr.warning('Disable URI connection to use this tab');
         }
@@ -250,12 +296,12 @@ Template.topNavbar.initIChecks = function () {
         checkboxClass: 'icheckbox_square-green'
     });
 
-    inputAuthStandardSelector.on('ifChecked', function (event) {
+    inputAuthStandardSelector.on('ifChecked', function () {
         formStandardAuthSelector.show();
         formCertificateAuthSelector.hide();
     });
 
-    $('#inputAuthCertificate').on('ifChecked', function (event) {
+    $('#inputAuthCertificate').on('ifChecked', function () {
         formStandardAuthSelector.hide();
         formCertificateAuthSelector.show();
     });
@@ -287,6 +333,7 @@ Template.topNavbar.populateConnectionsTable = function () {
     if ($.fn.dataTable.isDataTable('#tblConnection')) {
         tblConnections.DataTable().destroy();
     }
+
     tblConnections.DataTable({
         data: Connections.find().fetch(),
         columns: [
@@ -298,6 +345,15 @@ Template.topNavbar.populateConnectionsTable = function () {
             {data: "port"}
         ],
         columnDefs: [
+            {
+                targets: [2],
+                render: function (data) {
+                    if (!data) {
+                        return 'false';
+                    }
+                    return 'true';
+                }
+            },
             {
                 targets: [6],
                 data: null,
