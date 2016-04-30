@@ -21,7 +21,6 @@ Template.aggregate.initializeAceEditor = function () {
 
 Template.aggregate.executeQuery = function (historyParams) {
     Template.browseCollection.initExecuteQuery();
-    var connection = Connections.findOne({_id: Session.get(Template.strSessionConnection)});
     var selectedCollection = Session.get(Template.strSessionSelectedCollection);
     var pipeline = historyParams ? JSON.stringify(historyParams.pipeline) : ace.edit("acePipeline").getSession().getValue();
 
@@ -39,7 +38,7 @@ Template.aggregate.executeQuery = function (historyParams) {
     var convertIds = $('#aConvertObjectIds').iCheck('update')[0].checked;
     var convertDates = $('#aConvertIsoDates').iCheck('update')[0].checked;
 
-    Meteor.call("aggregate", connection, selectedCollection, pipeline, convertIds, convertDates,
+    Meteor.call("aggregate", Session.get(Template.strSessionConnection), selectedCollection, pipeline, convertIds, convertDates,
         function (err, result) {
             Template.renderAfterQueryExecution(err, result, false, "aggregate", params, (historyParams ? false : true));
         }

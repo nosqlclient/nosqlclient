@@ -8,9 +8,8 @@ Template.serverStatus.onRendered(function () {
 
 Template.serverInfo.executeQuery = function () {
     Template.adminQueries.initExecuteQuery();
-    var connection = Connections.findOne({_id: Session.get(Template.strSessionConnection)});
 
-    Meteor.call("serverInfo", connection, function (err, result) {
+    Meteor.call("serverInfo", Session.get(Template.strSessionConnection), function (err, result) {
         Template.renderAfterQueryExecution(err, result, true);
     });
 };

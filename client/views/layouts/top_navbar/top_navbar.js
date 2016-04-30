@@ -1,4 +1,4 @@
-Template.topNavbar.rendered = function () {
+Template.topNavbar.onRendered(function () {
 
     var selector = $('#tblConnection');
     selector.find('tbody').on('click', 'tr', function () {
@@ -24,13 +24,39 @@ Template.topNavbar.rendered = function () {
     // $('body').addClass('fixed-nav');
     // $(".navbar-static-top").removeClass('navbar-static-top').addClass('navbar-fixed-top');
 
-    $(":file").filestyle({icon: false});
+    $(":file").filestyle({icon: false, input: false});
     Template.topNavbar.initIChecks();
-    Template.topNavbar.populateConnectionsTable();
-};
+});
 
 
 Template.topNavbar.events({
+    'change #inputCertificate': function () {
+        var blob = $('#inputCertificate')[0].files[0];
+        if (blob) {
+            $('#inputCertificatePath').val(blob.name);
+        } else {
+            $('#inputCertificatePath').val('');
+        }
+    },
+
+    'change #inputRootCa': function () {
+        var blob = $('#inputRootCa')[0].files[0];
+        if (blob) {
+            $('#inputRootCaPath').val(blob.name);
+        } else {
+            $('#inputRootCaPath').val('');
+        }
+    },
+
+    'change #inputCertificateKey': function () {
+        var blob = $('#inputCertificateKey')[0].files[0];
+        if (blob) {
+            $('#inputCertificateKeyPath').val(blob.name);
+        } else {
+            $('#inputCertificateKeyPath').val('');
+        }
+    },
+
     'click #btnRefreshCollections': function (e) {
         e.preventDefault();
 
@@ -38,25 +64,14 @@ Template.topNavbar.events({
     },
 
     'click #btnCreateNewConnection': function () {
-        $('#inputConnectionName').val('');
-        $('#inputConnectionNameForUrl').val('');
-        $('#inputUrl').val('');
-        $('#inputHost').val('');
-        $('#inputPort').val('27017');
-        $('#inputDatabaseName').val('');
-        $('#inputUser').val('');
-        $('#inputPassword').val('');
-        $('#inputAuthenticationDB').val('');
-        $('#inputPassphrase').val('');
-        $(":file").filestyle('clear');
-        $('#inputUseUrl').iCheck('uncheck');
-        $('#inputUseSSL').iCheck('uncheck');
-        $('#inputAuthStandard').iCheck('check');
-
+        $('#addEditConnectionModalTitle').text('Add Connection');
+        Template.topNavbar.clearAllFieldsOfConnectionModal();
     },
 
     'click #btnConnectionList': function () {
         if (!Session.get(Template.strSessionConnection)) {
+            Template.topNavbar.populateConnectionsTable();
+
             $('#tblConnection').DataTable().$('tr.selected').removeClass('selected');
             $('#btnConnect').prop('disabled', true);
         }
@@ -64,58 +79,72 @@ Template.topNavbar.events({
 
     'click .editor_remove': function (e) {
         e.preventDefault();
+        var laddaButton = $('#btnConnect').ladda();
+        laddaButton.ladda('start');
+
         // set rows not selected
         $('#tblConnection').DataTable().$('tr.selected').removeClass('selected');
-        // disable connect button
-        $('#btnConnect').prop('disabled', true);
         // remove connection
         Meteor.call('removeConnection', Session.get(Template.strSessionConnection));
         // clear session
         Template.clearSessions();
 
+        Template.topNavbar.populateConnectionsTable();
+        Ladda.stopAll();
     },
 
     'click .editor_edit': function (e) {
+        $('#addEditConnectionModalTitle').text('Edit Connection');
+
         e.preventDefault();
         var connection = Connections.findOne({_id: Session.get(Template.strSessionConnection)});
-
-        $('#inputConnectionName').val(connection.name);
-        $('#inputHost').val(connection.host);
-        $('#inputPort').val(connection.port);
-        $('#inputDatabaseName').val(connection.databaseName);
-        $('#inputUser').val(connection.user);
-        $('#inputPassword').val(connection.password);
-        $('#inputAuthenticationDB').val(connection.authDatabaseName);
-        $('#inputPassphrase').val(connection.passphrase);
-
-        if (connection.useSsl) {
-            $('#inputUseSSL').iCheck('check');
-        } else {
-            $('#inputUseSSL').iCheck('uncheck');
-        }
-
-        if (connection.sslCertificatePath) {
-            $('#inputAuthStandard').iCheck('uncheck');
-            $('#inputAuthCertificate').iCheck('check');
-            $("#inputCertificatePath").find(":file").filestyle('input', connection.sslCertificatePath);
-            $("#inputRootCa :file").filestyle('input', connection.rootCACertificatePath);
-        } else {
-            $('#inputAuthStandard').iCheck('check');
-            $('#inputAuthCertificate').iCheck('uncheck');
-            $(":file").filestyle('clear');
-        }
+        Template.topNavbar.clearAllFieldsOfConnectionModal();
 
         if (connection.url) {
             $('#inputUseUrl').iCheck('check');
             $('#inputUrl').val(connection.url);
             $('#inputConnectionNameForUrl').val(connection.name);
+            $('.nav-tabs a[href="#tab-3-url"]').tab('show');
         } else {
             $('#inputUseUrl').iCheck('uncheck');
-            $('#inputUrl').val('');
-            $('#inputConnectionNameForUrl').val('');
+            $('#inputConnectionName').val(connection.name);
+            $('#inputHost').val(connection.host);
+            $('#inputPort').val(connection.port);
+            $('#inputDatabaseName').val(connection.databaseName);
+
+            if (connection.sslCertificatePath || connection.rootCACertificatePath || connection.certificateKeyPath) {
+                $('#inputAuthStandard').iCheck('uncheck');
+                $('#inputAuthCertificate').iCheck('check');
+                $('#inputPassPhrase').val(connection.passPhrase);
+
+                if (connection.sslCertificatePath) {
+                    $('#inputCertificatePath').val(connection.sslCertificatePath);
+                }
+
+                if (connection.rootCACertificatePath) {
+                    $("#inputRootCaPath").val(connection.rootCACertificatePath);
+                }
+
+                if (connection.certificateKeyPath) {
+                    $("#inputCertificateKeyPath").val(connection.certificateKeyPath);
+                }
+
+            } else {
+                $('#inputAuthStandard').iCheck('check');
+                $('#inputAuthCertificate').iCheck('uncheck');
+                $('#inputUser').val(connection.user);
+                $('#inputPassword').val(connection.password);
+                $('#inputAuthenticationDB').val(connection.authDatabaseName);
+
+                if (connection.useSsl) {
+                    $('#inputUseSSL').iCheck('check');
+                } else {
+                    $('#inputUseSSL').iCheck('uncheck');
+                }
+            }
         }
 
-        $('#connectionModal').modal('show');
+        $('#addEditConnectionModal').modal('show');
     },
 
     // Toggle left navigation
@@ -150,45 +179,63 @@ Template.topNavbar.events({
 
     'click #btnSaveConnection': function (e) {
         e.preventDefault();
-        var connection = {
-            name: $('#inputConnectionName').val(),
-            host: $('#inputHost').val(),
-            port: $('#inputPort').val(),
-            databaseName: $('#inputDatabaseName').val(),
-            user: $('#inputUser').val(),
-            password: $('#inputPassword').val()
-        };
+        var inputCertificatePathSelector = $('#inputCertificatePath');
+        var rootCertificatePathSelector = $("#inputRootCaPath");
+        var inputCertificateKeyPathSelector = $('#inputCertificateKeyPath');
+        var connection = {};
+
+        if ($('#inputUseUrl').iCheck('update')[0].checked) {
+            connection.url = $('#inputUrl').val();
+            connection.databaseName = Template.topNavbar.parseDatabaseNameFromUrl(connection.url);
+            connection.name = $('#inputConnectionNameForUrl').val();
+        } else {
+            connection.name = $('#inputConnectionName').val();
+            connection.host = $('#inputHost').val();
+            connection.port = $('#inputPort').val();
+            connection.databaseName = $('#inputDatabaseName').val();
+
+            if ($('#inputAuthCertificate').iCheck('update')[0].checked) {
+                if (inputCertificatePathSelector.val()) {
+                    connection.sslCertificatePath = inputCertificatePathSelector.val();
+                    connection.passPhrase = $("#inputPassPhrase").val();
+                }
+
+                if (rootCertificatePathSelector.val()) {
+                    connection.rootCACertificatePath = rootCertificatePathSelector.val();
+                }
+
+                if (inputCertificateKeyPathSelector.val()) {
+                    connection.certificateKeyPath = inputCertificateKeyPathSelector.val();
+                }
+
+            } else {
+                connection.user = $('#inputUser').val();
+                connection.password = $('#inputPassword').val();
+                connection.authDatabaseName = $('#inputAuthenticationDB').val();
+                connection.useSsl = $('#inputUseSSL').iCheck('update')[0].checked;
+            }
+        }
 
         if (!Template.topNavbar.checkConnection(connection)) {
             return;
         }
-        Meteor.call('saveConnection', connection, function (err) {
-            if (err) {
-                toastr.error(err.message);
-            }
-            else {
-                $('#connectionCreateModal').modal('hide');
-            }
-        });
-    },
 
-    'click #btnEditConnection': function (e) {
-        e.preventDefault();
-        var connection = {
-            name: $('#inputEditConnectionName').val(),
-            host: $('#inputEditHost').val(),
-            port: $('#inputEditPort').val(),
-            databaseName: $('#inputEditDatabaseName').val(),
-            user: $('#inputEditUser').val(),
-            password: $('#inputEditPassword').val(),
-            _id: Session.get(Template.strSessionConnection)
-        };
+        var laddaButton = $('#btnSaveConnection').ladda();
+        laddaButton.ladda('start');
 
-        if (!Template.topNavbar.checkConnection(connection)) {
-            return;
+        var isEdit = $('#addEditConnectionModalTitle').text() == 'Edit Connection';
+        var currentConnection;
+        if (isEdit) {
+            currentConnection = Connections.findOne({_id: Session.get(Template.strSessionConnection)});
         }
-        Meteor.call('updateConnection', connection);
-        $('#connectionEditModal').modal('hide');
+
+        if (isEdit) {
+            connection._id = Session.get(Template.strSessionConnection);
+            Template.topNavbar.loadCertificatesAndSave('updateConnection', connection, currentConnection);
+        }
+        else {
+            Template.topNavbar.loadCertificatesAndSave('saveConnection', connection, currentConnection);
+        }
     },
 
     'click #btnConnect': function () {
@@ -225,23 +272,145 @@ Template.topNavbar.events({
     }
 });
 
+Template.topNavbar.clearAllFieldsOfConnectionModal = function () {
+    $('#inputConnectionName').val('');
+    $('#inputConnectionNameForUrl').val('');
+    $('#inputUrl').val('');
+    $('#inputHost').val('');
+    $('#inputPort').val('27017');
+    $('#inputDatabaseName').val('');
+    $('#inputUser').val('');
+    $('#inputPassword').val('');
+    $('#inputAuthenticationDB').val('');
+    $("#inputCertificateKeyPath").val('');
+    $("#inputCertificatePath").val('');
+    $("#inputPassPhrase").val('');
+    $("#inputRootCaPath").val('');
+    $('#inputUseUrl').iCheck('uncheck');
+    $('#inputUseSSL').iCheck('uncheck');
+    $('#inputAuthStandard').iCheck('check');
+    $(":file").filestyle('clear');
+};
+
+Template.topNavbar.proceedSavingConnection = function (saveMethodName, connection) {
+    Meteor.call(saveMethodName, connection, function (err) {
+        if (err) {
+            toastr.warning("Couldn't save connection: " + err.message);
+        }
+        else {
+            Template.topNavbar.populateConnectionsTable();
+            toastr.success('Successfuly saved connection');
+            $('#addEditConnectionModal').modal('hide');
+        }
+
+        Ladda.stopAll();
+    });
+};
+
+Template.topNavbar.proceedCertificateLoading = function (saveMethodName, connection, currentConnection) {
+    var certificateKeySelector = $('#inputCertificateKey');
+    if (certificateKeySelector.get(0).files.length == 0 && currentConnection && currentConnection.certificateKey && $('#inputCertificateKeyPath').val()) {
+        connection.certificateKey = currentConnection.certificateKey;
+        Template.topNavbar.proceedSavingConnection(saveMethodName, connection);
+    } else {
+        if (certificateKeySelector.get(0).files.length != 0) {
+            Template.topNavbar.loadFile(function (file) {
+                connection.certificateKey = new Uint8Array(file.target.result);
+                Template.topNavbar.proceedSavingConnection(saveMethodName, connection);
+            }, certificateKeySelector[0].files[0]);
+        }
+        else {
+            Template.topNavbar.proceedSavingConnection(saveMethodName, connection);
+        }
+    }
+};
+
+Template.topNavbar.proceedRootCertificateLoading = function (saveMethodName, connection, currentConnection) {
+    var rootCaSelector = $('#inputRootCa');
+    if (rootCaSelector.get(0).files.length == 0 && currentConnection && currentConnection.rootCACertificate && $('#inputRootCaPath').val()) {
+        connection.rootCACertificate = currentConnection.rootCACertificate;
+        Template.topNavbar.proceedCertificateLoading(saveMethodName, connection, currentConnection);
+    } else {
+        if (rootCaSelector.get(0).files.length != 0) {
+            Template.topNavbar.loadFile(function (file) {
+                connection.rootCACertificate = new Uint8Array(file.target.result);
+                Template.topNavbar.proceedCertificateLoading(saveMethodName, connection, currentConnection);
+            }, rootCaSelector[0].files[0]);
+
+        } else {
+            Template.topNavbar.proceedCertificateLoading(saveMethodName, connection, currentConnection);
+        }
+    }
+};
+
+Template.topNavbar.loadCertificatesAndSave = function (saveMethodName, connection, currentConnection) {
+    var certificateSelector = $('#inputCertificate');
+
+    if ($('#inputAuthCertificate').iCheck('update')[0].checked && !$('#inputUseUrl').iCheck('update')[0].checked) {
+        if (certificateSelector.get(0).files.length == 0 && currentConnection && currentConnection.sslCertificate && $('#inputCertificatePath').val()) {
+            connection.sslCertificate = currentConnection.sslCertificate;
+            Template.topNavbar.proceedRootCertificateLoading(saveMethodName, connection, currentConnection);
+        }
+        else {
+            if (certificateSelector.get(0).files.length != 0) {
+                Template.topNavbar.loadFile(function (file) {
+                    connection.sslCertificate = new Uint8Array(file.target.result);
+                    Template.topNavbar.proceedRootCertificateLoading(saveMethodName, connection, currentConnection);
+                }, certificateSelector[0].files[0]);
+
+            } else {
+                Template.topNavbar.proceedRootCertificateLoading(saveMethodName, connection, currentConnection);
+            }
+        }
+    } else {
+        Template.topNavbar.proceedSavingConnection(saveMethodName, connection);
+    }
+};
+
+Template.topNavbar.loadFile = function (callback, blob) {
+    var fileReader = new FileReader();
+    fileReader.onload = callback;
+    fileReader.readAsArrayBuffer(blob);
+};
+
 
 Template.topNavbar.checkConnection = function (connection) {
     if (!connection.name) {
         toastr.error("Connection name can't be empty");
         return false;
     }
-    if (!connection.host) {
-        toastr.error("Host can't be empty");
-        return false;
-    }
-    if (!connection.port) {
-        toastr.error("Port can't be empty");
-        return false;
-    }
-    if (!connection.databaseName) {
-        toastr.error("Database name can't be empty");
-        return false;
+
+    if ($('#inputUseUrl').iCheck('update')[0].checked) {
+        if (!connection.url) {
+            toastr.error("Url can't be empty");
+            return false;
+        }
+
+        if (!Template.topNavbar.parseDatabaseNameFromUrl(connection.url)) {
+            toastr.error("Url should include db name");
+            return false;
+        }
+
+    } else {
+        if (!connection.host) {
+            toastr.error("Host can't be empty");
+            return false;
+        }
+        if (!connection.port) {
+            toastr.error("Port can't be empty");
+            return false;
+        }
+        if (!connection.databaseName) {
+            toastr.error("Database name can't be empty");
+            return false;
+        }
+
+        if (!$('#inputAuthCertificate').iCheck('update')[0].checked) {
+            if (connection.passPhrase) {
+                connection.passPhrase = "";
+                toastr.warning('Removed passPhrase, since there is no certificate');
+            }
+        }
     }
 
     return true;
@@ -250,7 +419,7 @@ Template.topNavbar.checkConnection = function (connection) {
 Template.topNavbar.connect = function (isRefresh) {
     var connection = Connections.findOne({_id: Session.get(Template.strSessionConnection)});
 
-    Meteor.call('connect', connection, function (err, result) {
+    Meteor.call('connect', connection._id, function (err, result) {
         if (err || result.error) {
             Template.showMeteorFuncError(err, result, "Couldn't connect");
         }
@@ -329,20 +498,16 @@ Template.topNavbar.initIChecks = function () {
 
 Template.topNavbar.populateConnectionsTable = function () {
     var tblConnections = $('#tblConnection');
-    // destroy jquery datatable to prevent reinitialization (https://datatables.net/manual/tech-notes/3)
-    if ($.fn.dataTable.isDataTable('#tblConnection')) {
-        tblConnections.DataTable().destroy();
-    }
 
     tblConnections.DataTable({
+        destroy: true,
         data: Connections.find().fetch(),
         columns: [
             {data: "_id", sClass: "hide_column"},
             {data: "name"},
             {data: "url"},
             {data: "useSsl"},
-            {data: "host"},
-            {data: "port"}
+            {data: "sslCertificatePath"}
         ],
         columnDefs: [
             {
@@ -355,17 +520,48 @@ Template.topNavbar.populateConnectionsTable = function () {
                 }
             },
             {
-                targets: [6],
+                targets: [3],
+                render: function (data) {
+                    if (!data) {
+                        return 'false';
+                    }
+                    return 'true';
+                }
+            },
+            {
+                targets: [4],
+                render: function (data) {
+                    if (!data) {
+                        return 'false';
+                    }
+                    return 'true';
+                }
+            },
+            {
+                targets: [5],
                 data: null,
                 bSortable: false,
                 defaultContent: '<a href="" title="Edit" class="editor_edit"><i class="fa fa-edit text-navy"></i></a>'
             },
             {
-                targets: [7],
+                targets: [6],
                 data: null,
                 bSortable: false,
                 defaultContent: '<a href="" title="Delete" class="editor_remove"><i class="fa fa-remove text-navy"></i></a>'
             }
         ]
-    });
+    }).draw();
+};
+
+Template.topNavbar.parseDatabaseNameFromUrl = function (url) {
+    try {
+        var lastIndex = url.length;
+        if (url.indexOf('?') != -1) {
+            lastIndex = url.indexOf('?');
+        }
+        return url.substring(url.lastIndexOf("/") + 1, lastIndex);
+    } catch (e) {
+        return "";
+    }
+
 };

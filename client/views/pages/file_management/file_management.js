@@ -45,8 +45,7 @@ Template.fileManagement.events({
                 if (isConfirm) {
                     var l = $('#btnReloadFiles').ladda();
                     l.ladda('start');
-                    var connection = Connections.findOne({_id: Session.get(Template.strSessionConnection)});
-                    Meteor.call('deleteFile', connection, $('#txtBucketName').val(), fileRow._id, function (err) {
+                    Meteor.call('deleteFile', Session.get(Template.strSessionConnection), $('#txtBucketName').val(), fileRow._id, function (err) {
                         if (err) {
                             toastr.error("Couldn't delete: " + err.message);
                         } else {
@@ -79,8 +78,7 @@ Template.fileManagement.events({
             }
 
             $('#metaDataModal').modal('show');
-            var connection = Connections.findOne({_id: Session.get(Template.strSessionConnection)});
-            Meteor.call('getFile', connection, $('#txtBucketName').val(), fileRow._id, function (err, result) {
+            Meteor.call('getFile', Session.get(Template.strSessionConnection), $('#txtBucketName').val(), fileRow._id, function (err, result) {
                 if(err || result.error){
                     Template.showMeteorFuncError(err, result, "Couldn't find file");
                 }
@@ -99,8 +97,7 @@ Template.fileManagement.initFileInformations = function () {
     var l = $('#btnReloadFiles').ladda();
     l.ladda('start');
 
-    var connection = Connections.findOne({_id: Session.get(Template.strSessionConnection)});
-    Meteor.call('getFileInfos', connection, $('#txtBucketName').val(), function (err, result) {
+    Meteor.call('getFileInfos', Session.get(Template.strSessionConnection), $('#txtBucketName').val(), function (err, result) {
             if(err || result.error){
                 Template.showMeteorFuncError(err, result, "Couldn't get file informations");
                 return;

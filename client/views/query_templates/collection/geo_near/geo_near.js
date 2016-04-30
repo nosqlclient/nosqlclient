@@ -20,7 +20,6 @@ Template.geoNear.initializeOptions = function () {
 
 Template.geoNear.executeQuery = function (historyParams) {
     Template.browseCollection.initExecuteQuery();
-    var connection = Connections.findOne({_id: Session.get(Template.strSessionConnection)});
     var selectedCollection = Session.get(Template.strSessionSelectedCollection);
     var xAxis = historyParams ? historyParams.xAxis : $('#inputXAxis').val();
     if (xAxis) {
@@ -45,7 +44,7 @@ Template.geoNear.executeQuery = function (historyParams) {
         options: options
     };
 
-    Meteor.call("geoNear", connection, selectedCollection, xAxis, yAxis, options, function (err, result) {
+    Meteor.call("geoNear", Session.get(Template.strSessionConnection), selectedCollection, xAxis, yAxis, options, function (err, result) {
         Template.renderAfterQueryExecution(err, result, false, "geoNear", params, (historyParams ? false : true));
     });
 };

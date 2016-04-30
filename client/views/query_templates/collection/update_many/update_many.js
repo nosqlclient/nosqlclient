@@ -20,7 +20,6 @@ Template.updateMany.initializeOptions = function () {
 
 Template.updateMany.executeQuery = function (historyParams) {
     Template.browseCollection.initExecuteQuery();
-    var connection = Connections.findOne({_id: Session.get(Template.strSessionConnection)});
     var selectedCollection = Session.get(Template.strSessionSelectedCollection);
     var options = historyParams ? historyParams.options : Template.updateMany.getOptions();
     var selector = historyParams ? JSON.stringify(historyParams.selector) : Template.selector.getValue();
@@ -57,7 +56,7 @@ Template.updateMany.executeQuery = function (historyParams) {
     var convertIds = $('#aConvertObjectIds').iCheck('update')[0].checked;
     var convertDates = $('#aConvertIsoDates').iCheck('update')[0].checked;
 
-    Meteor.call("updateMany", connection, selectedCollection, selector, setObject, options, convertIds, convertDates,
+    Meteor.call("updateMany", Session.get(Template.strSessionConnection), selectedCollection, selector, setObject, options, convertIds, convertDates,
         function (err, result) {
             Template.renderAfterQueryExecution(err, result, false, "updateMany", params, (historyParams ? false : true));
         }

@@ -196,8 +196,6 @@ Template.getDistinctKeysForAutoComplete = function (selectedCollection) {
     if (!settings.autoCompleteFields) {
         return;
     }
-    var connection = Connections.findOne({_id: Session.get(Template.strSessionConnection)});
-
     if (selectedCollection.endsWith('.chunks')) {
         // ignore chunks
         return;
@@ -209,7 +207,7 @@ Template.getDistinctKeysForAutoComplete = function (selectedCollection) {
         out: {inline: 1}
     };
 
-    Meteor.call("mapReduce", connection, selectedCollection, mapFunc, reduceFunc, options, function (err, result) {
+    Meteor.call("mapReduce", Session.get(Template.strSessionConnection), selectedCollection, mapFunc, reduceFunc, options, function (err, result) {
         if (err || result.error) {
             Template.showMeteorFuncError(err, result, "Couldn't fetch distinct fields for autocomplete");
         }

@@ -84,7 +84,7 @@ Template.userManagement.initUserTree = function () {
 
     var runOnAdminDB = $('#aRunOnAdminDBToFetchUsers').iCheck('update')[0].checked;
 
-    Meteor.call('command', connection, command, false, false, runOnAdminDB, function (err, result) {
+    Meteor.call('command', connection._id, command, false, false, runOnAdminDB, function (err, result) {
         if (err || result.error) {
             Template.showMeteorFuncError(err, result, "Couldn't fetch users");
         }
@@ -114,7 +114,7 @@ Template.userManagement.initUserTree = function () {
                                 showPrivileges: true
                             };
 
-                            Meteor.call('command', connection, userInfoCommand, false, false, runOnAdminDB, function (err, result) {
+                            Meteor.call('command', connection._id, userInfoCommand, false, false, runOnAdminDB, function (err, result) {
                                 if (err || result.error) {
                                     Template.showMeteorFuncError(err, result, "Couldn't fetch userInfo");
                                 }
@@ -130,7 +130,7 @@ Template.userManagement.initUserTree = function () {
                                 showBuiltinRoles: true
                             };
 
-                            Meteor.call('command', connection, roleInfoCommand, false, false, runOnAdminDB, function (err, result) {
+                            Meteor.call('command', connection._id, roleInfoCommand, false, false, runOnAdminDB, function (err, result) {
                                 if (err || result.error) {
                                     Template.showMeteorFuncError(err, result, "Couldn't fetch roleInfo");
                                 }

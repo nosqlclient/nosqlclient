@@ -2,19 +2,29 @@
  * Created by RSercan on 30.12.2015.
  */
 getConnectionUrl = function (connection) {
+    if (connection.url) {
+        return connection.url;
+    }
+
     var connectionUrl = 'mongodb://';
     if (connection.user && connection.password) {
         connectionUrl += connection.user + ':' + connection.password + '@';
     }
     connectionUrl += connection.host + ':' + connection.port + '/' + connection.databaseName;
 
+    if (connection.authDatabaseName) {
+        connectionUrl += '?authSource=' + connection.authDatabaseName;
+    }
+
     return connectionUrl;
 };
 
-getConnectionOptions = function () {
+getConnectionOptions = function (connection) {
     var result = {
         server: {socketOptions: {}}
     };
+
+    addConnectionParamsToOptions(connection, result);
 
     var settings = Settings.findOne();
     var connectionTimeout = settings.connectionTimeoutInSeconds;
@@ -28,6 +38,15 @@ getConnectionOptions = function () {
         socketTimeout = Math.round(socketTimeout * 100 * 1000) / 100;
         result.server.socketOptions.socketTimeoutMS = socketTimeout;
     }
+
+    return result;
+};
+
+clearConnectionOptionsForLog = function (connectionOptions) {
+    var result = JSON.parse(JSON.stringify(connectionOptions));
+    delete result.server.sslCert;
+    delete result.server.sslCA;
+    delete result.server.sslKey;
 
     return result;
 };
@@ -46,7 +65,27 @@ convertJSONtoBSON = function (obj, convertObjectId, convertIsoDates) {
     }
 };
 
+var addConnectionParamsToOptions = function (connection, result) {
+    result.server.ssl = !!connection.useSsl;
 
+    if (connection.sslCertificate) {
+        result.server.sslCert = connection.sslCertificate;
+        if (connection.passPhrase) {
+            result.server.sslPass = connection.passPhrase;
+        }
+    }
+
+    if (connection.rootCACertificate) {
+        result.server.sslCA = connection.rootCACertificate;
+        result.server.sslValidate = true;
+    } else {
+        result.server.sslValidate = false;
+    }
+
+    if (connection.certificateKey) {
+        result.server.sslKey = connection.certificateKey;
+    }
+};
 var convertDatesToString = function (obj) {
     for (var property in obj) {
         if (obj.hasOwnProperty(property) && obj[property] != null) {
@@ -155,3 +194,4 @@ var convertValidDates = function (obj) {
         }
     }
 };
+

@@ -8,14 +8,13 @@ Template.pageHeading.helpers({
             return;
         }
 
-        var connection = Connections.findOne({_id: Session.get(Template.strSessionConnection)});
         var selectedCollection = Session.get(Template.strSessionSelectedCollection);
 
         // get distinct field keys for auto complete on every collection change.
         Template.getDistinctKeysForAutoComplete(selectedCollection);
         Template.browseCollection.initExecuteQuery();
 
-        Meteor.call("stats", connection, selectedCollection, {}, function (err, result) {
+        Meteor.call("stats", Session.get(Template.strSessionConnection), selectedCollection, {}, function (err, result) {
             if (err || result.error) {
                 Template.showMeteorFuncError(err, result, "Couldn't fetch connection informations");
             }

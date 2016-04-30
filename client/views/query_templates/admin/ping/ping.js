@@ -8,9 +8,8 @@ Template.ping.onRendered(function () {
 
 Template.ping.executeQuery = function () {
     Template.adminQueries.initExecuteQuery();
-    var connection = Connections.findOne({_id: Session.get(Template.strSessionConnection)});
 
-    Meteor.call("ping", connection, function (err, result) {
+    Meteor.call("ping", Session.get(Template.strSessionConnection), function (err, result) {
         Template.renderAfterQueryExecution(err, result, true);
     });
 };

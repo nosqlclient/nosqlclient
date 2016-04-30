@@ -20,7 +20,6 @@ Template.geoHaystackSearch.initializeOptions = function () {
 
 Template.geoHaystackSearch.executeQuery = function (historyParams) {
     Template.browseCollection.initExecuteQuery();
-    var connection = Connections.findOne({_id: Session.get(Template.strSessionConnection)});
     var selectedCollection = Session.get(Template.strSessionSelectedCollection);
     var xAxis = historyParams ? historyParams.xAxis : $('#inputXAxis').val();
     if (xAxis) {
@@ -46,7 +45,7 @@ Template.geoHaystackSearch.executeQuery = function (historyParams) {
         options: options
     };
 
-    Meteor.call("geoHaystackSearch", connection, selectedCollection, xAxis, yAxis, options, function (err, result) {
+    Meteor.call("geoHaystackSearch", Session.get(Template.strSessionConnection), selectedCollection, xAxis, yAxis, options, function (err, result) {
         Template.renderAfterQueryExecution(err, result, false, "geoHaystackSearch", params, (historyParams ? false : true));
     });
 };

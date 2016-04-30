@@ -21,7 +21,6 @@ Template.createIndex.initializeOptions = function () {
 
 Template.createIndex.executeQuery = function (historyParams) {
     Template.browseCollection.initExecuteQuery();
-    var connection = Connections.findOne({_id: Session.get(Template.strSessionConnection)});
     var selectedCollection = Session.get(Template.strSessionSelectedCollection);
     var options = historyParams ? historyParams.options : Template.createIndexOptions.getOptions();
     var fields = historyParams ? JSON.stringify(historyParams.fields) : ace.edit("aceFields").getSession().getValue();
@@ -44,7 +43,7 @@ Template.createIndex.executeQuery = function (historyParams) {
         options: options
     };
 
-    Meteor.call("createIndex", connection, selectedCollection, fields, options, function (err, result) {
+    Meteor.call("createIndex", Session.get(Template.strSessionConnection), selectedCollection, fields, options, function (err, result) {
         Template.renderAfterQueryExecution(err, result, false, "createIndex", params, (historyParams ? false : true));
     });
 };

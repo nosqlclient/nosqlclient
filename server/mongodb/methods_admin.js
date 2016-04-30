@@ -2,12 +2,13 @@
  * Created by RSercan on 10.1.2016.
  */
 Meteor.methods({
-    'dbStats': function (connection) {
+    'dbStats': function (connectionId) {
+        var connection = Connections.findOne({_id: connectionId});
         var connectionUrl = getConnectionUrl(connection);
-        var connectionOptions = getConnectionOptions();
+        var connectionOptions = getConnectionOptions(connection);
 
         var mongodbApi = Meteor.npmRequire('mongodb').MongoClient;
-        LOGGER.info('[stats]', connectionUrl, connectionOptions);
+        LOGGER.info('[stats]', connectionUrl, clearConnectionOptionsForLog(connectionOptions));
 
         var result = Async.runSync(function (done) {
             mongodbApi.connect(connectionUrl, connectionOptions, function (mainError, db) {
@@ -150,13 +151,14 @@ Meteor.methods({
 });
 
 
-var proceedQueryExecution = function (connection, methodArray, convertIds, convertDates, runOnAdminDB) {
+var proceedQueryExecution = function (connectionId, methodArray, convertIds, convertDates, runOnAdminDB) {
+    var connection = Connections.findOne({_id: connectionId});
     var connectionUrl = getConnectionUrl(connection);
-    var connectionOptions = getConnectionOptions();
+    var connectionOptions = getConnectionOptions(connection);
 
     var mongodbApi = Meteor.npmRequire('mongodb').MongoClient;
 
-    LOGGER.info(methodArray, convertIds, convertDates, runOnAdminDB, connectionUrl, connectionOptions);
+    LOGGER.info(methodArray, convertIds, convertDates, runOnAdminDB, connectionUrl, clearConnectionOptionsForLog(connectionOptions));
 
     var convertObjectId = true;
     var convertIsoDates = true;

@@ -23,7 +23,6 @@ Template.findOne.initializeOptions = function () {
 
 Template.findOne.executeQuery = function (historyParams) {
     Template.browseCollection.initExecuteQuery();
-    var connection = Connections.findOne({_id: Session.get(Template.strSessionConnection)});
     var selectedCollection = Session.get(Template.strSessionSelectedCollection);
     var cursorOptions = historyParams ? historyParams.cursorOptions : Template.cursorOptions.getCursorOptions();
     var selector = historyParams ? JSON.stringify(historyParams.selector) : Template.selector.getValue();
@@ -49,7 +48,7 @@ Template.findOne.executeQuery = function (historyParams) {
     var convertIds = $('#aConvertObjectIds').iCheck('update')[0].checked;
     var convertDates = $('#aConvertIsoDates').iCheck('update')[0].checked;
 
-    Meteor.call("findOne", connection, selectedCollection, selector, cursorOptions, convertIds, convertDates,
+    Meteor.call("findOne", Session.get(Template.strSessionConnection), selectedCollection, selector, cursorOptions, convertIds, convertDates,
         function (err, result) {
             Template.renderAfterQueryExecution(err, result, false, "findOne", params, (historyParams ? false : true));
         }

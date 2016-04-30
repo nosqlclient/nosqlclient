@@ -2,12 +2,13 @@
  * Created by RSercan on 5.3.2016.
  */
 Meteor.methods({
-    'listCollectionNames': function (connection, dbName) {
+    'listCollectionNames': function (connectionId, dbName) {
+        var connection = Connections.findOne({_id: connectionId});
         var connectionUrl = getConnectionUrl(connection);
-        var connectionOptions = getConnectionOptions();
+        var connectionOptions = getConnectionOptions(connection);
         var mongodbApi = Meteor.npmRequire('mongodb').MongoClient;
 
-        LOGGER.info('[listCollectionNames]', dbName, connectionUrl, connectionOptions);
+        LOGGER.info('[listCollectionNames]', dbName, connectionUrl, clearConnectionOptionsForLog(connectionOptions));
 
         return Async.runSync(function (done) {
             mongodbApi.connect(connectionUrl, connectionOptions, function (mainError, db) {
@@ -38,11 +39,12 @@ Meteor.methods({
 
     },
 
-    'getDatabases': function (connection) {
+    'getDatabases': function (connectionId) {
+        var connection = Connections.findOne({_id: connectionId});
         var connectionUrl = getConnectionUrl(connection);
-        var connectionOptions = getConnectionOptions();
+        var connectionOptions = getConnectionOptions(connection);
 
-        LOGGER.info('[getDatabases]', connectionUrl, connectionOptions);
+        LOGGER.info('[getDatabases]', connectionUrl, clearConnectionOptionsForLog(connectionOptions));
 
         var mongodbApi = Meteor.npmRequire('mongodb').MongoClient;
         return Async.runSync(function (done) {
@@ -72,11 +74,12 @@ Meteor.methods({
 
     },
 
-    'connect': function (connection) {
+    'connect': function (connectionId) {
+        var connection = Connections.findOne({_id: connectionId});
         var connectionUrl = getConnectionUrl(connection);
-        var connectionOptions = getConnectionOptions();
+        var connectionOptions = getConnectionOptions(connection);
 
-        LOGGER.info('[connect]', connectionUrl, connectionOptions);
+        LOGGER.info('[connect]', connectionUrl, clearConnectionOptionsForLog(connectionOptions));
 
         var mongodbApi = Meteor.npmRequire('mongodb').MongoClient;
         return Async.runSync(function (done) {
@@ -105,12 +108,13 @@ Meteor.methods({
         });
     },
 
-    'dropDB': function (connection) {
+    'dropDB': function (connectionId) {
+        var connection = Connections.findOne({_id: connectionId});
         var connectionUrl = getConnectionUrl(connection);
-        var connectionOptions = getConnectionOptions();
+        var connectionOptions = getConnectionOptions(connection);
         var mongodbApi = Meteor.npmRequire('mongodb').MongoClient;
 
-        LOGGER.info('[dropDatabase]', connectionUrl, connectionOptions);
+        LOGGER.info('[dropDatabase]', connectionUrl, clearConnectionOptionsForLog(connectionOptions));
 
         return Async.runSync(function (done) {
             mongodbApi.connect(connectionUrl, connectionOptions, function (mainError, db) {
@@ -138,12 +142,13 @@ Meteor.methods({
         });
     },
 
-    'dropCollection': function (connection, collectionName) {
+    'dropCollection': function (connectionId, collectionName) {
+        var connection = Connections.findOne({_id: connectionId});
         var connectionUrl = getConnectionUrl(connection);
-        var connectionOptions = getConnectionOptions();
+        var connectionOptions = getConnectionOptions(connection);
         var mongodbApi = Meteor.npmRequire('mongodb').MongoClient;
 
-        LOGGER.info('[dropCollection]', connectionUrl, connectionOptions, collectionName);
+        LOGGER.info('[dropCollection]', connectionUrl, clearConnectionOptionsForLog(connectionOptions), collectionName);
 
         return Async.runSync(function (done) {
             mongodbApi.connect(connectionUrl, connectionOptions, function (mainError, db) {
@@ -174,12 +179,13 @@ Meteor.methods({
         });
     },
 
-    'dropAllCollections': function (connection) {
+    'dropAllCollections': function (connectionId) {
+        var connection = Connections.findOne({_id: connectionId});
         var connectionUrl = getConnectionUrl(connection);
-        var connectionOptions = getConnectionOptions();
+        var connectionOptions = getConnectionOptions(connection);
         var mongodbApi = Meteor.npmRequire('mongodb').MongoClient;
 
-        LOGGER.info('[dropAllCollections]', connectionUrl, connectionOptions);
+        LOGGER.info('[dropAllCollections]', connectionUrl, clearConnectionOptionsForLog(connectionOptions));
 
         return Async.runSync(function (done) {
             mongodbApi.connect(connectionUrl, connectionOptions, function (mainError, db) {
@@ -217,12 +223,13 @@ Meteor.methods({
         });
     },
 
-    'createCollection': function (connection, collectionName, options) {
+    'createCollection': function (connectionId, collectionName, options) {
+        var connection = Connections.findOne({_id: connectionId});
         var connectionUrl = getConnectionUrl(connection);
-        var connectionOptions = getConnectionOptions();
+        var connectionOptions = getConnectionOptions(connection);
         var mongodbApi = Meteor.npmRequire('mongodb').MongoClient;
 
-        LOGGER.info('[createCollection]', connectionUrl, connectionOptions, collectionName, options);
+        LOGGER.info('[createCollection]', connectionUrl, clearConnectionOptionsForLog(connectionOptions), collectionName, options);
         return Async.runSync(function (done) {
             mongodbApi.connect(connectionUrl, connectionOptions, function (mainError, db) {
                 if (mainError) {

@@ -122,11 +122,10 @@ Template.editDocument.deleteDocument = function () {
     var l = $('#btnDeleteDocument').ladda();
     l.ladda('start');
 
-    var connection = Connections.findOne({_id: Session.get(Template.strSessionConnection)});
     var collectionName = $('#cmbCollections').find(":selected").text();
     var idQuery = {_id: Session.get(Template.strSessionEasyEditID)};
 
-    Meteor.call('delete', connection, collectionName, idQuery, function (err, result) {
+    Meteor.call('delete', Session.get(Template.strSessionConnection), collectionName, idQuery, function (err, result) {
         if (err) {
             toastr.error("Couldn't delete: " + err.message);
         }
@@ -151,7 +150,6 @@ Template.editDocument.saveDocument = function () {
     var l = $('#btnSaveDocument').ladda();
     l.ladda('start');
 
-    var connection = Connections.findOne({_id: Session.get(Template.strSessionConnection)});
     var collectionName = $('#cmbCollections').find(":selected").text();
     var idQuery = {_id: Session.get(Template.strSessionEasyEditID)};
     var setValue = $('#divResult').data('editor').getValue();
@@ -170,7 +168,7 @@ Template.editDocument.saveDocument = function () {
     var convertIds = $('#aConvertObjectIds').iCheck('update')[0].checked;
     var convertDates = $('#aConvertIsoDates').iCheck('update')[0].checked;
 
-    Meteor.call('updateOne', connection, collectionName, idQuery, setValue, convertIds, convertDates,
+    Meteor.call('updateOne', Session.get(Template.strSessionConnection), collectionName, idQuery, setValue, convertIds, convertDates,
         function (err) {
             if (err) {
                 toastr.error("Couldn't update: " + err.message);
@@ -189,7 +187,6 @@ Template.editDocument.fetchDocument = function () {
 
     var collectionName = $('#cmbCollections').find(":selected").text();
     var selector = Template.selector.getValue();
-    var connection = Connections.findOne({_id: Session.get(Template.strSessionConnection)});
 
     if (!collectionName) {
         toastr.warning('Please select a collection first !');
@@ -207,7 +204,7 @@ Template.editDocument.fetchDocument = function () {
     var convertIds = $('#aConvertObjectIds').iCheck('update')[0].checked;
     var convertDates = $('#aConvertIsoDates').iCheck('update')[0].checked;
 
-    Meteor.call("findOne", connection, collectionName, selector, {}, convertIds, convertDates,
+    Meteor.call("findOne", Session.get(Template.strSessionConnection), collectionName, selector, {}, convertIds, convertDates,
         function (err, result) {
             var divResult = $('#divResult');
 

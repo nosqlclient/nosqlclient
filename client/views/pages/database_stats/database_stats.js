@@ -274,8 +274,7 @@ Template.databaseStats.helpers({
 
 Template.databaseStats.fetchStats = function () {
     if (Session.get(Template.strSessionCollectionNames) != undefined) {
-        var connection = Connections.findOne({_id: Session.get(Template.strSessionConnection)});
-        Meteor.call("dbStats", connection, function (err, result) {
+        Meteor.call("dbStats", Session.get(Template.strSessionConnection), function (err, result) {
             if (err || result.error) {
                 Template.showMeteorFuncError(err, result, "Couldn't execute dbStats");
                 Session.set(Template.strSessionDBStats, undefined);
@@ -290,8 +289,7 @@ Template.databaseStats.fetchStats = function () {
 
 Template.databaseStats.fetchStatus = function () {
     if (Session.get(Template.strSessionCollectionNames) != undefined) {
-        var connection = Connections.findOne({_id: Session.get(Template.strSessionConnection)});
-        Meteor.call("serverStatus", connection, function (err, result) {
+        Meteor.call("serverStatus", Session.get(Template.strSessionConnection), function (err, result) {
             if (err || result.error) {
                 Template.showMeteorFuncError(err, result, "Couldn't fetch serverStatus");
                 Session.set(Template.strSessionServerStatus, undefined);

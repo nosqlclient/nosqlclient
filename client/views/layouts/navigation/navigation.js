@@ -39,8 +39,7 @@ Template.navigation.events({
             confirmButtonText: "Yes, drop them!",
             closeOnConfirm: false
         }, function () {
-            var connection = Connections.findOne({_id: Session.get(Template.strSessionConnection)});
-            Meteor.call('dropAllCollections', connection, function (err, result) {
+            Meteor.call('dropAllCollections', Session.get(Template.strSessionConnection), function (err, result) {
                 if (err || result.error) {
                     Template.showMeteorFuncError(err, result, "Couldn't drop all collections");
                 }
@@ -48,7 +47,7 @@ Template.navigation.events({
                     Template.clearSessions();
                     swal({
                         title: "Dropped!",
-                        text: "Successfuly dropped all collections for database " + connection.databaseName,
+                        text: "Successfuly dropped all collections database ",
                         type: "success"
                     });
                 }
@@ -67,8 +66,7 @@ Template.navigation.events({
             confirmButtonText: "Yes, drop it!",
             closeOnConfirm: false
         }, function () {
-            var connection = Connections.findOne({_id: Session.get(Template.strSessionConnection)});
-            Meteor.call('dropDB', connection, function (err, result) {
+            Meteor.call('dropDB', Session.get(Template.strSessionConnection), function (err, result) {
                 if (err || result.error) {
                     Template.showMeteorFuncError(err, result, "Couldn't drop database");
                 }
@@ -76,7 +74,7 @@ Template.navigation.events({
                     Template.clearSessions();
                     swal({
                         title: "Dropped!",
-                        text: "Successfuly dropped database " + connection.databaseName,
+                        text: "Successfuly dropped database ",
                         type: "success"
                     });
                 }
@@ -180,8 +178,7 @@ Template.navigation.handleNavigationAndSessions = function () {
 };
 
 Template.navigation.dropCollection = function (collectionName) {
-    var connection = Connections.findOne({_id: Session.get(Template.strSessionConnection)});
-    Meteor.call('dropCollection', connection, collectionName, function (err, result) {
+    Meteor.call('dropCollection', Session.get(Template.strSessionConnection), collectionName, function (err, result) {
         if (err || result.error) {
             Template.showMeteorFuncError(err, result, "Couldn't drop collection");
         }
@@ -193,8 +190,7 @@ Template.navigation.dropCollection = function (collectionName) {
 };
 
 Template.navigation.renderCollectionNames = function () {
-    var connection = Connections.findOne({_id: Session.get(Template.strSessionConnection)});
-    Meteor.call('connect', connection, function (err, result) {
+    Meteor.call('connect', Session.get(Template.strSessionConnection), function (err, result) {
         if (err || result.error) {
             Template.showMeteorFuncError(err, result, "Couldn't connect");
         }

@@ -227,14 +227,15 @@ Meteor.methods({
     }
 });
 
-var proceedMapReduceExecution = function (connection, selectedCollection, map, reduce, options) {
+var proceedMapReduceExecution = function (connectionId, selectedCollection, map, reduce, options) {
+    var connection = Connections.findOne({_id: connectionId});
     var connectionUrl = getConnectionUrl(connection);
-    var connectionOptions = getConnectionOptions();
+    var connectionOptions = getConnectionOptions(connection);
     var mongodbApi = Meteor.npmRequire('mongodb').MongoClient;
 
     convertJSONtoBSON(options);
 
-    LOGGER.info('[mapReduce]', connectionUrl, connectionOptions, selectedCollection, map, reduce, options);
+    LOGGER.info('[mapReduce]', connectionUrl, clearConnectionOptionsForLog(connectionOptions), selectedCollection, map, reduce, options);
 
     var result = Async.runSync(function (done) {
         mongodbApi.connect(connectionUrl, connectionOptions, function (mainError, db) {
@@ -282,9 +283,10 @@ var proceedMapReduceExecution = function (connection, selectedCollection, map, r
     return result;
 };
 
-var proceedQueryExecution = function (connection, selectedCollection, methodArray, convertIds, convertDates) {
+var proceedQueryExecution = function (connectionId, selectedCollection, methodArray, convertIds, convertDates) {
+    var connection = Connections.findOne({_id: connectionId});
     var connectionUrl = getConnectionUrl(connection);
-    var connectionOptions = getConnectionOptions();
+    var connectionOptions = getConnectionOptions(connection);
     var mongodbApi = Meteor.npmRequire('mongodb').MongoClient;
     var convertObjectId = true;
     var convertIsoDates = true;
@@ -297,7 +299,7 @@ var proceedQueryExecution = function (connection, selectedCollection, methodArra
         convertIsoDates = false;
     }
 
-    LOGGER.info(methodArray, 'convertIds: ' + convertObjectId, 'convertDates: ' + convertIsoDates, connectionUrl, connectionOptions, selectedCollection);
+    LOGGER.info(methodArray, 'convertIds: ' + convertObjectId, 'convertDates: ' + convertIsoDates, connectionUrl, clearConnectionOptionsForLog(connectionOptions), selectedCollection);
 
     var result = Async.runSync(function (done) {
         mongodbApi.connect(connectionUrl, connectionOptions, function (mainError, db) {

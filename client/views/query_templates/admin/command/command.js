@@ -9,7 +9,6 @@ Template.command.onRendered(function () {
 
 Template.command.executeQuery = function () {
     Template.adminQueries.initExecuteQuery();
-    var connection = Connections.findOne({_id: Session.get(Template.strSessionConnection)});
     var command = ace.edit("aceCommand").getSession().getValue();
 
     command = Template.convertAndCheckJSON(command);
@@ -23,7 +22,7 @@ Template.command.executeQuery = function () {
     var convertDates = $('#aConvertIsoDates').iCheck('update')[0].checked;
     var runOnAdminDB = $('#aRunOnAdminDB').iCheck('update')[0].checked;
 
-    Meteor.call("command", connection, command, convertIds, convertDates, runOnAdminDB,
+    Meteor.call("command", Session.get(Template.strSessionConnection), command, convertIds, convertDates, runOnAdminDB,
         function (err, result) {
             Template.renderAfterQueryExecution(err, result, true);
         }

@@ -40,9 +40,8 @@ Template.manageRoles.events({
                 var command = {dropRole: Session.get(Template.strSessionUsermanagementRole).role};
 
                 var runOnAdminDB = $('#aRunOnAdminDBToFetchUsers').iCheck('update')[0].checked;
-                var connection = Connections.findOne({_id: Session.get(Template.strSessionConnection)});
 
-                Meteor.call('command', connection, command, false, false, runOnAdminDB, function (err, result) {
+                Meteor.call('command', Session.get(Template.strSessionConnection), command, false, false, runOnAdminDB, function (err, result) {
                     if (err || result.error) {
                         Template.showMeteorFuncError(err, result, "Couldn't drop role");
                     }
@@ -164,9 +163,8 @@ Template.manageRoles.events({
         l.ladda('start');
 
         var runOnAdminDB = $('#aRunOnAdminDBToFetchUsers').iCheck('update')[0].checked;
-        var connection = Connections.findOne({_id: Session.get(Template.strSessionConnection)});
 
-        Meteor.call('command', connection, command, false, false, runOnAdminDB, function (err, result) {
+        Meteor.call('command', Session.get(Template.strSessionConnection), command, false, false, runOnAdminDB, function (err, result) {
             if (err || result.error) {
                 Template.showMeteorFuncError(err, result, "Couldn't update role");
             }
@@ -310,7 +308,6 @@ Template.manageRoles.initRoles = function () {
     var l = $('#btnCloseUMRoles').ladda();
     l.ladda('start');
 
-    var connection = Connections.findOne({_id: Session.get(Template.strSessionConnection)});
     var command = {
         rolesInfo: 1,
         showBuiltinRoles: true
@@ -318,7 +315,7 @@ Template.manageRoles.initRoles = function () {
 
     var runOnAdminDB = $('#aRunOnAdminDBToFetchUsers').iCheck('update')[0].checked;
 
-    Meteor.call('command', connection, command, false, false, runOnAdminDB, function (err, result) {
+    Meteor.call('command', Session.get(Template.strSessionConnection), command, false, false, runOnAdminDB, function (err, result) {
         if (err || result.error) {
             Template.showMeteorFuncError(err, result, "Couldn't fetch roles");
         }
@@ -381,7 +378,7 @@ Template.manageRoles.popEditRoleModal = function (role) {
         showPrivileges: true
     };
 
-    Meteor.call('command', connection, rolesInfoCommand, false, false, runOnAdminDB, function (err, result) {
+    Meteor.call('command', connection._id, rolesInfoCommand, false, false, runOnAdminDB, function (err, result) {
         if (err || result.error) {
             Template.showMeteorFuncError(err, result, "Couldn't fetch roleInfo");
         }
@@ -562,8 +559,7 @@ Template.manageRoles.initResourcesForPrivileges = function (dbToSelect, collecti
 
     var cmbDBGroup = cmb.find('#optDB');
 
-    var connection = Connections.findOne({_id: Session.get(Template.strSessionConnection)});
-    Meteor.call('getDatabases', connection, function (err, result) {
+    Meteor.call('getDatabases', Session.get(Template.strSessionConnection), function (err, result) {
         if (err || result.error) {
             Template.showMeteorFuncError(err, result, "Couldn't fetch databases");
         }
@@ -609,8 +605,7 @@ Template.manageRoles.initCollectionsForPrivilege = function (collectionToSelect,
     var cmbGroup = cmb.find('#optCollections');
 
     if (db) {
-        var connection = Connections.findOne({_id: Session.get(Template.strSessionConnection)});
-        Meteor.call('listCollectionNames', connection, db, function (err, result) {
+        Meteor.call('listCollectionNames', Session.get(Template.strSessionConnection), db, function (err, result) {
             if (err || result.error) {
                 Template.showMeteorFuncError(err, result, "Couldn't fetch collection names");
             }
@@ -672,8 +667,7 @@ Template.manageRoles.initActionsForPrivilege = function (actions) {
     var cmb = $('#cmbActionsOfPrivilege');
     cmb.empty();
 
-    var connection = Connections.findOne({_id: Session.get(Template.strSessionConnection)});
-    Meteor.call('getAllActions', connection, function (err, result) {
+    Meteor.call('getAllActions', Session.get(Template.strSessionConnection), function (err, result) {
         if (err || result.error) {
             Template.showMeteorFuncError(err, result, "Couldn't fetch actions from docs.mongodb.org");
         }
@@ -692,11 +686,11 @@ Template.manageRoles.initActionsForPrivilege = function (actions) {
         });
 
         if (actions) {
-            for (var i = 0; i < actions.length; i++) {
-                if (cmb.find("option[value = " + actions[i] + "]").length == 0) {
+            for (var j = 0; j < actions.length; j++) {
+                if (cmb.find("option[value = " + actions[j] + "]").length == 0) {
                     cmb.append($("<option></option>")
-                        .attr("value", actions[i])
-                        .text(actions[i]));
+                        .attr("value", actions[j])
+                        .text(actions[j]));
                 }
             }
             cmb.val(actions);
@@ -711,8 +705,7 @@ Template.manageRoles.initDatabasesForInheritRole = function () {
     var cmb = $('#cmbDatabasesForInheritRole');
     cmb.empty();
 
-    var connection = Connections.findOne({_id: Session.get(Template.strSessionConnection)});
-    Meteor.call('getDatabases', connection, function (err, result) {
+    Meteor.call('getDatabases', Session.get(Template.strSessionConnection), function (err, result) {
         if (err || result.error) {
             Template.showMeteorFuncError(err, result, "Couldn't fetch databases");
         }
@@ -741,9 +734,8 @@ Template.manageRoles.initRolesForDBForInheritRole = function () {
     cmb.empty();
     cmb.prepend("<option value=''></option>");
 
-    var connection = Connections.findOne({_id: Session.get(Template.strSessionConnection)});
     var runOnAdminDB = $('#aRunOnAdminDBToFetchUsers').iCheck('update')[0].checked;
-    Meteor.call('command', connection, {
+    Meteor.call('command', Session.get(Template.strSessionConnection), {
         rolesInfo: 1,
         showBuiltinRoles: true
     }, false, false, runOnAdminDB, function (err, result) {

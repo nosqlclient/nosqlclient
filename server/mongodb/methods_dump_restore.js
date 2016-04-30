@@ -2,7 +2,8 @@
  * Created by RSercan on 17.1.2016.
  */
 Meteor.methods({
-    'restoreDump': function (connection, dumpInfo) {
+    'restoreDump': function (connectionId, dumpInfo) {
+        var connection = Connections.findOne({_id: connectionId});
         var connectionUrl = getConnectionUrl(connection);
         var restore = Meteor.npmRequire('mongodb-restore');
         var path = dumpInfo.filePath.substring(0, dumpInfo.filePath.indexOf('/'));
@@ -28,7 +29,8 @@ Meteor.methods({
         }
     },
 
-    'takeDump': function (connection, path) {
+    'takeDump': function (connectionId, path) {
+        var connection = Connections.findOne({_id: connectionId});
         var date = new Date();
         var connectionUrl = getConnectionUrl(connection);
         var fileName = connection.databaseName + "_" + date.getTime() + ".tar";

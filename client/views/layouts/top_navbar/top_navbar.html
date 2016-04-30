@@ -62,8 +62,7 @@
                             <th>Connection Name</th>
                             <th>Use Url</th>
                             <th>Use Ssl</th>
-                            <th>Hostname</th>
-                            <th>Port</th>
+                            <th>Certificate Auth</th>
                             <th>Edit</th>
                             <th>Delete</th>
                         </tr>
@@ -98,24 +97,26 @@
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span><span
                             class="sr-only">Close</span></button>
-                    <h4 id="addEditConnectionModalTitle" class="modal-title">New Connection</h4>
+                    <h4 id="addEditConnectionModalTitle" class="modal-title">Add Connection</h4>
                     <small class="font-bold">{{getConnection.name}}
                     </small>
                 </div>
                 <div class="modal-body">
                     <div class="tabs-container">
                         <ul class="nav nav-tabs">
-                            <li class="active"><a id="anchorTab1" data-toggle="tab" href="#tab-1" aria-expanded="true">
+                            <li class="active"><a id="anchorTab1" data-toggle="tab" href="#tab-1-connection"
+                                                  aria-expanded="true">
                                 Connection</a>
                             </li>
-                            <li class=""><a id="anchorTab2" data-toggle="tab" href="#tab-2" aria-expanded="false">Authentication</a>
+                            <li class=""><a id="anchorTab2" data-toggle="tab" href="#tab-2-authentication"
+                                            aria-expanded="false">Authentication</a>
                             </li>
-                            <li class=""><a data-toggle="tab" href="#tab-3" aria-expanded="false">URL</a>
+                            <li class=""><a data-toggle="tab" href="#tab-3-url" aria-expanded="false">URL</a>
                             </li>
                         </ul>
                         <div class="tab-content">
                             <!-- TAB 1 -->
-                            <div id="tab-1" class="tab-pane active">
+                            <div id="tab-1-connection" class="tab-pane active">
                                 <div class="panel-body no-borders modal-background">
                                     <form class="form-horizontal">
                                         <div class="form-group"><label class="col-lg-2 control-label">Connection
@@ -153,7 +154,7 @@
                             </div>
 
                             <!-- TAB 2 -->
-                            <div id="tab-2" class="tab-pane">
+                            <div id="tab-2-authentication" class="tab-pane">
                                 <div class="panel-body no-borders modal-background">
                                     <form class="form-horizontal">
                                         <div class="form-group">
@@ -180,25 +181,28 @@
 
                                     <!-- STANDARD AUTH FORM-->
                                     <form id="formStandardAuth" class="form-horizontal">
-                                        <div class="form-group"><label class="col-lg-2 control-label">User</label>
+                                        <div class="form-group"><label class="col-lg-2 control-label">User
+                                            </label>
                                             <div class="col-lg-10"><input id="inputUser" type="text" placeholder="User"
                                                                           class="form-control">
                                             </div>
                                         </div>
-                                        <div class="form-group"><label class="col-lg-2 control-label">Password</label>
+                                        <div class="form-group"><label class="col-lg-2 control-label">Password
+                                            </label>
                                             <div class="col-lg-10"><input id="inputPassword" type="password"
                                                                           placeholder="Password"
                                                                           class="form-control">
                                             </div>
                                         </div>
                                         <div class="form-group"><label class="col-lg-2 control-label">Authentication
-                                            DB</label>
+                                            DB </label>
                                             <div class="col-lg-10"><input id="inputAuthenticationDB" type="text"
                                                                           placeholder="Authentication DB"
                                                                           class="form-control">
                                             </div>
                                         </div>
-                                        <div class="form-group"><label class="col-lg-2 control-label">Use SSL</label>
+                                        <div class="form-group"><label class="col-lg-2 control-label">Use SSL
+                                            </label>
                                             <div id="divUseSSL" class="col-lg-10">
                                                 <input id="inputUseSSL" type="checkbox"
                                                        class="form-control"
@@ -213,25 +217,49 @@
                                         <div class="form-group">
                                             <label class="col-lg-2 control-label">Certificate </label>
                                             <div class="col-lg-10">
-                                                <input class="form-control" type="file" id="inputCertificatePath">
+                                                <div class="input-group">
+                                                    <input class="form-control" type="text" id="inputCertificatePath"
+                                                           disabled="true">
+                                                    <input class="input-group-btn filestyle" type="file"
+                                                           id="inputCertificate"
+                                                           data-buttonName="btn-primary">
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group"><label class="col-lg-2 control-label">PassPhrase
+                                            </label>
+                                            <div class="col-lg-10"><input id="inputPassPhrase" type="password"
+                                                                          placeholder="PassPhrase"
+                                                                          class="form-control">
                                             </div>
                                         </div>
 
                                         <div class="form-group">
-                                            <label class="col-lg-2 control-label">Passphrase (optional) </label>
+                                            <label class="col-lg-2 control-label">Certificate Key File
+                                                 </label>
                                             <div class="col-lg-10">
-                                                <input class="form-control filestyle" type="password"
-                                                       id="inputPassphrase"
-                                                       data-buttonName="btn-primary"
-                                                       placeholder="Passphrase">
+                                                <div class="input-group">
+                                                    <input class="form-control" type="text"
+                                                           disabled="true"
+                                                           id="inputCertificateKeyPath">
+                                                    <input class="input-group-btn filestyle" type="file"
+                                                           id="inputCertificateKey"
+                                                           data-buttonName="btn-primary">
+                                                </div>
                                             </div>
                                         </div>
 
                                         <div class="form-group">
-                                            <label class="col-lg-2 control-label">ROOT CA file (optional) </label>
+                                            <label class="col-lg-2 control-label">ROOT CA file  </label>
                                             <div class="col-lg-10">
-                                                <input class="form-control filestyle" type="file" id="inputRootCa"
-                                                       data-buttonName="btn-primary">
+                                                <div class="input-group">
+                                                    <input class="form-control" type="text" id="inputRootCaPath"
+                                                           disabled="true">
+                                                    <input class="input-group-btn filestyle" type="file"
+                                                           id="inputRootCa"
+                                                           data-buttonName="btn-primary">
+                                                </div>
                                             </div>
                                         </div>
                                     </form>
@@ -239,7 +267,7 @@
                             </div>
 
                             <!--TAB 3 -->
-                            <div id="tab-3" class="tab-pane">
+                            <div id="tab-3-url" class="tab-pane">
                                 <div class="panel-body no-borders modal-background">
                                     <form class="form-horizontal">
                                         <div class="form-group"><label class="col-lg-2 control-label">Use URL</label>
@@ -283,82 +311,13 @@
                     <div class="pull-left">
                         <button type="button" class="btn btn-white" data-dismiss="modal">Close</button>
                     </div>
-                    <button id="btnSaveConnection" type="button" class="btn btn-primary">Save changes</button>
+                    <button id="btnSaveConnection" type="button" class="btn btn-primary ladda-button"
+                            data-style="contract">Save changes
+                    </button>
                 </div>
             </div>
         </div>
     </div>
 
-
-    <!-- MODAL EditConnection
-    <div class="modal inmodal" id="connectionEditModal" tabindex="-1" role="dialog" aria-hidden="true"
-         style="display: none;">
-        <div class="modal-dialog">
-            <div class="modal-content animated bounceInRight">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span><span
-                            class="sr-only">Close</span></button>
-                    <h4 class="modal-title">Edit Connection</h4>
-                    <small class="font-bold">{{getConnection.name}}
-                    </small>
-                </div>
-                <div class="modal-body">
-                    <form id="formCreateConnection" class="form-horizontal">
-                        <div class="form-group"><label class="col-lg-2 control-label">Connection Name</label>
-                            <div class="col-lg-10">
-                                <input id="inputEditConnectionName" value="{{getConnection.name}}" required="true"
-                                       type="text"
-                                       placeholder="Connection Name" class="form-control">
-                            </div>
-                        </div>
-                        <div class="form-group"><label class="col-lg-2 control-label">Hostname</label>
-                            <div class="col-lg-10">
-                                <input id="inputEditHost" required="true" type="text"
-                                       value="{{getConnection.host}}"
-                                       placeholder="Hostname"
-                                       class="form-control">
-                            </div>
-                        </div>
-                        <div class="form-group"><label class="col-lg-2 control-label">Port</label>
-                            <div class="col-lg-10">
-                                <input id="inputEditPort" required="true" type="number"
-                                       value="{{getConnection.port}}"
-                                       placeholder="Port"
-                                       class="form-control">
-                            </div>
-                        </div>
-                        <div class="form-group"><label class="col-lg-2 control-label">DB Name</label>
-                            <div class="col-lg-10">
-                                <input id="inputEditDatabaseName" required="true" type="text"
-                                       value="{{getConnection.databaseName}}"
-                                       placeholder="Database Name"
-                                       class="form-control">
-                            </div>
-                        </div>
-                        <div class="form-group"><label class="col-lg-2 control-label">User</label>
-                            <div class="col-lg-10">
-                                <input id="inputEditUser" type="text" placeholder="User"
-                                       value="{{getConnection.user}}"
-                                       class="form-control">
-                            </div>
-                        </div>
-                        <div class="form-group"><label class="col-lg-2 control-label">Password</label>
-                            <div class="col-lg-10">
-                                <input id="inputEditPassword" type="password" placeholder="Password"
-                                       value="{{getConnection.password}}"
-                                       class="form-control">
-                            </div>
-                        </div>
-                    </form>
-                </div>
-                <div class="modal-footer">
-                    <div class="pull-left">
-                        <button type="button" class="btn btn-white" data-dismiss="modal">Close</button>
-                    </div>
-                    <button id="btnEditConnection" type="button" class="btn btn-primary">Save changes</button>
-                </div>
-            </div>
-        </div>
-    </div>-->
 
 </template>

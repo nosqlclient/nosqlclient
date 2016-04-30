@@ -9,7 +9,6 @@ Template.validateCollection.onRendered(function () {
 
 Template.validateCollection.executeQuery = function () {
     Template.adminQueries.initExecuteQuery();
-    var connection = Connections.findOne({_id: Session.get(Template.strSessionConnection)});
     var collectionName = $('#inputValidateCollection').val();
     var options = ace.edit("aceOptions").getSession().getValue();
 
@@ -29,7 +28,7 @@ Template.validateCollection.executeQuery = function () {
     var convertIds = $('#aConvertObjectIds').iCheck('update')[0].checked;
     var convertDates = $('#aConvertIsoDates').iCheck('update')[0].checked;
 
-    Meteor.call("validateCollection", connection, collectionName, options, convertIds, convertDates,
+    Meteor.call("validateCollection", Session.get(Template.strSessionConnection), collectionName, options, convertIds, convertDates,
         function (err, result) {
             Template.renderAfterQueryExecution(err, result, true);
         })

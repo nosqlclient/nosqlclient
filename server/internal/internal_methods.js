@@ -61,20 +61,8 @@ Meteor.methods({
     },
 
     'updateConnection': function (connection) {
-        Connections.update({_id: connection._id}, {
-            $set: {
-                name: connection.name,
-                host: connection.host,
-                authDatabaseName: connection.authDatabaseName,
-                url: connection.url,
-                useSsl: connection.useSsl,
-                sslCertificatePath: connection.sslCertificatePath,
-                port: connection.port,
-                databaseName: connection.databaseName,
-                user: connection.user,
-                password: connection.password
-            }
-        });
+        Connections.remove({_id: connection._id});
+        Connections.insert(connection);
     },
 
     'removeConnection': function (connectionId) {
