@@ -8,7 +8,6 @@ Template.removeUser.onRendered(function () {
 
 Template.removeUser.executeQuery = function () {
     Template.adminQueries.initExecuteQuery();
-    var connection = Connections.findOne({_id: Session.get(Template.strSessionConnection)});
     var username = $('#inputAddUserUsername').val();
 
     if (username == null || username.length === 0) {
@@ -19,7 +18,7 @@ Template.removeUser.executeQuery = function () {
 
     var runOnAdminDB = $('#aRunOnAdminDB').iCheck('update')[0].checked;
 
-    Meteor.call("removeUser", connection, username, runOnAdminDB, function (err, result) {
+    Meteor.call("removeUser", Session.get(Template.strSessionConnection), username, runOnAdminDB, function (err, result) {
         Template.renderAfterQueryExecution(err, result, true);
     });
 };

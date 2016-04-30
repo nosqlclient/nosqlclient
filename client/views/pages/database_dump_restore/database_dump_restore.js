@@ -13,13 +13,12 @@ Template.databaseDumpRestore.onRendered(function () {
 Template.databaseDumpRestore.events({
     'click #btnTakeDump': function (e) {
         e.preventDefault();
-        var connection = Connections.findOne({_id: Session.get(Template.strSessionConnection)});
         var settings = Settings.findOne();
 
         var laddaButton = $('#btnTakeDump').ladda();
         laddaButton.ladda('start');
 
-        Meteor.call('takeDump', connection, settings.dumpPath, function (err) {
+        Meteor.call('takeDump', Session.get(Template.strSessionConnection), settings.dumpPath, function (err) {
             if (err) {
                 toastr.error("Couldn't take dump, " + err.message);
             }
@@ -33,7 +32,6 @@ Template.databaseDumpRestore.events({
 
     'click .editor_import': function (e) {
         e.preventDefault();
-        var connection = Connections.findOne({_id: Session.get(Template.strSessionConnection)});
         if (Session.get(Template.strSessionSelectedDump)) {
             swal({
                 title: "Are you sure?",
@@ -50,7 +48,7 @@ Template.databaseDumpRestore.events({
                 var dumpInfo = Session.get(Template.strSessionSelectedDump);
                 dumpInfo.status = DUMP_STATUS.IN_PROGRESS;
                 Meteor.call('updateDump', dumpInfo); // this is a simple update to notify user on UI
-                Meteor.call('restoreDump', connection, dumpInfo, function (err) {
+                Meteor.call('restoreDump', Session.get(Template.strSessionConnection), dumpInfo, function (err) {
                     if (err) {
                         toastr.error("Couldn't restore dump, " + err.message);
                     }

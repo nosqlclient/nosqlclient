@@ -5,6 +5,8 @@ Template.uploadFile.onRendered(function () {
     if (Session.get(Template.strSessionCollectionNames) == undefined) {
         Router.go('databaseStats');
     }
+
+    // $(":file").filestyle({icon: false, buttonBefore: true});
 });
 
 Template.uploadFile.events({
@@ -37,8 +39,7 @@ Template.uploadFile.proceedUploading = function (blob, contentType, metaData, al
     l.ladda('start');
     var fileReader = new FileReader();
     fileReader.onload = function (file) {
-        var connection = Connections.findOne({_id: Session.get(Template.strSessionConnection)});
-        Meteor.call('uploadFile', connection, $('#txtBucketName').val(), new Uint8Array(file.target.result), blob.name, contentType, metaData, aliases, function (err, result) {
+        Meteor.call('uploadFile', Session.get(Template.strSessionConnection), $('#txtBucketName').val(), new Uint8Array(file.target.result), blob.name, contentType, metaData, aliases, function (err, result) {
             if (err || result.error) {
                 Template.showMeteorFuncError(err, result, "Couldn't upload file");
             }

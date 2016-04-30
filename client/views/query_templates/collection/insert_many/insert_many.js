@@ -21,7 +21,6 @@ Template.insertMany.initializeAceEditor = function () {
 
 Template.insertMany.executeQuery = function (historyParams) {
     Template.browseCollection.initExecuteQuery();
-    var connection = Connections.findOne({_id: Session.get(Template.strSessionConnection)});
     var selectedCollection = Session.get(Template.strSessionSelectedCollection);
     var docs = historyParams ? JSON.stringify(historyParams.docs) : ace.edit("aceDocs").getSession().getValue();
 
@@ -45,7 +44,7 @@ Template.insertMany.executeQuery = function (historyParams) {
     var convertIds = $('#aConvertObjectIds').iCheck('update')[0].checked;
     var convertDates = $('#aConvertIsoDates').iCheck('update')[0].checked;
 
-    Meteor.call("insertMany", connection, selectedCollection, docs, convertIds, convertDates, function (err, result) {
+    Meteor.call("insertMany", Session.get(Template.strSessionConnection), selectedCollection, docs, convertIds, convertDates, function (err, result) {
         Template.renderAfterQueryExecution(err, result, false, "insertMany", params, (historyParams ? false : true));
     });
 };

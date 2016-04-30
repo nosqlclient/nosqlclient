@@ -41,9 +41,8 @@ Template.manageUsers.events({
                 var command = {dropUser: Session.get(Template.strSessionUsermanagementUser).user};
 
                 var runOnAdminDB = $('#aRunOnAdminDBToFetchUsers').iCheck('update')[0].checked;
-                var connection = Connections.findOne({_id: Session.get(Template.strSessionConnection)});
 
-                Meteor.call('command', connection, command, false, false, runOnAdminDB, function (err, result) {
+                Meteor.call('command', Session.get(Template.strSessionConnection), command, false, false, runOnAdminDB, function (err, result) {
                     if (err || result.error) {
                         Template.showMeteorFuncError(err, result, "Couldn't drop user");
                     }
@@ -86,7 +85,7 @@ Template.manageUsers.events({
                 showPrivileges: true
             };
 
-            Meteor.call('command', connection, userInfoCommand, false, false, runOnAdminDB, function (err, result) {
+            Meteor.call('command', connection._id, userInfoCommand, false, false, runOnAdminDB, function (err, result) {
                 if (err || result.error) {
                     Template.showMeteorFuncError(err, result, "Couldn't fetch userInfo");
                 }
@@ -150,9 +149,8 @@ Template.manageUsers.events({
         l.ladda('start');
 
         var runOnAdminDB = $('#aRunOnAdminDBToFetchUsers').iCheck('update')[0].checked;
-        var connection = Connections.findOne({_id: Session.get(Template.strSessionConnection)});
 
-        Meteor.call('command', connection, command, false, false, runOnAdminDB, function (err, result) {
+        Meteor.call('command', Session.get(Template.strSessionConnection), command, false, false, runOnAdminDB, function (err, result) {
             if (err || result.error) {
                 Template.showMeteorFuncError(err, result, "Couldn't update user");
             }
@@ -211,8 +209,7 @@ Template.manageUsers.events({
         cmb.append($("<optgroup id='optGroupDatabases' label='Databases'></optgroup>"));
         var cmbOptGroupCollection = cmb.find('#optGroupDatabases');
 
-        var connection = Connections.findOne({_id: Session.get(Template.strSessionConnection)});
-        Meteor.call('getDatabases', connection, function (err, result) {
+        Meteor.call('getDatabases', Session.get(Template.strSessionConnection), function (err, result) {
             if (err || result.error) {
                 Template.showMeteorFuncError(err, result, "Couldn't fetch databases");
             }
@@ -228,7 +225,7 @@ Template.manageUsers.events({
         });
 
         var runOnAdminDB = $('#aRunOnAdminDBToFetchUsers').iCheck('update')[0].checked;
-        Meteor.call('command', connection, {
+        Meteor.call('command', Session.get(Template.strSessionConnection), {
             rolesInfo: 1,
             showBuiltinRoles: true
         }, false, false, runOnAdminDB, function (err, result) {
@@ -282,7 +279,6 @@ Template.manageUsers.initUsers = function () {
     var l = $('#btnCloseUMDB').ladda();
     l.ladda('start');
 
-    var connection = Connections.findOne({_id: Session.get(Template.strSessionConnection)});
     var command = {
         usersInfo: 1,
         showCredentials: true
@@ -290,7 +286,7 @@ Template.manageUsers.initUsers = function () {
 
     var runOnAdminDB = $('#aRunOnAdminDBToFetchUsers').iCheck('update')[0].checked;
 
-    Meteor.call('command', connection, command, false, false, runOnAdminDB, function (err, result) {
+    Meteor.call('command', Session.get(Template.strSessionConnection), command, false, false, runOnAdminDB, function (err, result) {
         if (err || result.error) {
             Template.showMeteorFuncError(err, result, "Couldn't fetch users");
         }
@@ -420,7 +416,7 @@ Template.manageUsers.popEditUserModal = function (user) {
         showPrivileges: true
     };
 
-    Meteor.call('command', connection, userInfoCommand, false, false, runOnAdminDB, function (err, result) {
+    Meteor.call('command', connection._id, userInfoCommand, false, false, runOnAdminDB, function (err, result) {
         if (err || result.error) {
             Template.showMeteorFuncError(err, result, "Couldn't fetch userInfo");
         }

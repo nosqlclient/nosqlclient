@@ -10,7 +10,6 @@ Template.addCollection.onRendered(function () {
 Template.addCollection.events({
     'click #btnCreateCollection': function (e) {
         e.preventDefault();
-        var connection = Connections.findOne({_id: Session.get(Template.strSessionConnection)});
         var isCapped = $('#divIsCapped').iCheck('update')[0].checked;
         var autoIndexId = $('#divAutoIndexId').iCheck('update')[0].checked;
         var collectionName = $('#inputCollectionName').val();
@@ -29,15 +28,21 @@ Template.addCollection.events({
             max: maxDocs
         };
 
-        Meteor.call('createCollection', connection, collectionName, options, function (err) {
+        var laddaButton = $('#btnCreateCollection').ladda();
+        laddaButton.ladda('start');
+        
+        Meteor.call('createCollection', Session.get(Template.strSessionConnection), collectionName, options, function (err) {
             if (err) {
                 toastr.error("Couldn't create collection: " + err.message);
+                Ladda.stopAll();
                 return;
             }
 
             Template.navigation.renderCollectionNames();
             $('#collectionAddModal').modal('hide');
             toastr.success('Successfuly created collection: ' + collectionName);
+
+            Ladda.stopAll();
         });
     }
 });

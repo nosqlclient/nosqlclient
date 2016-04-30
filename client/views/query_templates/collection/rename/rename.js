@@ -26,13 +26,12 @@ Template.rename.initializeOptions = function () {
 
 Template.rename.executeQuery = function () {
     Template.browseCollection.initExecuteQuery();
-    var connection = Connections.findOne({_id: Session.get(Template.strSessionConnection)});
     var selectedCollection = Session.get(Template.strSessionSelectedCollection);
     var options = Template.rename.getOptions();
     var newName = $('#inputNewName').val();
 
     if (newName) {
-        Meteor.call("rename", connection, selectedCollection, newName, options, function (err, result) {
+        Meteor.call("rename", Session.get(Template.strSessionConnection), selectedCollection, newName, options, function (err, result) {
             Template.renderAfterQueryExecution(err, result, false, "rename");
             if (err == undefined && result.error == undefined) {
                 Template.rename.renderCollectionnames(newName);
@@ -46,8 +45,7 @@ Template.rename.executeQuery = function () {
 };
 
 Template.rename.renderCollectionnames = function (newName) {
-    var connection = Connections.findOne({_id: Session.get(Template.strSessionConnection)});
-    Meteor.call('connect', connection, function (err, result) {
+    Meteor.call('connect', Session.get(Template.strSessionConnection), function (err, result) {
         if (err || result.error) {
             Template.showMeteorFuncError(err, result, "Couldn't connect");
         } else {

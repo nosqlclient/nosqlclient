@@ -7,10 +7,9 @@ Template.isCapped.onRendered(function () {
 
 Template.isCapped.executeQuery = function (historyParams) {
     Template.browseCollection.initExecuteQuery();
-    var connection = Connections.findOne({_id: Session.get(Template.strSessionConnection)});
     var selectedCollection = Session.get(Template.strSessionSelectedCollection);
 
-    Meteor.call("isCapped", connection, selectedCollection, function (err, result) {
+    Meteor.call("isCapped", Session.get(Template.strSessionConnection), selectedCollection, function (err, result) {
         if (!result.result) {
             result.result = false;
         }

@@ -40,7 +40,6 @@ Template.mapReduce.initializeAceEditor = function (id) {
 
 Template.mapReduce.executeQuery = function (historyParams) {
     Template.browseCollection.initExecuteQuery();
-    var connection = Connections.findOne({_id: Session.get(Template.strSessionConnection)});
     var selectedCollection = Session.get(Template.strSessionSelectedCollection);
     var options = historyParams ? historyParams.options : Template.mapReduceOptions.getOptions();
     var map = historyParams ? JSON.stringify(historyParams.map) : ace.edit("aceMap").getSession().getValue();
@@ -71,7 +70,7 @@ Template.mapReduce.executeQuery = function (historyParams) {
         options: options
     };
 
-    Meteor.call("mapReduce", connection, selectedCollection, map, reduce, options, function (err, result) {
+    Meteor.call("mapReduce", Session.get(Template.strSessionConnection), selectedCollection, map, reduce, options, function (err, result) {
         Template.renderAfterQueryExecution(err, result, false, "mapReduce", params, (historyParams ? false : true));
     });
 };

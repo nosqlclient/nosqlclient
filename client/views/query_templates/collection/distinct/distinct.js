@@ -16,7 +16,6 @@ Template.distinct.events({
 
 Template.distinct.executeQuery = function (historyParams) {
     Template.browseCollection.initExecuteQuery();
-    var connection = Connections.findOne({_id: Session.get(Template.strSessionConnection)});
     var selectedCollection = Session.get(Template.strSessionSelectedCollection);
     var selector = historyParams ? JSON.stringify(historyParams.selector) : Template.selector.getValue();
     var fieldName = historyParams ? historyParams.fieldName : $('#inputField').val();
@@ -36,7 +35,7 @@ Template.distinct.executeQuery = function (historyParams) {
     var convertIds = $('#aConvertObjectIds').iCheck('update')[0].checked;
     var convertDates = $('#aConvertIsoDates').iCheck('update')[0].checked;
 
-    Meteor.call("distinct", connection, selectedCollection, selector, fieldName, convertIds, convertDates,
+    Meteor.call("distinct", Session.get(Template.strSessionConnection), selectedCollection, selector, fieldName, convertIds, convertDates,
         function (err, result) {
             Template.renderAfterQueryExecution(err, result, false, "distinct", params, (historyParams ? false : true));
         }

@@ -20,7 +20,6 @@ Template.find.initializeOptions = function () {
 
 Template.find.executeQuery = function (historyParams) {
     Template.browseCollection.initExecuteQuery();
-    var connection = Connections.findOne({_id: Session.get(Template.strSessionConnection)});
     var selectedCollection = Session.get(Template.strSessionSelectedCollection);
     var maxAllowedFetchSize = Math.round(Settings.findOne().maxAllowedFetchSize * 100) / 100;
     var cursorOptions = historyParams ? historyParams.cursorOptions : Template.cursorOptions.getCursorOptions();
@@ -42,27 +41,27 @@ Template.find.executeQuery = function (historyParams) {
     // max allowed fetch size  != 0 and there's no project option, check for size
     if (maxAllowedFetchSize && maxAllowedFetchSize != 0 && !(CURSOR_OPTIONS.PROJECT in cursorOptions)) {
         // get stats to calculate fetched documents size from avgObjSize (stats could be changed, therefore we can't get it from html )
-        Meteor.call("stats", connection, selectedCollection, {}, function (statsError, statsResult) {
+        Meteor.call("stats", Session.get(Template.strSessionConnection), selectedCollection, {}, function (statsError, statsResult) {
             if (statsError || statsResult.error || !(statsResult.result.avgObjSize)) {
                 // if there's an error, nothing we can do
-                Template.find.proceedFindQuery(connection, selectedCollection, selector, cursorOptions, (historyParams ? false : true));
+                Template.find.proceedFindQuery(selectedCollection, selector, cursorOptions, (historyParams ? false : true));
             }
             else {
                 if (CURSOR_OPTIONS.LIMIT in cursorOptions) {
                     var count = cursorOptions.limit;
                     if (Template.find.checkAverageSize(count, statsResult.result.avgObjSize, maxAllowedFetchSize)) {
-                        Template.find.proceedFindQuery(connection, selectedCollection, selector, cursorOptions, (historyParams ? false : true));
+                        Template.find.proceedFindQuery(selectedCollection, selector, cursorOptions, (historyParams ? false : true));
                     }
                 }
                 else {
-                    Meteor.call("count", connection, selectedCollection, selector, function (err, result) {
+                    Meteor.call("count", Session.get(Template.strSessionConnection), selectedCollection, selector, function (err, result) {
                         if (err || result.error) {
-                            Template.find.proceedFindQuery(connection, selectedCollection, selector, cursorOptions, (historyParams ? false : true));
+                            Template.find.proceedFindQuery(selectedCollection, selector, cursorOptions, (historyParams ? false : true));
                         }
                         else {
                             var count = result.result;
                             if (Template.find.checkAverageSize(count, statsResult.result.avgObjSize, maxAllowedFetchSize)) {
-                                Template.find.proceedFindQuery(connection, selectedCollection, selector, cursorOptions, (historyParams ? false : true));
+                                Template.find.proceedFindQuery( selectedCollection, selector, cursorOptions, (historyParams ? false : true));
                             }
                         }
                     });
@@ -71,11 +70,11 @@ Template.find.executeQuery = function (historyParams) {
         });
     }
     else {
-        Template.find.proceedFindQuery(connection, selectedCollection, selector, cursorOptions);
+        Template.find.proceedFindQuery(selectedCollection, selector, cursorOptions);
     }
 };
 
-Template.find.proceedFindQuery = function (connection, selectedCollection, selector, cursorOptions, saveHistory) {
+Template.find.proceedFindQuery = function (selectedCollection, selector, cursorOptions, saveHistory) {
     var params = {
         selector: selector,
         cursorOptions: cursorOptions
@@ -84,7 +83,7 @@ Template.find.proceedFindQuery = function (connection, selectedCollection, selec
     var convertIds = $('#aConvertObjectIds').iCheck('update')[0].checked;
     var convertDates = $('#aConvertIsoDates').iCheck('update')[0].checked;
 
-    Meteor.call("find", connection, selectedCollection, selector, cursorOptions, convertIds, convertDates, function (err, result) {
+    Meteor.call("find", Session.get(Template.strSessionConnection), selectedCollection, selector, cursorOptions, convertIds, convertDates, function (err, result) {
         Template.renderAfterQueryExecution(err, result, false, "find", params, saveHistory);
     });
 };

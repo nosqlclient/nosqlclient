@@ -34,7 +34,6 @@ Template.findOneAndReplace.initializeOptions = function () {
 
 Template.findOneAndReplace.executeQuery = function (historyParams) {
     Template.browseCollection.initExecuteQuery();
-    var connection = Connections.findOne({_id: Session.get(Template.strSessionConnection)});
     var selectedCollection = Session.get(Template.strSessionSelectedCollection);
     var options = historyParams ? historyParams.options : Template.findOneModifyOptions.getOptions();
     var selector = historyParams ? JSON.stringify(historyParams.selector) : Template.selector.getValue();
@@ -69,7 +68,7 @@ Template.findOneAndReplace.executeQuery = function (historyParams) {
     var convertIds = $('#aConvertObjectIds').iCheck('update')[0].checked;
     var convertDates = $('#aConvertIsoDates').iCheck('update')[0].checked;
 
-    Meteor.call("findOneAndReplace", connection, selectedCollection, selector, replaceObject, options, convertIds, convertDates,
+    Meteor.call("findOneAndReplace", Session.get(Template.strSessionConnection), selectedCollection, selector, replaceObject, options, convertIds, convertDates,
         function (err, result) {
             Template.renderAfterQueryExecution(err, result, false, "findOneAndReplace", params, (historyParams ? false : true));
         }

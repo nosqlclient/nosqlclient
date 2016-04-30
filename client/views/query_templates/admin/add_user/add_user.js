@@ -21,7 +21,6 @@ Template.addUser.initializeOptions = function () {
 
 Template.addUser.executeQuery = function () {
     Template.adminQueries.initExecuteQuery();
-    var connection = Connections.findOne({_id: Session.get(Template.strSessionConnection)});
     var options = Template.addUserOptions.getOptions();
     var username = $('#inputAddUserUsername').val();
     var password = $('#inputAddUserPassword').val();
@@ -46,7 +45,7 @@ Template.addUser.executeQuery = function () {
 
     var runOnAdminDB = $('#aRunOnAdminDB').iCheck('update')[0].checked;
 
-    Meteor.call("addUser", connection, username, password, options, runOnAdminDB, function (err, result) {
+    Meteor.call("addUser", Session.get(Template.strSessionConnection), username, password, options, runOnAdminDB, function (err, result) {
         Template.renderAfterQueryExecution(err, result, true);
     });
 };

@@ -7,10 +7,9 @@ Template.reIndex.onRendered(function () {
 
 Template.reIndex.executeQuery = function (historyParams) {
     Template.browseCollection.initExecuteQuery();
-    var connection = Connections.findOne({_id: Session.get(Template.strSessionConnection)});
     var selectedCollection = Session.get(Template.strSessionSelectedCollection);
 
-    Meteor.call("reIndex", connection, selectedCollection, function (err, result) {
+    Meteor.call("reIndex", Session.get(Template.strSessionConnection), selectedCollection, function (err, result) {
         Template.renderAfterQueryExecution(err, result, false, "reIndex", {}, (historyParams ? false : true));
     });
 };

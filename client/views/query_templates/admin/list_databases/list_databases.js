@@ -8,9 +8,8 @@ Template.listDatabases.onRendered(function () {
 
 Template.listDatabases.executeQuery = function () {
     Template.adminQueries.initExecuteQuery();
-    var connection = Connections.findOne({_id: Session.get(Template.strSessionConnection)});
 
-    Meteor.call("listDatabases", connection, function (err, result) {
+    Meteor.call("listDatabases", Session.get(Template.strSessionConnection), function (err, result) {
         Template.renderAfterQueryExecution(err, result, true);
     });
 };

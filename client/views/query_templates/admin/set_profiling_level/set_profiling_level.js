@@ -20,10 +20,9 @@ Template.setProfilingLevel.initializeOptions = function () {
 
 Template.setProfilingLevel.executeQuery = function () {
     Template.adminQueries.initExecuteQuery();
-    var connection = Connections.findOne({_id: Session.get(Template.strSessionConnection)});
     var level = $('#cmbLevel').val();
 
-    Meteor.call("setProfilingLevel", connection, level, function (err, result) {
+    Meteor.call("setProfilingLevel", Session.get(Template.strSessionConnection), level, function (err, result) {
         Template.renderAfterQueryExecution(err, result, true);
     });
 };

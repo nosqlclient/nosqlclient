@@ -7,7 +7,6 @@ Template.delete.onRendered(function () {
 
 Template.delete.executeQuery = function (historyParams) {
     Template.browseCollection.initExecuteQuery();
-    var connection = Connections.findOne({_id: Session.get(Template.strSessionConnection)});
     var selectedCollection = Session.get(Template.strSessionSelectedCollection);
     var selector = historyParams ? JSON.stringify(historyParams.selector) : Template.selector.getValue();
 
@@ -25,7 +24,7 @@ Template.delete.executeQuery = function (historyParams) {
     var convertIds = $('#aConvertObjectIds').iCheck('update')[0].checked;
     var convertDates = $('#aConvertIsoDates').iCheck('update')[0].checked;
 
-    Meteor.call("delete", connection, selectedCollection, selector, convertIds, convertDates,
+    Meteor.call("delete", Session.get(Template.strSessionConnection), selectedCollection, selector, convertIds, convertDates,
         function (err, result) {
             Template.renderAfterQueryExecution(err, result, false, "delete", params, (historyParams ? false : true));
         }

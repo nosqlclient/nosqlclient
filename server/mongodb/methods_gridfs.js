@@ -2,12 +2,13 @@
  * Created by RSercan on 9.2.2016.
  */
 Meteor.methods({
-    'deleteFile': function (connection, bucketName, fileId) {
+    'deleteFile': function (connectionId, bucketName, fileId) {
+        var connection = Connections.findOne({_id: connectionId});
         var connectionUrl = getConnectionUrl(connection);
-        var connectionOptions = getConnectionOptions();
+        var connectionOptions = getConnectionOptions(connection);
         var mongodbApi = Meteor.npmRequire('mongodb');
 
-        LOGGER.info('[deleteFile]', connectionUrl, connectionOptions, bucketName, fileId);
+        LOGGER.info('[deleteFile]', connectionUrl, clearConnectionOptionsForLog(connectionOptions), bucketName, fileId);
 
         var result = Async.runSync(function (done) {
             mongodbApi.MongoClient.connect(connectionUrl, connectionOptions, function (mainError, db) {
@@ -41,12 +42,13 @@ Meteor.methods({
         return result;
     },
 
-    'getFileInfos': function (connection, bucketName) {
+    'getFileInfos': function (connectionId, bucketName) {
+        var connection = Connections.findOne({_id: connectionId});
         var connectionUrl = getConnectionUrl(connection);
-        var connectionOptions = getConnectionOptions();
+        var connectionOptions = getConnectionOptions(connection);
         var mongodbApi = Meteor.npmRequire('mongodb');
 
-        LOGGER.info('[getFileInfos]', connectionUrl, connectionOptions, bucketName);
+        LOGGER.info('[getFileInfos]', connectionUrl, clearConnectionOptionsForLog(connectionOptions), bucketName);
 
         var result = Async.runSync(function (done) {
             mongodbApi.MongoClient.connect(connectionUrl, connectionOptions, function (mainError, db) {
@@ -81,9 +83,10 @@ Meteor.methods({
         return result;
     },
 
-    'uploadFile': function (connection, bucketName, blob, fileName, contentType, metaData, aliases) {
+    'uploadFile': function (connectionId, bucketName, blob, fileName, contentType, metaData, aliases) {
+        var connection = Connections.findOne({_id: connectionId});
         var connectionUrl = getConnectionUrl(connection);
-        var connectionOptions = getConnectionOptions();
+        var connectionOptions = getConnectionOptions(connection);
         var mongodbApi = Meteor.npmRequire('mongodb');
         if (metaData) {
             convertJSONtoBSON(metaData);
@@ -91,7 +94,7 @@ Meteor.methods({
 
         blob = new Buffer(blob);
 
-        LOGGER.info('[uploadFile]', connectionUrl, connectionOptions, bucketName, fileName, contentType, metaData, aliases);
+        LOGGER.info('[uploadFile]', connectionUrl, clearConnectionOptionsForLog(connectionOptions), bucketName, fileName, contentType, metaData, aliases);
 
         return Async.runSync(function (done) {
             mongodbApi.MongoClient.connect(connectionUrl, connectionOptions, function (mainError, db) {
@@ -128,12 +131,13 @@ Meteor.methods({
         });
     },
 
-    'getFile': function (connection, bucketName, fileId) {
+    'getFile': function (connectionId, bucketName, fileId) {
+        var connection = Connections.findOne({_id: connectionId});
         var connectionUrl = getConnectionUrl(connection);
-        var connectionOptions = getConnectionOptions();
+        var connectionOptions = getConnectionOptions(connection);
         var mongodbApi = Meteor.npmRequire('mongodb');
 
-        LOGGER.info('[getFile]', connectionUrl, connectionOptions, bucketName, fileId);
+        LOGGER.info('[getFile]', connectionUrl, clearConnectionOptionsForLog(connectionOptions), bucketName, fileId);
 
         var result = Async.runSync(function (done) {
             mongodbApi.MongoClient.connect(connectionUrl, connectionOptions, function (mainError, db) {

@@ -23,7 +23,6 @@ Template.findOneAndDelete.initializeOptions = function () {
 
 Template.findOneAndDelete.executeQuery = function (historyParams) {
     Template.browseCollection.initExecuteQuery();
-    var connection = Connections.findOne({_id: Session.get(Template.strSessionConnection)});
     var selectedCollection = Session.get(Template.strSessionSelectedCollection);
     var options = historyParams ? historyParams.options : Template.findOneModifyOptions.getOptions();
     var selector = historyParams ? JSON.stringify(historyParams.selector) : Template.selector.getValue();
@@ -49,7 +48,7 @@ Template.findOneAndDelete.executeQuery = function (historyParams) {
     var convertIds = $('#aConvertObjectIds').iCheck('update')[0].checked;
     var convertDates = $('#aConvertIsoDates').iCheck('update')[0].checked;
 
-    Meteor.call("findOneAndDelete", connection, selectedCollection, selector, options , convertIds, convertDates,
+    Meteor.call("findOneAndDelete", Session.get(Template.strSessionConnection), selectedCollection, selector, options , convertIds, convertDates,
         function (err, result) {
             Template.renderAfterQueryExecution(err, result, false, "findOneAndDelete", params, (historyParams ? false : true));
         }
