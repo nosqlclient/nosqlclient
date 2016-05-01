@@ -35,7 +35,8 @@ To learn more see the [wiki](https://github.com/rsercano/mongoclient/wiki) page.
 
 <br/>
 ## Version History
-* [1.0.0](https://github.com/rsercano/mongoclient/releases/1.0.0)
+### [1.0.0](https://github.com/rsercano/mongoclient/releases/1.0.0)  
+Includes basic mongodb management features. [See details](https://github.com/rsercano/mongoclient/issues?q=milestone%3Av1.0.0)
 
 <br/>
 ## License
