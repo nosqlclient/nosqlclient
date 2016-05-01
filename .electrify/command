@@ -1,0 +1,3 @@
+electrify package -- --icon=public/logo/head.ico
+#mac
+electrify package -- --icon=public/logo/head.icns
