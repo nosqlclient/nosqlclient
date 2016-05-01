@@ -28,5 +28,4 @@ momentjs:moment
 arch:ace-editor
 aldeed:collection2
 ephemer:reactive-datatables-modified
-#arboleya:electrify  # need for desktop packaging only.
 http

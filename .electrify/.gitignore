@@ -1,0 +1,6 @@
+.DS_Store
+.dist
+app
+bin
+db
+node_modules
