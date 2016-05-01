@@ -13,9 +13,9 @@ Cross-platform, MongoDB 3.2+ support and more features!
 :-------------------------:|:-------------------------:
 ![](http://mongoclient.com/img/ss/main_view.png)  |  ![](http://mongoclient.com/img/ss/file.png)
 
-   Autocomplete and Dynamic Query Templates  | 
+   Autocomplete     | User Management
 :-------------------------:|:-------------------------:
-![](http://mongoclient.com/img/ss/auto_complete.png)  |  
+![](http://mongoclient.com/img/ss/auto_complete.png)  |  ![](http://mongoclient.com/img/ss/um.png)
 
 <a href="http://www.mongoclient.com"><img src="http://www.mongoclient.com/img/logo/head_only_medium.png" align="left" hspace="10" vspace="6"></a>
 
