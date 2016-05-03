@@ -559,9 +559,15 @@ Template.topNavbar.parseDatabaseNameFromUrl = function (url) {
         if (url.indexOf('?') != -1) {
             lastIndex = url.indexOf('?');
         }
-        return url.substring(url.lastIndexOf("/") + 1, lastIndex);
-    } catch (e) {
-        return "";
-    }
 
+        var urlSplit = url.split('//');
+
+        if (urlSplit[1].lastIndexOf("/") == -1) {
+            return "admin";
+        }
+
+        return url.substring(urlSplit[0].length + urlSplit[1].lastIndexOf("/") + 3, lastIndex);
+    } catch (e) {
+        return "admin";
+    }
 };
