@@ -207,7 +207,7 @@ Template.getDistinctKeysForAutoComplete = function (selectedCollection) {
         out: {inline: 1}
     };
 
-    Meteor.call("mapReduce", Session.get(Template.strSessionConnection), selectedCollection, mapFunc, reduceFunc, options, function (err, result) {
+    Meteor.call("mapReduce", selectedCollection, mapFunc, reduceFunc, options, function (err, result) {
         if (err || result.error) {
             Template.showMeteorFuncError(err, result, "Couldn't fetch distinct fields for autocomplete");
         }

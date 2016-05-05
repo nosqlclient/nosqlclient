@@ -9,7 +9,7 @@ Template.ping.onRendered(function () {
 Template.ping.executeQuery = function () {
     Template.adminQueries.initExecuteQuery();
 
-    Meteor.call("ping", Session.get(Template.strSessionConnection), function (err, result) {
+    Meteor.call("ping", function (err, result) {
         Template.renderAfterQueryExecution(err, result, true);
     });
 };

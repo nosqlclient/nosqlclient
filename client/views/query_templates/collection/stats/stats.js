@@ -33,7 +33,7 @@ Template.stats.executeQuery = function (historyParams) {
         options: options
     };
 
-    Meteor.call("stats", Session.get(Template.strSessionConnection), selectedCollection, options, function (err, result) {
+    Meteor.call("stats", selectedCollection, options, function (err, result) {
         Template.renderAfterQueryExecution(err, result, false, "stats", params, (historyParams ? false : true));
     });
 };

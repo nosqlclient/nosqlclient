@@ -44,7 +44,7 @@ Template.geoNear.executeQuery = function (historyParams) {
         options: options
     };
 
-    Meteor.call("geoNear", Session.get(Template.strSessionConnection), selectedCollection, xAxis, yAxis, options, function (err, result) {
+    Meteor.call("geoNear", selectedCollection, xAxis, yAxis, options, function (err, result) {
         Template.renderAfterQueryExecution(err, result, false, "geoNear", params, (historyParams ? false : true));
     });
 };

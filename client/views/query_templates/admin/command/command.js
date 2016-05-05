@@ -22,7 +22,7 @@ Template.command.executeQuery = function () {
     var convertDates = $('#aConvertIsoDates').iCheck('update')[0].checked;
     var runOnAdminDB = $('#aRunOnAdminDB').iCheck('update')[0].checked;
 
-    Meteor.call("command", Session.get(Template.strSessionConnection), command, convertIds, convertDates, runOnAdminDB,
+    Meteor.call("command", command, convertIds, convertDates, runOnAdminDB,
         function (err, result) {
             Template.renderAfterQueryExecution(err, result, true);
         }

@@ -44,7 +44,7 @@ Template.insertMany.executeQuery = function (historyParams) {
     var convertIds = $('#aConvertObjectIds').iCheck('update')[0].checked;
     var convertDates = $('#aConvertIsoDates').iCheck('update')[0].checked;
 
-    Meteor.call("insertMany", Session.get(Template.strSessionConnection), selectedCollection, docs, convertIds, convertDates, function (err, result) {
+    Meteor.call("insertMany", selectedCollection, docs, convertIds, convertDates, function (err, result) {
         Template.renderAfterQueryExecution(err, result, false, "insertMany", params, (historyParams ? false : true));
     });
 };

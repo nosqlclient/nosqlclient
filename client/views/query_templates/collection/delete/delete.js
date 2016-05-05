@@ -24,7 +24,7 @@ Template.delete.executeQuery = function (historyParams) {
     var convertIds = $('#aConvertObjectIds').iCheck('update')[0].checked;
     var convertDates = $('#aConvertIsoDates').iCheck('update')[0].checked;
 
-    Meteor.call("delete", Session.get(Template.strSessionConnection), selectedCollection, selector, convertIds, convertDates,
+    Meteor.call("delete", selectedCollection, selector, convertIds, convertDates,
         function (err, result) {
             Template.renderAfterQueryExecution(err, result, false, "delete", params, (historyParams ? false : true));
         }

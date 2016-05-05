@@ -8,7 +8,7 @@ Template.profilingInfo.onRendered(function () {
 
 Template.profilingInfo.executeQuery = function () {
     Template.adminQueries.initExecuteQuery();
-    Meteor.call("profilingInfo", Session.get(Template.strSessionConnection), function (err, result) {
+    Meteor.call("profilingInfo", function (err, result) {
         Template.renderAfterQueryExecution(err, result, true);
     });
 };

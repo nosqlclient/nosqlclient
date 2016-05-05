@@ -68,7 +68,7 @@ Template.findOneAndReplace.executeQuery = function (historyParams) {
     var convertIds = $('#aConvertObjectIds').iCheck('update')[0].checked;
     var convertDates = $('#aConvertIsoDates').iCheck('update')[0].checked;
 
-    Meteor.call("findOneAndReplace", Session.get(Template.strSessionConnection), selectedCollection, selector, replaceObject, options, convertIds, convertDates,
+    Meteor.call("findOneAndReplace", selectedCollection, selector, replaceObject, options, convertIds, convertDates,
         function (err, result) {
             Template.renderAfterQueryExecution(err, result, false, "findOneAndReplace", params, (historyParams ? false : true));
         }

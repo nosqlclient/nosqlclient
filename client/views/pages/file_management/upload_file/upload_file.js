@@ -39,7 +39,7 @@ Template.uploadFile.proceedUploading = function (blob, contentType, metaData, al
     l.ladda('start');
     var fileReader = new FileReader();
     fileReader.onload = function (file) {
-        Meteor.call('uploadFile', Session.get(Template.strSessionConnection), $('#txtBucketName').val(), new Uint8Array(file.target.result), blob.name, contentType, metaData, aliases, function (err, result) {
+        Meteor.call('uploadFile', $('#txtBucketName').val(), new Uint8Array(file.target.result), blob.name, contentType, metaData, aliases, function (err, result) {
             if (err || result.error) {
                 Template.showMeteorFuncError(err, result, "Couldn't upload file");
             }

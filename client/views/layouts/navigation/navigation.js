@@ -39,7 +39,7 @@ Template.navigation.events({
             confirmButtonText: "Yes, drop them!",
             closeOnConfirm: false
         }, function () {
-            Meteor.call('dropAllCollections', Session.get(Template.strSessionConnection), function (err, result) {
+            Meteor.call('dropAllCollections', function (err, result) {
                 if (err || result.error) {
                     Template.showMeteorFuncError(err, result, "Couldn't drop all collections");
                 }
@@ -66,7 +66,7 @@ Template.navigation.events({
             confirmButtonText: "Yes, drop it!",
             closeOnConfirm: false
         }, function () {
-            Meteor.call('dropDB', Session.get(Template.strSessionConnection), function (err, result) {
+            Meteor.call('dropDB', function (err, result) {
                 if (err || result.error) {
                     Template.showMeteorFuncError(err, result, "Couldn't drop database");
                 }
@@ -178,7 +178,7 @@ Template.navigation.handleNavigationAndSessions = function () {
 };
 
 Template.navigation.dropCollection = function (collectionName) {
-    Meteor.call('dropCollection', Session.get(Template.strSessionConnection), collectionName, function (err, result) {
+    Meteor.call('dropCollection', collectionName, function (err, result) {
         if (err || result.error) {
             Template.showMeteorFuncError(err, result, "Couldn't drop collection");
         }

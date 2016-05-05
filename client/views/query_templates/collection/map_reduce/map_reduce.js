@@ -70,7 +70,7 @@ Template.mapReduce.executeQuery = function (historyParams) {
         options: options
     };
 
-    Meteor.call("mapReduce", Session.get(Template.strSessionConnection), selectedCollection, map, reduce, options, function (err, result) {
+    Meteor.call("mapReduce", selectedCollection, map, reduce, options, function (err, result) {
         Template.renderAfterQueryExecution(err, result, false, "mapReduce", params, (historyParams ? false : true));
     });
 };

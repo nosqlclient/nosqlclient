@@ -31,7 +31,7 @@ Template.addCollection.events({
         var laddaButton = $('#btnCreateCollection').ladda();
         laddaButton.ladda('start');
         
-        Meteor.call('createCollection', Session.get(Template.strSessionConnection), collectionName, options, function (err) {
+        Meteor.call('createCollection', collectionName, options, function (err) {
             if (err) {
                 toastr.error("Couldn't create collection: " + err.message);
                 Ladda.stopAll();

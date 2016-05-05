@@ -248,6 +248,8 @@ Template.topNavbar.events({
 
     'click #btnDisconnect': function (e) {
         e.preventDefault();
+
+        Meteor.call('disconnect');
         Template.clearSessions();
 
         swal({

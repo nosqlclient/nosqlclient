@@ -9,7 +9,7 @@ Template.replSetGetStatus.onRendered(function () {
 Template.replSetGetStatus.executeQuery = function () {
     Template.adminQueries.initExecuteQuery();
 
-    Meteor.call("replSetGetStatus", Session.get(Template.strSessionConnection), function (err, result) {
+    Meteor.call("replSetGetStatus", function (err, result) {
         Template.renderAfterQueryExecution(err, result, true);
     });
 };

@@ -14,7 +14,7 @@ Template.pageHeading.helpers({
         Template.getDistinctKeysForAutoComplete(selectedCollection);
         Template.browseCollection.initExecuteQuery();
 
-        Meteor.call("stats", Session.get(Template.strSessionConnection), selectedCollection, {}, function (err, result) {
+        Meteor.call("stats", selectedCollection, {}, function (err, result) {
             if (err || result.error) {
                 Template.showMeteorFuncError(err, result, "Couldn't fetch connection informations");
             }

@@ -8,7 +8,7 @@ Template.fileManagement.onRendered(function () {
     }
 
     Template.fileManagement.initFileInformations();
-    Template.initiateDatatable($('#tblFiles'),Template.strSessionSelectedFile);
+    Template.initiateDatatable($('#tblFiles'), Template.strSessionSelectedFile);
 });
 
 Template.fileManagement.events({
@@ -45,7 +45,7 @@ Template.fileManagement.events({
                 if (isConfirm) {
                     var l = $('#btnReloadFiles').ladda();
                     l.ladda('start');
-                    Meteor.call('deleteFile', Session.get(Template.strSessionConnection), $('#txtBucketName').val(), fileRow._id, function (err) {
+                    Meteor.call('deleteFile', $('#txtBucketName').val(), fileRow._id, function (err) {
                         if (err) {
                             toastr.error("Couldn't delete: " + err.message);
                         } else {
@@ -78,11 +78,11 @@ Template.fileManagement.events({
             }
 
             $('#metaDataModal').modal('show');
-            Meteor.call('getFile', Session.get(Template.strSessionConnection), $('#txtBucketName').val(), fileRow._id, function (err, result) {
-                if(err || result.error){
+            Meteor.call('getFile', $('#txtBucketName').val(), fileRow._id, function (err, result) {
+                if (err || result.error) {
                     Template.showMeteorFuncError(err, result, "Couldn't find file");
                 }
-                else{
+                else {
                     jsonEditor.set(result.result);
                 }
                 Ladda.stopAll();
@@ -97,12 +97,12 @@ Template.fileManagement.initFileInformations = function () {
     var l = $('#btnReloadFiles').ladda();
     l.ladda('start');
 
-    Meteor.call('getFileInfos', Session.get(Template.strSessionConnection), $('#txtBucketName').val(), function (err, result) {
-            if(err || result.error){
+    Meteor.call('getFileInfos', $('#txtBucketName').val(), function (err, result) {
+            if (err || result.error) {
                 Template.showMeteorFuncError(err, result, "Couldn't get file informations");
                 return;
             }
-        
+
             var tblFiles = $('#tblFiles');
             // destroy jquery datatable to prevent reinitialization (https://datatables.net/manual/tech-notes/3)
             if ($.fn.dataTable.isDataTable('#tblFiles')) {

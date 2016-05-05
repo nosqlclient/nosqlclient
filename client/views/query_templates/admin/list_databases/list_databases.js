@@ -9,7 +9,7 @@ Template.listDatabases.onRendered(function () {
 Template.listDatabases.executeQuery = function () {
     Template.adminQueries.initExecuteQuery();
 
-    Meteor.call("listDatabases", Session.get(Template.strSessionConnection), function (err, result) {
+    Meteor.call("listDatabases", function (err, result) {
         Template.renderAfterQueryExecution(err, result, true);
     });
 };

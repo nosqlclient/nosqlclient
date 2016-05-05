@@ -125,7 +125,7 @@ Template.editDocument.deleteDocument = function () {
     var collectionName = $('#cmbCollections').find(":selected").text();
     var idQuery = {_id: Session.get(Template.strSessionEasyEditID)};
 
-    Meteor.call('delete', Session.get(Template.strSessionConnection), collectionName, idQuery, function (err, result) {
+    Meteor.call('delete', collectionName, idQuery, function (err, result) {
         if (err) {
             toastr.error("Couldn't delete: " + err.message);
         }
@@ -168,7 +168,7 @@ Template.editDocument.saveDocument = function () {
     var convertIds = $('#aConvertObjectIds').iCheck('update')[0].checked;
     var convertDates = $('#aConvertIsoDates').iCheck('update')[0].checked;
 
-    Meteor.call('updateOne', Session.get(Template.strSessionConnection), collectionName, idQuery, setValue, convertIds, convertDates,
+    Meteor.call('updateOne', collectionName, idQuery, setValue, convertIds, convertDates,
         function (err) {
             if (err) {
                 toastr.error("Couldn't update: " + err.message);
@@ -204,7 +204,7 @@ Template.editDocument.fetchDocument = function () {
     var convertIds = $('#aConvertObjectIds').iCheck('update')[0].checked;
     var convertDates = $('#aConvertIsoDates').iCheck('update')[0].checked;
 
-    Meteor.call("findOne", Session.get(Template.strSessionConnection), collectionName, selector, {}, convertIds, convertDates,
+    Meteor.call("findOne",  collectionName, selector, {}, convertIds, convertDates,
         function (err, result) {
             var divResult = $('#divResult');
 

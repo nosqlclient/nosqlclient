@@ -31,7 +31,7 @@ Template.rename.executeQuery = function () {
     var newName = $('#inputNewName').val();
 
     if (newName) {
-        Meteor.call("rename", Session.get(Template.strSessionConnection), selectedCollection, newName, options, function (err, result) {
+        Meteor.call("rename", selectedCollection, newName, options, function (err, result) {
             Template.renderAfterQueryExecution(err, result, false, "rename");
             if (err == undefined && result.error == undefined) {
                 Template.rename.renderCollectionnames(newName);

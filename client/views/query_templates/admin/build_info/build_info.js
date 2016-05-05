@@ -6,7 +6,7 @@ Template.buildInfo.onRendered(function () {
 Template.buildInfo.executeQuery = function () {
     Template.adminQueries.initExecuteQuery();
 
-    Meteor.call("buildInfo", Session.get(Template.strSessionConnection), function (err, result) {
+    Meteor.call("buildInfo", function (err, result) {
         Template.renderAfterQueryExecution(err, result, true);
     });
 };

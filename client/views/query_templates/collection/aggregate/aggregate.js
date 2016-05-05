@@ -38,7 +38,7 @@ Template.aggregate.executeQuery = function (historyParams) {
     var convertIds = $('#aConvertObjectIds').iCheck('update')[0].checked;
     var convertDates = $('#aConvertIsoDates').iCheck('update')[0].checked;
 
-    Meteor.call("aggregate", Session.get(Template.strSessionConnection), selectedCollection, pipeline, convertIds, convertDates,
+    Meteor.call("aggregate", selectedCollection, pipeline, convertIds, convertDates,
         function (err, result) {
             Template.renderAfterQueryExecution(err, result, false, "aggregate", params, (historyParams ? false : true));
         }

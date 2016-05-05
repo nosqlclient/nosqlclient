@@ -22,7 +22,7 @@ Template.setProfilingLevel.executeQuery = function () {
     Template.adminQueries.initExecuteQuery();
     var level = $('#cmbLevel').val();
 
-    Meteor.call("setProfilingLevel", Session.get(Template.strSessionConnection), level, function (err, result) {
+    Meteor.call("setProfilingLevel", level, function (err, result) {
         Template.renderAfterQueryExecution(err, result, true);
     });
 };

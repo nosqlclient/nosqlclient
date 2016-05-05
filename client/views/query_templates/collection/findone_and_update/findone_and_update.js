@@ -55,7 +55,7 @@ Template.findOneAndUpdate.executeQuery = function (historyParams) {
     var convertIds = $('#aConvertObjectIds').iCheck('update')[0].checked;
     var convertDates = $('#aConvertIsoDates').iCheck('update')[0].checked;
 
-    Meteor.call("findOneAndUpdate", Session.get(Template.strSessionConnection), selectedCollection, selector, setObject, options, convertIds, convertDates,
+    Meteor.call("findOneAndUpdate", selectedCollection, selector, setObject, options, convertIds, convertDates,
         function (err, result) {
             Template.renderAfterQueryExecution(err, result, false, "findOneAndUpdate", params, (historyParams ? false : true));
         }

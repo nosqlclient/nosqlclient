@@ -43,7 +43,7 @@ Template.createIndex.executeQuery = function (historyParams) {
         options: options
     };
 
-    Meteor.call("createIndex", Session.get(Template.strSessionConnection), selectedCollection, fields, options, function (err, result) {
+    Meteor.call("createIndex", selectedCollection, fields, options, function (err, result) {
         Template.renderAfterQueryExecution(err, result, false, "createIndex", params, (historyParams ? false : true));
     });
 };

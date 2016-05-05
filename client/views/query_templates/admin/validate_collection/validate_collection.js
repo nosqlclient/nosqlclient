@@ -28,7 +28,7 @@ Template.validateCollection.executeQuery = function () {
     var convertIds = $('#aConvertObjectIds').iCheck('update')[0].checked;
     var convertDates = $('#aConvertIsoDates').iCheck('update')[0].checked;
 
-    Meteor.call("validateCollection", Session.get(Template.strSessionConnection), collectionName, options, convertIds, convertDates,
+    Meteor.call("validateCollection", collectionName, options, convertIds, convertDates,
         function (err, result) {
             Template.renderAfterQueryExecution(err, result, true);
         })

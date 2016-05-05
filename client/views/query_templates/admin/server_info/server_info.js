@@ -9,7 +9,7 @@ Template.serverStatus.onRendered(function () {
 Template.serverInfo.executeQuery = function () {
     Template.adminQueries.initExecuteQuery();
 
-    Meteor.call("serverInfo", Session.get(Template.strSessionConnection), function (err, result) {
+    Meteor.call("serverInfo", function (err, result) {
         Template.renderAfterQueryExecution(err, result, true);
     });
 };

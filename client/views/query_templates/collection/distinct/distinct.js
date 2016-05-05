@@ -35,7 +35,7 @@ Template.distinct.executeQuery = function (historyParams) {
     var convertIds = $('#aConvertObjectIds').iCheck('update')[0].checked;
     var convertDates = $('#aConvertIsoDates').iCheck('update')[0].checked;
 
-    Meteor.call("distinct", Session.get(Template.strSessionConnection), selectedCollection, selector, fieldName, convertIds, convertDates,
+    Meteor.call("distinct", selectedCollection, selector, fieldName, convertIds, convertDates,
         function (err, result) {
             Template.renderAfterQueryExecution(err, result, false, "distinct", params, (historyParams ? false : true));
         }

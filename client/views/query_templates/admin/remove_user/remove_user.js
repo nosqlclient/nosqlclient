@@ -18,7 +18,7 @@ Template.removeUser.executeQuery = function () {
 
     var runOnAdminDB = $('#aRunOnAdminDB').iCheck('update')[0].checked;
 
-    Meteor.call("removeUser", Session.get(Template.strSessionConnection), username, runOnAdminDB, function (err, result) {
+    Meteor.call("removeUser", username, runOnAdminDB, function (err, result) {
         Template.renderAfterQueryExecution(err, result, true);
     });
 };

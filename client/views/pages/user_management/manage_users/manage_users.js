@@ -42,7 +42,7 @@ Template.manageUsers.events({
 
                 var runOnAdminDB = $('#aRunOnAdminDBToFetchUsers').iCheck('update')[0].checked;
 
-                Meteor.call('command', Session.get(Template.strSessionConnection), command, false, false, runOnAdminDB, function (err, result) {
+                Meteor.call('command', command, false, false, runOnAdminDB, function (err, result) {
                     if (err || result.error) {
                         Template.showMeteorFuncError(err, result, "Couldn't drop user");
                     }
@@ -85,7 +85,7 @@ Template.manageUsers.events({
                 showPrivileges: true
             };
 
-            Meteor.call('command', connection._id, userInfoCommand, false, false, runOnAdminDB, function (err, result) {
+            Meteor.call('command', userInfoCommand, false, false, runOnAdminDB, function (err, result) {
                 if (err || result.error) {
                     Template.showMeteorFuncError(err, result, "Couldn't fetch userInfo");
                 }
@@ -150,7 +150,7 @@ Template.manageUsers.events({
 
         var runOnAdminDB = $('#aRunOnAdminDBToFetchUsers').iCheck('update')[0].checked;
 
-        Meteor.call('command', Session.get(Template.strSessionConnection), command, false, false, runOnAdminDB, function (err, result) {
+        Meteor.call('command', command, false, false, runOnAdminDB, function (err, result) {
             if (err || result.error) {
                 Template.showMeteorFuncError(err, result, "Couldn't update user");
             }
@@ -209,7 +209,7 @@ Template.manageUsers.events({
         cmb.append($("<optgroup id='optGroupDatabases' label='Databases'></optgroup>"));
         var cmbOptGroupCollection = cmb.find('#optGroupDatabases');
 
-        Meteor.call('getDatabases', Session.get(Template.strSessionConnection), function (err, result) {
+        Meteor.call('getDatabases', function (err, result) {
             if (err || result.error) {
                 Template.showMeteorFuncError(err, result, "Couldn't fetch databases");
             }
@@ -225,7 +225,7 @@ Template.manageUsers.events({
         });
 
         var runOnAdminDB = $('#aRunOnAdminDBToFetchUsers').iCheck('update')[0].checked;
-        Meteor.call('command', Session.get(Template.strSessionConnection), {
+        Meteor.call('command', {
             rolesInfo: 1,
             showBuiltinRoles: true
         }, false, false, runOnAdminDB, function (err, result) {
@@ -286,7 +286,7 @@ Template.manageUsers.initUsers = function () {
 
     var runOnAdminDB = $('#aRunOnAdminDBToFetchUsers').iCheck('update')[0].checked;
 
-    Meteor.call('command', Session.get(Template.strSessionConnection), command, false, false, runOnAdminDB, function (err, result) {
+    Meteor.call('command', command, false, false, runOnAdminDB, function (err, result) {
         if (err || result.error) {
             Template.showMeteorFuncError(err, result, "Couldn't fetch users");
         }
@@ -416,7 +416,7 @@ Template.manageUsers.popEditUserModal = function (user) {
         showPrivileges: true
     };
 
-    Meteor.call('command', connection._id, userInfoCommand, false, false, runOnAdminDB, function (err, result) {
+    Meteor.call('command', userInfoCommand, false, false, runOnAdminDB, function (err, result) {
         if (err || result.error) {
             Template.showMeteorFuncError(err, result, "Couldn't fetch userInfo");
         }
