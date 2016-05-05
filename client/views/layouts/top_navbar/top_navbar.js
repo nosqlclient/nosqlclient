@@ -424,6 +424,15 @@ Template.topNavbar.connect = function (isRefresh) {
             Template.showMeteorFuncError(err, result, "Couldn't connect");
         }
         else {
+            result.result.sort(function compare(a, b) {
+                if (a.name < b.name)
+                    return -1;
+                else if (a.name > b.name)
+                    return 1;
+                else
+                    return 0;
+            });
+
             Session.set(Template.strSessionCollectionNames, result.result);
 
             if (!isRefresh) {
