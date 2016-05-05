@@ -49,30 +49,38 @@ Meteor.methods({
 
         LOGGER.info('[connect]', connectionUrl, clearConnectionOptionsForLog(connectionOptions));
 
-        var mongodbApi = Meteor.npmRequire('mongodb').MongoClient;
         return Async.runSync(function (done) {
-            mongodbApi.connect(connectionUrl, connectionOptions, function (mainError, db) {
-                if (mainError || db == null || db == undefined) {
-                    done(mainError, db);
-                    if (db) {
-                        db.close();
+            if (connection.sshAddress) {
+                var config = {
+                    dstPort: connection.port,
+                    host: connection.sshAddress,
+                    port: connection.sshPort,
+                    username: connection.sshUser
+                };
+
+                if (connection.sshCertificate) {
+                    config.privateKey = connection.sshCertificate;
+                }
+
+                if (connection.sshPassPhrase) {
+                    config.passphrase = connection.sshPassPhrase;
+                }
+
+                if (connection.sshPassword) {
+                    config.password = connection.sshPassword;
+                }
+
+                var tunnel = new Meteor.npmRequire('tunnel-ssh').tunnel;
+                tunnel(config, function (error) {
+                    if (error) {
+                        done(new Meteor.Error(error.message), null);
+                        return;
                     }
-                    return;
-                }
-                try {
-                    database = db;
-                    database.listCollections().toArray(function (err, collections) {
-                        done(err, collections);
-                    });
-                }
-                catch (ex) {
-                    LOGGER.error('[connect]', ex);
-                    done(new Meteor.Error(ex.message), null);
-                    if (database) {
-                        database.close();
-                    }
-                }
-            });
+                    proceedConnectingMongodb(connectionUrl, connectionOptions, done);
+                });
+            } else {
+                proceedConnectingMongodb(connectionUrl, connectionOptions, done);
+            }
         });
     },
 
@@ -147,3 +155,29 @@ Meteor.methods({
         });
     }
 });
+
+var proceedConnectingMongodb = function (connectionUrl, connectionOptions, done) {
+    var mongodbApi = Meteor.npmRequire('mongodb').MongoClient;
+    mongodbApi.connect(connectionUrl, connectionOptions, function (mainError, db) {
+        if (mainError || db == null || db == undefined) {
+            done(mainError, db);
+            if (db) {
+                db.close();
+            }
+            return;
+        }
+        try {
+            database = db;
+            database.listCollections().toArray(function (err, collections) {
+                done(err, collections);
+            });
+        }
+        catch (ex) {
+            LOGGER.error('[connect]', ex);
+            done(new Meteor.Error(ex.message), null);
+            if (database) {
+                database.close();
+            }
+        }
+    });
+};
