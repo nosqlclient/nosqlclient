@@ -1,9 +1,7 @@
-## Mongoclient, Featured MongoDB Management Tool
+## Mongoclient, Featured MongoDB Management Tool Demo Branch
 Cross-platform, MongoDB 3.2+ support and more features!
 
 [![Join the chat at https://gitter.im/rsercano/mongoclient](https://badges.gitter.im/rsercano/mongoclient.svg)](https://gitter.im/rsercano/mongoclient?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)                                          [![Build Status](https://travis-ci.org/rsercano/mongoclient.svg?branch=master)](https://travis-ci.org/rsercano/mongoclient)
-
-> Hello fellows, I just wanted to thank you all for your kind opinions and support. Also I want you to know, I'm reading all your feedbacks that you sent from the inside of application, evaluating all your requests. Best wishes to you all !
 
 <pre align="center">
   <a href="http://www.mongoclient.com:3000">Try the Demo Application</a>
