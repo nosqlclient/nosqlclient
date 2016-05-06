@@ -26,6 +26,7 @@ Template.topNavbar.onRendered(function () {
 
     $(":file").filestyle({icon: false, input: false});
     Template.topNavbar.initIChecks();
+    Template.topNavbar.initChosen();
 });
 
 
@@ -36,6 +37,15 @@ Template.topNavbar.events({
             $('#inputCertificatePath').val(blob.name);
         } else {
             $('#inputCertificatePath').val('');
+        }
+    },
+
+    'change #inputSshCertificate': function () {
+        var blob = $('#inputSshCertificate')[0].files[0];
+        if (blob) {
+            $('#inputSshCertificatePath').val(blob.name);
+        } else {
+            $('#inputSshCertificatePath').val('');
         }
     },
 
@@ -54,6 +64,18 @@ Template.topNavbar.events({
             $('#inputCertificateKeyPath').val(blob.name);
         } else {
             $('#inputCertificateKeyPath').val('');
+        }
+    },
+
+    'change #cmbSshAuthType': function () {
+        var value = $('#cmbSshAuthType').find(":selected").text();
+        if (value == 'Password') {
+            $('#formSshPasswordAuth').show();
+            $('#formSshCertificateAuth').hide();
+        }
+        else {
+            $('#formSshCertificateAuth').show();
+            $('#formSshPasswordAuth').hide();
         }
     },
 
@@ -99,6 +121,31 @@ Template.topNavbar.events({
         e.preventDefault();
         var connection = Connections.findOne({_id: Session.get(Template.strSessionConnection)});
         Template.topNavbar.clearAllFieldsOfConnectionModal();
+
+        if (connection.sshAddress) {
+            $('#inputUseSsh').iCheck('check');
+            $('#inputSshHostname').val(connection.sshAddress);
+            $('#inputSshPort').val(connection.sshPort);
+            $('#inputSshUsername').val(connection.sshUser);
+
+            if (connection.sshPassword) {
+                $("#cmbSshAuthType").val('Password').trigger('chosen:updated');
+                $('#inputSshPassword').val(connection.sshPassword);
+                $('#formSshPasswordAuth').show();
+                $('#formSshCertificateAuth').hide();
+            }
+            if (connection.sshCertificatePath) {
+                $("#cmbSshAuthType").val('Key File').trigger('chosen:updated');
+                $('#inputSshCertificatePath').val(connection.sshCertificatePath);
+                $('#formSshPasswordAuth').hide();
+                $('#formSshCertificateAuth').show();
+            }
+            if (connection.sshPassPhrase) {
+                $('#inputSshPassPhrase').val(connection.sshPassPhrase);
+            }
+        } else {
+            $('#inputUseSsh').iCheck('uncheck');
+        }
 
         if (connection.url) {
             $('#inputUseUrl').iCheck('check');
@@ -183,6 +230,24 @@ Template.topNavbar.events({
         var rootCertificatePathSelector = $("#inputRootCaPath");
         var inputCertificateKeyPathSelector = $('#inputCertificateKeyPath');
         var connection = {};
+
+        if ($('#inputUseSsh').iCheck('update')[0].checked) {
+            connection.sshAddress = $('#inputSshHostname').val();
+            connection.sshPort = $('#inputSshPort').val();
+            connection.sshUser = $('#inputSshUsername').val();
+
+            if ($('#cmbSshAuthType').val() == 'Password') {
+                connection.sshPassword = $('#inputSshPassword').val();
+            }
+            else if ($('#cmbSshAuthType').val() == 'Key File') {
+                if ($('#inputSshCertificatePath').val()) {
+                    connection.sshCertificatePath = $('#inputSshCertificatePath').val();
+                }
+                if ($('#inputSshPassPhrase').val()) {
+                    connection.sshPassPhrase = $('#inputSshPassPhrase').val();
+                }
+            }
+        }
 
         if ($('#inputUseUrl').iCheck('update')[0].checked) {
             connection.url = $('#inputUrl').val();
@@ -288,7 +353,15 @@ Template.topNavbar.clearAllFieldsOfConnectionModal = function () {
     $("#inputCertificatePath").val('');
     $("#inputPassPhrase").val('');
     $("#inputRootCaPath").val('');
+    $("#inputSshHostname").val('');
+    $("#inputSshPort").val('22');
+    $("#inputSshUsername").val('');
+    $("#cmbSshAuthType").val('').trigger('chosen:updated');
+    $("#inputSshCertificatePath").val('');
+    $("#inputSshPassPhrase").val('');
+    $("#inputSshPassword").val('');
     $('#inputUseUrl').iCheck('uncheck');
+    $('#inputUseSsh').iCheck('uncheck');
     $('#inputUseSSL').iCheck('uncheck');
     $('#inputAuthStandard').iCheck('check');
     $(":file").filestyle('clear');
@@ -346,6 +419,24 @@ Template.topNavbar.proceedRootCertificateLoading = function (saveMethodName, con
 };
 
 Template.topNavbar.loadCertificatesAndSave = function (saveMethodName, connection, currentConnection) {
+    var sshCertificateSelector = $('#inputSshCertificate');
+    if (sshCertificateSelector.get(0).files.length == 0 && currentConnection && currentConnection.sshCertificate && $('#inputSshCertificatePath').val()) {
+        connection.sshCertificate = currentConnection.sshCertificate;
+        Template.topNavbar.proceedLoadingCertificates(saveMethodName, connection, currentConnection);
+    } else {
+        if (sshCertificateSelector.get(0).files.length != 0) {
+            Template.topNavbar.loadFile(function (file) {
+                connection.sshCertificate = new Uint8Array(file.target.result);
+                Template.topNavbar.proceedLoadingCertificates(saveMethodName, connection, currentConnection);
+            }, sshCertificateSelector[0].files[0]);
+
+        } else {
+            Template.topNavbar.proceedLoadingCertificates(saveMethodName, connection, currentConnection);
+        }
+    }
+};
+
+Template.topNavbar.proceedLoadingCertificates = function (saveMethodName, connection, currentConnection) {
     var certificateSelector = $('#inputCertificate');
 
     if ($('#inputAuthCertificate').iCheck('update')[0].checked && !$('#inputUseUrl').iCheck('update')[0].checked) {
@@ -375,12 +466,48 @@ Template.topNavbar.loadFile = function (callback, blob) {
     fileReader.readAsArrayBuffer(blob);
 };
 
-
 Template.topNavbar.checkConnection = function (connection) {
+    var sshAuthTypeSelector = $('#cmbSshAuthType');
+
     if (!connection.name) {
         toastr.error("Connection name can't be empty");
         return false;
     }
+
+    if ($('#inputUseSsh').iCheck('update')[0].checked) {
+        if (!connection.sshAddress) {
+            toastr.error("Ssh hostname can't be empty");
+            return false;
+        }
+
+        if (!connection.sshPort) {
+            toastr.error("Ssh port can't be empty");
+            return false;
+        }
+
+        if (!connection.sshUser) {
+            toastr.error("Ssh user can't be empty");
+            return false;
+        }
+
+        if (!sshAuthTypeSelector.find(":selected").text()) {
+            toastr.error("Ssh authentication type can't be empty");
+            return false;
+        }
+
+        if (sshAuthTypeSelector.find(":selected").text() == 'Password') {
+            if (!connection.sshPassword) {
+                toastr.error("Ssh password can't be empty");
+                return false;
+            }
+        } else {
+            if (!connection.sshCertificatePath) {
+                toastr.error("Ssh certificate path can't be empty");
+                return false;
+            }
+        }
+    }
+
 
     if ($('#inputUseUrl').iCheck('update')[0].checked) {
         if (!connection.url) {
@@ -453,6 +580,19 @@ Template.topNavbar.connect = function (isRefresh) {
     });
 };
 
+Template.topNavbar.initChosen = function () {
+    var cmb = $('#cmbSshAuthType');
+
+    cmb.append($("<option></option>")
+        .attr("value", "Password")
+        .text("Password"));
+    cmb.append($("<option></option>")
+        .attr("value", "Key File")
+        .text("Key File"));
+
+    cmb.chosen({width: '100%'});
+};
+
 Template.topNavbar.initIChecks = function () {
     var selector = $('#divAuthType');
     selector.iCheck({
@@ -465,10 +605,15 @@ Template.topNavbar.initIChecks = function () {
     var anchorTab1Selector = $('#anchorTab1');
     var anchorTab2Selector = $('#anchorTab2');
     var inputUseUriSelector = $("#inputUseUrl");
+    var inputUseSshSelector = $("#inputUseSsh");
 
     inputAuthStandardSelector.iCheck('check');
 
     $('#divUseSSL').iCheck({
+        checkboxClass: 'icheckbox_square-green'
+    });
+
+    $('#divUseSsh').iCheck({
         checkboxClass: 'icheckbox_square-green'
     });
 
@@ -505,6 +650,39 @@ Template.topNavbar.initIChecks = function () {
             anchorTab2Selector.attr('data-toggle', 'tab');
         }
     });
+
+    inputUseSshSelector.iCheck('uncheck');
+    inputUseSshSelector.on('ifChanged', function (event) {
+        var inputSshHostnameSelector = $('#inputSshHostname');
+        var inputSshPortSelector = $('#inputSshPort');
+        var inputSshUsernameSelector = $('#inputSshUsername');
+        var comboSshAuthTypeSelector = $('#cmbSshAuthType');
+        var inputSshPasswordSelector = $('#inputSshPassword');
+        var inputSshCertificatePathSelector = $('#inputSshCertificatePath');
+        var inputSshCertificateSelector = $('#inputSshCertificate');
+        var inputSshPassPhrase = $('#inputSshPassPhrase');
+
+
+        var isChecked = event.currentTarget.checked;
+        if (isChecked) {
+            inputSshHostnameSelector.prop('disabled', false);
+            inputSshPortSelector.prop('disabled', false);
+            inputSshUsernameSelector.prop('disabled', false);
+            comboSshAuthTypeSelector.prop('disabled', false).trigger("chosen:updated");
+            inputSshCertificatePathSelector.prop('disabled', false);
+            inputSshCertificateSelector.prop('disabled', false);
+            inputSshPassPhrase.prop('disabled', false);
+        } else {
+            inputSshHostnameSelector.prop('disabled', true);
+            inputSshPortSelector.prop('disabled', true);
+            inputSshUsernameSelector.prop('disabled', true);
+            comboSshAuthTypeSelector.prop('disabled', true).trigger("chosen:updated");
+            inputSshCertificatePathSelector.prop('disabled', true);
+            inputSshCertificateSelector.prop('disabled', true);
+            inputSshPassPhrase.prop('disabled', true);
+        }
+
+    });
 };
 
 Template.topNavbar.populateConnectionsTable = function () {
@@ -518,7 +696,8 @@ Template.topNavbar.populateConnectionsTable = function () {
             {data: "name"},
             {data: "url"},
             {data: "useSsl"},
-            {data: "sslCertificatePath"}
+            {data: "sslCertificatePath"},
+            {data: "sshAddress"}
         ],
         columnDefs: [
             {
@@ -550,12 +729,21 @@ Template.topNavbar.populateConnectionsTable = function () {
             },
             {
                 targets: [5],
+                render: function (data) {
+                    if (!data) {
+                        return 'false';
+                    }
+                    return 'true';
+                }
+            },
+            {
+                targets: [6],
                 data: null,
                 bSortable: false,
                 defaultContent: '<a href="" title="Edit" class="editor_edit"><i class="fa fa-edit text-navy"></i></a>'
             },
             {
-                targets: [6],
+                targets: [7],
                 data: null,
                 bSortable: false,
                 defaultContent: '<a href="" title="Delete" class="editor_remove"><i class="fa fa-remove text-navy"></i></a>'
