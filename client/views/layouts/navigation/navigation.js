@@ -1,4 +1,16 @@
 Template.navigation.events({
+    'click #anchorDatabaseDumpRestore': function (e) {
+        e.preventDefault();
+        var connection = Connections.findOne({_id: Session.get(Template.strSessionConnection)});
+
+        if (connection.sshAddress) {
+            toastr.info('Unfortunately, this feature is not usable in SSH connections');
+            return;
+        }
+
+        Router.go('databaseDumpRestore');
+    },
+
     'click #btnAddCollection': function (e) {
         e.preventDefault();
         $('#collectionAddModal').modal('show');

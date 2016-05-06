@@ -39,7 +39,9 @@ Meteor.methods({
     },
 
     'disconnect': function () {
-        database.close();
+        if (database) {
+            database.close();
+        }
     },
 
     'connect': function (connectionId) {
@@ -70,8 +72,8 @@ Meteor.methods({
                     config.password = connection.sshPassword;
                 }
 
-                var tunnel = new Meteor.npmRequire('tunnel-ssh');
-                tunnel(config, function (error) {
+                var tunnelSsh = new Meteor.npmRequire('tunnel-ssh');
+                tunnelSsh(config, function (error) {
                     if (error) {
                         done(new Meteor.Error(error.message), null);
                         return;
@@ -158,8 +160,10 @@ Meteor.methods({
 
 var proceedConnectingMongodb = function (connectionUrl, connectionOptions, done) {
     var mongodbApi = Meteor.npmRequire('mongodb').MongoClient;
+
     mongodbApi.connect(connectionUrl, connectionOptions, function (mainError, db) {
         if (mainError || db == null || db == undefined) {
+            LOGGER.error(mainError, db);
             done(mainError, db);
             if (db) {
                 db.close();
@@ -175,8 +179,8 @@ var proceedConnectingMongodb = function (connectionUrl, connectionOptions, done)
         catch (ex) {
             LOGGER.error('[connect]', ex);
             done(new Meteor.Error(ex.message), null);
-            if (database) {
-                database.close();
+            if (db) {
+                db.close();
             }
         }
     });
