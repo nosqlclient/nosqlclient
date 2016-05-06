@@ -70,7 +70,7 @@ Meteor.methods({
                     config.password = connection.sshPassword;
                 }
 
-                var tunnel = new Meteor.npmRequire('tunnel-ssh').tunnel;
+                var tunnel = new Meteor.npmRequire('tunnel-ssh');
                 tunnel(config, function (error) {
                     if (error) {
                         done(new Meteor.Error(error.message), null);
@@ -144,8 +144,8 @@ Meteor.methods({
 
         return Async.runSync(function (done) {
             try {
-                database.createCollection(collectionName, options, function (err, result) {
-                    done(err, result);
+                database.createCollection(collectionName, options, function (err, collection) {
+                    done(err, null);
                 });
             }
             catch (ex) {

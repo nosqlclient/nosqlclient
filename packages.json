@@ -2,7 +2,7 @@
   "mongodb": "2.1.7",
   "mongodb-backup": "1.5.4",
   "mongodb-restore": "1.5.2",
-  "tunnel-ssh": "3.2.1-beta",
+  "tunnel-ssh": "2.1.1",
   "cheerio": "0.20.0",
   "winston": "2.2.0"
 }

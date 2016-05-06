@@ -195,6 +195,15 @@ Template.navigation.renderCollectionNames = function () {
             Template.showMeteorFuncError(err, result, "Couldn't connect");
         }
         else {
+            result.result.sort(function compare(a, b) {
+                if (a.name < b.name)
+                    return -1;
+                else if (a.name > b.name)
+                    return 1;
+                else
+                    return 0;
+            });
+
             // re-set collection names
             Session.set(Template.strSessionCollectionNames, result.result);
             // set all session values undefined except connection
