@@ -144,7 +144,7 @@ Meteor.methods({
 
         return Async.runSync(function (done) {
             try {
-                database.createCollection(collectionName, options, function (err, collection) {
+                database.createCollection(collectionName, options, function (err, result) {
                     done(err, null);
                 });
             }
