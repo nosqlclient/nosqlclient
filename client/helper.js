@@ -23,7 +23,6 @@ Template.strSessionUsermanagementUser = "userManagementUser";
 Template.strSessionUsermanagementRole = "userManagementRole";
 Template.strSessionUsermanagementPrivilege = "userManagementPrivilege";
 
-
 Template.clearSessions = function () {
     Object.keys(Session.keys).forEach(function (key) {
         Session.set(key, undefined);
