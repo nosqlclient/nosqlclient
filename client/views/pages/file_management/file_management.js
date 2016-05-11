@@ -8,7 +8,7 @@ Template.fileManagement.onRendered(function () {
     }
 
     Template.fileManagement.initFileInformations();
-    Template.initiateDatatable($('#tblFiles'), Template.strSessionSelectedFile);
+    Template.initiateDatatable($('#tblFiles'), Template.strSessionSelectedFile, true);
 });
 
 Template.fileManagement.events({
@@ -30,7 +30,6 @@ Template.fileManagement.events({
     },
 
     'click .editor_delete': function (e) {
-        e.preventDefault();
         var fileRow = Session.get(Template.strSessionSelectedFile);
         if (fileRow) {
             swal({

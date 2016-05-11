@@ -27,3 +27,7 @@ tr.selected {
 .modal-background {
     background: #f8fafb !important;
 }
+
+.chosen-container {
+    width: 100% !important;
+}

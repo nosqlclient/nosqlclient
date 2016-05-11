@@ -29,7 +29,7 @@ Template.clearSessions = function () {
     })
 };
 
-Template.initiateDatatable = function (selector, sessionKey) {
+Template.initiateDatatable = function (selector, sessionKey, noDeleteEvent) {
     selector.find('tbody').on('click', 'tr', function () {
         var table = selector.DataTable();
         if ($(this).hasClass('selected')) {
@@ -45,9 +45,11 @@ Template.initiateDatatable = function (selector, sessionKey) {
         }
     });
 
-    selector.find('tbody').on('click', 'a.editor_delete', function () {
-        selector.DataTable().row($(this).parents('tr')).remove().draw();
-    });
+    if (!noDeleteEvent) {
+        selector.find('tbody').on('click', 'a.editor_delete', function () {
+            selector.DataTable().row($(this).parents('tr')).remove().draw();
+        });
+    }
 };
 
 Template.renderAfterQueryExecution = function (err, result, isAdmin, queryInfo, queryParams, saveHistory) {
