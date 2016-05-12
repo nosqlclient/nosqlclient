@@ -161,6 +161,12 @@ Meteor.methods({
 var proceedConnectingMongodb = function (connectionUrl, connectionOptions, done) {
     var mongodbApi = Meteor.npmRequire('mongodb').MongoClient;
 
+    if (!connectionOptions) {
+        connectionOptions = {};
+    }
+
+    connectionOptions.uri_decode_auth = true;
+
     mongodbApi.connect(connectionUrl, connectionOptions, function (mainError, db) {
         if (mainError || db == null || db == undefined) {
             LOGGER.error(mainError, db);

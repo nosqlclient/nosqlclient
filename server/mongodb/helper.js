@@ -8,7 +8,7 @@ getConnectionUrl = function (connection) {
 
     var connectionUrl = 'mongodb://';
     if (connection.user && connection.password) {
-        connectionUrl += connection.user + ':' + connection.password + '@';
+        connectionUrl += connection.user + ':' + encodeURIComponent(connection.password) + '@';
     }
     connectionUrl += connection.host + ':' + connection.port + '/' + connection.databaseName;
 
