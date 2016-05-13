@@ -30,6 +30,12 @@ Template.rename.executeQuery = function () {
     var options = Template.rename.getOptions();
     var newName = $('#inputNewName').val();
 
+    if (newName == selectedCollection) {
+        toastr.warning('Can not use same name as target name');
+        Ladda.stopAll();
+        return;
+    }
+
     if (newName) {
         Meteor.call("rename", selectedCollection, newName, options, function (err, result) {
             Template.renderAfterQueryExecution(err, result, false, "rename");
@@ -49,6 +55,15 @@ Template.rename.renderCollectionnames = function (newName) {
         if (err || result.error) {
             Template.showMeteorFuncError(err, result, "Couldn't connect");
         } else {
+            result.result.sort(function compare(a, b) {
+                if (a.name < b.name)
+                    return -1;
+                else if (a.name > b.name)
+                    return 1;
+                else
+                    return 0;
+            });
+
             // re-set collection names and selected collection
             Session.set(Template.strSessionCollectionNames, result.result);
             Session.set(Template.strSessionSelectedCollection, newName);

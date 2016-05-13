@@ -51,6 +51,21 @@ clearConnectionOptionsForLog = function (connectionOptions) {
     return result;
 };
 
+removeConnectionTopology = function (obj) {
+    if (obj.result && (typeof obj.result === 'object')) {
+        if ('connection' in obj.result) {
+            delete obj.result.connection;
+        }
+    }
+};
+
+removeCollectionTopology = function (obj) {
+    if (obj.result && (typeof obj.result === 'object')) {
+        obj.result = {};
+    }
+};
+
+
 convertBSONtoJSON = function (obj) {
     convertObjectIDsToString(obj);
     convertDatesToString(obj);

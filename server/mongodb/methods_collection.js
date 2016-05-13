@@ -35,7 +35,11 @@ Meteor.methods({
                 "rename": [newName, options]
             }
         ];
-        return proceedQueryExecution(selectedCollection, methodArray);
+
+        var result = proceedQueryExecution(selectedCollection, methodArray);
+        removeCollectionTopology(result);
+        console.log(result);
+        return result;
     },
 
     'reIndex': function (selectedCollection) {
@@ -304,5 +308,6 @@ var proceedQueryExecution = function (selectedCollection, methodArray, convertId
     });
 
     convertBSONtoJSON(result);
+    removeConnectionTopology(result);
     return result;
 };
