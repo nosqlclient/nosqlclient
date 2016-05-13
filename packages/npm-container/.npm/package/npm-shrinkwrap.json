@@ -419,16 +419,16 @@
       }
     },
     "mongodb": {
-      "version": "2.1.7",
+      "version": "2.1.18",
       "dependencies": {
         "es6-promise": {
           "version": "3.0.2"
         },
         "mongodb-core": {
-          "version": "1.3.1",
+          "version": "1.3.18",
           "dependencies": {
             "bson": {
-              "version": "0.4.21"
+              "version": "0.4.23"
             },
             "require_optional": {
               "version": "1.0.0",
@@ -463,16 +463,16 @@
       }
     },
     "mongodb-backup": {
-      "version": "1.5.4",
+      "version": "1.5.5",
       "dependencies": {
         "bson": {
-          "version": "0.4.21"
+          "version": "0.4.23"
         },
         "fstream": {
           "version": "1.0.8",
           "dependencies": {
             "graceful-fs": {
-              "version": "4.1.3"
+              "version": "4.1.4"
             },
             "inherits": {
               "version": "2.0.1"
@@ -489,7 +489,7 @@
               "version": "2.5.2",
               "dependencies": {
                 "glob": {
-                  "version": "7.0.0",
+                  "version": "7.0.3",
                   "dependencies": {
                     "inflight": {
                       "version": "1.0.4",
@@ -503,10 +503,10 @@
                       "version": "3.0.0",
                       "dependencies": {
                         "brace-expansion": {
-                          "version": "1.1.3",
+                          "version": "1.1.4",
                           "dependencies": {
                             "balanced-match": {
-                              "version": "0.3.0"
+                              "version": "0.4.1"
                             },
                             "concat-map": {
                               "version": "0.0.1"
@@ -532,83 +532,14 @@
             }
           }
         },
-        "logger-request": {
-          "version": "3.6.0",
-          "dependencies": {
-            "basic-authentication": {
-              "version": "1.6.2",
-              "dependencies": {
-                "setheaders": {
-                  "version": "0.1.5"
-                }
-              }
-            },
-            "on-finished": {
-              "version": "2.3.0",
-              "dependencies": {
-                "ee-first": {
-                  "version": "1.1.1"
-                }
-              }
-            },
-            "transfer-rate": {
-              "version": "1.1.3"
-            },
-            "winston": {
-              "version": "2.1.1",
-              "dependencies": {
-                "async": {
-                  "version": "1.0.0"
-                },
-                "colors": {
-                  "version": "1.0.3"
-                },
-                "cycle": {
-                  "version": "1.0.3"
-                },
-                "eyes": {
-                  "version": "0.1.8"
-                },
-                "isstream": {
-                  "version": "0.1.2"
-                },
-                "pkginfo": {
-                  "version": "0.3.1"
-                },
-                "stack-trace": {
-                  "version": "0.0.9"
-                }
-              }
-            }
-          }
-        },
-        "tar": {
-          "version": "2.2.1",
-          "dependencies": {
-            "block-stream": {
-              "version": "0.0.8"
-            },
-            "inherits": {
-              "version": "2.0.1"
-            }
-          }
-        }
-      }
-    },
-    "mongodb-restore": {
-      "version": "1.5.2",
-      "dependencies": {
-        "bson": {
-          "version": "0.4.21"
-        },
         "mongodb": {
-          "version": "2.1.6",
+          "version": "2.1.16",
           "dependencies": {
             "es6-promise": {
               "version": "3.0.2"
             },
             "mongodb-core": {
-              "version": "1.3.1",
+              "version": "1.3.16",
               "dependencies": {
                 "require_optional": {
                   "version": "1.0.0",
@@ -643,7 +574,7 @@
           }
         },
         "logger-request": {
-          "version": "3.6.0",
+          "version": "3.6.1",
           "dependencies": {
             "basic-authentication": {
               "version": "1.6.2",
@@ -663,32 +594,6 @@
             },
             "transfer-rate": {
               "version": "1.1.3"
-            },
-            "winston": {
-              "version": "2.1.1",
-              "dependencies": {
-                "async": {
-                  "version": "1.0.0"
-                },
-                "colors": {
-                  "version": "1.0.3"
-                },
-                "cycle": {
-                  "version": "1.0.3"
-                },
-                "eyes": {
-                  "version": "0.1.8"
-                },
-                "isstream": {
-                  "version": "0.1.2"
-                },
-                "pkginfo": {
-                  "version": "0.3.1"
-                },
-                "stack-trace": {
-                  "version": "0.0.9"
-                }
-              }
             }
           }
         },
@@ -696,13 +601,97 @@
           "version": "2.2.1",
           "dependencies": {
             "block-stream": {
-              "version": "0.0.8"
+              "version": "0.0.9"
+            },
+            "inherits": {
+              "version": "2.0.1"
+            }
+          }
+        }
+      }
+    },
+    "mongodb-restore": {
+      "version": "1.5.3",
+      "dependencies": {
+        "bson": {
+          "version": "0.4.23"
+        },
+        "mongodb": {
+          "version": "2.1.16",
+          "dependencies": {
+            "es6-promise": {
+              "version": "3.0.2"
+            },
+            "mongodb-core": {
+              "version": "1.3.16",
+              "dependencies": {
+                "require_optional": {
+                  "version": "1.0.0",
+                  "dependencies": {
+                    "semver": {
+                      "version": "5.1.0"
+                    },
+                    "resolve-from": {
+                      "version": "2.0.0"
+                    }
+                  }
+                }
+              }
+            },
+            "readable-stream": {
+              "version": "1.0.31",
+              "dependencies": {
+                "core-util-is": {
+                  "version": "1.0.2"
+                },
+                "isarray": {
+                  "version": "0.0.1"
+                },
+                "string_decoder": {
+                  "version": "0.10.31"
+                },
+                "inherits": {
+                  "version": "2.0.1"
+                }
+              }
+            }
+          }
+        },
+        "logger-request": {
+          "version": "3.6.1",
+          "dependencies": {
+            "basic-authentication": {
+              "version": "1.6.2",
+              "dependencies": {
+                "setheaders": {
+                  "version": "0.1.5"
+                }
+              }
+            },
+            "on-finished": {
+              "version": "2.3.0",
+              "dependencies": {
+                "ee-first": {
+                  "version": "1.1.1"
+                }
+              }
+            },
+            "transfer-rate": {
+              "version": "1.1.3"
+            }
+          }
+        },
+        "tar": {
+          "version": "2.2.1",
+          "dependencies": {
+            "block-stream": {
+              "version": "0.0.9"
             },
             "fstream": {
-              "version": "1.0.8",
+              "version": "1.0.9",
               "dependencies": {
                 "graceful-fs": {
-                  "version": "4.1.3"
+                  "version": "4.1.4"
                 },
                 "mkdirp": {
                   "version": "0.5.1",
@@ -716,7 +705,7 @@
                   "version": "2.5.2",
                   "dependencies": {
                     "glob": {
-                      "version": "7.0.0",
+                      "version": "7.0.3",
                       "dependencies": {
                         "inflight": {
                           "version": "1.0.4",
@@ -730,10 +719,10 @@
                           "version": "3.0.0",
                           "dependencies": {
                             "brace-expansion": {
-                              "version": "1.1.3",
+                              "version": "1.1.4",
                               "dependencies": {
                                 "balanced-match": {
-                                  "version": "0.3.0"
+                                  "version": "0.4.1"
                                 },
                                 "concat-map": {
                                   "version": "0.0.1"
