@@ -185,7 +185,7 @@ Template.editDocument.saveDocument = function () {
         setValue = {"$set": setValue};
         var idQuery = {_id: Session.get(Template.strSessionEasyEditID)};
 
-        Meteor.call('updateOne', collectionName, idQuery, setValue, convertIds, convertDates,
+        Meteor.call('updateOne', collectionName, idQuery, setValue, {}, convertIds, convertDates,
             function (err) {
                 if (err) {
                     toastr.error("Couldn't update: " + err.message);

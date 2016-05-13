@@ -57,6 +57,41 @@ Template.fileManagement.events({
         }
     },
 
+    'click #btnUpdateMetadata': function (e) {
+        e.preventDefault();
+
+        swal({
+            title: "Are you sure ?",
+            text: "Existing metadata will be overwritten, are you sure ?",
+            type: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#DD6B55",
+            confirmButtonText: "Yes!",
+            cancelButtonText: "No"
+        }, function (isConfirm) {
+            if (isConfirm) {
+                var l = $('#btnUpdateMetadata').ladda();
+                l.ladda('start');
+                var jsonEditor = $('#jsonEditorOfMetadata').data('jsoneditor');
+                var setValue = jsonEditor.get();
+                delete setValue._id;
+
+                Meteor.call('updateOne', $('#txtBucketName').val() + '.files',
+                    {'_id': Session.get(Template.strSessionSelectedFile)._id}, {"$set": setValue}, {}, true, true,
+                    function (err, result) {
+                        if (err) {
+                            toastr.error("Couldn't update file info: " + err.message);
+                        } else {
+                            toastr.success('Successfully updated file information !');
+                            Template.fileManagement.proceedShowingMetadata(Session.get(Template.strSessionSelectedFile)._id, jsonEditor);
+                        }
+
+                        Ladda.stopAll();
+                    });
+            }
+        });
+    },
+
     'click .editor_show_metadata': function (e) {
         e.preventDefault();
         var l = $('#btnClose').ladda();
@@ -77,19 +112,23 @@ Template.fileManagement.events({
             }
 
             $('#metaDataModal').modal('show');
-            Meteor.call('getFile', $('#txtBucketName').val(), fileRow._id, function (err, result) {
-                if (err || result.error) {
-                    Template.showMeteorFuncError(err, result, "Couldn't find file");
-                }
-                else {
-                    jsonEditor.set(result.result);
-                }
-                Ladda.stopAll();
-            });
+            Template.fileManagement.proceedShowingMetadata(fileRow._id, jsonEditor);
         }
     }
 
 });
+
+Template.fileManagement.proceedShowingMetadata = function (id, jsonEditor) {
+    Meteor.call('getFile', $('#txtBucketName').val(), id, function (err, result) {
+        if (err || result.error) {
+            Template.showMeteorFuncError(err, result, "Couldn't find file");
+        }
+        else {
+            jsonEditor.set(result.result);
+        }
+        Ladda.stopAll();
+    });
+};
 
 Template.fileManagement.initFileInformations = function () {
     // loading button
@@ -121,7 +160,7 @@ Template.fileManagement.initFileInformations = function () {
                         targets: [5],
                         data: null,
                         width: "5%",
-                        defaultContent: '<a href="" title="Show File Info" class="editor_show_metadata"><i class="fa fa-book text-navy"></i></a>'
+                        defaultContent: '<a href="" title="Edit Metadata" class="editor_show_metadata"><i class="fa fa-book text-navy"></i></a>'
                     },
                     {
                         targets: [6],
