@@ -1,6 +1,10 @@
 /**
  * Created by RSercan on 29.12.2015.
  */
+Template.browseCollection.onCreated(function () {
+    Session.set(Template.strSessionSelectedQuery, QUERY_TYPES.FIND);
+});
+
 Template.browseCollection.onRendered(function () {
     if (!Session.get(Template.strSessionSelectedCollection)) {
         Router.go('databaseStats');
@@ -12,9 +16,13 @@ Template.browseCollection.onRendered(function () {
     var cmbOptGroupCollection = cmb.find('#optGroupCollectionQueries');
 
     $.each(Template.sortObjectByKey(QUERY_TYPES), function (key, value) {
-        cmbOptGroupCollection.append($("<option></option>")
+        var option = $("<option></option>")
             .attr("value", key)
-            .text(value));
+            .text(value);
+        if (value === QUERY_TYPES.FIND) {
+            option.attr('selected', true);
+        }
+        cmbOptGroupCollection.append(option);
     });
     cmb.chosen();
 
