@@ -10,11 +10,7 @@ Template.editDocument.onRendered(function () {
     Template.editDocument.initializeCollectionsCombobox();
     Session.set(Template.strSessionEasyEditID, undefined);
 
-    $('#aConvertIsoDates').iCheck({
-        checkboxClass: 'icheckbox_square-green'
-    });
-
-    $('#aConvertObjectIds').iCheck({
+    $('#aConvertIsoDates, #aConvertObjectIds').iCheck({
         checkboxClass: 'icheckbox_square-green'
     });
 
