@@ -20,7 +20,7 @@ tr.selected {
     top: 0;
 }
 
-#btnManageRoles, #btnEditUser, #btnManageUsers {
+#btnManageRoles, #btnEditUser, #btnManageUsers, #btnExecuteAggregatePipeline {
     margin-bottom: 0 !important;
 }
 
@@ -30,4 +30,12 @@ tr.selected {
 
 .chosen-container {
     width: 100% !important;
+}
+
+#remove-stage-element {
+    margin-bottom: 5px;
+}
+
+.CodeMirror {
+    width: 100%;
 }
