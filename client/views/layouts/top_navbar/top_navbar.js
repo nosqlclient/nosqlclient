@@ -317,11 +317,11 @@ Template.topNavbar.events({
         Meteor.call('disconnect');
         Template.clearSessions();
 
-        swal({
-            title: "Disconnected!",
-            text: "Successfuly disconnected",
-            type: "success"
-        });
+        // swal({
+        //     title: "Disconnected!",
+        //     text: "Successfuly disconnected",
+        //     type: "success"
+        // });
 
         Router.go('databaseStats');
     },
@@ -566,11 +566,11 @@ Template.topNavbar.connect = function (isRefresh) {
 
             if (!isRefresh) {
                 $('#connectionModal').modal('hide');
-                swal({
-                    title: "Connected!",
-                    text: "Successfuly connected to " + connection.name,
-                    type: "success"
-                });
+                // swal({
+                //     title: "Connected!",
+                //     text: "Successfuly connected to " + connection.name,
+                //     type: "success"
+                // });
             }
             else {
                 toastr.success("Successfuly refreshed collections");
