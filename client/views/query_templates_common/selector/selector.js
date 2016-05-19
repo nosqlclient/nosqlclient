@@ -33,6 +33,12 @@ Template.selector.onRendered(function () {
         //    }
         //});
         divSelector.data('editor', codeMirror);
+
+        $('.CodeMirror').resizable({
+            resize: function () {
+                codeMirror.setSize($(this).width(), $(this).height());
+            }
+        });
     }
     else {
         codeMirror = divSelector.data('editor');
