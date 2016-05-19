@@ -22,11 +22,7 @@ Template.browseCollection.onRendered(function () {
         Template.queryHistories.initQueryHistories();
     });
 
-    $('#aConvertIsoDates').iCheck({
-        checkboxClass: 'icheckbox_square-green'
-    });
-
-    $('#aConvertObjectIds').iCheck({
+    $('#aConvertIsoDates, #aConvertObjectIds').iCheck({
         checkboxClass: 'icheckbox_square-green'
     });
 

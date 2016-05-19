@@ -18,15 +18,7 @@ Template.adminQueries.onRendered(function () {
     });
     cmb.chosen();
 
-    $('#aConvertIsoDates').iCheck({
-        checkboxClass: 'icheckbox_square-green'
-    });
-
-    $('#aConvertObjectIds').iCheck({
-        checkboxClass: 'icheckbox_square-green'
-    });
-
-    $('#aRunOnAdminDB').iCheck({
+    $('#aConvertIsoDates, #aConvertObjectIds, #aRunOnAdminDB').iCheck({
         checkboxClass: 'icheckbox_square-green'
     });
 

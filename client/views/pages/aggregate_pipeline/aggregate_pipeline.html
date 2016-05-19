@@ -1,0 +1,90 @@
+<template name="aggregatePipeline">
+    {{#if isConnected}}
+        {{> pageHeading title='Aggregate' }}
+        <div class="wrapper wrapper-content animated fadeInRight">
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="ibox float-e-margins">
+                        <div class="ibox-title">
+                            <h5>Collection
+                                <small>Collection to execute this aggregation at
+                                </small>
+                            </h5>
+                            <div class="ibox-tools">
+                                <a id="aConvertIsoDates" class="i-checks"
+                                   style="display: none;"
+                                   data-toggle="tooltip"
+                                   title="Enable/Disable YYYY-MM-DD HH:MM:ss formatted strings to ISODate conversion">
+                                    <input id="inputConvertIsoDates" type="checkbox" value=""
+                                           class="form-control"
+                                           checked=""
+                                           style="position: absolute; opacity: 0;"/>
+                                </a>
+                                <a id="aConvertObjectIds" class="i-checks"
+                                   style="display: none;"
+                                   data-toggle="tooltip"
+                                   title="Enable/Disable valid ObjectID strings to ObjectID conversion">
+                                    <input id="inputConvertObjectIDs" type="checkbox" value=""
+                                           class="form-control"
+                                           checked=""
+                                           style="position: absolute; opacity: 0;"/>
+                                </a>
+                            </div>
+                        </div>
+                        <div class="ibox-content">
+                            <form class="form-horizontal">
+                                <div class="form-group">
+                                    <label class="col-lg-1 control-label">Collection</label>
+                                    <div class="col-lg-11">
+                                        <select id="cmbCollections"
+                                                data-placeholder="Choose a collection..."
+                                                class="chosen-select form-control"
+                                                tabindex="-1">
+                                            <option></option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="ibox">
+                        <div class="ibox-content">
+                            <h3>Stages</h3>
+                            <p class="small"><i class="fa fa-hand-o-up"></i> Drag stages between list</p>
+
+                            <div class="form-group">
+                                <select id="cmbStageQueries"
+                                        data-placeholder="Choose a stage query.."
+                                        class="chosen-select form-control col-lg-10"
+                                        tabindex="-1">
+                                    <option></option>
+                                    <option>$project</option>
+                                    <option>$match</option>
+                                    <option>$redact</option>
+                                    <option>$limit</option>
+                                    <option>$skip</option>
+                                    <option>$unwind</option>
+                                    <option>$group</option>
+                                    <option>$sample</option>
+                                    <option>$sort</option>
+                                    <option>$geoNear</option>
+                                    <option>$lookup</option>
+                                    <option>$out</option>
+                                    <option>$indexStats</option>
+                                </select>
+                            </div>
+
+                            <ul class="sortable-list agile-list" id="stages">
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    {{/if}}
+</template>
