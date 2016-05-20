@@ -20,21 +20,24 @@ Cross-platform, MongoDB 3.2+ support and more features!
 <a href="http://www.mongoclient.com"><img src="http://www.mongoclient.com/img/logo/head_only_medium.png" align="left" hspace="10" vspace="6"></a>
 
 ## Download
-Version 1.1.0 has been released ! 
+Version 1.2.0 has been released ! 
 
 ### Distributions
 
-* [Linux x64](https://github.com/rsercano/mongoclient/releases/download/1.1.0/linux-portable-x64.zip)
-* [Linux x86](https://github.com/rsercano/mongoclient/releases/download/1.1.0/linux-portable-x86.32-bit.zip)
-* [Windows x64](https://github.com/rsercano/mongoclient/releases/download/1.1.0/windows-portable-x64.zip)
-* [Windows x86](https://github.com/rsercano/mongoclient/releases/download/1.1.0/windows-portable-x86.32.bit.zip)
-* [OSx](https://github.com/rsercano/mongoclient/releases/download/1.1.0/osx-portable.zip)
+* [Linux x64](https://github.com/rsercano/mongoclient/releases/download/1.2.0/linux-portable-x64.zip)
+* [Linux x86](https://github.com/rsercano/mongoclient/releases/download/1.2.0/linux-portable-x86.32-bit.zip)
+* [Windows x64](https://github.com/rsercano/mongoclient/releases/download/1.2.0/windows-portable-x64.zip)
+* [Windows x86](https://github.com/rsercano/mongoclient/releases/download/1.2.0/windows-portable-x86.32.bit.zip)
+* [OSx](https://github.com/rsercano/mongoclient/releases/download/1.2.0/osx-portable.zip)
 * [Web Application](https://github.com/rsercano/mongoclient/wiki#31-compile-from-source-browser-edition)
 
 To learn more see the [wiki](https://github.com/rsercano/mongoclient/wiki) page.
 
 <br/>
 ## Version History
+### [1.1.0](https://github.com/rsercano/mongoclient/releases/1.0.0)  
+Includes usermanagement, and bugfixes generally. [See details](https://github.com/rsercano/mongoclient/issues?q=milestone%3Av1.1.0)
+
 ### [1.0.0](https://github.com/rsercano/mongoclient/releases/1.0.0)  
 Includes basic mongodb management features. [See details](https://github.com/rsercano/mongoclient/issues?q=milestone%3Av1.0.0)
 
