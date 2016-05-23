@@ -2,6 +2,8 @@
  * Created by RSercan on 29.12.2015.
  */
 Template.browseCollection.onCreated(function () {
+    Session.set(Template.strSessionSelectedOptions, []);
+
     Session.set(Template.strSessionSelectedQuery, QUERY_TYPES.FIND);
 });
 
