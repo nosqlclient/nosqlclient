@@ -135,7 +135,16 @@ Template.fileManagement.initFileInformations = function () {
     var l = $('#btnReloadFiles').ladda();
     l.ladda('start');
 
-    Meteor.call('getFileInfos', $('#txtBucketName').val(), function (err, result) {
+    var selector = Template.selector.getValue();
+
+    selector = Template.convertAndCheckJSON(selector);
+    if (selector["ERROR"]) {
+        toastr.error("Syntax error on selector: " + selector["ERROR"]);
+        Ladda.stopAll();
+        return;
+    }
+
+    Meteor.call('getFileInfos', $('#txtBucketName').val(), selector, function (err, result) {
             if (err || result.error) {
                 Template.showMeteorFuncError(err, result, "Couldn't get file informations");
                 return;

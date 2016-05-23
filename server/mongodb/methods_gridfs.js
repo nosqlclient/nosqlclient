@@ -23,14 +23,16 @@ Meteor.methods({
         return result;
     },
 
-    'getFileInfos': function (bucketName) {
-        LOGGER.info('[getFileInfos]', bucketName);
+    'getFileInfos': function (bucketName, selector) {
+        LOGGER.info('[getFileInfos]', bucketName,selector);
         var mongodbApi = Meteor.npmRequire('mongodb');
+
+        var query = selector ? selector : {};
 
         var result = Async.runSync(function (done) {
             try {
                 var bucket = new mongodbApi.GridFSBucket(database, {bucketName: bucketName});
-                bucket.find({}).toArray(function (err, files) {
+                bucket.find(query).toArray(function (err, files) {
                     done(err, files);
                 });
 
