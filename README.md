@@ -14,11 +14,11 @@ Cross-platform, MongoDB 3.2+ support and more features!
 
    Database Monitoring     | Easy GridFS, Dump/Restore Management
 :-------------------------:|:-------------------------:
-![](http://mongoclient.com/img/ss/main_view.png)  |  ![](http://mongoclient.com/img/ss/file.png)
+<img src="http://mongoclient.com/img/ss/main_view.png" width="400">  | <img src="http://mongoclient.com/img/ss/file.png" width="400">
 
    Autocomplete     | User Management
 :-------------------------:|:-------------------------:
-![](http://mongoclient.com/img/ss/auto_complete.png)  |  ![](http://mongoclient.com/img/ss/um.png)
+<img src="http://mongoclient.com/img/ss/auto_complete.png" width="400">  | <img src="http://mongoclient.com/img/ss/um.png" width="400">
 
 <a href="http://www.mongoclient.com"><img src="http://www.mongoclient.com/img/logo/head_only_medium.png" align="left" hspace="10" vspace="6"></a>
 
