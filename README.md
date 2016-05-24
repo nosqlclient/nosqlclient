@@ -2,6 +2,9 @@
 Cross-platform, MongoDB 3.2+ support and more features!
 
 [![Join the chat at https://gitter.im/rsercano/mongoclient](https://badges.gitter.im/rsercano/mongoclient.svg)](https://gitter.im/rsercano/mongoclient?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)                                          [![Build Status](https://travis-ci.org/rsercano/mongoclient.svg?branch=master)](https://travis-ci.org/rsercano/mongoclient)
+[![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=BE3J6ZLBVXMGU)
+
+*Hello, recently I'm trying to save money for my marriage :) and can't afford for the INSPINA theme's extended licence ($1000) which I have to buy to keep developing mongoclient. I wasn't planning to add a donation button but, recent things forced me to put one. You don't have to donate, I will always maintain mongoclient as much as I can, so no worries, but if you can that would be really appreciated.*
 
 <pre align="center">
   <a href="http://www.mongoclient.com:3000">Try the Demo Application</a>
