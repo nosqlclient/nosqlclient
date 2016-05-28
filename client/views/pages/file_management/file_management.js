@@ -22,9 +22,7 @@ Template.fileManagement.events({
         if (fileRow) {
             window.open(Router.url('download', {
                 fileId: fileRow._id,
-                connectionId: Session.get(Template.strSessionConnection),
-                bucketName: $('#txtBucketName').val(),
-                fileName: fileRow.filename
+                bucketName: $('#txtBucketName').val()
             }));
         }
     },
