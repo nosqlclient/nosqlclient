@@ -12,8 +12,16 @@ getConnectionUrl = function (connection) {
     }
     connectionUrl += connection.host + ':' + connection.port + '/' + connection.databaseName;
 
+    if (connection.readFromSecondary) {
+        connectionUrl += '?readPreference=secondary';
+    }
+
     if (connection.authDatabaseName) {
-        connectionUrl += '?authSource=' + connection.authDatabaseName;
+        if (connectionUrl.indexOf('?') != -1) {
+            connectionUrl += '&authSource=' + connection.authDatabaseName;
+        } else {
+            connectionUrl += '?authSource=' + connection.authDatabaseName;
+        }
     }
 
     return connectionUrl;

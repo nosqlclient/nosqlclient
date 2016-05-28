@@ -122,6 +122,12 @@ Template.topNavbar.events({
         var connection = Connections.findOne({_id: Session.get(Template.strSessionConnection)});
         Template.topNavbar.clearAllFieldsOfConnectionModal();
 
+        if (connection.readFromSecondary) {
+            $('#inputReadFromSecondary').iCheck('check');
+        } else {
+            $('#inputReadFromSecondary').iCheck('uncheck');
+        }
+
         if (connection.sshAddress) {
             $('#inputUseSsh').iCheck('check');
             $('#inputSshHostname').val(connection.sshAddress);
@@ -230,6 +236,8 @@ Template.topNavbar.events({
         var rootCertificatePathSelector = $("#inputRootCaPath");
         var inputCertificateKeyPathSelector = $('#inputCertificateKeyPath');
         var connection = {};
+
+        connection.readFromSecondary = $('#inputReadFromSecondary').iCheck('update')[0].checked;
 
         if ($('#inputUseSsh').iCheck('update')[0].checked) {
             connection.sshAddress = $('#inputSshHostname').val();
@@ -363,6 +371,7 @@ Template.topNavbar.clearAllFieldsOfConnectionModal = function () {
     $('#inputUseUrl').iCheck('uncheck');
     $('#inputUseSsh').iCheck('uncheck');
     $('#inputUseSSL').iCheck('uncheck');
+    $('#inputReadFromSecondary').iCheck('uncheck');
     $('#inputAuthStandard').iCheck('check');
     $(":file").filestyle('clear');
 };
@@ -606,18 +615,11 @@ Template.topNavbar.initIChecks = function () {
     var anchorTab2Selector = $('#anchorTab2');
     var inputUseUriSelector = $("#inputUseUrl");
     var inputUseSshSelector = $("#inputUseSsh");
+    var inputReadFromSecondary = $("#inputReadFromSecondary");
 
     inputAuthStandardSelector.iCheck('check');
 
-    $('#divUseSSL').iCheck({
-        checkboxClass: 'icheckbox_square-green'
-    });
-
-    $('#divUseSsh').iCheck({
-        checkboxClass: 'icheckbox_square-green'
-    });
-
-    $('#divUseUrl').iCheck({
+    $('#divUseSSL, #divUseSsh, #divUseUrl, #divReadFromSecondary').iCheck({
         checkboxClass: 'icheckbox_square-green'
     });
 
@@ -631,6 +633,8 @@ Template.topNavbar.initIChecks = function () {
         formCertificateAuthSelector.show();
     });
 
+
+    inputReadFromSecondary.iCheck('uncheck');
 
     inputUseUriSelector.iCheck('uncheck');
     inputUseUriSelector.on('ifChanged', function (event) {
