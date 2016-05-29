@@ -289,9 +289,10 @@ Template.databaseStats.fetchStats = function () {
 
 Template.databaseStats.fetchStatus = function () {
     if (Session.get(Template.strSessionCollectionNames) != undefined) {
-        Meteor.call("serverStatus",  function (err, result) {
+        Meteor.call("serverStatus", function (err, result) {
             if (err || result.error) {
-                Template.showMeteorFuncError(err, result, "Couldn't fetch serverStatus");
+                var errorMessage = result.error ? result.error.message : err.message;
+                $('#errorMessage').text("Successfully connected but, couldn't fetch server status: " + errorMessage);
                 Session.set(Template.strSessionServerStatus, undefined);
             }
             else {
