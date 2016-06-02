@@ -48,7 +48,7 @@ Template.aggregatePipeline.events({
             pipeline = Template.aggregatePipeline.createPipeline(stages);
         }
         catch (e) {
-            toastr.error('One of the stages has error, stage name: ' + e.message);
+            toastr.error('One of the stages has error: ' + e);
             Ladda.stopAll();
             return;
         }
