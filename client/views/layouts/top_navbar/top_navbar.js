@@ -399,7 +399,7 @@ Template.topNavbar.proceedCertificateLoading = function (saveMethodName, connect
     } else {
         if (certificateKeySelector.get(0).files.length != 0) {
             Template.topNavbar.loadFile(function (file) {
-                connection.certificateKey = new Uint8Array(file.target.result);
+                connection.certificateKey = Template.topNavbar.convertToBuffer(file.target.result);
                 Template.topNavbar.proceedSavingConnection(saveMethodName, connection);
             }, certificateKeySelector[0].files[0]);
         }
@@ -417,7 +417,7 @@ Template.topNavbar.proceedRootCertificateLoading = function (saveMethodName, con
     } else {
         if (rootCaSelector.get(0).files.length != 0) {
             Template.topNavbar.loadFile(function (file) {
-                connection.rootCACertificate = new Uint8Array(file.target.result);
+                connection.rootCACertificate = Template.topNavbar.convertToBuffer(file.target.result);
                 Template.topNavbar.proceedCertificateLoading(saveMethodName, connection, currentConnection);
             }, rootCaSelector[0].files[0]);
 
@@ -435,7 +435,7 @@ Template.topNavbar.loadCertificatesAndSave = function (saveMethodName, connectio
     } else {
         if (sshCertificateSelector.get(0).files.length != 0) {
             Template.topNavbar.loadFile(function (file) {
-                connection.sshCertificate = new Uint8Array(file.target.result);
+                connection.sshCertificate = Template.topNavbar.convertToBuffer(file.target.result);
                 Template.topNavbar.proceedLoadingCertificates(saveMethodName, connection, currentConnection);
             }, sshCertificateSelector[0].files[0]);
 
@@ -456,7 +456,7 @@ Template.topNavbar.proceedLoadingCertificates = function (saveMethodName, connec
         else {
             if (certificateSelector.get(0).files.length != 0) {
                 Template.topNavbar.loadFile(function (file) {
-                    connection.sslCertificate = new Uint8Array(file.target.result);
+                    connection.sslCertificate = Template.topNavbar.convertToBuffer(file.target.result);
                     Template.topNavbar.proceedRootCertificateLoading(saveMethodName, connection, currentConnection);
                 }, certificateSelector[0].files[0]);
 
@@ -773,4 +773,8 @@ Template.topNavbar.parseDatabaseNameFromUrl = function (url) {
     } catch (e) {
         return "admin";
     }
+};
+
+Template.topNavbar.convertToBuffer = function (buffer) {
+    return new Uint8Array(buffer);
 };

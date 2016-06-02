@@ -61,7 +61,7 @@ Meteor.methods({
                 };
 
                 if (connection.sshCertificate) {
-                    config.privateKey = connection.sshCertificate;
+                    config.privateKey = new Buffer( connection.sshCertificate );
                 }
 
                 if (connection.sshPassPhrase) {
@@ -191,3 +191,4 @@ var proceedConnectingMongodb = function (connectionUrl, connectionOptions, done)
         }
     });
 };
+
