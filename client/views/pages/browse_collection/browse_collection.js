@@ -3,7 +3,6 @@
  */
 Template.browseCollection.onCreated(function () {
     Session.set(Template.strSessionSelectedOptions, []);
-
     Session.set(Template.strSessionSelectedQuery, QUERY_TYPES.FIND);
 });
 
@@ -38,7 +37,10 @@ Template.browseCollection.onRendered(function () {
 
     $('[data-toggle="tooltip"]').tooltip({trigger: 'hover'});
 
-    Template.changeConvertOptionsVisibility(false);
+    // see #108
+    if (Session.get(Template.strSessionSelectedQuery) != QUERY_TYPES.FIND) {
+        Template.changeConvertOptionsVisibility(false);
+    }
     Template.browseCollection.clearQueryIfAdmin();
 });
 
