@@ -92,21 +92,21 @@ var addConnectionParamsToOptions = function (connection, result) {
     result.server.ssl = !!connection.useSsl;
 
     if (connection.sslCertificate) {
-        result.server.sslCert = connection.sslCertificate;
+        result.server.sslCert = new Buffer(connection.sslCertificate);
         if (connection.passPhrase) {
             result.server.sslPass = connection.passPhrase;
         }
     }
 
     if (connection.rootCACertificate) {
-        result.server.sslCA = connection.rootCACertificate;
+        result.server.sslCA = new Buffer(connection.rootCACertificate);
         result.server.sslValidate = true;
     } else {
         result.server.sslValidate = false;
     }
 
     if (connection.certificateKey) {
-        result.server.sslKey = connection.certificateKey;
+        result.server.sslKey = new Buffer(connection.certificateKey);
     }
 };
 var convertDatesToString = function (obj) {
