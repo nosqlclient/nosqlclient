@@ -89,7 +89,9 @@ convertJSONtoBSON = function (obj, convertObjectId, convertIsoDates) {
 };
 
 var addConnectionParamsToOptions = function (connection, result) {
-    result.server.ssl = !!connection.useSsl;
+    if (connection.useSsl || connection.sslCertificate) {
+        result.server.ssl = true;
+    }
 
     if (connection.sslCertificate) {
         result.server.sslCert = connection.sslCertificate;
