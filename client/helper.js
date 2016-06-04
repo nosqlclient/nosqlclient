@@ -114,6 +114,25 @@ Template.convertAndCheckJSON = function (json) {
     return result;
 };
 
+Template.convertAndCheckJSONAsArray = function (json) {
+    if (json == "") return [];
+    var result = [];
+    try {
+        result = JSON.parse(json);
+    }
+    catch (err) {
+        throw err.message;
+    }
+
+    if (!$.isArray(result)) {
+        var res = [];
+        res.push(result);
+        return res;
+    }
+    
+    return result;
+};
+
 Template.checkCodeMirrorSelectorForOption = function (option, result, optionEnum) {
     if ($.inArray(option, Session.get(Template.strSessionSelectedOptions)) != -1) {
         var val = Template.selector.getValue();

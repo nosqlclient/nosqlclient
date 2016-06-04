@@ -41,10 +41,16 @@ Template.browseCollection.onRendered(function () {
     if (Session.get(Template.strSessionSelectedQuery) != QUERY_TYPES.FIND) {
         Template.changeConvertOptionsVisibility(false);
     }
+
     Template.browseCollection.clearQueryIfAdmin();
 });
 
 Template.browseCollection.events({
+    'click #btnSaveFindFindOne': function (e) {
+        e.preventDefault();
+        Template.browseCollection.saveEditor();
+    },
+
     'click #btnShowQueryHistories': function () {
         $('#queryHistoriesModal').modal('show');
     },
@@ -206,6 +212,23 @@ Template.browseCollection.setResult = function (result, queryInfo, queryParams, 
             var tabID = $(this).parents('a').attr('href');
             $(this).parents('li').remove();
             $(tabID).remove();
+
+            if (resultTabs.find('li').length == 0 || resultTabs.find('li.active').length == 0) {
+                $('#divBrowseCollectionFooter').hide();
+            }
+        });
+
+        resultTabs.on('shown.bs.tab', function (e) {
+            var activeTabText = $(e.target).text();
+            var activeTabQueryInfo = activeTabText.substring(0, activeTabText.indexOf(' '));
+            // see #104
+
+            if (activeTabQueryInfo == 'findOne' || activeTabQueryInfo == 'find') {
+                $('#divBrowseCollectionFooter').show();
+            } else {
+                $('#divBrowseCollectionFooter').hide();
+            }
+
         });
 
         // show last tab
@@ -218,6 +241,8 @@ Template.browseCollection.setResult = function (result, queryInfo, queryParams, 
     if (saveHistory) {
         Template.browseCollection.saveQueryHistory(queryInfo, queryParams);
     }
+
+
 };
 
 Template.browseCollection.saveQueryHistory = function (queryInfo, queryParams) {
@@ -341,3 +366,71 @@ Template.browseCollection.getEditor = function (tabID) {
 
     return tabView.data('jsoneditor');
 };
+
+Template.browseCollection.getActiveEditorValue = function () {
+    var resultTabs = $('#resultTabs');
+    var resultContents = $('#resultTabContents');
+
+    var whichIsDisplayed = Template.browseCollection.getWhichResultViewShowing();
+    if (whichIsDisplayed == 'aceEditor') {
+        var foundAceEditor = resultContents.find('div.active').find('pre').attr('id');
+        if (foundAceEditor) {
+            return ace.edit(foundAceEditor).getValue();
+        }
+    }
+    else if (whichIsDisplayed == 'jsonEditor') {
+        var tabId = resultTabs.find('li.active').find('a').attr('href');
+        if ($(tabId).data('jsoneditor')) {
+            return JSON.stringify($(tabId).data('jsoneditor').get());
+        }
+    }
+};
+
+Template.browseCollection.saveEditor = function () {
+    var convertedDocs;
+    try {
+        convertedDocs = Template.convertAndCheckJSONAsArray(Template.browseCollection.getActiveEditorValue());
+    }
+    catch (e) {
+        toastr.error('Syntax error, can not save document(s): ' + e);
+        return;
+    }
+
+    swal({
+        title: "Are you sure ?",
+        text: convertedDocs.length + ' document(s) will be updated (_id field is unchangeable),  are you sure ?',
+        type: "info",
+        showCancelButton: true,
+        confirmButtonColor: "#DD6B55",
+        confirmButtonText: "Yes!",
+        cancelButtonText: "No"
+    }, function (isConfirm) {
+        if (isConfirm) {
+            var l = $('#btnSaveFindFindOne').ladda();
+            l.ladda('start');
+
+            var selectedCollection = Session.get(Template.strSessionSelectedCollection);
+            var convertIds = $('#aConvertObjectIds').iCheck('update')[0].checked;
+            var convertDates = $('#aConvertIsoDates').iCheck('update')[0].checked;
+            var i = 0;
+            _.each(convertedDocs, function (doc) {
+                if (doc._id) {
+                    Meteor.call("updateOne", selectedCollection, {_id: doc._id}, doc, {}, convertIds, convertDates, function (err, result) {
+                        if (err || result.error) {
+                            Template.showMeteorFuncError(err, result, "Couldn't update one of the documents");
+                            Ladda.stopAll();
+                        } else {
+                            if ((i++) == (convertedDocs.length - 1)) {
+                                // last time
+                                toastr.success('Successfully updated document(s)');
+                                Ladda.stopAll();
+                            }
+                        }
+                    });
+                }
+            });
+        }
+    });
+
+};
+
