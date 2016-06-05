@@ -6,7 +6,8 @@
                 </a>
                 <form role="search" class="navbar-form-custom">
                     <div class="form-group">
-                        <input type="text" disabled="true" placeholder="Search for something..." class="form-control" name="top-search"
+                        <input type="text" disabled="true" placeholder="Search for something..." class="form-control"
+                               name="top-search"
                                id="top-search">
                     </div>
                 </form>
@@ -154,7 +155,8 @@
                                                                           class="form-control">
                                             </div>
                                         </div>
-                                        <div class="form-group"><label class="col-lg-2 control-label">Read From SECONDARY
+                                        <div class="form-group"><label class="col-lg-2 control-label">Read From
+                                            SECONDARY
                                         </label>
                                             <div id="divReadFromSecondary" class="col-lg-10">
                                                 <input id="inputReadFromSecondary" type="checkbox"
@@ -275,6 +277,23 @@
                                                            id="inputRootCa"
                                                            data-buttonName="btn-primary">
                                                 </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group"><label class="col-lg-2 control-label">Use x509</label>
+                                            <div id="divUseX509" class="col-lg-10">
+                                                <input id="inputUseX509" type="checkbox"
+                                                       class="form-control"
+                                                       checked=""
+                                                       style="position: absolute; opacity: 0;"/>
+                                            </div>
+                                        </div>
+
+                                        <div id="divX509Username" class="form-group" style="display: none">
+                                            <label class="col-lg-2 control-label">x509 Username</label>
+                                            <div class="col-lg-10"><input id="inputX509Username" type="text"
+                                                                          placeholder="x509 Username"
+                                                                          class="form-control">
                                             </div>
                                         </div>
                                     </form>

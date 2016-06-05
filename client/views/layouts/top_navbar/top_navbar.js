@@ -122,6 +122,15 @@ Template.topNavbar.events({
         var connection = Connections.findOne({_id: Session.get(Template.strSessionConnection)});
         Template.topNavbar.clearAllFieldsOfConnectionModal();
 
+        if (connection.x509Username) {
+            $('#divX509Username').show();
+            $('#inputUseX509').iCheck('check');
+            $('#inputX509Username').val(connection.x509Username);
+        } else {
+            $('#inputUseX509').iCheck('uncheck');
+            $('#divX509Username').hide();
+        }
+
         if (connection.readFromSecondary) {
             $('#inputReadFromSecondary').iCheck('check');
         } else {
@@ -235,6 +244,9 @@ Template.topNavbar.events({
         var inputCertificatePathSelector = $('#inputCertificatePath');
         var rootCertificatePathSelector = $("#inputRootCaPath");
         var inputCertificateKeyPathSelector = $('#inputCertificateKeyPath');
+        var cmbSShAuthTypeSelector = $('#cmbSshAuthType');
+        var inputSShPassPhraseSelector = $('#inputSshPassPhrase');
+        var inputSshCertificatePathSelector = $('#inputSshCertificatePath');
         var connection = {};
 
         connection.readFromSecondary = $('#inputReadFromSecondary').iCheck('update')[0].checked;
@@ -244,15 +256,15 @@ Template.topNavbar.events({
             connection.sshPort = $('#inputSshPort').val();
             connection.sshUser = $('#inputSshUsername').val();
 
-            if ($('#cmbSshAuthType').val() == 'Password') {
+            if (cmbSShAuthTypeSelector.val() == 'Password') {
                 connection.sshPassword = $('#inputSshPassword').val();
             }
-            else if ($('#cmbSshAuthType').val() == 'Key File') {
-                if ($('#inputSshCertificatePath').val()) {
-                    connection.sshCertificatePath = $('#inputSshCertificatePath').val();
+            else if (cmbSShAuthTypeSelector.val() == 'Key File') {
+                if (inputSshCertificatePathSelector.val()) {
+                    connection.sshCertificatePath = inputSshCertificatePathSelector.val();
                 }
-                if ($('#inputSshPassPhrase').val()) {
-                    connection.sshPassPhrase = $('#inputSshPassPhrase').val();
+                if (inputSShPassPhraseSelector.val()) {
+                    connection.sshPassPhrase = inputSShPassPhraseSelector.val();
                 }
             }
         }
@@ -268,6 +280,10 @@ Template.topNavbar.events({
             connection.databaseName = $('#inputDatabaseName').val();
 
             if ($('#inputAuthCertificate').iCheck('update')[0].checked) {
+                if ($('#inputUseX509').iCheck('update')[0].checked && $('#inputX509Username').val()) {
+                    connection.x509Username = $('#inputX509Username').val();
+                }
+
                 if (inputCertificatePathSelector.val()) {
                     connection.sslCertificatePath = inputCertificatePathSelector.val();
                     connection.passPhrase = $("#inputPassPhrase").val();
@@ -368,6 +384,9 @@ Template.topNavbar.clearAllFieldsOfConnectionModal = function () {
     $("#inputSshCertificatePath").val('');
     $("#inputSshPassPhrase").val('');
     $("#inputSshPassword").val('');
+    $('#inputX509Username').val('');
+    $('#divX509Username').hide();
+    $('#inputUseX509').iCheck('uncheck');
     $('#inputUseUrl').iCheck('uncheck');
     $('#inputUseSsh').iCheck('uncheck');
     $('#inputUseSSL').iCheck('uncheck');
@@ -615,11 +634,12 @@ Template.topNavbar.initIChecks = function () {
     var anchorTab2Selector = $('#anchorTab2');
     var inputUseUriSelector = $("#inputUseUrl");
     var inputUseSshSelector = $("#inputUseSsh");
+    var inputUseX509Username = $("#inputUseX509");
     var inputReadFromSecondary = $("#inputReadFromSecondary");
 
     inputAuthStandardSelector.iCheck('check');
 
-    $('#divUseSSL, #divUseSsh, #divUseUrl, #divReadFromSecondary').iCheck({
+    $('#divUseSSL, #divUseSsh, #divUseUrl, #divReadFromSecondary, #divUseX509').iCheck({
         checkboxClass: 'icheckbox_square-green'
     });
 
@@ -635,6 +655,18 @@ Template.topNavbar.initIChecks = function () {
 
 
     inputReadFromSecondary.iCheck('uncheck');
+
+    inputUseX509Username.iCheck('uncheck');
+    inputUseX509Username.on('ifChanged', function (event) {
+        var divX509UsernameSelector = $('#divX509Username');
+
+        var isChecked = event.currentTarget.checked;
+        if (isChecked) {
+            divX509UsernameSelector.show();
+        } else {
+            divX509UsernameSelector.hide();
+        }
+    });
 
     inputUseUriSelector.iCheck('uncheck');
     inputUseUriSelector.on('ifChanged', function (event) {

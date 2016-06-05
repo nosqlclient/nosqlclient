@@ -9,11 +9,23 @@ getConnectionUrl = function (connection) {
     var connectionUrl = 'mongodb://';
     if (connection.user && connection.password) {
         connectionUrl += connection.user + ':' + encodeURIComponent(connection.password) + '@';
+    } else if (connection.x509Username) {
+        connectionUrl += encodeURIComponent(connection.x509Username) + '@'
     }
+
+
     connectionUrl += connection.host + ':' + connection.port + '/' + connection.databaseName;
 
     if (connection.readFromSecondary) {
         connectionUrl += '?readPreference=secondary';
+    }
+
+    if (connection.x509Username) {
+        if (connectionUrl.indexOf('?') != -1) {
+            connectionUrl += '&authMechanism=MONGODB-X509';
+        } else {
+            connectionUrl += '?authMechanism=MONGODB-X509';
+        }
     }
 
     if (connection.authDatabaseName) {
