@@ -13,6 +13,7 @@ RUN curl https://install.meteor.com/ | sh
 
 # Append mongoclient source
 ADD / /opt/mongoclient
+RUN rm -rf .meteor/local
 
 # pre-update some libraries
 RUN /usr/local/bin/meteor update
