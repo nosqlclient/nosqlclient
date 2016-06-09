@@ -2,7 +2,6 @@ FROM fedora
 
 # Setup for run mongoclient
 EXPOSE 3000
-WORKDIR /opt/mongoclient
 CMD ["/usr/local/bin/meteor", "run", "--port", "3000"]
 
 # Install required softwares
