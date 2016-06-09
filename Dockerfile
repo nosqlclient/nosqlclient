@@ -12,7 +12,10 @@ RUN dnf install -y tar procps-ng && dnf clean all
 RUN curl https://install.meteor.com/ | sh
 
 # Append mongoclient source
-ADD / /opt/mongoclient
+WORKDIR /tmp/mongoclient
+ADD / /tmp/mongoclient
+RUN cp -R /tmp/mongoclient /opt/mongoclient
+WORKDIR /opt/mongoclient
 RUN rm -rf .meteor/local
 
 # pre-update some libraries
