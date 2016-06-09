@@ -11,8 +11,11 @@ RUN dnf install -y tar procps-ng && dnf clean all
 # Install MeteorJS
 RUN curl https://install.meteor.com/ | sh
 
-# Append mongoclient source
-ADD / /opt/mongoclient
+# Append mongoclient source, without cp -R it throws weird exceptions
+WORKDIR /tmp/mongoclient
+ADD / /tmp/mongoclient
+RUN cp -R /tmp/mongoclient /opt/mongoclient
+WORKDIR /opt/mongoclient
 
 # pre-update some libraries
 RUN /usr/local/bin/meteor update
