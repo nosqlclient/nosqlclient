@@ -1,9 +1,5 @@
 FROM fedora
 
-# Setup for run mongoclient
-EXPOSE 3000
-CMD ["/usr/local/bin/meteor", "run", "--port", "3000"]
-
 # Install required softwares
 RUN dnf install -y tar procps-ng && dnf clean all
 
@@ -18,3 +14,7 @@ WORKDIR /opt/mongoclient
 
 # pre-update some libraries
 RUN /usr/local/bin/meteor update
+
+# Setup for run mongoclient
+EXPOSE 3000
+CMD ["/usr/local/bin/meteor", "run", "--port", "3000"]
