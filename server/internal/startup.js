@@ -17,4 +17,11 @@ Meteor.startup(function () {
             dumpPath: home + "/myDumps/"
         });
     }
+
+    if (process.env.MONGOCLIENT_AUTH == 'true') {
+        var basicAuth = new HttpBasicAuth(function (username, password) {
+            return (process.env.MONGOCLIENT_USERNAME == username && process.env.MONGOCLIENT_PASSWORD == password);
+        });
+        basicAuth.protect();
+    }
 });
