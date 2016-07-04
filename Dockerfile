@@ -1,4 +1,4 @@
-FROM fedora
+FROM fedora:22
 
 # Install required softwares
 RUN dnf install -y tar procps-ng && dnf clean all
