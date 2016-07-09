@@ -23,7 +23,7 @@ Cross-platform, MongoDB 3.2+ support and more features!
 <img src="http://www.mongoclient.com/img/logo/head_only_medium.png" align="left" hspace="10" vspace="6">
 
 ## Download
-Version 1.2.2 has been released ! 
+Version 1.2.2 has been released ! Please check [FAQ](https://github.com/rsercano/mongoclient/wiki/Frequently-Asked-Questions#6-frequently-asked-questions) before asking anything, other than that you can use live chat from inside of app :)
 
 ### Distributions
 
