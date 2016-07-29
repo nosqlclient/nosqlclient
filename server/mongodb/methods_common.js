@@ -72,7 +72,7 @@ Meteor.methods({
                     config.password = connection.sshPassword;
                 }
 
-                var tunnelSsh = new Meteor.npmRequire('tunnel-ssh');
+                var tunnelSsh = new require('tunnel-ssh');
                 tunnelSsh(config, function (error) {
                     if (error) {
                         done(new Meteor.Error(error.message), null);
@@ -159,7 +159,7 @@ Meteor.methods({
 });
 
 var proceedConnectingMongodb = function (connectionUrl, connectionOptions, done) {
-    var mongodbApi = Meteor.npmRequire('mongodb').MongoClient;
+    var mongodbApi = require('mongodb').MongoClient;
 
     if (!connectionOptions) {
         connectionOptions = {};

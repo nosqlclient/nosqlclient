@@ -5,7 +5,7 @@ Meteor.methods({
     'restoreDump': function (connectionId, dumpInfo) {
         var connection = Connections.findOne({_id: connectionId});
         var connectionUrl = getConnectionUrl(connection);
-        var restore = Meteor.npmRequire('mongodb-restore');
+        var restore = require('mongodb-restore');
         var path = dumpInfo.filePath.substring(0, dumpInfo.filePath.indexOf('/'));
         var fileName = dumpInfo.filePath.substring(dumpInfo.filePath.indexOf('/') + 1);
 
@@ -35,8 +35,8 @@ Meteor.methods({
         var connectionUrl = getConnectionUrl(connection);
         var fileName = connection.databaseName + "_" + date.getTime() + ".tar";
         var fullFilePath = path + "/" + fileName;
-        var backup = Meteor.npmRequire('mongodb-backup');
-        var fs = Meteor.npmRequire('fs');
+        var backup = require('mongodb-backup');
+        var fs = require('fs');
 
         LOGGER.info('[takeDump]', connectionUrl, path);
         try {

@@ -6,6 +6,10 @@
   },
   "dependencies": {
     "cheerio": "0.20.0",
+    "datatables.net": "^1.10.12",
+    "datatables.net-bs": "^1.10.12",
+    "datatables.net-buttons": "^1.2.1",
+    "datatables.net-responsive": "^2.1.0",
     "meteor-node-stubs": "^0.2.3",
     "mongodb": "2.1.18",
     "mongodb-backup": "1.5.5",

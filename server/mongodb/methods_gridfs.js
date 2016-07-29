@@ -4,7 +4,7 @@
 Meteor.methods({
     'deleteFile': function (bucketName, fileId) {
         LOGGER.info('[deleteFile]', bucketName, fileId);
-        var mongodbApi = Meteor.npmRequire('mongodb');
+        var mongodbApi = require('mongodb');
 
         var result = Async.runSync(function (done) {
             try {
@@ -25,7 +25,7 @@ Meteor.methods({
 
     'getFileInfos': function (bucketName, selector) {
         LOGGER.info('[getFileInfos]', bucketName,selector);
-        var mongodbApi = Meteor.npmRequire('mongodb');
+        var mongodbApi = require('mongodb');
 
         var query = selector ? selector : {};
 
@@ -48,7 +48,7 @@ Meteor.methods({
     },
 
     'uploadFile': function (bucketName, blob, fileName, contentType, metaData, aliases) {
-        var mongodbApi = Meteor.npmRequire('mongodb');
+        var mongodbApi = require('mongodb');
         if (metaData) {
             convertJSONtoBSON(metaData);
         }
@@ -78,7 +78,7 @@ Meteor.methods({
     },
 
     'getFile': function (bucketName, fileId) {
-        var mongodbApi = Meteor.npmRequire('mongodb');
+        var mongodbApi = require('mongodb');
 
         LOGGER.info('[getFile]', bucketName, fileId);
 
