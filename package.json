@@ -10,14 +10,12 @@
     "datatables.net-bs": "^1.10.12",
     "datatables.net-buttons": "^1.2.1",
     "datatables.net-responsive": "^2.1.0",
+    "jquery": "2.2.0",
     "meteor-node-stubs": "^0.2.3",
     "mongodb": "2.1.18",
     "mongodb-backup": "1.5.5",
     "mongodb-restore": "1.5.3",
     "tunnel-ssh": "2.1.1",
     "winston": "2.2.0"
-  },
-  "devDependencies": {
-    "chimp": "^0.30.0"
   }
 }
