@@ -14,8 +14,8 @@
     "jsoneditor": "^5.5.6",
     "meteor-node-stubs": "^0.2.3",
     "mongodb": "2.1.18",
-    "mongodb-backup": "1.5.5",
-    "mongodb-restore": "1.5.3",
+    "mongodb-backup": "1.6.3",
+    "mongodb-restore": "1.5.4",
     "tunnel-ssh": "2.1.1",
     "winston": "2.2.0"
   }
