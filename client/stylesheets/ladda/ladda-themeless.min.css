@@ -1,0 +1,7 @@
+.ladda-button[data-style=contract] {
+  width: auto;
+}
+
+.ladda-button[data-style=contract].btn-block {
+  width: 100%;
+}

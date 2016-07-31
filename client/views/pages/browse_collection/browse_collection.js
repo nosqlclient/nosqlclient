@@ -1,6 +1,9 @@
 /**
  * Created by RSercan on 29.12.2015.
  */
+
+import JSONEditor from 'jsoneditor';
+
 Template.browseCollection.onCreated(function () {
     Session.set(Template.strSessionSelectedOptions, []);
     Session.set(Template.strSessionSelectedQuery, QUERY_TYPES.FIND);

@@ -1,6 +1,9 @@
 /**
  * Created by sercan on 14.04.2016.
  */
+
+import JSONEditor from 'jsoneditor';
+
 Template.manageUsers.onRendered(function () {
     Template.initiateDatatable($('#tblUsers'), Template.strSessionUsermanagementUser);
     Template.initiateDatatable($('#tblUserRoles'));
