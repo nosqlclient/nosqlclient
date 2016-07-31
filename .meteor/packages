@@ -24,7 +24,7 @@ twbs:bootstrap@3.3.6
 momentjs:moment
 arch:ace-editor
 aldeed:collection2
-ephemer:reactive-datatables-modified
+ephemer:reactive-datatables
 http@1.2.8
 jabbslad:basic-auth
 standard-minifier-css@1.1.8
@@ -34,7 +34,6 @@ tkornblit:icheck
 joshdellay:meteor-ladda-bootstrap
 meteorhacks:async
 perak:codemirror
-dataflows:jsoneditor
 flot:flot
 mrt:chosen-package
 linto:jquery-ui

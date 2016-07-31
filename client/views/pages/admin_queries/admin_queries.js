@@ -1,6 +1,10 @@
 /**
  * Created by RSercan on 10.1.2016.
  */
+
+import JSONEditor from 'jsoneditor';
+
+
 Template.adminQueries.onRendered(function () {
     if (Session.get(Template.strSessionCollectionNames) == undefined) {
         Router.go('databaseStats');

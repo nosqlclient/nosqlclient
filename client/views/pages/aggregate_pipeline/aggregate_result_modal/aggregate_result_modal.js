@@ -1,6 +1,9 @@
 /**
  * Created by RSercan on 19.5.2016.
  */
+
+import JSONEditor from 'jsoneditor';
+
 Template.aggregateResultModal.onRendered(function () {
     var jsonEditor = new JSONEditor(document.getElementById('divJsonEditor'), {
         mode: 'tree',

@@ -11,6 +11,7 @@
     "datatables.net-buttons": "^1.2.1",
     "datatables.net-responsive": "^2.1.0",
     "jquery": "2.2.0",
+    "jsoneditor": "^5.5.6",
     "meteor-node-stubs": "^0.2.3",
     "mongodb": "2.1.18",
     "mongodb-backup": "1.5.5",
