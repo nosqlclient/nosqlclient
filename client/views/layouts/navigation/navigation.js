@@ -1,5 +1,7 @@
+var toastr = require('toastr');
 Template.navigation.events({
     'click #anchorDatabaseDumpRestore': function (e) {
+        
         e.preventDefault();
         var connection = Connections.findOne({_id: Session.get(Template.strSessionConnection)});
 

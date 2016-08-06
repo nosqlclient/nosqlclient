@@ -1,3 +1,14 @@
+var toastr = require('toastr');
+var Ladda = require('ladda');
+require( 'datatables.net' )( window, $ );
+require( 'datatables.net-buttons' )( window, $ );
+require( 'datatables.net-responsive' )( window, $ );
+
+require( 'datatables.net-bs' )( window, $ );
+require( 'datatables.net-buttons-bs' )( window, $ );
+require( 'datatables.net-responsive-bs' )( window, $ );
+
+
 Template.topNavbar.onRendered(function () {
 
     var selector = $('#tblConnection');
@@ -101,8 +112,9 @@ Template.topNavbar.events({
 
     'click .editor_remove': function (e) {
         e.preventDefault();
-        var laddaButton = $('#btnConnect').ladda();
-        laddaButton.ladda('start');
+        
+        var laddaButton = Ladda.create(document.querySelector('#btnConnect'));
+        laddaButton.start();
 
         // set rows not selected
         $('#tblConnection').DataTable().$('tr.selected').removeClass('selected');
@@ -309,8 +321,9 @@ Template.topNavbar.events({
             return;
         }
 
-        var laddaButton = $('#btnSaveConnection').ladda();
-        laddaButton.ladda('start');
+        
+        var laddaButton = Ladda.create(document.querySelector('#btnSaveConnection'));
+        laddaButton.start();
 
         var isEdit = $('#addEditConnectionModalTitle').text() == 'Edit Connection';
         var currentConnection;
@@ -329,8 +342,9 @@ Template.topNavbar.events({
 
     'click #btnConnect': function () {
         // loading button
-        var laddaButton = $('#btnConnect').ladda();
-        laddaButton.ladda('start');
+        
+        var laddaButton = Ladda.create(document.querySelector('#btnConnect'));
+        laddaButton.start();
 
         Template.topNavbar.connect(false);
     },
@@ -495,6 +509,7 @@ Template.topNavbar.loadFile = function (callback, blob) {
 };
 
 Template.topNavbar.checkConnection = function (connection) {
+    
     var sshAuthTypeSelector = $('#cmbSshAuthType');
 
     if (!connection.name) {

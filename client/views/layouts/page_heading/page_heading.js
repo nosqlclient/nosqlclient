@@ -1,3 +1,5 @@
+var Ladda = require('ladda');
+
 Template.pageHeading.helpers({
     // Route for Home link in breadcrumbs
     'home': 'databaseStats',
@@ -12,14 +14,14 @@ Template.pageHeading.helpers({
 
         // get distinct field keys for auto complete on every collection change.
         Template.getDistinctKeysForAutoComplete(selectedCollection);
-        Template.browseCollection.initExecuteQuery();
-
+        
         Meteor.call("stats", selectedCollection, {}, function (err, result) {
             if (err || result.error) {
                 Template.showMeteorFuncError(err, result, "Couldn't fetch connection informations");
             }
             else {
                 Template.pageHeading.populateCollectionInfo(result.result);
+                             
                 Ladda.stopAll();
             }
         });

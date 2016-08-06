@@ -109,7 +109,7 @@ var fixHrefs = function (url, $) {
 };
 
 var load = function (url) {
-    var cheerio = Meteor.npmRequire('cheerio');
+    var cheerio = require('cheerio');
     var content = Meteor.http.get(url).content;
     return cheerio.load(content);
 };

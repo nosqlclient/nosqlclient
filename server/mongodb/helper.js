@@ -150,7 +150,7 @@ var convertDatesToString = function (obj) {
 };
 
 var convertObjectIDsToString = function (obj) {
-    var objectID = Meteor.npmRequire('mongodb').ObjectID;
+    var objectID = require('mongodb').ObjectID;
 
     for (var property in obj) {
         if (obj.hasOwnProperty(property) && obj[property] != null) {
@@ -178,7 +178,7 @@ var convertObjectIDsToString = function (obj) {
 };
 
 var convertValidObjectIds = function (obj) {
-    var objectID = Meteor.npmRequire('mongodb').ObjectID;
+    var objectID = require('mongodb').ObjectID;
 
     for (var property in obj) {
         if (obj.hasOwnProperty(property) && obj[property] != null) {

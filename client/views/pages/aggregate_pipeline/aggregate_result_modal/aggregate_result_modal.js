@@ -1,3 +1,4 @@
+var JSONEditor = require('jsoneditor');
 /**
  * Created by RSercan on 19.5.2016.
  */

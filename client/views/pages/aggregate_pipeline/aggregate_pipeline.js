@@ -1,3 +1,7 @@
+var toastr = require('toastr');
+var CodeMirror = require("codemirror");
+var Ladda = require('ladda');
+
 /**
  * Created by RSercan on 14.5.2016.
  */
@@ -40,8 +44,9 @@ Template.aggregatePipeline.events({
             return;
         }
 
-        var l = $('#btnExecuteAggregatePipeline').ladda();
-        l.ladda('start');
+        
+        var l = Ladda.create(document.querySelector('#btnExecuteAggregatePipeline'));
+        l.start();
 
         var pipeline;
         try {

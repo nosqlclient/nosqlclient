@@ -1,3 +1,6 @@
+var toastr = require('toastr');
+var Ladda = require('ladda');
+
 /**
  * Created by RSercan on 20.2.2016.
  */
@@ -9,6 +12,7 @@ Template.addCollection.onRendered(function () {
 
 Template.addCollection.events({
     'click #btnCreateCollection': function (e) {
+        
         e.preventDefault();
         var isCapped = $('#divIsCapped').iCheck('update')[0].checked;
         var autoIndexId = $('#divAutoIndexId').iCheck('update')[0].checked;
@@ -28,12 +32,14 @@ Template.addCollection.events({
             max: maxDocs
         };
 
-        var laddaButton = $('#btnCreateCollection').ladda();
-        laddaButton.ladda('start');
+        
+        var laddaButton = Ladda.create(document.querySelector('#btnCreateCollection'));
+        laddaButton.start();
 
         Meteor.call('createCollection', collectionName, options, function (err) {
             if (err) {
                 toastr.error("Couldn't create collection: " + err.message);
+                
                 Ladda.stopAll();
                 return;
             }

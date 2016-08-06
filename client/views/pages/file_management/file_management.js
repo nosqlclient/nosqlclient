@@ -1,3 +1,6 @@
+var JSONEditor = require('jsoneditor');
+var toastr = require('toastr');
+var Ladda = require('ladda');
 /**
  * Created by sercan on 09.02.2016.
  */
@@ -40,8 +43,9 @@ Template.fileManagement.events({
                 cancelButtonText: "No"
             }, function (isConfirm) {
                 if (isConfirm) {
-                    var l = $('#btnReloadFiles').ladda();
-                    l.ladda('start');
+                    
+                    var l = Ladda.create(document.querySelector('#btnReloadFiles'));
+                    l.start();
                     Meteor.call('deleteFile', $('#txtBucketName').val(), fileRow._id, function (err) {
                         if (err) {
                             toastr.error("Couldn't delete: " + err.message);
@@ -68,8 +72,9 @@ Template.fileManagement.events({
             cancelButtonText: "No"
         }, function (isConfirm) {
             if (isConfirm) {
-                var l = $('#btnUpdateMetadata').ladda();
-                l.ladda('start');
+                
+                var l = Ladda.create(document.querySelector('#btnUpdateMetadata'));
+                l.start();
                 var jsonEditor = $('#jsonEditorOfMetadata').data('jsoneditor');
                 var setValue = jsonEditor.get();
                 delete setValue._id;
@@ -84,7 +89,8 @@ Template.fileManagement.events({
                             Template.fileManagement.proceedShowingMetadata(Session.get(Template.strSessionSelectedFile)._id, jsonEditor);
                         }
 
-                        Ladda.stopAll();
+                        
+           Ladda.stopAll();
                     });
             }
         });
@@ -92,8 +98,9 @@ Template.fileManagement.events({
 
     'click .editor_show_metadata': function (e) {
         e.preventDefault();
-        var l = $('#btnClose').ladda();
-        l.ladda('start');
+        
+        var l = Ladda.create(document.querySelector('#btnClose'));
+        l.start();
 
         var fileRow = Session.get(Template.strSessionSelectedFile);
         if (fileRow) {
@@ -124,20 +131,23 @@ Template.fileManagement.proceedShowingMetadata = function (id, jsonEditor) {
         else {
             jsonEditor.set(result.result);
         }
+                     
         Ladda.stopAll();
     });
 };
 
 Template.fileManagement.initFileInformations = function () {
     // loading button
-    var l = $('#btnReloadFiles').ladda();
-    l.ladda('start');
+    
+    var l = Ladda.create(document.querySelector('#btnReloadFiles'));
+    l.start();
 
     var selector = Template.selector.getValue();
 
     selector = Template.convertAndCheckJSON(selector);
     if (selector["ERROR"]) {
         toastr.error("Syntax error on selector: " + selector["ERROR"]);
+                     
         Ladda.stopAll();
         return;
     }
