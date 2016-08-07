@@ -1,3 +1,5 @@
+var Ladda = require('ladda');
+
 /**
  * Created by RSercan on 24.2.2016.
  */
@@ -39,8 +41,9 @@ Template.queryHistories.events({
 
 Template.queryHistories.initQueryHistories = function () {
     // loading button
-    var l = $('#btnExecuteAgain').ladda();
-    l.ladda('start');
+    
+    var l = Ladda.create(document.querySelector('#btnExecuteAgain'));
+    l.start();
 
     var connectionId = Session.get(Template.strSessionConnection);
     var selectedCollection = Session.get(Template.strSessionSelectedCollection);

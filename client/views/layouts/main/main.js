@@ -1,5 +1,6 @@
+var toastr = require('toastr');
 Template.mainLayout.rendered = function () {
-
+    
     $(document).idleTimer(30 * 60 * 1000);
     $(document).on("idle.idleTimer", function () {
         toastr.info('You are idle for 30 minutes :(', 'Idle');

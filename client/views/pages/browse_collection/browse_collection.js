@@ -1,3 +1,6 @@
+var JSONEditor = require('jsoneditor');
+var toastr = require('toastr');
+var Ladda = require('ladda');
 /**
  * Created by RSercan on 29.12.2015.
  */
@@ -172,8 +175,8 @@ Template.browseCollection.clearQueryIfAdmin = function () {
 
 Template.browseCollection.initExecuteQuery = function () {
     // loading button
-    var l = $('#btnExecuteQuery').ladda();
-    l.ladda('start');
+    var l = Ladda.create(document.querySelector('#btnExecuteQuery'));
+    l.start();
 };
 
 Template.browseCollection.setResult = function (result, queryInfo, queryParams, saveHistory) {
@@ -406,8 +409,9 @@ Template.browseCollection.saveEditor = function () {
         cancelButtonText: "No"
     }, function (isConfirm) {
         if (isConfirm) {
-            var l = $('#btnSaveFindFindOne').ladda();
-            l.ladda('start');
+            
+            var l = Ladda.create(document.querySelector('#btnSaveFindFindOne'));
+            l.start();
 
             var selectedCollection = Session.get(Template.strSessionSelectedCollection);
             var convertIds = $('#aConvertObjectIds').iCheck('update')[0].checked;

@@ -1,3 +1,6 @@
+var JSONEditor = require('jsoneditor');
+var toastr = require('toastr');
+var Ladda = require('ladda');
 /**
  * Created by sercan on 14.04.2016.
  */
@@ -35,8 +38,9 @@ Template.manageUsers.events({
             cancelButtonText: "No"
         }, function (isConfirm) {
             if (isConfirm) {
-                var l = $('#btnCloseUMDB').ladda();
-                l.ladda('start');
+                
+                var l = Ladda.create(document.querySelector('#btnCloseUMDB'));
+                l.start();
 
                 var command = {dropUser: Session.get(Template.strSessionUsermanagementUser).user};
 
@@ -58,8 +62,9 @@ Template.manageUsers.events({
 
     'click .editor_show_custom_data': function (e) {
         e.preventDefault();
-        var l = $('#btnCloseUMDB').ladda();
-        l.ladda('start');
+        
+        var l = Ladda.create(document.querySelector('#btnCloseUMDB'));
+        l.start();
 
         var selectedUser = Session.get(Template.strSessionUsermanagementUser);
         if (selectedUser) {
@@ -145,8 +150,9 @@ Template.manageUsers.events({
             command.pwd = passwordSelector.val();
         }
 
-        var l = $('#btnApplyAddEditUser').ladda();
-        l.ladda('start');
+        
+        var l = Ladda.create(document.querySelector('#btnApplyAddEditUser'));
+        l.start();
 
         var runOnAdminDB = $('#aRunOnAdminDBToFetchUsers').iCheck('update')[0].checked;
 
@@ -276,8 +282,9 @@ Template.manageUsers.events({
 
 Template.manageUsers.initUsers = function () {
     // loading button
-    var l = $('#btnCloseUMDB').ladda();
-    l.ladda('start');
+    
+    var l = Ladda.create(document.querySelector('#btnCloseUMDB'));
+    l.start();
 
     var command = {
         usersInfo: 1,
@@ -325,7 +332,8 @@ Template.manageUsers.initUsers = function () {
             });
         }
 
-        Ladda.stopAll();
+                    
+         Ladda.stopAll();
     });
 };
 
@@ -402,8 +410,9 @@ Template.manageUsers.loadCustomDataEditor = function () {
 
 Template.manageUsers.popEditUserModal = function (user) {
     $('#addEditUserModalTitle').text('Edit User');
-    var l = $('#btnCloseUMDB').ladda();
-    l.ladda('start');
+    
+    var l = Ladda.create(document.querySelector('#btnCloseUMDB'));
+    l.start();
 
     var connection = Connections.findOne({_id: Session.get(Template.strSessionConnection)});
     var runOnAdminDB = $('#aRunOnAdminDBToFetchUsers').iCheck('update')[0].checked;

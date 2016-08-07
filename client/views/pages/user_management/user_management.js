@@ -1,3 +1,6 @@
+var toastr = require('toastr');
+var Ladda = require('ladda');
+var Clipboard = require('clipboard');
 /**
  * Created by RSercan on 9.4.2016.
  */
@@ -9,8 +12,9 @@ Template.userManagement.onRendered(function () {
         return;
     }
 
-    var l = $('#btnRefreshUsers').ladda();
-    l.ladda('start');
+    
+    var l = Ladda.create(document.querySelector('#btnRefreshUsers'));
+    l.start();
 
     var chckRunOnAdminDB = $('#aRunOnAdminDBToFetchUsers');
     chckRunOnAdminDB.iCheck({
@@ -43,8 +47,9 @@ Template.userManagement.events({
     'click #btnRefreshUsers': function (e) {
         e.preventDefault();
 
-        var l = $('#btnRefreshUsers').ladda();
-        l.ladda('start');
+        
+        var l = Ladda.create(document.querySelector('#btnRefreshUsers'));
+        l.start();
 
         $("#userTree").jstree('destroy');
         Template.userManagement.initUserTree();
@@ -204,8 +209,9 @@ Template.userManagement.getNodeInformation = function (node) {
 };
 
 Template.userManagement.getActionInfo = function (action) {
-    var l = $('#btnRefreshUsers').ladda();
-    l.ladda('start');
+    
+    var l = Ladda.create(document.querySelector('#btnRefreshUsers'));
+    l.start();
     loading = true;
 
     Meteor.call('getActionInfo', action, function (err, result) {
@@ -216,13 +222,15 @@ Template.userManagement.getActionInfo = function (action) {
         }
 
         loading = false;
+                     
         Ladda.stopAll();
     });
 };
 
 Template.userManagement.getResourceInfo = function (resourceType) {
-    var l = $('#btnRefreshUsers').ladda();
-    l.ladda('start');
+    
+    var l = Ladda.create(document.querySelector('#btnRefreshUsers'));
+    l.start();
     loading = true;
 
     Meteor.call('getResourceInfo', resourceType, function (err, result) {
@@ -233,13 +241,15 @@ Template.userManagement.getResourceInfo = function (resourceType) {
         }
 
         loading = false;
+                     
         Ladda.stopAll();
     });
 };
 
 Template.userManagement.getRoleInfo = function (role) {
-    var l = $('#btnRefreshUsers').ladda();
-    l.ladda('start');
+    
+    var l = Ladda.create(document.querySelector('#btnRefreshUsers'));
+    l.start();
     loading = true;
 
     Meteor.call('getRoleInfo', role, function (err, result) {

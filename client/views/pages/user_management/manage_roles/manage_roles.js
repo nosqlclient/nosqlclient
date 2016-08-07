@@ -1,3 +1,5 @@
+var toastr = require('toastr');
+var Ladda = require('ladda');
 /**
  * Created by sercan on 14.04.2016.
  */
@@ -34,8 +36,9 @@ Template.manageRoles.events({
             cancelButtonText: "No"
         }, function (isConfirm) {
             if (isConfirm) {
-                var l = $('#btnCloseUMRoles').ladda();
-                l.ladda('start');
+                
+                var l = Ladda.create(document.querySelector('#btnCloseUMRoles'));
+                l.start();
 
                 var command = {dropRole: Session.get(Template.strSessionUsermanagementRole).role};
 
@@ -69,8 +72,9 @@ Template.manageRoles.events({
         $('#addEditPrivilegeModalTitle').text('Edit Privilege');
         $('#addEditPrivilegeModalText').text('');
 
-        var l = $('#btnApplyAddPrivilegeToRole').ladda();
-        l.ladda('start');
+        
+        var l = Ladda.create(document.querySelector('#btnApplyAddPrivilegeToRole'));
+        l.start();
 
         var selectedResource = Session.get(Template.strSessionUsermanagementPrivilege).resource;
         var dbToSelect = '', collectionToSelect = '';
@@ -106,8 +110,9 @@ Template.manageRoles.events({
         $('#addEditPrivilegeModalTitle').text('Add Privilege');
         $('#addEditPrivilegeModalText').text('Role ' + (Session.get(Template.strSessionUsermanagementRole) ? Session.get(Template.strSessionUsermanagementRole).role : ''));
 
-        var l = $('#btnApplyAddPrivilegeToRole').ladda();
-        l.ladda('start');
+        
+        var l = Ladda.create(document.querySelector('#btnApplyAddPrivilegeToRole'));
+        l.start();
 
         Template.manageRoles.initResourcesForPrivileges();
         Template.manageRoles.initActionsForPrivilege();
@@ -122,8 +127,9 @@ Template.manageRoles.events({
             return;
         }
 
-        var l = $('#btnAddInheritRole').ladda();
-        l.ladda('start');
+        
+        var l = Ladda.create(document.querySelector('#btnAddInheritRole'));
+        l.start();
 
         Template.manageRoles.initDatabasesForInheritRole();
         $('#addRoleToInherit').modal('show');
@@ -159,8 +165,9 @@ Template.manageRoles.events({
         command.privileges = Template.manageRoles.populatePrivilegesToSave();
         command.roles = Template.manageRoles.populateInheritRolesToSave();
 
-        var l = $('#btnApplyAddEditRole').ladda();
-        l.ladda('start');
+        
+        var l = Ladda.create(document.querySelector('#btnApplyAddEditRole'));
+        l.start();
 
         var runOnAdminDB = $('#aRunOnAdminDBToFetchUsers').iCheck('update')[0].checked;
 
@@ -198,8 +205,9 @@ Template.manageRoles.events({
     'change #cmbPrivilegeResource': function () {
         var db = $('#cmbPrivilegeResource').find(":selected").text();
         if (db && db != 'anyResource' && db != 'cluster') {
-            var l = $('#btnApplyAddPrivilegeToRole').ladda();
-            l.ladda('start');
+            
+            var l = Ladda.create(document.querySelector('#btnApplyAddPrivilegeToRole'));
+            l.start();
 
             Template.manageRoles.initCollectionsForPrivilege(null, db, true);
         } else {
@@ -305,8 +313,9 @@ Template.manageRoles.events({
 
 Template.manageRoles.initRoles = function () {
     // loading button
-    var l = $('#btnCloseUMRoles').ladda();
-    l.ladda('start');
+    
+    var l = Ladda.create(document.querySelector('#btnCloseUMRoles'));
+    l.start();
 
     var command = {
         rolesInfo: 1,
@@ -359,14 +368,16 @@ Template.manageRoles.initRoles = function () {
             });
         }
 
+                     
         Ladda.stopAll();
     });
 };
 
 Template.manageRoles.popEditRoleModal = function (role) {
     $('#addEditRoleModalTitle').text('Edit Role');
-    var l = $('#btnCloseUMRoles').ladda();
-    l.ladda('start');
+    
+    var l = Ladda.create(document.querySelector('#btnCloseUMRoles'));
+    l.start();
 
     var connection = Connections.findOne({_id: Session.get(Template.strSessionConnection)});
     var runOnAdminDB = $('#aRunOnAdminDBToFetchUsers').iCheck('update')[0].checked;

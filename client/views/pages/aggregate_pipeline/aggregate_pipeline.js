@@ -1,3 +1,20 @@
+var toastr = require('toastr');
+var CodeMirror = require("codemirror");
+
+require("/node_modules/codemirror/mode/javascript/javascript.js");
+require("/node_modules/codemirror/addon/fold/brace-fold.js");
+require("/node_modules/codemirror/addon/fold/comment-fold.js");
+require("/node_modules/codemirror/addon/fold/foldcode.js");
+require("/node_modules/codemirror/addon/fold/foldgutter.js");
+require("/node_modules/codemirror/addon/fold/indent-fold.js");
+require("/node_modules/codemirror/addon/fold/markdown-fold.js");
+require("/node_modules/codemirror/addon/fold/xml-fold.js");
+require("/node_modules/codemirror/addon/hint/javascript-hint.js");
+require("/node_modules/codemirror/addon/hint/show-hint.js");
+
+
+var Ladda = require('ladda');
+
 /**
  * Created by RSercan on 14.5.2016.
  */
@@ -40,8 +57,9 @@ Template.aggregatePipeline.events({
             return;
         }
 
-        var l = $('#btnExecuteAggregatePipeline').ladda();
-        l.ladda('start');
+        
+        var l = Ladda.create(document.querySelector('#btnExecuteAggregatePipeline'));
+        l.start();
 
         var pipeline;
         try {

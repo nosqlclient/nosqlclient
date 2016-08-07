@@ -1,3 +1,19 @@
+var toastr = require('toastr');
+var CodeMirror = require("codemirror");
+
+require("/node_modules/codemirror/mode/javascript/javascript.js");
+require("/node_modules/codemirror/addon/fold/brace-fold.js");
+require("/node_modules/codemirror/addon/fold/comment-fold.js");
+require("/node_modules/codemirror/addon/fold/foldcode.js");
+require("/node_modules/codemirror/addon/fold/foldgutter.js");
+require("/node_modules/codemirror/addon/fold/indent-fold.js");
+require("/node_modules/codemirror/addon/fold/markdown-fold.js");
+require("/node_modules/codemirror/addon/fold/xml-fold.js");
+require("/node_modules/codemirror/addon/hint/javascript-hint.js");
+require("/node_modules/codemirror/addon/hint/show-hint.js");
+
+var Ladda = require('ladda');
+
 /**
  * Created by RSercan on 15.2.2016.
  */
@@ -131,8 +147,9 @@ Template.editDocument.initializeResultArea = function (result) {
 };
 
 Template.editDocument.deleteDocument = function () {
-    var l = $('#btnDeleteDocument').ladda();
-    l.ladda('start');
+    
+    var l = Ladda.create(document.querySelector('#btnDeleteDocument'));
+    l.start();
 
     var collectionName = $('#cmbCollections').find(":selected").text();
     var idQuery = {_id: Session.get(Template.strSessionEasyEditID)};
@@ -154,13 +171,15 @@ Template.editDocument.deleteDocument = function () {
             toastr.error("Couldn't delete: " + JSON.stringify(result));
         }
 
+                     
         Ladda.stopAll();
     });
 };
 
 Template.editDocument.saveDocument = function () {
-    var l = $('#btnSaveDocument').ladda();
-    l.ladda('start');
+    
+    var l = Ladda.create(document.querySelector('#btnSaveDocument'));
+    l.start();
 
     var collectionName = $('#cmbCollections').find(":selected").text();
     var setValue = $('#divResult').data('editor').getValue();
@@ -168,6 +187,7 @@ Template.editDocument.saveDocument = function () {
     setValue = Template.convertAndCheckJSON(setValue);
     if (setValue["ERROR"]) {
         toastr.error("Syntax error on document: " + setValue["ERROR"]);
+                     
         Ladda.stopAll();
         return;
     }
@@ -189,7 +209,8 @@ Template.editDocument.saveDocument = function () {
                     toastr.success('Successfuly updated !');
                 }
 
-                Ladda.stopAll();
+                
+   Ladda.stopAll();
             }
         );
     } else {
@@ -207,21 +228,24 @@ Template.editDocument.saveDocument = function () {
                     toastr.success('Successfuly inserted !');
                 }
 
-                Ladda.stopAll();
+                
+   Ladda.stopAll();
             }
         );
     }
 };
 
 Template.editDocument.fetchDocument = function () {
-    var l = $('#btnFetchDocument').ladda();
-    l.ladda('start');
+    
+    var l = Ladda.create(document.querySelector('#btnFetchDocument'));
+    l.start();
 
     var collectionName = $('#cmbCollections').find(":selected").text();
     var selector = Template.selector.getValue();
 
     if (!collectionName) {
         toastr.warning('Please select a collection first !');
+                     
         Ladda.stopAll();
         return;
     }

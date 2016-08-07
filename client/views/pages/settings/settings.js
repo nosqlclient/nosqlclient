@@ -1,3 +1,5 @@
+var toastr = require('toastr');
+var Ladda = require('ladda');
 /**
  * Created by RSercan on 9.1.2016.
  */
@@ -14,12 +16,14 @@ Template.settings.onRendered(function () {
 Template.settings.events({
     'click #btnSaveSettings': function (e) {
         e.preventDefault();
-        var laddaButton = $('#btnSaveSettings').ladda();
-        laddaButton.ladda('start');
+        
+        var laddaButton = Ladda.create(document.querySelector('#btnSaveSettings'));
+        laddaButton.start();
 
         Meteor.call('updateSettings', Template.settings.getSettingsFromForm());
         toastr.success('Successfuly saved !');
 
+                     
         Ladda.stopAll();
     }
 });

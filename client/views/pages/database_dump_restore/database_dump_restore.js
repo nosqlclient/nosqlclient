@@ -1,3 +1,5 @@
+var toastr = require('toastr');
+var Ladda = require('ladda');
 /**
  * Created by RSercan on 17.1.2016.
  */
@@ -12,11 +14,13 @@ Template.databaseDumpRestore.onRendered(function () {
 
 Template.databaseDumpRestore.events({
     'click #btnTakeDump': function (e) {
+        
         e.preventDefault();
         var settings = Settings.findOne();
 
-        var laddaButton = $('#btnTakeDump').ladda();
-        laddaButton.ladda('start');
+        
+        var laddaButton = Ladda.create(document.querySelector('#btnTakeDump'));
+        laddaButton.start();
 
         Meteor.call('takeDump', Session.get(Template.strSessionConnection), settings.dumpPath, function (err) {
             if (err) {
@@ -42,8 +46,9 @@ Template.databaseDumpRestore.events({
                 confirmButtonText: "Yes, do it!",
                 closeOnConfirm: true
             }, function () {
-                var laddaButton = $('#btnTakeDump').ladda();
-                laddaButton.ladda('start');
+                
+                var laddaButton = Ladda.create(document.querySelector('#btnTakeDump'));
+                laddaButton.start();
 
                 var dumpInfo = Session.get(Template.strSessionSelectedDump);
                 dumpInfo.status = DUMP_STATUS.IN_PROGRESS;

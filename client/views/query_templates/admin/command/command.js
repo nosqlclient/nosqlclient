@@ -1,3 +1,5 @@
+var toastr = require('toastr');
+var Ladda = require('ladda');
 /**
  * Created by RSercan on 10.1.2016.
  */

@@ -1,3 +1,6 @@
+var toastr = require('toastr');
+var Ladda = require('ladda');
+require( 'bootstrap-filestyle' );
 /**
  * Created by RSercan on 13.2.2016.
  */
@@ -35,8 +38,9 @@ Template.uploadFile.events({
 });
 
 Template.uploadFile.proceedUploading = function (blob, contentType, metaData, aliases) {
-    var l = $('#btnUpload').ladda();
-    l.ladda('start');
+    
+    var l = Ladda.create(document.querySelector('#btnUpload'));
+    l.start();
     var fileReader = new FileReader();
     fileReader.onload = function (file) {
         Meteor.call('uploadFile', $('#txtBucketName').val(), new Uint8Array(file.target.result), blob.name, contentType, metaData, aliases, function (err, result) {
@@ -46,7 +50,8 @@ Template.uploadFile.proceedUploading = function (blob, contentType, metaData, al
             else {
                 toastr.success('Successfuly uploaded file');
                 Template.fileManagement.initFileInformations();
-                Ladda.stopAll();
+                
+   Ladda.stopAll();
             }
         });
     };

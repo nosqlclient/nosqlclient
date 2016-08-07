@@ -1,3 +1,6 @@
+var toastr = require('toastr');
+var Ladda = require('ladda');
+
 /**
  * Created by RSercan on 26.12.2015.
  */
@@ -62,12 +65,14 @@ Template.renderAfterQueryExecution = function (err, result, isAdmin, queryInfo, 
         } else {
             Template.browseCollection.setResult(result.result, queryInfo, queryParams, saveHistory);
         }
+                     
         Ladda.stopAll();
     }
 
 };
 
 Template.showMeteorFuncError = function (err, result, message) {
+    
     var errorMessage;
     if (err) {
         errorMessage = err.message;
@@ -80,6 +85,7 @@ Template.showMeteorFuncError = function (err, result, message) {
         toastr.error(message);
     }
 
+                 
     Ladda.stopAll();
 };
 
@@ -237,6 +243,7 @@ Template.getDistinctKeysForAutoComplete = function (selectedCollection) {
                 nameArray.push(entry._id);
             });
             Session.set(Template.strSessionDistinctFields, nameArray);
+                         
             Ladda.stopAll();
         }
 
