@@ -17,4 +17,5 @@ before_script:
   - meteor npm install
 
 script:
-  - meteor test --once
+  - meteor add dispatch:mocha-phantomjs
+  - meteor test --once --driver-package dispatch:mocha-phantomjs
