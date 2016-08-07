@@ -1,9 +1,5 @@
 {
   "private": true,
-  "scripts": {
-    "start": ".scripts/start.js",
-    "test": ".scripts/test.js"
-  },
   "devDependencies": {},
   "dependencies": {
     "bootstrap-filestyle": "^1.2.1",
