@@ -14,6 +14,7 @@ WORKDIR /opt/mongoclient
 
 # pre-update some libraries
 RUN /usr/local/bin/meteor update
+RUN /usr/local/bin/meteor npm install
 
 # Setup for run mongoclient
 EXPOSE 3000
