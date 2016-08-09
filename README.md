@@ -6,7 +6,7 @@ Cross-platform, MongoDB 3.2+ support and more features!
 
 [![paypal](https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=Y5VD95E96NU6S)
 
-*Hello, recently I'm trying to save money for my marriage :) and can't afford for the INSPINA theme's extended licence ($1000) which I have to buy to keep developing mongoclient. I wasn't planning to add a donation button but, recent things forced me to put one. You don't have to donate of course, I will always maintain mongoclient as much as I can, so no worries, but if you can that would be really appreciated. [Here's a list of donators](https://github.com/rsercano/mongoclient/wiki/Donators)* 
+*Hello, finally I've recently married guys :) and can't afford for the INSPINA theme's extended licence ($1000) which I have to buy to keep developing mongoclient. I wasn't planning to add a donation button but, recent things forced me to put one. You don't have to donate of course, I will always maintain mongoclient as much as I can, so no worries, but if you can that would be really appreciated. [Here's a list of donators](https://github.com/rsercano/mongoclient/wiki/Donators)* 
 *p.s. Donation email is hakan.kocabas@gmx.de (Can't use turkey accounts for donations anymore)*
 
 
