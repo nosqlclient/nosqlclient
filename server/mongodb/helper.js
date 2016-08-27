@@ -132,7 +132,7 @@ var convertDatesToString = function (obj) {
             else if (obj[property].constructor == Array) {
                 for (var i = 0; i < obj[property].length; i++) {
 
-                    if (Object.prototype.toString.call(obj[property][i]) === '[object Date]') {
+                    if (obj[property][i] != null && Object.prototype.toString.call(obj[property][i]) === '[object Date]') {
                         obj[property][i] = moment(obj[property][i]).format('YYYY-MM-DD HH:mm:ss');
                     }
                     else {
@@ -160,7 +160,7 @@ var convertObjectIDsToString = function (obj) {
             else if (obj[property].constructor == Array) {
                 for (var i = 0; i < obj[property].length; i++) {
 
-                    if (objectID.isValid(obj[property][i].toString())) {
+                    if (obj[property][i] != null && objectID.isValid(obj[property][i].toString())) {
                         obj[property][i] = obj[property][i].toString();
                     }
                     else {
@@ -188,7 +188,7 @@ var convertValidObjectIds = function (obj) {
             else if (obj[property].constructor == Array) {
                 for (var i = 0; i < obj[property].length; i++) {
 
-                    if (objectID.isValid(obj[property][i].toString())) {
+                    if (obj[property][i] != null && objectID.isValid(obj[property][i].toString())) {
                         obj[property][i] = new objectID(obj[property][i].toString());
                     }
                     else {
@@ -215,7 +215,7 @@ var convertValidDates = function (obj) {
             else if (obj[property].constructor == Array) {
                 for (var i = 0; i < obj[property].length; i++) {
 
-                    if (moment(obj[property][i].toString(), 'YYYY-MM-DD HH:mm:ss', true).isValid()) {
+                    if (obj[property][i] != null && moment(obj[property][i].toString(), 'YYYY-MM-DD HH:mm:ss', true).isValid()) {
                         obj[property][i] = moment(obj[property][i].toString(), 'YYYY-MM-DD HH:mm:ss', true).toDate();
                     }
                     else {
