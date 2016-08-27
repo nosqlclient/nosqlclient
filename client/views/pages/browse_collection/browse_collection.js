@@ -54,6 +54,11 @@ Template.browseCollection.events({
         Template.browseCollection.saveEditor();
     },
 
+    'click #btnDelFindFindOne': function (e) {
+        e.preventDefault();
+        Template.browseCollection.deleteDocument();
+    },
+
     'click #btnShowQueryHistories': function () {
         $('#queryHistoriesModal').modal('show');
     },
@@ -427,6 +432,56 @@ Template.browseCollection.saveEditor = function () {
                             if ((i++) == (convertedDocs.length - 1)) {
                                 // last time
                                 toastr.success('Successfully updated document(s)');
+                                Ladda.stopAll();
+                            }
+                        }
+                    });
+                }
+            });
+        }
+    });
+
+};
+
+
+Template.browseCollection.deleteDocument = function () {
+    var convertedDocs;
+    try {
+        convertedDocs = Template.convertAndCheckJSONAsArray(Template.browseCollection.getActiveEditorValue());
+    }
+    catch (e) {
+        toastr.error('Syntax error, can not save document(s): ' + e);
+        return;
+    }
+
+    swal({
+        title: "Are you sure ?",
+        text: convertedDocs.length + ' document(s) will be deleted,  are you sure ?',
+        type: "info",
+        showCancelButton: true,
+        confirmButtonColor: "#DD6B55",
+        confirmButtonText: "Yes!",
+        cancelButtonText: "No"
+    }, function (isConfirm) {
+        if (isConfirm) {
+
+            var l = Ladda.create(document.querySelector('#btnDelFindFindOne'));
+            l.start();
+
+            var selectedCollection = Session.get(Template.strSessionSelectedCollection);
+            var convertIds = $('#aConvertObjectIds').iCheck('update')[0].checked;
+            var convertDates = $('#aConvertIsoDates').iCheck('update')[0].checked;
+            var i = 0;
+            _.each(convertedDocs, function (doc) {
+                if (doc._id) {
+                    Meteor.call("delete", selectedCollection, {_id: doc._id}, convertIds, convertDates, function (err, result) {
+                        if (err || result.error) {
+                            Template.showMeteorFuncError(err, result, "Couldn't delete one of the documents");
+                            Ladda.stopAll();
+                        } else {
+                            if ((i++) == (convertedDocs.length - 1)) {
+                                // last time
+                                toastr.success('Successfully deleted document(s)');
                                 Ladda.stopAll();
                             }
                         }
