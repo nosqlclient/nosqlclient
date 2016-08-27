@@ -1,12 +1,12 @@
 var toastr = require('toastr');
 var Ladda = require('ladda');
-require( 'datatables.net' )( window, $ );
-require( 'datatables.net-buttons' )( window, $ );
-require( 'datatables.net-responsive' )( window, $ );
+require('datatables.net')(window, $);
+require('datatables.net-buttons')(window, $);
+require('datatables.net-responsive')(window, $);
 
-require( 'datatables.net-bs' )( window, $ );
-require( 'datatables.net-buttons-bs' )( window, $ );
-require( 'datatables.net-responsive-bs' )( window, $ );
+require('datatables.net-bs')(window, $);
+require('datatables.net-buttons-bs')(window, $);
+require('datatables.net-responsive-bs')(window, $);
 
 
 Template.topNavbar.onRendered(function () {
@@ -27,6 +27,24 @@ Template.topNavbar.onRendered(function () {
         if (table.row(this).data()) {
             Session.set(Template.strSessionConnection, table.row(this).data()._id);
             $('#btnConnect').prop('disabled', false);
+        }
+    });
+
+    var selectorForSwitchDatabases = $('#tblSwitchDatabases');
+    selectorForSwitchDatabases.find('tbody').on('click', 'tr', function () {
+
+        var table = selectorForSwitchDatabases.DataTable();
+
+        if ($(this).hasClass('selected')) {
+            $(this).removeClass('selected');
+        }
+        else {
+            table.$('tr.selected').removeClass('selected');
+            $(this).addClass('selected');
+        }
+
+        if (table.row(this).data()) {
+            Session.set(Template.strSessionSwitchDatabaseDB, table.row(this).data().name);
         }
     });
 
@@ -90,10 +108,42 @@ Template.topNavbar.events({
         }
     },
 
-    'click #btnRefreshCollections': function (e) {
+    'click #btnSwitchDatabase': function (e) {
         e.preventDefault();
+        $('#switchDatabaseModal').modal('show');
 
-        Template.topNavbar.connect(true);
+        var laddaButton = Ladda.create(document.querySelector('#btnConnectSwitchedDatabase'));
+        laddaButton.start();
+
+        Meteor.call('listDatabases', function (err, result) {
+            if (err || result.error) {
+                Template.showMeteorFuncError(err, result, "Couldn't fetch databases");
+            }
+            else {
+                result.result.databases.sort(function compare(a, b) {
+                    if (a.name < b.name)
+                        return -1;
+                    else if (a.name > b.name)
+                        return 1;
+                    else
+                        return 0;
+                });
+
+                Template.topNavbar.populateSwitchDatabaseTable(result.result.databases);
+                Ladda.stopAll();
+            }
+        });
+
+    },
+
+    'click #btnConnectSwitchedDatabase': function () {
+        var laddaButton = Ladda.create(document.querySelector('#btnConnectSwitchedDatabase'));
+        laddaButton.start();
+        var connection = Connections.findOne({_id: Session.get(Template.strSessionConnection)});
+        connection.databaseName = Session.get(Template.strSessionSwitchDatabaseDB);
+        Meteor.call('updateConnection', connection);
+
+        Template.topNavbar.connect(false);
     },
 
     'click #btnCreateNewConnection': function () {
@@ -112,7 +162,7 @@ Template.topNavbar.events({
 
     'click .editor_remove': function (e) {
         e.preventDefault();
-        
+
         var laddaButton = Ladda.create(document.querySelector('#btnConnect'));
         laddaButton.start();
 
@@ -321,7 +371,7 @@ Template.topNavbar.events({
             return;
         }
 
-        
+
         var laddaButton = Ladda.create(document.querySelector('#btnSaveConnection'));
         laddaButton.start();
 
@@ -342,7 +392,7 @@ Template.topNavbar.events({
 
     'click #btnConnect': function () {
         // loading button
-        
+
         var laddaButton = Ladda.create(document.querySelector('#btnConnect'));
         laddaButton.start();
 
@@ -509,7 +559,7 @@ Template.topNavbar.loadFile = function (callback, blob) {
 };
 
 Template.topNavbar.checkConnection = function (connection) {
-    
+
     var sshAuthTypeSelector = $('#cmbSshAuthType');
 
     if (!connection.name) {
@@ -590,7 +640,6 @@ Template.topNavbar.checkConnection = function (connection) {
 
 Template.topNavbar.connect = function (isRefresh) {
     var connection = Connections.findOne({_id: Session.get(Template.strSessionConnection)});
-
     Meteor.call('connect', connection._id, function (err, result) {
         if (err || result.error) {
             Template.showMeteorFuncError(err, result, "Couldn't connect");
@@ -609,11 +658,9 @@ Template.topNavbar.connect = function (isRefresh) {
 
             if (!isRefresh) {
                 $('#connectionModal').modal('hide');
-                // swal({
-                //     title: "Connected!",
-                //     text: "Successfuly connected to " + connection.name,
-                //     type: "success"
-                // });
+                $('#switchDatabaseModal').modal('hide');
+
+                Router.go('databaseStats');
             }
             else {
                 toastr.success("Successfuly refreshed collections");
@@ -800,6 +847,19 @@ Template.topNavbar.populateConnectionsTable = function () {
                 defaultContent: '<a href="" title="Delete" class="editor_remove"><i class="fa fa-remove text-navy"></i></a>'
             }
         ]
+    }).draw();
+};
+
+Template.topNavbar.populateSwitchDatabaseTable = function (data) {
+    var tblSwitchDatabases = $('#tblSwitchDatabases');
+
+    tblSwitchDatabases.DataTable({
+        destroy: true,
+        data: data,
+        columns: [
+            {data: "name"}
+        ],
+        columnDefs: []
     }).draw();
 };
 

@@ -18,7 +18,7 @@ Template.navigation.events({
         $('#collectionAddModal').modal('show');
     },
 
-    'click #btnRefreshCollections2': function (e) {
+    'click #btnRefreshCollections': function (e) {
         e.preventDefault();
         Template.topNavbar.connect(true);
     },

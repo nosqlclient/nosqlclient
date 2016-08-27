@@ -61,7 +61,7 @@ Meteor.methods({
                 };
 
                 if (connection.sshCertificate) {
-                    config.privateKey = new Buffer( connection.sshCertificate );
+                    config.privateKey = new Buffer(connection.sshCertificate);
                 }
 
                 if (connection.sshPassPhrase) {
