@@ -1,5 +1,6 @@
 var toastr = require('toastr');
 var Ladda = require('ladda');
+var fbbkJson = require("fbbk-json");
 
 /**
  * Created by RSercan on 26.12.2015.
@@ -66,14 +67,14 @@ Template.renderAfterQueryExecution = function (err, result, isAdmin, queryInfo, 
         } else {
             Template.browseCollection.setResult(result.result, queryInfo, queryParams, saveHistory);
         }
-                     
+
         Ladda.stopAll();
     }
 
 };
 
 Template.showMeteorFuncError = function (err, result, message) {
-    
+
     var errorMessage;
     if (err) {
         errorMessage = err.message;
@@ -86,7 +87,7 @@ Template.showMeteorFuncError = function (err, result, message) {
         toastr.error(message);
     }
 
-                 
+
     Ladda.stopAll();
 };
 
@@ -108,11 +109,21 @@ Template.sortObjectByKey = function (obj) {
     return sorted_obj;
 };
 
+
 Template.convertAndCheckJSON = function (json) {
     if (json == "") return {};
     var result = {};
     try {
-        result = JSON.parse(json);
+        if (!json.startsWith('{') && !json.startsWith(']')) {
+            json = '{' + json;
+        }
+
+        if ((!json.endsWith('}') && !json.endsWith(']')) ||
+            (json.split('\{').length - 1) > (json.split('\}').length - 1)) {
+            json = json + '}';
+        }
+
+        result = fbbkJson.parse(json);
     }
     catch (err) {
         result["ERROR"] = err.message;
@@ -125,7 +136,7 @@ Template.convertAndCheckJSONAsArray = function (json) {
     if (json == "") return [];
     var result = [];
     try {
-        result = JSON.parse(json);
+        result = fbbkJson.parse(json);
     }
     catch (err) {
         throw err.message;
@@ -136,7 +147,7 @@ Template.convertAndCheckJSONAsArray = function (json) {
         res.push(result);
         return res;
     }
-    
+
     return result;
 };
 
@@ -244,7 +255,7 @@ Template.getDistinctKeysForAutoComplete = function (selectedCollection) {
                 nameArray.push(entry._id);
             });
             Session.set(Template.strSessionDistinctFields, nameArray);
-                         
+
             Ladda.stopAll();
         }
 
