@@ -6,8 +6,8 @@ Meteor.methods({
         var connection = Connections.findOne({_id: connectionId});
         var connectionUrl = getConnectionUrl(connection);
         var restore = require('mongodb-restore');
-        var path = dumpInfo.filePath.substring(0, dumpInfo.filePath.indexOf('/'));
-        var fileName = dumpInfo.filePath.substring(dumpInfo.filePath.indexOf('/') + 1);
+        var path = dumpInfo.filePath.substring(0, dumpInfo.filePath.lastIndexOf('/'));
+        var fileName = dumpInfo.filePath.substring(dumpInfo.filePath.lastIndexOf('/') + 1);
 
         LOGGER.info('[restoreDump]', connectionUrl, dumpInfo);
         try {
