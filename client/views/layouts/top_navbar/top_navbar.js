@@ -44,7 +44,7 @@ Template.topNavbar.onRendered(function () {
         }
 
         if (table.row(this).data()) {
-            Session.set(Template.strSessionSwitchDatabaseDB, table.row(this).data().name);
+            $('#inputDatabaseNameToSwitch').val(table.row(this).data().name);
         }
     });
 
@@ -137,10 +137,15 @@ Template.topNavbar.events({
     },
 
     'click #btnConnectSwitchedDatabase': function () {
+        if (!$('#inputDatabaseNameToSwitch').val()) {
+            toastr.error('Please enter a database name or choose one from the list');
+            return;
+        }
+
         var laddaButton = Ladda.create(document.querySelector('#btnConnectSwitchedDatabase'));
         laddaButton.start();
         var connection = Connections.findOne({_id: Session.get(Template.strSessionConnection)});
-        connection.databaseName = Session.get(Template.strSessionSwitchDatabaseDB);
+        connection.databaseName = $('#inputDatabaseNameToSwitch').val();
         Meteor.call('updateConnection', connection);
 
         Template.topNavbar.connect(false);

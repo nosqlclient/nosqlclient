@@ -5,7 +5,6 @@ var fbbkJson = require("fbbk-json");
 /**
  * Created by RSercan on 26.12.2015.
  */
-Template.strSessionSwitchDatabaseDB = "switchDatabaseDB";
 Template.strSessionConnection = "connection";
 Template.strSessionCollectionNames = "collectionNames";
 Template.strSessionSelectedCollection = "selectedCollection";
