@@ -108,6 +108,11 @@ Template.topNavbar.events({
         }
     },
 
+    'click #btnAboutMongoclient' : function(e){
+        e.preventDefault();
+        $('#aboutModal').modal('show');
+    },
+
     'click #btnSwitchDatabase': function (e) {
         e.preventDefault();
         $('#switchDatabaseModal').modal('show');
