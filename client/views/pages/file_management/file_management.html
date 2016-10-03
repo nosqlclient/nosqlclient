@@ -24,6 +24,19 @@
                                 {{>uploadFile}}
 
                                 <div class="form-group">
+                                    <label class="col-lg-1 control-label">Limit</label>
+                                    <div class="col-lg-11">
+                                        <input id="txtFileFetchLimit" value="100"
+                                               data-required="true"
+                                               min="1"
+                                               max="200"
+                                               type="number"
+                                               placeholder="Limit to fetch files"
+                                               class="form-control">
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
                                     <div class="col-sm-12">
                                         <button id="btnReloadFiles"
                                                 class="btn btn-block btn-outline btn-primary ladda-button "

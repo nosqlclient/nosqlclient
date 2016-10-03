@@ -1,6 +1,8 @@
 /**
  * Created by RSercan on 10.1.2016.
  */
+var cheerio = require('cheerio');
+
 Meteor.methods({
     'getAllActions': function () {
         var action = Actions.findOne();
@@ -109,7 +111,6 @@ var fixHrefs = function (url, $) {
 };
 
 var load = function (url) {
-    var cheerio = require('cheerio');
     var content = Meteor.http.get(url).content;
     return cheerio.load(content);
 };

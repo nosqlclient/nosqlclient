@@ -1,10 +1,11 @@
 /**
  * Created by RSercan on 9.2.2016.
  */
+var mongodbApi = require('mongodb');
+
 Meteor.methods({
     'deleteFile': function (bucketName, fileId) {
         LOGGER.info('[deleteFile]', bucketName, fileId);
-        var mongodbApi = require('mongodb');
 
         var result = Async.runSync(function (done) {
             try {
@@ -23,16 +24,15 @@ Meteor.methods({
         return result;
     },
 
-    'getFileInfos': function (bucketName, selector) {
-        LOGGER.info('[getFileInfos]', bucketName,selector);
-        var mongodbApi = require('mongodb');
-
-        var query = selector ? selector : {};
+    'getFileInfos': function (bucketName, selector, limit) {
+        limit = parseInt(limit) || 100;
+        selector = selector || {};
+        LOGGER.info('[getFileInfos]', bucketName, selector, limit);
 
         var result = Async.runSync(function (done) {
             try {
                 var bucket = new mongodbApi.GridFSBucket(database, {bucketName: bucketName});
-                bucket.find(query).toArray(function (err, files) {
+                bucket.find(selector, {limit: limit}).toArray(function (err, files) {
                     done(err, files);
                 });
 
@@ -48,7 +48,6 @@ Meteor.methods({
     },
 
     'uploadFile': function (bucketName, blob, fileName, contentType, metaData, aliases) {
-        var mongodbApi = require('mongodb');
         if (metaData) {
             convertJSONtoBSON(metaData);
         }
@@ -78,8 +77,6 @@ Meteor.methods({
     },
 
     'getFile': function (bucketName, fileId) {
-        var mongodbApi = require('mongodb');
-
         LOGGER.info('[getFile]', bucketName, fileId);
 
         var result = Async.runSync(function (done) {

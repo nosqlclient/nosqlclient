@@ -1,6 +1,8 @@
 /**
  * Created by RSercan on 5.3.2016.
  */
+var mongodbApi = require('mongodb');
+var tunnelSsh = new require('tunnel-ssh');
 
 Meteor.methods({
     'listCollectionNames': function (dbName) {
@@ -72,7 +74,6 @@ Meteor.methods({
                     config.password = connection.sshPassword;
                 }
 
-                var tunnelSsh = new require('tunnel-ssh');
                 tunnelSsh(config, function (error) {
                     if (error) {
                         done(new Meteor.Error(error.message), null);
@@ -159,15 +160,13 @@ Meteor.methods({
 });
 
 var proceedConnectingMongodb = function (connectionUrl, connectionOptions, done) {
-    var mongodbApi = require('mongodb').MongoClient;
-
     if (!connectionOptions) {
         connectionOptions = {};
     }
 
     connectionOptions.uri_decode_auth = true;
 
-    mongodbApi.connect(connectionUrl, connectionOptions, function (mainError, db) {
+    mongodbApi.MongoClient.connect(connectionUrl, connectionOptions, function (mainError, db) {
         if (mainError || db == null || db == undefined) {
             LOGGER.error(mainError, db);
             done(mainError, db);

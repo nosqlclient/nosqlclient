@@ -1,11 +1,14 @@
 /**
  * Created by RSercan on 17.1.2016.
  */
+var backup = require('mongodb-backup');
+var restore = require('mongodb-restore');
+var fs = require('fs');
+
 Meteor.methods({
     'restoreDump': function (connectionId, dumpInfo) {
         var connection = Connections.findOne({_id: connectionId});
         var connectionUrl = getConnectionUrl(connection);
-        var restore = require('mongodb-restore');
         var path = dumpInfo.filePath.substring(0, dumpInfo.filePath.lastIndexOf('/'));
         var fileName = dumpInfo.filePath.substring(dumpInfo.filePath.lastIndexOf('/') + 1);
 
@@ -35,8 +38,6 @@ Meteor.methods({
         var connectionUrl = getConnectionUrl(connection);
         var fileName = connection.databaseName + "_" + date.getTime() + ".tar";
         var fullFilePath = path + "/" + fileName;
-        var backup = require('mongodb-backup');
-        var fs = require('fs');
 
         LOGGER.info('[takeDump]', connectionUrl, path);
         try {

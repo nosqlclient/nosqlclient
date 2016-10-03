@@ -1,6 +1,6 @@
 var toastr = require('toastr');
 var Ladda = require('ladda');
-require( 'bootstrap-filestyle' );
+require('bootstrap-filestyle');
 /**
  * Created by RSercan on 13.2.2016.
  */
@@ -18,18 +18,15 @@ Template.uploadFile.events({
         var blob = $('#inputFile')[0].files[0];
         if (blob) {
             swal({
-                title: "Additional Information",
-                text: "Do you want to add additional information to your file ?",
-                type: "info",
+                title: "Are you sure ?",
+                text: "Are you sure to continue uploading file ?",
+                type: "warning",
                 showCancelButton: true,
                 confirmButtonColor: "#DD6B55",
                 confirmButtonText: "Yes!",
                 cancelButtonText: "No"
             }, function (isConfirm) {
-                if (!isConfirm) {
-                    Template.uploadFile.proceedUploading(blob);
-                }
-                else {
+                if (isConfirm) {
                     $('#fileInfoModal').modal('show');
                 }
             });
@@ -38,7 +35,7 @@ Template.uploadFile.events({
 });
 
 Template.uploadFile.proceedUploading = function (blob, contentType, metaData, aliases) {
-    
+
     var l = Ladda.create(document.querySelector('#btnUpload'));
     l.start();
     var fileReader = new FileReader();
@@ -50,8 +47,8 @@ Template.uploadFile.proceedUploading = function (blob, contentType, metaData, al
             else {
                 toastr.success('Successfuly uploaded file');
                 Template.fileManagement.initFileInformations();
-                
-   Ladda.stopAll();
+
+                Ladda.stopAll();
             }
         });
     };

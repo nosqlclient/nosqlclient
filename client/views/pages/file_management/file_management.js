@@ -137,8 +137,6 @@ Template.fileManagement.proceedShowingMetadata = function (id, jsonEditor) {
 };
 
 Template.fileManagement.initFileInformations = function () {
-    // loading button
-    
     var l = Ladda.create(document.querySelector('#btnReloadFiles'));
     l.start();
 
@@ -152,7 +150,7 @@ Template.fileManagement.initFileInformations = function () {
         return;
     }
 
-    Meteor.call('getFileInfos', $('#txtBucketName').val(), selector, function (err, result) {
+    Meteor.call('getFileInfos', $('#txtBucketName').val(), selector,$('#txtFileFetchLimit').val(), function (err, result) {
             if (err || result.error) {
                 Template.showMeteorFuncError(err, result, "Couldn't get file informations");
                 return;
