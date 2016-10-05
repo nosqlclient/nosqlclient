@@ -1,6 +1,6 @@
 var toastr = require('toastr');
 var Ladda = require('ladda');
-var Clipboard = require('clipboard');
+//var Clipboard = require('clipboard');
 /**
  * Created by RSercan on 9.4.2016.
  */
@@ -12,7 +12,7 @@ Template.userManagement.onRendered(function () {
         return;
     }
 
-    
+
     var l = Ladda.create(document.querySelector('#btnRefreshUsers'));
     l.start();
 
@@ -24,7 +24,7 @@ Template.userManagement.onRendered(function () {
     chckRunOnAdminDB.iCheck('uncheck');
 
     Template.userManagement.initUserTree();
-    new Clipboard('.reference');
+    //new Clipboard('.reference');
 });
 
 Template.userManagement.helpers({
@@ -37,17 +37,17 @@ Template.userManagement.helpers({
 });
 
 Template.userManagement.events({
-    'click a': function (e) {
-        e.preventDefault();
-        if (e.currentTarget && e.currentTarget.host && e.currentTarget.host.indexOf('docs.mongodb.org') != -1) {
-            toastr.success('Link has been copied to clipboard !');
-        }
-    },
+    //'click a': function (e) {
+    //   e.preventDefault();
+    //   if (e.currentTarget && e.currentTarget.host && e.currentTarget.host.indexOf('docs.mongodb.org') != -1) {
+    //       toastr.success('Link has been copied to clipboard !');
+    //    }
+    //},
 
     'click #btnRefreshUsers': function (e) {
         e.preventDefault();
 
-        
+
         var l = Ladda.create(document.querySelector('#btnRefreshUsers'));
         l.start();
 
@@ -209,7 +209,7 @@ Template.userManagement.getNodeInformation = function (node) {
 };
 
 Template.userManagement.getActionInfo = function (action) {
-    
+
     var l = Ladda.create(document.querySelector('#btnRefreshUsers'));
     l.start();
     loading = true;
@@ -222,13 +222,13 @@ Template.userManagement.getActionInfo = function (action) {
         }
 
         loading = false;
-                     
+
         Ladda.stopAll();
     });
 };
 
 Template.userManagement.getResourceInfo = function (resourceType) {
-    
+
     var l = Ladda.create(document.querySelector('#btnRefreshUsers'));
     l.start();
     loading = true;
@@ -241,13 +241,13 @@ Template.userManagement.getResourceInfo = function (resourceType) {
         }
 
         loading = false;
-                     
+
         Ladda.stopAll();
     });
 };
 
 Template.userManagement.getRoleInfo = function (role) {
-    
+
     var l = Ladda.create(document.querySelector('#btnRefreshUsers'));
     l.start();
     loading = true;
