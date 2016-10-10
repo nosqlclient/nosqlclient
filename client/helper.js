@@ -131,6 +131,7 @@ Template.convertAndCheckJSON = function (json) {
     return result;
 };
 
+
 Template.convertAndCheckJSONAsArray = function (json) {
     if (json == "") return [];
     var result = [];
