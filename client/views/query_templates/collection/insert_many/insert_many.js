@@ -26,17 +26,11 @@ Template.insertMany.executeQuery = function (historyParams) {
     var selectedCollection = Session.get(Template.strSessionSelectedCollection);
     var docs = historyParams ? JSON.stringify(historyParams.docs) : ace.edit("aceDocs").getSession().getValue();
 
-    docs = Template.convertAndCheckJSON(docs);
+    docs = Template.convertAndCheckJSONAsArray(docs);
     if (docs["ERROR"]) {
         toastr.error("Syntax error on docs: " + docs["ERROR"]);
         Ladda.stopAll();
         return;
-    }
-
-    if (!(docs instanceof Array)) {
-        var newArray = [];
-        newArray.push(docs);
-        docs = newArray;
     }
 
     var params = {
