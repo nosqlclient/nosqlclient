@@ -35,16 +35,34 @@ Template.selector.onRendered(function () {
             gutters: ["CodeMirror-linenumbers", "CodeMirror-foldgutter"]
         });
 
+
         codeMirror.on("change", function () {
             Session.set(Template.strSessionSelectorValue, codeMirror.getValue());
         });
 
         codeMirror.setSize('%100', 100);
-        //codeMirror.on("keyup", function (cm, event) {
-        //    if (!cm.state.completionActive && event.keyCode != 13) {
-        //        CodeMirror.commands.autocomplete(cm, null, {completeSingle: false});
-        //    }
-        //});
+
+        CodeMirror.hint.javascript = function (editor) {
+            var list = Session.get(Template.strSessionDistinctFields) || [];
+            var cursor = editor.getCursor();
+            var currentLine = editor.getLine(cursor.line);
+            var start = cursor.ch;
+            var end = start;
+            while (end < currentLine.length && /[\w$]+/.test(currentLine.charAt(end))) ++end;
+            while (start && /[\w$]+/.test(currentLine.charAt(start - 1))) --start;
+            var curWord = start != end && currentLine.slice(start, end);
+            var regex = new RegExp('^' + curWord, 'i');
+            var result = {
+                list: (!curWord ? list : list.filter(function (item) {
+                    return item.match(regex);
+                })).sort(),
+                from: CodeMirror.Pos(cursor.line, start),
+                to: CodeMirror.Pos(cursor.line, end)
+            };
+
+            return result;
+        };
+
         divSelector.data('editor', codeMirror);
 
         $('.CodeMirror').resizable({
