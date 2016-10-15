@@ -4,14 +4,14 @@ var Ladda = require('ladda');
  * Created by RSercan on 10.1.2016.
  */
 Template.command.onRendered(function () {
-    Template.initializeAceEditor('aceCommand', Template.command.executeQuery);
+    Template.initializeCodeMirror($('#divCommand'), 'txtCommand');
     Template.changeConvertOptionsVisibility(true);
     Template.changeRunOnAdminOptionVisibility(true);
 });
 
 Template.command.executeQuery = function () {
     Template.adminQueries.initExecuteQuery();
-    var command = ace.edit("aceCommand").getSession().getValue();
+    var command = Template.getCodeMirrorValue($('#divCommand'));
 
     command = Template.convertAndCheckJSON(command);
     if (command["ERROR"]) {

@@ -2,11 +2,9 @@
     {{> selector}}
 
     <div class="form-group">
-        <label class="col-lg-1 control-label">replacement</label>
-        <div class="col-lg-11">
-            <pre class="form-control" id='aceReplacement' style="height: 150px;"></pre>
-            <span class="help-block m-b-none">By default, valid <strong>ObjectID</strong> and <strong>ISODate (YYYY-MM-DD
-                HH:mm:ss)</strong> strings are being converted into MongoDB objects, <strong>uncheck</strong> right upper corner checkboxes to change this behaviour</span>
+        <label class="col-lg-1 control-label">Replacement</label>
+        <div id="divReplacement" class="col-lg-11">
+            <textarea id="txtReplacement" class="form-control"></textarea>
         </div>
     </div>
 

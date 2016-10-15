@@ -2,12 +2,12 @@
  * Created by RSercan on 2.1.2016.
  */
 Template.search.onRendered(function () {
-    Template.initializeAceEditor('aceSearch', Template.geoHaystackSearch.executeQuery);
+    Template.initializeCodeMirror($('#divSearch'), 'txtSearch');
 });
 
 Template.geoHaystackSearchOptions.getOptions = function () {
     var result = {};
-    Template.checkAceEditorOption("SEARCH", "aceSearch", result, GEO_HAYSTACK_SEARCH_OPTIONS);
+    Template.checkAndAddOption("SEARCH", $('#divSearch'), result, GEO_HAYSTACK_SEARCH_OPTIONS);
 
     if ($.inArray("MAX_DISTANCE", Session.get(Template.strSessionSelectedOptions)) != -1) {
         var maxDistanceValue = $('#inputMaxDistance').val();

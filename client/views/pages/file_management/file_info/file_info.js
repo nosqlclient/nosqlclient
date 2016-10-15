@@ -3,7 +3,7 @@ var toastr = require('toastr');
  * Created by RSercan on 14.2.2016.
  */
 Template.fileInfo.onRendered(function () {
-    Template.initializeAceEditor('aceMetaData', 'null');
+    Template.initializeCodeMirror($('#divMetadata'), 'txtMetadata');
 });
 
 Template.fileInfo.events({
@@ -29,7 +29,7 @@ Template.fileInfo.events({
         e.preventDefault();
         var contentType = $('#inputContentType').val();
         var blob = $('#inputFile')[0].files[0];
-        var metaData = ace.edit("aceMetaData").getSession().getValue();
+        var metaData = Template.getCodeMirrorValue($('#divMetadata'));
         metaData = Template.convertAndCheckJSON(metaData);
         if (metaData["ERROR"]) {
             toastr.error("Syntax error on metaData: " + metaData["ERROR"]);

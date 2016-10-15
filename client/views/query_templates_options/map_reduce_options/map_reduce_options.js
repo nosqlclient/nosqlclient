@@ -2,11 +2,15 @@
  * Created by RSercan on 3.1.2016.
  */
 Template.out.onRendered(function () {
-    Template.initializeAceEditor('aceOut', Template.mapReduce.executeQuery);
+    Template.initializeCodeMirror($('#divOut'), 'txtOut');
 });
 
 Template.scope.onRendered(function () {
-    Template.initializeAceEditor('aceScope', Template.mapReduce.executeQuery);
+    Template.initializeCodeMirror($('#divScope'), 'txtScope');
+});
+
+Template.finalize.onRendered(function () {
+    Template.initializeCodeMirror($('#divFinalize'), 'txtFinalize');
 });
 
 Template.verbose.onRendered(function () {
@@ -21,29 +25,16 @@ Template.bypassDocumentValidation.onRendered(function () {
     });
 });
 
-Template.finalize.onRendered(function () {
-    AceEditor.instance('aceFinalize', {
-        mode: "javascript",
-        theme: 'dawn'
-    }, function (editor) {
-        editor.$blockScrolling = Infinity;
-        editor.getSession().setOption("useWorker", false);
-        editor.setOptions({
-            fontSize: "11pt",
-            showPrintMargin: false
-        });
-    });
-});
 
 Template.mapReduceOptions.getOptions = function () {
     var result = {};
-    Template.checkAceEditorOption("OUT", "aceOut", result, MAP_REDUCE_OPTIONS);
+    Template.checkAndAddOption("OUT", $('#divOut'), result, MAP_REDUCE_OPTIONS);
     Template.checkCodeMirrorSelectorForOption("QUERY", result, MAP_REDUCE_OPTIONS);
-    Template.checkAceEditorOption("SORT", "aceSort", result, MAP_REDUCE_OPTIONS);
-    Template.checkAceEditorOption("SCOPE", "aceScope", result, MAP_REDUCE_OPTIONS);
+    Template.checkAndAddOption("SORT", $('#divSort'), result, MAP_REDUCE_OPTIONS);
+    Template.checkAndAddOption("SCOPE", $('#divScope'), result, MAP_REDUCE_OPTIONS);
 
     if ($.inArray("FINALIZE", Session.get(Template.strSessionSelectedOptions)) != -1) {
-        var finalize = ace.edit("aceFinalize").getSession().getValue();
+        var finalize = Template.getCodeMirrorValue($('#divFinalize'));
         if (finalize.parseFunction() == null) {
             result["ERROR"] = "Syntax Error on finalize, not a valid function";
             return;

@@ -10,8 +10,8 @@
 <template name="customData">
     <div class="form-group">
         <label class="col-lg-1 control-label">Custom data</label>
-        <div class="col-lg-11">
-            <pre class="form-control" id='aceCustomData'></pre>
+        <div id="divCustomData" class="col-lg-11">
+            <textarea id="txtCustomData" class="form-control"></textarea>
             <span class="help-block m-b-none">Custom data associated with the user <strong>(only Mongodb 2.6 or
                 higher)</strong><br/>
                 By default, valid <strong>ObjectID</strong> and <strong>ISODate (YYYY-MM-DD
@@ -23,8 +23,8 @@
 <template name="roles">
     <div class="form-group">
         <label class="col-lg-1 control-label">Roles</label>
-        <div class="col-lg-11">
-            <pre class="form-control" id='aceRoles'></pre>
+        <div id="divRoles" class="col-lg-11">
+            <textarea id="txtRoles" class="form-control"></textarea>
             <span class="help-block m-b-none">Array | Object<br/>Creating a user without roles is deprecated in <strong>MongoDB
                 >= 2.6</strong></span>
         </div>

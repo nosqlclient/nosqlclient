@@ -21,8 +21,8 @@ Template.background.onRendered(function () {
 
 Template.createIndexOptions.getOptions = function () {
     var result = {};
-    Template.checkAceEditorOption("MAX", "aceMax", result, CURSOR_OPTIONS);
-    Template.checkAceEditorOption("MIN", "aceMin", result, CURSOR_OPTIONS);
+    Template.checkAndAddOption("MAX", $('#divMax'), result, CURSOR_OPTIONS);
+    Template.checkAndAddOption("MIN", $('#divMin'), result, CURSOR_OPTIONS);
 
     if ($.inArray("UNIQUE", Session.get(Template.strSessionSelectedOptions)) != -1) {
         var uniqueVal = $('#divUnique').iCheck('update')[0].checked;

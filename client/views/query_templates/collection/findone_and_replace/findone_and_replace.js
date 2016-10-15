@@ -4,23 +4,10 @@ var Ladda = require('ladda');
  * Created by RSercan on 1.1.2016.
  */
 Template.findOneAndReplace.onRendered(function () {
-    Template.findOneAndReplace.initializeAceEditor();
+    Template.initializeCodeMirror($('#divReplacement'), 'txtReplacement');
     Template.findOneAndReplace.initializeOptions();
     Template.changeConvertOptionsVisibility(true);
 });
-
-Template.findOneAndReplace.initializeAceEditor = function () {
-    AceEditor.instance('aceReplacement', {
-        mode: "javascript",
-        theme: 'dawn'
-    }, function (editor) {
-        editor.$blockScrolling = Infinity;
-        editor.setOptions({
-            fontSize: "11pt",
-            showPrintMargin: false
-        });
-    });
-};
 
 Template.findOneAndReplace.initializeOptions = function () {
     var cmb = $('#cmbFindOneModifyOptions');
@@ -39,7 +26,7 @@ Template.findOneAndReplace.executeQuery = function (historyParams) {
     var selectedCollection = Session.get(Template.strSessionSelectedCollection);
     var options = historyParams ? historyParams.options : Template.findOneModifyOptions.getOptions();
     var selector = historyParams ? JSON.stringify(historyParams.selector) : Template.selector.getValue();
-    var replaceObject = historyParams ? JSON.stringify(historyParams.replaceObject) : ace.edit("aceReplacement").getSession().getValue();
+    var replaceObject = historyParams ? JSON.stringify(historyParams.replaceObject) : Template.getCodeMirrorValue($('#divReplacement'));
 
     selector = Template.convertAndCheckJSON(selector);
     if (selector["ERROR"]) {

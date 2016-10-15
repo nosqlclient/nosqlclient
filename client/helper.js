@@ -180,9 +180,9 @@ Template.checkCodeMirrorSelectorForOption = function (option, result, optionEnum
     }
 };
 
-Template.checkAceEditorOption = function (option, editorId, result, optionEnum) {
+Template.checkAndAddOption = function (option, divSelector, result, optionEnum) {
     if ($.inArray(option, Session.get(Template.strSessionSelectedOptions)) != -1) {
-        var val = ace.edit(editorId).getSession().getValue();
+        var val = Template.getCodeMirrorValue(divSelector);
 
         if (val == "") result[optionEnum[option]] = {};
         else {
@@ -274,38 +274,6 @@ Template.getDistinctKeysForAutoComplete = function (selectedCollection) {
     });
 };
 
-Template.initializeAceEditor = function (id, evt) {
-    Tracker.autorun(function (e) {
-        var editor = AceEditor.instance(id, {
-            mode: "javascript",
-            theme: 'dawn'
-        });
-        if (editor.loaded !== undefined) {
-            e.stop();
-            editor.$blockScrolling = Infinity;
-            editor.setOptions({
-                fontSize: "11pt",
-                showPrintMargin: false
-            });
-
-            // remove newlines in pasted text
-            editor.on("paste", function (e) {
-                e.text = e.text.replace(/[\r\n]+/g, " ");
-            });
-            // make mouse position clipping nicer
-            editor.renderer.screenToTextCoordinates = function (x, y) {
-                var pos = this.pixelToScreenCoordinates(x, y);
-                return this.session.screenToDocumentPosition(
-                    Math.min(this.session.getScreenLength() - 1, Math.max(pos.row, 0)),
-                    Math.max(pos.column, 0)
-                );
-            };
-            // disable Enter Shift-Enter keys
-            editor.commands.bindKey("Enter|Shift-Enter", evt);
-        }
-    });
-};
-
 Template.registerHelper('isOptionSelected', function (option) {
     return $.inArray(option, Session.get(Template.strSessionSelectedOptions)) != -1;
 });
@@ -389,15 +357,13 @@ Template.initializeCodeMirror = function (divSelector, txtAreaId, keepValue) {
             while (start && /[\w$]+/.test(currentLine.charAt(start - 1))) --start;
             var curWord = start != end && currentLine.slice(start, end);
             var regex = new RegExp('^' + curWord, 'i');
-            var result = {
+            return {
                 list: (!curWord ? list : list.filter(function (item) {
                     return item.match(regex);
                 })).sort(),
                 from: CodeMirror.Pos(cursor.line, start),
                 to: CodeMirror.Pos(cursor.line, end)
             };
-
-            return result;
         };
 
         divSelector.data('editor', codeMirror);
@@ -417,6 +383,15 @@ Template.initializeCodeMirror = function (divSelector, txtAreaId, keepValue) {
     }
 };
 
+Template.setCodeMirrorValue = function (divSelector, val) {
+    if (divSelector.data('editor')) {
+        divSelector.data('editor').setValue(val);
+    }
+};
+
 Template.getCodeMirrorValue = function (divSelector) {
-    return divSelector.data('editor').getValue()
+    if (divSelector.data('editor')) {
+        return divSelector.data('editor').getValue();
+    }
+    throw 'Unexpected state, codemirror could not be found';
 };

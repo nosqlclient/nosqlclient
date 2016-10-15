@@ -3,8 +3,8 @@
  */
 Template.findOneModifyOptions.getOptions = function () {
     var result = {};
-    Template.checkAceEditorOption("PROJECTION", "aceProject", result, FINDONE_MODIFY_OPTIONS);
-    Template.checkAceEditorOption("SORT", "aceSort", result, FINDONE_MODIFY_OPTIONS);
+    Template.checkAndAddOption("PROJECTION", $('#divProject'), result, FINDONE_MODIFY_OPTIONS);
+    Template.checkAndAddOption("SORT", $('#divSort'), result, FINDONE_MODIFY_OPTIONS);
 
     if ($.inArray("RETURN_ORIGINAL", Session.get(Template.strSessionSelectedOptions)) != -1) {
         var returnOrgVal = $('#divReturnOriginal').iCheck('update')[0].checked;

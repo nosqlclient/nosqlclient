@@ -8,6 +8,13 @@ Template.manageUsers.onRendered(function () {
     Template.initiateDatatable($('#tblUsers'), Template.strSessionUsermanagementUser);
     Template.initiateDatatable($('#tblUserRoles'));
     Template.manageUsers.initiateRoleToAddTable();
+
+    $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+        var target = $(e.target).attr("href");
+        if (target == '#tab-2') {
+            Template.initializeCodeMirror($('#divCustomData'), 'txtCustomData');
+        }
+    });
 });
 
 Template.manageUsers.helpers({
@@ -38,7 +45,7 @@ Template.manageUsers.events({
             cancelButtonText: "No"
         }, function (isConfirm) {
             if (isConfirm) {
-                
+
                 var l = Ladda.create(document.querySelector('#btnCloseUMDB'));
                 l.start();
 
@@ -62,7 +69,7 @@ Template.manageUsers.events({
 
     'click .editor_show_custom_data': function (e) {
         e.preventDefault();
-        
+
         var l = Ladda.create(document.querySelector('#btnCloseUMDB'));
         l.start();
 
@@ -122,7 +129,7 @@ Template.manageUsers.events({
             return;
         }
 
-        var customData = ace.edit("aceCustomDataUM").getSession().getValue();
+        var customData = Template.getCodeMirrorValue($('#divCustomData'));
         if (customData) {
             try {
                 customData = JSON.parse(customData);
@@ -150,7 +157,7 @@ Template.manageUsers.events({
             command.pwd = passwordSelector.val();
         }
 
-        
+
         var l = Ladda.create(document.querySelector('#btnApplyAddEditUser'));
         l.start();
 
@@ -269,8 +276,8 @@ Template.manageUsers.events({
         inputPasswordSelector.attr('placeholder', 'Password');
 
         $('#addEditUserModalTitle').text('Add User');
-        Template.manageUsers.loadCustomDataEditor();
-        ace.edit("aceCustomDataUM").setValue('');
+        $('.nav-tabs a[href="#tab-1"]').tab('show');
+        Template.setCodeMirrorValue($('#divCustomData'), '');
     },
 
     'click .editor_edit': function (e) {
@@ -282,7 +289,7 @@ Template.manageUsers.events({
 
 Template.manageUsers.initUsers = function () {
     // loading button
-    
+
     var l = Ladda.create(document.querySelector('#btnCloseUMDB'));
     l.start();
 
@@ -332,8 +339,8 @@ Template.manageUsers.initUsers = function () {
             });
         }
 
-                    
-         Ladda.stopAll();
+
+        Ladda.stopAll();
     });
 };
 
@@ -391,26 +398,9 @@ Template.manageUsers.populateUserRolesToSave = function () {
     return result;
 };
 
-Template.manageUsers.loadCustomDataEditor = function () {
-    Tracker.autorun(function (e) {
-        var editor = AceEditor.instance('aceCustomDataUM', {
-            mode: "javascript",
-            theme: 'dawn'
-        });
-        if (editor.loaded !== undefined) {
-            e.stop();
-            editor.$blockScrolling = Infinity;
-            editor.setOptions({
-                fontSize: "11pt",
-                showPrintMargin: false
-            });
-        }
-    });
-};
-
 Template.manageUsers.popEditUserModal = function (user) {
     $('#addEditUserModalTitle').text('Edit User');
-    
+
     var l = Ladda.create(document.querySelector('#btnCloseUMDB'));
     l.start();
 
@@ -430,6 +420,8 @@ Template.manageUsers.popEditUserModal = function (user) {
             Template.showMeteorFuncError(err, result, "Couldn't fetch userInfo");
         }
         else {
+            $('#editUserModal').modal('show');
+
             var user = result.result.users[0];
             Template.manageUsers.populateUserRolesTable(user.roles);
 
@@ -437,17 +429,14 @@ Template.manageUsers.popEditUserModal = function (user) {
             inputUsernameSelector.val(user.user);
             inputUsernameSelector.prop('disabled', true);
 
-            // set customData
-            Template.manageUsers.loadCustomDataEditor();
-            if (user.customData) {
-                ace.edit("aceCustomDataUM").setValue(JSON.stringify(user.customData, null, '\t'), -1);
-            }
-
             var inputPasswordSelector = $('#inputPasswordUM');
             inputPasswordSelector.val('');
             inputPasswordSelector.attr('placeholder', 'Leave this blank to keep old one');
 
-            $('#editUserModal').modal('show');
+            if (user.customData) {
+                $('.nav-tabs a[href="#tab-2"]').tab('show');
+                Template.setCodeMirrorValue($('#divCustomData'), JSON.stringify(user.customData, null, '\t'));
+            }
         }
 
         Ladda.stopAll();

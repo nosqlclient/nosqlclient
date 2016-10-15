@@ -4,27 +4,14 @@ var Ladda = require('ladda');
  * Created by RSercan on 3.1.2016.
  */
 Template.insertMany.onRendered(function () {
-    Template.insertMany.initializeAceEditor();
+    Template.initializeCodeMirror($('#divDocs'), 'txtDocs');
     Template.changeConvertOptionsVisibility(true);
 });
-
-Template.insertMany.initializeAceEditor = function () {
-    AceEditor.instance('aceDocs', {
-        mode: "javascript",
-        theme: 'dawn'
-    }, function (editor) {
-        editor.$blockScrolling = Infinity;
-        editor.setOptions({
-            fontSize: "11pt",
-            showPrintMargin: false
-        });
-    });
-};
 
 Template.insertMany.executeQuery = function (historyParams) {
     Template.browseCollection.initExecuteQuery();
     var selectedCollection = Session.get(Template.strSessionSelectedCollection);
-    var docs = historyParams ? JSON.stringify(historyParams.docs) : ace.edit("aceDocs").getSession().getValue();
+    var docs = historyParams ? JSON.stringify(historyParams.docs) : Template.getCodeMirrorValue($('#divDocs'));
 
     docs = Template.convertAndCheckJSONAsArray(docs);
     if (docs["ERROR"]) {

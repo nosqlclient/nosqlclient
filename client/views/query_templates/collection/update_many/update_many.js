@@ -25,7 +25,7 @@ Template.updateMany.executeQuery = function (historyParams) {
     var selectedCollection = Session.get(Template.strSessionSelectedCollection);
     var options = historyParams ? historyParams.options : Template.updateMany.getOptions();
     var selector = historyParams ? JSON.stringify(historyParams.selector) : Template.selector.getValue();
-    var setObject = historyParams ? JSON.stringify(historyParams.setObject) : ace.edit("aceSet").getSession().getValue();
+    var setObject = historyParams ? JSON.stringify(historyParams.setObject) : Template.getCodeMirrorValue($('#divSet'));
 
     selector = Template.convertAndCheckJSON(selector);
     if (selector["ERROR"]) {
