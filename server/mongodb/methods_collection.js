@@ -2,6 +2,15 @@
  * Created by RSercan on 27.12.2015.
  */
 Meteor.methods({
+    'bulkWrite': function (selectedCollection, operations, convertIds, convertDates) {
+        var methodArray = [
+            {
+                "bulkWrite": [operations]
+            }
+        ];
+        return proceedQueryExecution(selectedCollection, methodArray, convertIds, convertDates);
+    },
+
     'updateOne': function (selectedCollection, selector, setObject, options, convertIds, convertDates) {
         var methodArray = [
             {
