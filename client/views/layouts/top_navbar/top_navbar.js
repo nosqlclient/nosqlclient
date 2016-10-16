@@ -53,46 +53,58 @@ Template.topNavbar.onRendered(function () {
     // $('body').addClass('fixed-nav');
     // $(".navbar-static-top").removeClass('navbar-static-top').addClass('navbar-fixed-top');
 
-    $(":file").filestyle({icon: false, input: false});
+    $(":file").filestyle({});
     Template.topNavbar.initIChecks();
     Template.topNavbar.initChosen();
 });
 
 
 Template.topNavbar.events({
+    'click #btnRefreshCollections': function () {
+        Template.topNavbar.connect(true);
+    },
+
     'change #inputCertificate': function () {
         var blob = $('#inputCertificate')[0].files[0];
+        var fileInput = $('#inputCertificate').siblings('.bootstrap-filestyle').children('input');
+
         if (blob) {
-            $('#inputCertificatePath').val(blob.name);
+            fileInput.val(blob.name);
         } else {
-            $('#inputCertificatePath').val('');
+            fileInput.val('');
         }
     },
 
     'change #inputSshCertificate': function () {
         var blob = $('#inputSshCertificate')[0].files[0];
+        var fileInput = $('#inputSshCertificate').siblings('.bootstrap-filestyle').children('input');
+
         if (blob) {
-            $('#inputSshCertificatePath').val(blob.name);
+            fileInput.val(blob.name);
         } else {
-            $('#inputSshCertificatePath').val('');
+            fileInput.val('');
         }
     },
 
     'change #inputRootCa': function () {
         var blob = $('#inputRootCa')[0].files[0];
+        var fileInput = $('#inputRootCa').siblings('.bootstrap-filestyle').children('input');
+
         if (blob) {
-            $('#inputRootCaPath').val(blob.name);
+            fileInput.val(blob.name);
         } else {
-            $('#inputRootCaPath').val('');
+            fileInput.val('');
         }
     },
 
     'change #inputCertificateKey': function () {
         var blob = $('#inputCertificateKey')[0].files[0];
+        var fileInput = $('#inputCertificateKey').siblings('.bootstrap-filestyle').children('input');
+
         if (blob) {
-            $('#inputCertificateKeyPath').val(blob.name);
+            fileInput.val(blob.name);
         } else {
-            $('#inputCertificateKeyPath').val('');
+            fileInput.val('');
         }
     },
 
@@ -108,7 +120,12 @@ Template.topNavbar.events({
         }
     },
 
-    'click #btnAboutMongoclient' : function(e){
+    'click #btnMigrateMongoclient': function (e) {
+        e.preventDefault();
+        $('#migrateMongoclientModal').modal('show');
+    },
+
+    'click #btnAboutMongoclient': function (e) {
         e.preventDefault();
         $('#aboutModal').modal('show');
     },
@@ -223,7 +240,7 @@ Template.topNavbar.events({
             }
             if (connection.sshCertificatePath) {
                 $("#cmbSshAuthType").val('Key File').trigger('chosen:updated');
-                $('#inputSshCertificatePath').val(connection.sshCertificatePath);
+                $('#inputSshCertificate').siblings('.bootstrap-filestyle').children('input').val(connection.sshCertificatePath);
                 $('#formSshPasswordAuth').hide();
                 $('#formSshCertificateAuth').show();
             }
@@ -252,15 +269,15 @@ Template.topNavbar.events({
                 $('#inputPassPhrase').val(connection.passPhrase);
 
                 if (connection.sslCertificatePath) {
-                    $('#inputCertificatePath').val(connection.sslCertificatePath);
+                    $('#inputCertificate').siblings('.bootstrap-filestyle').children('input').val(connection.sslCertificatePath);
                 }
 
                 if (connection.rootCACertificatePath) {
-                    $("#inputRootCaPath").val(connection.rootCACertificatePath);
+                    $('#inputRootCa').siblings('.bootstrap-filestyle').children('input').val(connection.rootCACertificatePath);
                 }
 
                 if (connection.certificateKeyPath) {
-                    $("#inputCertificateKeyPath").val(connection.certificateKeyPath);
+                    $('#inputCertificateKey').siblings('.bootstrap-filestyle').children('input').val(connection.certificateKeyPath);
                 }
 
             } else {
@@ -313,12 +330,12 @@ Template.topNavbar.events({
 
     'click #btnSaveConnection': function (e) {
         e.preventDefault();
-        var inputCertificatePathSelector = $('#inputCertificatePath');
-        var rootCertificatePathSelector = $("#inputRootCaPath");
-        var inputCertificateKeyPathSelector = $('#inputCertificateKeyPath');
+        var inputCertificatePathSelector = $('#inputCertificate').siblings('.bootstrap-filestyle').children('input');
+        var rootCertificatePathSelector = $('#inputRootCa').siblings('.bootstrap-filestyle').children('input');
+        var inputCertificateKeyPathSelector = $('#inputCertificateKey').siblings('.bootstrap-filestyle').children('input');
         var cmbSShAuthTypeSelector = $('#cmbSshAuthType');
         var inputSShPassPhraseSelector = $('#inputSshPassPhrase');
-        var inputSshCertificatePathSelector = $('#inputSshCertificatePath');
+        var inputSshCertificatePathSelector = $('#inputSshCertificate').siblings('.bootstrap-filestyle').children('input');
         var connection = {};
 
         connection.readFromSecondary = $('#inputReadFromSecondary').iCheck('update')[0].checked;
@@ -447,15 +464,11 @@ Template.topNavbar.clearAllFieldsOfConnectionModal = function () {
     $('#inputUser').val('');
     $('#inputPassword').val('');
     $('#inputAuthenticationDB').val('');
-    $("#inputCertificateKeyPath").val('');
-    $("#inputCertificatePath").val('');
     $("#inputPassPhrase").val('');
-    $("#inputRootCaPath").val('');
     $("#inputSshHostname").val('');
     $("#inputSshPort").val('22');
     $("#inputSshUsername").val('');
     $("#cmbSshAuthType").val('').trigger('chosen:updated');
-    $("#inputSshCertificatePath").val('');
     $("#inputSshPassPhrase").val('');
     $("#inputSshPassword").val('');
     $('#inputX509Username').val('');
@@ -486,7 +499,8 @@ Template.topNavbar.proceedSavingConnection = function (saveMethodName, connectio
 
 Template.topNavbar.proceedCertificateLoading = function (saveMethodName, connection, currentConnection) {
     var certificateKeySelector = $('#inputCertificateKey');
-    if (certificateKeySelector.get(0).files.length == 0 && currentConnection && currentConnection.certificateKey && $('#inputCertificateKeyPath').val()) {
+    var fileInput = $('#inputCertificateKey').siblings('.bootstrap-filestyle').children('input');
+    if (certificateKeySelector.get(0).files.length == 0 && currentConnection && currentConnection.certificateKey && fileInput.val()) {
         connection.certificateKey = currentConnection.certificateKey;
         Template.topNavbar.proceedSavingConnection(saveMethodName, connection);
     } else {
@@ -504,7 +518,9 @@ Template.topNavbar.proceedCertificateLoading = function (saveMethodName, connect
 
 Template.topNavbar.proceedRootCertificateLoading = function (saveMethodName, connection, currentConnection) {
     var rootCaSelector = $('#inputRootCa');
-    if (rootCaSelector.get(0).files.length == 0 && currentConnection && currentConnection.rootCACertificate && $('#inputRootCaPath').val()) {
+    var fileInput = $('#inputRootCa').siblings('.bootstrap-filestyle').children('input');
+
+    if (rootCaSelector.get(0).files.length == 0 && currentConnection && currentConnection.rootCACertificate && fileInput.val()) {
         connection.rootCACertificate = currentConnection.rootCACertificate;
         Template.topNavbar.proceedCertificateLoading(saveMethodName, connection, currentConnection);
     } else {
@@ -522,7 +538,9 @@ Template.topNavbar.proceedRootCertificateLoading = function (saveMethodName, con
 
 Template.topNavbar.loadCertificatesAndSave = function (saveMethodName, connection, currentConnection) {
     var sshCertificateSelector = $('#inputSshCertificate');
-    if (sshCertificateSelector.get(0).files.length == 0 && currentConnection && currentConnection.sshCertificate && $('#inputSshCertificatePath').val()) {
+    var fileInput = $('#inputSshCertificate').siblings('.bootstrap-filestyle').children('input');
+
+    if (sshCertificateSelector.get(0).files.length == 0 && currentConnection && currentConnection.sshCertificate && fileInput.val()) {
         connection.sshCertificate = currentConnection.sshCertificate;
         Template.topNavbar.proceedLoadingCertificates(saveMethodName, connection, currentConnection);
     } else {
@@ -540,9 +558,10 @@ Template.topNavbar.loadCertificatesAndSave = function (saveMethodName, connectio
 
 Template.topNavbar.proceedLoadingCertificates = function (saveMethodName, connection, currentConnection) {
     var certificateSelector = $('#inputCertificate');
+    var fileInput = $('#inputCertificate').siblings('.bootstrap-filestyle').children('input');
 
     if ($('#inputAuthCertificate').iCheck('update')[0].checked && !$('#inputUseUrl').iCheck('update')[0].checked) {
-        if (certificateSelector.get(0).files.length == 0 && currentConnection && currentConnection.sslCertificate && $('#inputCertificatePath').val()) {
+        if (certificateSelector.get(0).files.length == 0 && currentConnection && currentConnection.sslCertificate && fileInput.val()) {
             connection.sslCertificate = currentConnection.sslCertificate;
             Template.topNavbar.proceedRootCertificateLoading(saveMethodName, connection, currentConnection);
         }

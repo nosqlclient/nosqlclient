@@ -13,22 +13,40 @@
                 </form>
             </div>
             <ul class="nav navbar-top-links navbar-right">
-                <li>
-                    <a id="btnAboutMongoclient" href="">
-                        <i class="fa fa-warning"></i> About
+                <li class="dropdown">
+                    <a class="dropdown-toggle" data-toggle="dropdown" href="#" aria-expanded="false">
+                        <i class="fa fa-chevron-circle-down"></i> More
                     </a>
-                </li>
-                {{#if isConnected}}
-                    <li>
-                        <a id="btnSwitchDatabase" href="">
-                            <i class="fa fa-database"></i> Switch Database
-                        </a>
-                    </li>
-                {{/if}}
-                <li>
-                    <a href="{{pathFor route="settings"}}">
-                        <i class="fa fa-gears"></i> Settings
-                    </a>
+                    <ul class="dropdown-menu dropdown-alerts">
+                        {{#if isConnected}}
+                            <li>
+                                <a id="btnSwitchDatabase" href="">
+                                    <i class="fa fa-database"></i> Switch Database
+                                </a>
+                            </li>
+                            <li class="divider"></li>
+                            <li><a id="btnRefreshCollections" href="#"><i class="fa fa-refresh"></i> Refresh
+                                Collections</a></li>
+                            <li class="divider"></li>
+                        {{/if}}
+                        <li>
+                            <a href="{{pathFor route="settings"}}">
+                                <i class="fa fa-gears"></i> Settings
+                            </a>
+                        </li>
+                        <li class="divider"></li>
+                        <li>
+                            <a id="btnMigrateMongoclient">
+                                <i class="fa fa-download"></i> Import (Migrate) Existing Mongoclient
+                            </a>
+                        </li>
+                        <li class="divider"></li>
+                        <li>
+                            <a id="btnAboutMongoclient" href="">
+                                <i class="fa fa-globe"></i> About
+                            </a>
+                        </li>
+                    </ul>
                 </li>
                 <li>
                     {{#if isConnected}}
@@ -55,13 +73,49 @@
                             class="sr-only">Close</span></button>
                     <img src="logo/head_5.png" class="modal-icon"/>
                     <h4 class="modal-title">Mongoclient</h4>
-                    <huge class="font-bold">Version 1.4.0-SNAPSHOT<br/>Copyright R. Sercan Özdemir © 2016 <br/>MIT License
+                    <huge class="font-bold">Version 1.4.0-SNAPSHOT<br/>Copyright R. Sercan Özdemir © 2016 <br/>MIT
+                        License
                     </huge>
                 </div>
             </div>
         </div>
     </div>
 
+    <!-- MODAL Migrate Mongoclient-->
+    <div class="modal inmodal" id="migrateMongoclientModal" tabindex="-1" role="dialog" aria-hidden="true"
+         style="display: none;">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content animated bounceInRight">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span><span
+                            class="sr-only">Close</span></button>
+                    <i class="fa fa-download modal-icon"></i>
+                    <h4 class="modal-title">Import Existing Mongoclient Connections/Settings</h4>
+                </div>
+                <div class="modal-body">
+                    <form class="form-horizontal">
+                        <div class="form-group">
+                            <label class="col-lg-3 control-label">Existing Mongoclient Path </label>
+                            <div class="col-lg-9">
+                                <input class="form-control filestyle" type="file"
+                                       webkitdirectory directory
+                                       id="inputExistingMongoclient"
+                                       data-buttonName="btn-primary">
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <div class="pull-left">
+                        <button type="button" class="btn btn-white" data-dismiss="modal">Close</button>
+                    </div>
+                    <button id="btnProceedMigrate" title="Import Now !" type="button" disabled="true"
+                            class="btn btn-primary ladda-button" data-style="contract">Import
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <!-- MODAL Switch Database-->
     <div class="modal inmodal" id="switchDatabaseModal" tabindex="-1" role="dialog" aria-hidden="true"
@@ -305,13 +359,9 @@
                                         <div class="form-group">
                                             <label class="col-lg-2 control-label">Certificate </label>
                                             <div class="col-lg-10">
-                                                <div class="input-group">
-                                                    <input class="form-control" type="text" id="inputCertificatePath"
-                                                           disabled="true">
-                                                    <input class="input-group-btn filestyle" type="file"
-                                                           id="inputCertificate"
-                                                           data-buttonName="btn-primary">
-                                                </div>
+                                                <input class="form-control filestyle" type="file"
+                                                       id="inputCertificate"
+                                                       data-buttonName="btn-primary">
                                             </div>
                                         </div>
 
@@ -327,27 +377,18 @@
                                             <label class="col-lg-2 control-label">Certificate Key File
                                             </label>
                                             <div class="col-lg-10">
-                                                <div class="input-group">
-                                                    <input class="form-control" type="text"
-                                                           disabled="true"
-                                                           id="inputCertificateKeyPath">
-                                                    <input class="input-group-btn filestyle" type="file"
-                                                           id="inputCertificateKey"
-                                                           data-buttonName="btn-primary">
-                                                </div>
+                                                <input class="form-control filestyle" type="file"
+                                                       id="inputCertificateKey"
+                                                       data-buttonName="btn-primary">
                                             </div>
                                         </div>
 
                                         <div class="form-group">
                                             <label class="col-lg-2 control-label">ROOT CA file </label>
                                             <div class="col-lg-10">
-                                                <div class="input-group">
-                                                    <input class="form-control" type="text" id="inputRootCaPath"
-                                                           disabled="true">
-                                                    <input class="input-group-btn filestyle" type="file"
-                                                           id="inputRootCa"
-                                                           data-buttonName="btn-primary">
-                                                </div>
+                                                <input class="form-control filestyle" type="file"
+                                                       id="inputRootCa"
+                                                       data-buttonName="btn-primary">
                                             </div>
                                         </div>
 
@@ -468,13 +509,9 @@
                                         <div class="form-group">
                                             <label class="col-lg-2 control-label">Certificate </label>
                                             <div class="col-lg-10">
-                                                <div class="input-group">
-                                                    <input class="form-control" type="text" id="inputSshCertificatePath"
-                                                           disabled="true">
-                                                    <input class="input-group-btn filestyle" type="file"
-                                                           id="inputSshCertificate"
-                                                           data-buttonName="btn-primary">
-                                                </div>
+                                                <input class="form-control filestyle" type="file"
+                                                       id="inputSshCertificate"
+                                                       data-buttonName="btn-primary">
                                             </div>
                                         </div>
                                         <div class="form-group">
