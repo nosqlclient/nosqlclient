@@ -18,6 +18,11 @@ Template.find.initializeOptions = function () {
 
     cmb.chosen();
     Template.setOptionsComboboxChangeEvent(cmb);
+
+    $('#divExecuteExplain').iCheck({
+        checkboxClass: 'icheckbox_square-green'
+    });
+    $('#inputExecuteExplain').iCheck('uncheck');
 };
 
 Template.find.executeQuery = function (historyParams) {
@@ -84,8 +89,9 @@ Template.find.proceedFindQuery = function (selectedCollection, selector, cursorO
 
     var convertIds = $('#aConvertObjectIds').iCheck('update')[0].checked;
     var convertDates = $('#aConvertIsoDates').iCheck('update')[0].checked;
+    var executeExplain = $('#inputExecuteExplain').iCheck('update')[0].checked;
 
-    Meteor.call("find", selectedCollection, selector, cursorOptions, convertIds, convertDates, function (err, result) {
+    Meteor.call("find", selectedCollection, selector, cursorOptions, executeExplain, convertIds, convertDates, function (err, result) {
         Template.renderAfterQueryExecution(err, result, false, "find", params, saveHistory);
     });
 };

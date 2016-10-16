@@ -725,7 +725,6 @@ Template.topNavbar.initIChecks = function () {
         formCertificateAuthSelector.show();
     });
 
-
     inputReadFromSecondary.iCheck('uncheck');
 
     inputUseX509Username.iCheck('uncheck');

@@ -176,7 +176,7 @@ Meteor.methods({
         return proceedQueryExecution(selectedCollection, methodArray, convertIds, convertDates);
     },
 
-    'find': function (selectedCollection, selector, cursorOptions, convertIds, convertDates) {
+    'find': function (selectedCollection, selector, cursorOptions, executeExplain, convertIds, convertDates) {
         var methodArray = [
             {
                 "find": [selector]
@@ -189,7 +189,12 @@ Meteor.methods({
                 methodArray.push(obj);
             }
         }
-        methodArray.push({'toArray': []});
+
+        if(executeExplain){
+            methodArray.push({'explain': []});
+        }else{
+            methodArray.push({'toArray': []});
+        }
 
         return proceedQueryExecution(selectedCollection, methodArray, convertIds, convertDates);
     },
