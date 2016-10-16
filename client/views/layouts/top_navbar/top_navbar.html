@@ -97,10 +97,10 @@
                         <div class="form-group">
                             <label class="col-lg-3 control-label">Existing Mongoclient Path </label>
                             <div class="col-lg-9">
-                                <input class="form-control filestyle" type="file"
-                                       webkitdirectory directory
-                                       id="inputExistingMongoclient"
+                                //FIND A WAY TO MAKE IT POSSIBLE THROUGH READING OTHER MONGOCLIENT
+                                <input class="form-control" type="text" id="inputExistingMongoclient"
                                        data-buttonName="btn-primary">
+                                <span class="help-block m-b-none">Example: <b>/home/user/mongoclient/</b></span>
                             </div>
                         </div>
                     </form>
@@ -109,7 +109,7 @@
                     <div class="pull-left">
                         <button type="button" class="btn btn-white" data-dismiss="modal">Close</button>
                     </div>
-                    <button id="btnProceedMigrate" title="Import Now !" type="button" disabled="true"
+                    <button id="btnProceedMigrate" title="Import Now !" type="button"
                             class="btn btn-primary ladda-button" data-style="contract">Import
                     </button>
                 </div>

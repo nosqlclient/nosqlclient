@@ -53,13 +53,17 @@ Template.topNavbar.onRendered(function () {
     // $('body').addClass('fixed-nav');
     // $(".navbar-static-top").removeClass('navbar-static-top').addClass('navbar-fixed-top');
 
-    $(":file").filestyle({});
+    $(".filestyle").filestyle({});
     Template.topNavbar.initIChecks();
     Template.topNavbar.initChosen();
 });
 
 
 Template.topNavbar.events({
+    'click #btnProceedMigrate': function (e) {
+        e.preventDefault();
+    },
+
     'click #btnRefreshCollections': function () {
         Template.topNavbar.connect(true);
     },

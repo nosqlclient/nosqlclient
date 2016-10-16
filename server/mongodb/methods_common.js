@@ -5,6 +5,9 @@ var mongodbApi = require('mongodb');
 var tunnelSsh = new require('tunnel-ssh');
 
 Meteor.methods({
+    'migrateMongoclient': function () {
+    },
+
     'listCollectionNames': function (dbName) {
         LOGGER.info('[listCollectionNames]', dbName);
 
@@ -14,7 +17,6 @@ Meteor.methods({
                 wishedDB.listCollections().toArray(function (err, collections) {
                     done(err, collections);
                 });
-
             }
             catch (ex) {
                 LOGGER.error('[listCollectionNames]', ex);
