@@ -60,8 +60,40 @@ Template.topNavbar.onRendered(function () {
 
 
 Template.topNavbar.events({
-    'click #btnProceedMigrate': function (e) {
+    'click #btnProceedImportExport': function (e) {
         e.preventDefault();
+        var laddaButton = Ladda.create(document.querySelector('#btnProceedImportExport'));
+        var isImport = $('#importExportMongoclientTitle').text() == 'Import Mongoclient Data';
+        var importInput = $('#inputImportBackupFile');
+        var exportInput = $('#inputExportBackupDir');
+
+        if (isImport && importInput.val()) {
+            laddaButton.start();
+            Meteor.call('importMongoclient', importInput.val(), function (err) {
+                if (err) {
+                    toastr.error("Couldn't import: " + err.message);
+                } else {
+                    toastr.success("Successfully imported from " + importInput.val());
+                    $('#importExportMongoclientModal').modal('hide');
+                }
+
+                Ladda.stopAll();
+            });
+        }
+        else if (!isImport && exportInput.val()) {
+            laddaButton.start();
+            Meteor.call('exportMongoclient', exportInput.val(), function (err, path) {
+                if (err) {
+                    toastr.error("Couldn't export: " + err.message);
+                } else {
+                    toastr.success("Successfully exported to " + path.result);
+                    $('#importExportMongoclientModal').modal('hide');
+                }
+
+                Ladda.stopAll();
+            });
+        }
+
     },
 
     'click #btnRefreshCollections': function () {
@@ -124,9 +156,26 @@ Template.topNavbar.events({
         }
     },
 
-    'click #btnMigrateMongoclient': function (e) {
+    'click #btnExportMongoclient': function (e) {
         e.preventDefault();
-        $('#migrateMongoclientModal').modal('show');
+        $('#importExportMongoclientTitle').text('Export Mongoclient Data');
+        $('#importExportMongoclientIcon').removeClass('fa-download');
+        $('#importExportMongoclientIcon').addClass('fa-upload');
+        $('#btnProceedImportExport').text('Export');
+        $('#frmImportMongoclient').hide();
+        $('#frmExportMongoclient').show();
+        $('#importExportMongoclientModal').modal('show');
+    },
+
+    'click #btnImportMongoclient': function (e) {
+        e.preventDefault();
+        $('#importExportMongoclientTitle').text('Import Mongoclient Data');
+        $('#importExportMongoclientIcon').addClass('fa-download');
+        $('#importExportMongoclientIcon').removeClass('fa-upload');
+        $('#btnProceedImportExport').text('Import');
+        $('#frmImportMongoclient').show();
+        $('#frmExportMongoclient').hide();
+        $('#importExportMongoclientModal').modal('show');
     },
 
     'click #btnAboutMongoclient': function (e) {

@@ -3,9 +3,58 @@
  */
 var mongodbApi = require('mongodb');
 var tunnelSsh = new require('tunnel-ssh');
+var fs = require('fs');
 
 Meteor.methods({
-    'migrateMongoclient': function () {
+    'importMongoclient': function (file) {
+        LOGGER.info('[importMongoclient]', file);
+
+        var result = Async.runSync(function (done) {
+            try {
+                fs.readFile(file, 'utf8', function (err, data) {
+                    done(err, data);
+                });
+            } catch (ex) {
+                LOGGER.error('[importMongoclient]', ex);
+                done(new Meteor.Error(ex.message), null);
+            }
+        });
+
+        if (result.err) {
+            return result;
+        }
+
+        var mongoclientData = JSON.parse(result.result);
+        if (mongoclientData.settings) {
+            Settings.remove({});
+            Settings.insert(mongoclientData.settings);
+        }
+
+        if (mongoclientData.connections) {
+            for (var i = 0; i < mongoclientData.connections.length; i++) {
+                Connections.insert(mongoclientData.connections[i]);
+            }
+        }
+    },
+
+    'exportMongoclient': function (dir) {
+        var filePath = dir + "/backup_" + moment().format('DD_MM_YYYY_HH_mm_ss') + ".json";
+        var fileContent = {};
+        fileContent.settings = Settings.findOne();
+        fileContent.connections = Connections.find().fetch();
+
+        LOGGER.info('[exportMongoclient]', filePath);
+
+        return Async.runSync(function (done) {
+            try {
+                fs.writeFile(filePath, JSON.stringify(fileContent), function (err) {
+                    done(err, filePath);
+                });
+            } catch (ex) {
+                LOGGER.error('[exportMongoclient]', ex);
+                done(new Meteor.Error(ex.message), null);
+            }
+        });
     },
 
     'listCollectionNames': function (dbName) {
