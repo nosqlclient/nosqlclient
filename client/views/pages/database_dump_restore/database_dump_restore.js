@@ -10,15 +10,16 @@ Template.databaseDumpRestore.onRendered(function () {
     }
 
     Template.initiateDatatable($('#tblDumps'), Template.strSessionSelectedDump);
+    Template.databaseDumpRestore.populateDatatable();
 });
 
 Template.databaseDumpRestore.events({
     'click #btnTakeDump': function (e) {
-        
+
         e.preventDefault();
         var settings = Settings.findOne();
 
-        
+
         var laddaButton = Ladda.create(document.querySelector('#btnTakeDump'));
         laddaButton.start();
 
@@ -46,7 +47,7 @@ Template.databaseDumpRestore.events({
                 confirmButtonText: "Yes, do it!",
                 closeOnConfirm: true
             }, function () {
-                
+
                 var laddaButton = Ladda.create(document.querySelector('#btnTakeDump'));
                 laddaButton.start();
 
@@ -68,15 +69,12 @@ Template.databaseDumpRestore.events({
     }
 });
 
+Template.databaseDumpRestore.populateDatatable = function () {
+    var tblDumps = $('#tblDumps');
 
-Template.databaseDumpRestore.helpers({
-    'getDumps': function () {
-        return function () {
-            return Dumps.find({}, {sort: {date: -1}}).fetch(); // or .map()
-        };
-    },
-
-    'dumpsTableOptions': {
+    tblDumps.DataTable({
+        destroy: true,
+        data: Dumps.find({}, {sort: {date: -1}}).fetch(),
         columns: [
             {
                 title: '_id',
@@ -149,5 +147,5 @@ Template.databaseDumpRestore.helpers({
                 defaultContent: '<a href="" title="Import" class="editor_import"><i class="fa fa-database text-navy"></i></a>'
             }
         ]
-    }
-});
+    }).draw();
+};

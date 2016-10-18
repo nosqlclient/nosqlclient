@@ -10,7 +10,24 @@
                             <h5>Dumps for {{getConnection.name}}</h5>
                         </div>
                         <div class="ibox-content">
-                            {{> ReactiveDatatable tableData=getDumps options=dumpsTableOptions tableId="tblDumps" }}
+                            <table id="tblDumps"
+                                   class="table table-striped table-bordered table-hover dataTables-example dataTable"
+                                   style="width: 100%">
+                                <thead>
+                                <tr>
+                                    <th>_id</th>
+                                    <th>Connection Name</th>
+                                    <th>Date</th>
+                                    <th>File Path</th>
+                                    <th>Size</th>
+                                    <th>Import Status</th>
+                                    <th>Import</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                </tbody>
+                            </table>
+
                         </div>
                         <div class="ibox-footer">
                             <!--<span class="pull-right">
