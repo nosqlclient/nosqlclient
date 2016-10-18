@@ -57,12 +57,12 @@ Meteor.methods({
             throw new Meteor.Error('Connection name already exist: ' + connection.name);
         }
 
-        Connections.insert(connection);
+        Connections._collection.insert(connection);
     },
 
     'updateConnection': function (connection) {
         Connections.remove({_id: connection._id});
-        Connections.insert(connection);
+        Connections._collection.insert(connection);
     },
 
     'removeConnection': function (connectionId) {
