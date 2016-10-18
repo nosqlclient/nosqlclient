@@ -27,6 +27,9 @@ Template.uploadFile.events({
                 cancelButtonText: "No"
             }, function (isConfirm) {
                 if (isConfirm) {
+                    $('#fileInfoModal').on('shown.bs.modal', function() {
+                        Template.initializeCodeMirror($('#divMetadata'), 'txtMetadata');
+                    });
                     $('#fileInfoModal').modal('show');
                 }
             });

@@ -2,9 +2,6 @@ var toastr = require('toastr');
 /**
  * Created by RSercan on 14.2.2016.
  */
-Template.fileInfo.onRendered(function () {
-    Template.initializeCodeMirror($('#divMetadata'), 'txtMetadata');
-});
 
 Template.fileInfo.events({
     'click #btnAddAlias': function (e) {
