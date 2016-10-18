@@ -32,7 +32,7 @@ Meteor.methods({
 
         if (mongoclientData.connections) {
             for (var i = 0; i < mongoclientData.connections.length; i++) {
-                Connections.insert(mongoclientData.connections[i]);
+                Connections._collection.insert(mongoclientData.connections[i]);
             }
         }
     },
