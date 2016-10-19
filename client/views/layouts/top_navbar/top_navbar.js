@@ -96,7 +96,7 @@ Template.topNavbar.events({
 
     },
 
-    'click #btnRefreshCollections': function () {
+    'click #btnRefreshCollections2': function () {
         Template.topNavbar.connect(true);
     },
 
