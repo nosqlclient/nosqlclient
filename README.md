@@ -3,12 +3,11 @@ Cross-platform, MongoDB 3.2+ support and more features!
 
 [![Join the chat at https://gitter.im/rsercano/mongoclient](https://badges.gitter.im/rsercano/mongoclient.svg)](https://gitter.im/rsercano/mongoclient?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)                     [![Build Status](https://travis-ci.org/rsercano/mongoclient.svg?branch=master)](https://travis-ci.org/rsercano/mongoclient)
 
+[![Paypal](https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=Y5VD95E96NU6S)                     [![Flattr this git repo](http://api.flattr.com/button/flattr-badge-large.png)](https://flattr.com/submit/auto?user_id=mongoclient&url=https://github.com/rsercano/mongoclient&title=Mongoclient&language=Javascript&tags=github&category=software)
 
-[![paypal](https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=Y5VD95E96NU6S)
 
-*Hello, I've recently married guys :) and can't afford for the INSPINA theme's extended licence ($1000) which I have to buy to keep developing mongoclient. I wasn't planning to add a donation button but, recent things forced me to put one. You don't have to donate of course, I will always maintain mongoclient as much as I can, so no worries, but if you can that would be really appreciated. [Here's a list of donators](https://github.com/rsercano/mongoclient/wiki/Donators)* 
-*p.s. Donation email is hakan.kocabas@gmx.de (Can't use turkey accounts for donations anymore)*
-
+*Mongoclient is in need of you to buy INSPINA theme's extended licence ($1000) to live longer.*
+[Thank you so much](https://github.com/rsercano/mongoclient/wiki/Donators) 
 
 [Try Demo Application](http://www.mongoclient.com:3000)
 
