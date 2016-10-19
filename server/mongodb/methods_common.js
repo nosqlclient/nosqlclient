@@ -27,11 +27,13 @@ Meteor.methods({
         var mongoclientData = JSON.parse(result.result);
         if (mongoclientData.settings) {
             Settings.remove({});
+            delete mongoclientData.settings._id;
             Settings.insert(mongoclientData.settings);
         }
 
         if (mongoclientData.connections) {
             for (var i = 0; i < mongoclientData.connections.length; i++) {
+                delete mongoclientData.connections[i]._id;
                 Connections._collection.insert(mongoclientData.connections[i]);
             }
         }
