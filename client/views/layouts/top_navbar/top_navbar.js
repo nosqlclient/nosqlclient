@@ -246,15 +246,18 @@ Template.topNavbar.events({
         var laddaButton = Ladda.create(document.querySelector('#btnConnect'));
         laddaButton.start();
 
-        // set rows not selected
         $('#tblConnection').DataTable().$('tr.selected').removeClass('selected');
-        // remove connection
-        Meteor.call('removeConnection', Session.get(Template.strSessionConnection));
-        // clear session
-        Template.clearSessions();
+        Meteor.call('removeConnection', Session.get(Template.strSessionConnection), function (err) {
+            if (!err) {
+                Template.clearSessions();
+                Template.topNavbar.populateConnectionsTable();
+            }else{
+                toastr.error("unexpected error during connection remove: " + err.message);
+            }
 
-        Template.topNavbar.populateConnectionsTable();
-        Ladda.stopAll();
+            Ladda.stopAll();
+        });
+
     },
 
     'click .editor_edit': function (e) {
@@ -722,6 +725,11 @@ Template.topNavbar.checkConnection = function (connection) {
 
 Template.topNavbar.connect = function (isRefresh) {
     var connection = Connections.findOne({_id: Session.get(Template.strSessionConnection)});
+    if(!connection){
+        toastr.info('Please select a connection first !');
+        Ladda.stopAll();
+        return;
+    }
     Meteor.call('connect', connection._id, function (err, result) {
         if (err || result.error) {
             Template.showMeteorFuncError(err, result, "Couldn't connect");
@@ -867,8 +875,11 @@ Template.topNavbar.initIChecks = function () {
 Template.topNavbar.populateConnectionsTable = function () {
     var tblConnections = $('#tblConnection');
 
+    if ($.fn.dataTable.isDataTable('#tblConnection')) {
+        tblConnections.DataTable().destroy();
+    }
+
     tblConnections.DataTable({
-        destroy: true,
         data: Connections.find().fetch(),
         columns: [
             {data: "_id", sClass: "hide_column"},
@@ -928,7 +939,7 @@ Template.topNavbar.populateConnectionsTable = function () {
                 defaultContent: '<a href="" title="Delete" class="editor_remove"><i class="fa fa-remove text-navy"></i></a>'
             }
         ]
-    }).draw();
+    });
 };
 
 Template.topNavbar.populateSwitchDatabaseTable = function (data) {
