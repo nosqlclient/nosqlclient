@@ -1,11 +1,14 @@
 /**
  * Created by RSercan on 10.1.2016.
  */
+import LOGGER from "../internal/logging/logger";
+import Helper from "./helper";
+
 Meteor.methods({
-    'dbStats': function () {
+    dbStats() {
         LOGGER.info('[stats]');
 
-        var result = Async.runSync(function (done) {
+        let result = Async.runSync(function (done) {
             try {
                 database.stats(function (err, docs) {
                     done(err, docs);
@@ -17,12 +20,12 @@ Meteor.methods({
             }
         });
 
-        convertBSONtoJSON(result);
+        Helper.convertBSONtoJSON(result);
         return result;
     },
 
-    'validateCollection': function (collectionName, options, convertIds, convertDates) {
-        var methodArray = [
+    validateCollection(collectionName, options, convertIds, convertDates) {
+        const methodArray = [
             {
                 "validateCollection": [collectionName, options]
             }
@@ -30,8 +33,8 @@ Meteor.methods({
         return proceedQueryExecution(methodArray, convertIds, convertDates, true);
     },
 
-    'setProfilingLevel': function (level) {
-        var methodArray = [
+    setProfilingLevel(level) {
+        const methodArray = [
             {
                 "setProfilingLevel": [level]
             }
@@ -39,8 +42,8 @@ Meteor.methods({
         return proceedQueryExecution(methodArray, false, false, true);
     },
 
-    'serverStatus': function () {
-        var methodArray = [
+    serverStatus() {
+        const methodArray = [
             {
                 "serverStatus": []
             }
@@ -48,8 +51,8 @@ Meteor.methods({
         return proceedQueryExecution(methodArray, false, false, true);
     },
 
-    'serverInfo': function () {
-        var methodArray = [
+    serverInfo() {
+        const methodArray = [
             {
                 "serverInfo": []
             }
@@ -57,8 +60,8 @@ Meteor.methods({
         return proceedQueryExecution(methodArray, false, false, true);
     },
 
-    'replSetGetStatus': function () {
-        var methodArray = [
+    replSetGetStatus() {
+        const methodArray = [
             {
                 "replSetGetStatus": []
             }
@@ -66,8 +69,8 @@ Meteor.methods({
         return proceedQueryExecution(methodArray, false, false, true);
     },
 
-    'removeUser': function (username, runOnAdminDB) {
-        var methodArray = [
+    removeUser(username, runOnAdminDB) {
+        const methodArray = [
             {
                 "removeUser": [username]
             }
@@ -75,8 +78,8 @@ Meteor.methods({
         return proceedQueryExecution(methodArray, false, false, runOnAdminDB);
     },
 
-    'profilingInfo': function () {
-        var methodArray = [
+    profilingInfo() {
+        const methodArray = [
             {
                 "profilingInfo": []
             }
@@ -84,8 +87,8 @@ Meteor.methods({
         return proceedQueryExecution(methodArray, false, false, true);
     },
 
-    'ping': function () {
-        var methodArray = [
+    ping() {
+        const methodArray = [
             {
                 "ping": []
             }
@@ -93,8 +96,8 @@ Meteor.methods({
         return proceedQueryExecution(methodArray, false, false, true);
     },
 
-    'listDatabases': function () {
-        var methodArray = [
+    listDatabases() {
+        const methodArray = [
             {
                 "listDatabases": []
             }
@@ -102,8 +105,8 @@ Meteor.methods({
         return proceedQueryExecution(methodArray, false, false, true);
     },
 
-    'command': function (command, convertIds, convertDates, runOnAdminDB) {
-        var methodArray = [
+    command (command, convertIds, convertDates, runOnAdminDB) {
+        const methodArray = [
             {
                 "command": [command]
             }
@@ -111,8 +114,8 @@ Meteor.methods({
         return proceedQueryExecution(methodArray, convertIds, convertDates, runOnAdminDB);
     },
 
-    'addUser': function (username, password, options, runOnAdminDB) {
-        var methodArray = [
+    addUser(username, password, options, runOnAdminDB) {
+        const methodArray = [
             {
                 "addUser": [username, password, options]
             }
@@ -120,8 +123,8 @@ Meteor.methods({
         return proceedQueryExecution(methodArray, false, false, runOnAdminDB);
     },
 
-    'buildInfo': function () {
-        var methodArray = [
+    buildInfo() {
+        const methodArray = [
             {
                 "buildInfo": []
             }
@@ -131,11 +134,11 @@ Meteor.methods({
 });
 
 
-var proceedQueryExecution = function (methodArray, convertIds, convertDates, runOnAdminDB) {
+const proceedQueryExecution = function (methodArray, convertIds, convertDates, runOnAdminDB) {
     LOGGER.info(methodArray, convertIds, convertDates, runOnAdminDB);
 
-    var convertObjectId = true;
-    var convertIsoDates = true;
+    let convertObjectId = true;
+    let convertIsoDates = true;
 
     if (convertIds !== undefined && !convertIds) {
         convertObjectId = false;
@@ -145,15 +148,15 @@ var proceedQueryExecution = function (methodArray, convertIds, convertDates, run
         convertIsoDates = false;
     }
 
-    var result = Async.runSync(function (done) {
+    let result = Async.runSync(function (done) {
         try {
-            var execution = runOnAdminDB ? database.admin() : database;
-            for (var i = 0; i < methodArray.length; i++) {
-                var last = i == (methodArray.length - 1);
-                var entry = methodArray[i];
-                convertJSONtoBSON(entry, convertObjectId, convertIsoDates);
+            let execution = runOnAdminDB ? database.admin() : database;
+            for (let i = 0; i < methodArray.length; i++) {
+                let last = i == (methodArray.length - 1);
+                let entry = methodArray[i];
+                Helper.convertJSONtoBSON(entry, convertObjectId, convertIsoDates);
 
-                for (var key in entry) {
+                for (let key in entry) {
                     if (entry.hasOwnProperty(key)) {
                         if (last && key == Object.keys(entry)[Object.keys(entry).length - 1]) {
                             entry[key].push(function (err, docs) {
@@ -174,6 +177,6 @@ var proceedQueryExecution = function (methodArray, convertIds, convertDates, run
         }
     });
 
-    convertBSONtoJSON(result);
+    Helper.convertBSONtoJSON(result);
     return result;
 };

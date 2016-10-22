@@ -1,22 +1,25 @@
 /**
  * Created by RSercan on 10.1.2016.
  */
-var cheerio = require('cheerio');
+import LOGGER from "../internal/logging/logger";
+import Helper from "./helper";
+
+const cheerio = require('cheerio');
 
 Meteor.methods({
-    'getAllActions': function () {
-        var action = Actions.findOne();
+    getAllActions() {
+        let action = Actions.findOne();
         if (action && action.actionList) {
             return action.actionList;
         }
 
         LOGGER.info('[crawl]', 'getAllActions');
 
-        var url = "https://docs.mongodb.org/manual/reference/privilege-actions";
+        let url = "https://docs.mongodb.org/manual/reference/privilege-actions";
         $ = load(url);
         fixHrefs(url, $);
 
-        var result = [];
+        let result = [];
 
         $("dl[class='authaction']").children('dt').each(function () {
             result.push($(this).attr('id').replace('authr.', ''));
@@ -26,23 +29,23 @@ Meteor.methods({
         return result;
     },
 
-    'getActionInfo': function (action) {
+    getActionInfo(action) {
         LOGGER.info('[crawl]', 'getAction', action);
 
-        var url = "https://docs.mongodb.org/manual/reference/privilege-actions";
+        let url = "https://docs.mongodb.org/manual/reference/privilege-actions";
         $ = load(url);
         fixHrefs(url, $);
 
         return $("dt[id='authr." + action + "']").parent('dl[class=authaction]').children('dd').html();
     },
 
-    'getRoleInfo': function (roleName) {
+    getRoleInfo(roleName) {
         LOGGER.info('[crawl]', 'getRoleInfo', roleName);
 
-        var url = "https://docs.mongodb.org/manual/reference/built-in-roles";
+        let url = "https://docs.mongodb.org/manual/reference/built-in-roles";
 
         $ = load(url + "/#" + roleName);
-        var result = 'It looks like a user-defined role';
+        let result = 'It looks like a user-defined role';
 
         $('.authrole').each(function () {
             if ($(this).children('dt').attr('id') == roleName) {
@@ -54,10 +57,10 @@ Meteor.methods({
         return result;
     },
 
-    'getResourceInfo': function (resource) {
+    getResourceInfo(resource) {
         LOGGER.info('[crawl]', 'getResourceInfo', resource);
 
-        var url = "https://docs.mongodb.org/manual/reference/resource-document";
+        let url = "https://docs.mongodb.org/manual/reference/resource-document";
         $ = load(url);
 
         fixHrefs(url, $);
@@ -91,12 +94,12 @@ Meteor.methods({
 
 });
 
-var fixHrefs = function (url, $) {
-    var hrefs = $('a[href]');
+const fixHrefs = function (url, $) {
+    let hrefs = $('a[href]');
 
     // fix all hrefs
     hrefs.attr('href', function (i, href) {
-        var tmpUrl = url;
+        let tmpUrl = url;
         while (href.indexOf('..') != -1) {
             href = href.substring(3);
             tmpUrl = tmpUrl.substring(0, tmpUrl.lastIndexOf('/'));
@@ -110,7 +113,6 @@ var fixHrefs = function (url, $) {
     });
 };
 
-var load = function (url) {
-    var content = Meteor.http.get(url).content;
-    return cheerio.load(content);
+const load = function (url) {
+    return cheerio.load(Meteor.http.get(url).content);
 };

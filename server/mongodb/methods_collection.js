@@ -1,9 +1,12 @@
 /**
  * Created by RSercan on 27.12.2015.
  */
+import LOGGER from "../internal/logging/logger";
+import Helper from "./helper";
+
 Meteor.methods({
-    'bulkWrite': function (selectedCollection, operations, convertIds, convertDates) {
-        var methodArray = [
+    bulkWrite(selectedCollection, operations, convertIds, convertDates) {
+        const methodArray = [
             {
                 "bulkWrite": [operations]
             }
@@ -11,8 +14,8 @@ Meteor.methods({
         return proceedQueryExecution(selectedCollection, methodArray, convertIds, convertDates);
     },
 
-    'updateOne': function (selectedCollection, selector, setObject, options, convertIds, convertDates) {
-        var methodArray = [
+    updateOne(selectedCollection, selector, setObject, options, convertIds, convertDates) {
+        const methodArray = [
             {
                 "updateOne": [selector, setObject, options]
             }
@@ -20,8 +23,8 @@ Meteor.methods({
         return proceedQueryExecution(selectedCollection, methodArray, convertIds, convertDates);
     },
 
-    'updateMany': function (selectedCollection, selector, setObject, options, convertIds, convertDates) {
-        var methodArray = [
+    updateMany(selectedCollection, selector, setObject, options, convertIds, convertDates) {
+        const methodArray = [
             {
                 "updateMany": [selector, setObject, options]
             }
@@ -29,8 +32,8 @@ Meteor.methods({
         return proceedQueryExecution(selectedCollection, methodArray, convertIds, convertDates);
     },
 
-    'stats': function (selectedCollection, options) {
-        var methodArray = [
+    stats(selectedCollection, options) {
+        const methodArray = [
             {
                 "stats": [options]
             }
@@ -38,21 +41,21 @@ Meteor.methods({
         return proceedQueryExecution(selectedCollection, methodArray);
     },
 
-    'rename': function (selectedCollection, newName, options) {
-        var methodArray = [
+    rename(selectedCollection, newName, options) {
+        const methodArray = [
             {
                 "rename": [newName, options]
             }
         ];
 
-        var result = proceedQueryExecution(selectedCollection, methodArray);
-        removeCollectionTopology(result);
+        let result = proceedQueryExecution(selectedCollection, methodArray);
+        Helper.removeCollectionTopology(result);
         console.log(result);
         return result;
     },
 
-    'reIndex': function (selectedCollection) {
-        var methodArray = [
+    reIndex(selectedCollection) {
+        const methodArray = [
             {
                 "reIndex": []
             }
@@ -60,8 +63,8 @@ Meteor.methods({
         return proceedQueryExecution(selectedCollection, methodArray);
     },
 
-    'options': function (selectedCollection) {
-        var methodArray = [
+    options(selectedCollection) {
+        const methodArray = [
             {
                 "options": []
             }
@@ -69,12 +72,12 @@ Meteor.methods({
         return proceedQueryExecution(selectedCollection, methodArray);
     },
 
-    'mapReduce': function (selectedCollection, map, reduce, options) {
+    mapReduce(selectedCollection, map, reduce, options) {
         return proceedMapReduceExecution(selectedCollection, map, reduce, options);
     },
 
-    'isCapped': function (selectedCollection) {
-        var methodArray = [
+    isCapped(selectedCollection) {
+        const methodArray = [
             {
                 "isCapped": []
             }
@@ -82,8 +85,8 @@ Meteor.methods({
         return proceedQueryExecution(selectedCollection, methodArray);
     },
 
-    'insertMany': function (selectedCollection, docs, convertIds, convertDates) {
-        var methodArray = [
+    insertMany(selectedCollection, docs, convertIds, convertDates) {
+        const methodArray = [
             {
                 "insertMany": [docs]
             }
@@ -91,8 +94,8 @@ Meteor.methods({
         return proceedQueryExecution(selectedCollection, methodArray, convertIds, convertDates);
     },
 
-    'indexInformation': function (selectedCollection, isFull) {
-        var methodArray = [
+    indexInformation(selectedCollection, isFull) {
+        const methodArray = [
             {
                 "indexInformation": [{'full': isFull}]
             }
@@ -100,8 +103,8 @@ Meteor.methods({
         return proceedQueryExecution(selectedCollection, methodArray);
     },
 
-    'geoNear': function (selectedCollection, xAxis, yAxis, options) {
-        var methodArray = [
+    geoNear(selectedCollection, xAxis, yAxis, options) {
+        const methodArray = [
             {
                 "geoNear": [xAxis, yAxis, options]
             }
@@ -109,8 +112,8 @@ Meteor.methods({
         return proceedQueryExecution(selectedCollection, methodArray);
     },
 
-    'geoHaystackSearch': function (selectedCollection, xAxis, yAxis, options) {
-        var methodArray = [
+    geoHaystackSearch(selectedCollection, xAxis, yAxis, options) {
+        const methodArray = [
             {
                 "geoHaystackSearch": [xAxis, yAxis, options]
             }
@@ -118,8 +121,8 @@ Meteor.methods({
         return proceedQueryExecution(selectedCollection, methodArray);
     },
 
-    'dropIndex': function (selectedCollection, indexName) {
-        var methodArray = [
+    dropIndex(selectedCollection, indexName) {
+        const methodArray = [
             {
                 "dropIndex": [indexName]
             }
@@ -128,8 +131,8 @@ Meteor.methods({
         return proceedQueryExecution(selectedCollection, methodArray);
     },
 
-    'distinct': function (selectedCollection, selector, fieldName, convertIds, convertDates) {
-        var methodArray = [
+    distinct(selectedCollection, selector, fieldName, convertIds, convertDates) {
+        const methodArray = [
             {
                 "distinct": [fieldName, selector]
             }
@@ -138,8 +141,8 @@ Meteor.methods({
         return proceedQueryExecution(selectedCollection, methodArray, convertIds, convertDates);
     },
 
-    'delete': function (selectedCollection, selector, convertIds, convertDates) {
-        var methodArray = [
+    delete(selectedCollection, selector, convertIds, convertDates) {
+        const methodArray = [
             {
                 "deleteMany": [selector]
             }
@@ -148,8 +151,8 @@ Meteor.methods({
         return proceedQueryExecution(selectedCollection, methodArray, convertIds, convertDates);
     },
 
-    'createIndex': function (selectedCollection, fields, options) {
-        var methodArray = [
+    createIndex(selectedCollection, fields, options) {
+        const methodArray = [
             {
                 "createIndex": [fields, options]
             }
@@ -158,15 +161,15 @@ Meteor.methods({
         return proceedQueryExecution(selectedCollection, methodArray);
     },
 
-    'findOne': function (selectedCollection, selector, cursorOptions, convertIds, convertDates) {
-        var methodArray = [
+    findOne(selectedCollection, selector, cursorOptions, convertIds, convertDates) {
+        const methodArray = [
             {
                 "find": [selector]
             }
         ];
-        for (var key in cursorOptions) {
+        for (let key in cursorOptions) {
             if (cursorOptions.hasOwnProperty(key) && cursorOptions[key]) {
-                var obj = {};
+                let obj = {};
                 obj[key] = [cursorOptions[key]];
                 methodArray.push(obj);
             }
@@ -176,31 +179,31 @@ Meteor.methods({
         return proceedQueryExecution(selectedCollection, methodArray, convertIds, convertDates);
     },
 
-    'find': function (selectedCollection, selector, cursorOptions, executeExplain, convertIds, convertDates) {
-        var methodArray = [
+    find(selectedCollection, selector, cursorOptions, executeExplain, convertIds, convertDates) {
+        const methodArray = [
             {
                 "find": [selector]
             }
         ];
-        for (var key in cursorOptions) {
+        for (let key in cursorOptions) {
             if (cursorOptions.hasOwnProperty(key) && cursorOptions[key]) {
-                var obj = {};
+                let obj = {};
                 obj[key] = [cursorOptions[key]];
                 methodArray.push(obj);
             }
         }
 
-        if(executeExplain){
+        if (executeExplain) {
             methodArray.push({'explain': []});
-        }else{
+        } else {
             methodArray.push({'toArray': []});
         }
 
         return proceedQueryExecution(selectedCollection, methodArray, convertIds, convertDates);
     },
 
-    'findOneAndUpdate': function (selectedCollection, selector, setObject, options, convertIds, convertDates) {
-        var methodArray = [
+    findOneAndUpdate(selectedCollection, selector, setObject, options, convertIds, convertDates) {
+        const methodArray = [
             {
                 "findOneAndUpdate": [selector, setObject, options]
             }
@@ -208,8 +211,8 @@ Meteor.methods({
         return proceedQueryExecution(selectedCollection, methodArray, convertIds, convertDates);
     },
 
-    'findOneAndReplace': function (selectedCollection, selector, setObject, options, convertIds, convertDates) {
-        var methodArray = [
+    findOneAndReplace(selectedCollection, selector, setObject, options, convertIds, convertDates) {
+        const methodArray = [
             {
                 "findOneAndReplace": [selector, setObject, options]
             }
@@ -217,8 +220,8 @@ Meteor.methods({
         return proceedQueryExecution(selectedCollection, methodArray, convertIds, convertDates);
     },
 
-    'findOneAndDelete': function (selectedCollection, selector, options, convertIds, convertIsoDates) {
-        var methodArray = [
+    findOneAndDelete(selectedCollection, selector, options, convertIds, convertIsoDates) {
+        const methodArray = [
             {
                 "findOneAndDelete": [selector, options]
             }
@@ -226,8 +229,8 @@ Meteor.methods({
         return proceedQueryExecution(selectedCollection, methodArray, convertIds, convertIsoDates);
     },
 
-    'aggregate': function (selectedCollection, pipeline, convertIds, convertDates) {
-        var methodArray = [
+    aggregate(selectedCollection, pipeline, convertIds, convertDates) {
+        const methodArray = [
             {
                 "aggregate": [pipeline]
             }
@@ -235,8 +238,8 @@ Meteor.methods({
         return proceedQueryExecution(selectedCollection, methodArray, convertIds, convertDates);
     },
 
-    'count': function (selectedCollection, selector, convertIds, convertDates) {
-        var methodArray = [
+    count(selectedCollection, selector, convertIds, convertDates) {
+        const methodArray = [
             {
                 "count": [selector]
             }
@@ -245,14 +248,14 @@ Meteor.methods({
     }
 });
 
-var proceedMapReduceExecution = function (selectedCollection, map, reduce, options) {
-    convertJSONtoBSON(options);
+const proceedMapReduceExecution = function (selectedCollection, map, reduce, options) {
+    Helper.convertJSONtoBSON(options);
 
     LOGGER.info('[mapReduce]', selectedCollection, map, reduce, options);
 
-    var result = Async.runSync(function (done) {
+    let result = Async.runSync(function (done) {
         try {
-            var collection = database.collection(selectedCollection);
+            const collection = database.collection(selectedCollection);
             collection.mapReduce(map, reduce, options, function (err, resultCollection) {
                 if (err) {
                     done(err, null);
@@ -274,13 +277,13 @@ var proceedMapReduceExecution = function (selectedCollection, map, reduce, optio
         }
     });
 
-    convertBSONtoJSON(result);
+    Helper.convertBSONtoJSON(result);
     return result;
 };
 
-var proceedQueryExecution = function (selectedCollection, methodArray, convertIds, convertDates) {
-    var convertObjectId = true;
-    var convertIsoDates = true;
+const proceedQueryExecution = function (selectedCollection, methodArray, convertIds, convertDates) {
+    let convertObjectId = true;
+    let convertIsoDates = true;
 
     if (convertIds !== undefined && !convertIds) {
         convertObjectId = false;
@@ -292,15 +295,15 @@ var proceedQueryExecution = function (selectedCollection, methodArray, convertId
 
     LOGGER.info(methodArray, 'convertIds: ' + convertObjectId, 'convertDates: ' + convertIsoDates, selectedCollection);
 
-    var result = Async.runSync(function (done) {
+    let result = Async.runSync(function (done) {
         try {
-            var execution = database.collection(selectedCollection);
-            for (var i = 0; i < methodArray.length; i++) {
-                var last = i == (methodArray.length - 1);
-                var entry = methodArray[i];
-                convertJSONtoBSON(entry, convertObjectId, convertIsoDates);
+            let execution = database.collection(selectedCollection);
+            for (let i = 0; i < methodArray.length; i++) {
+                let last = i == (methodArray.length - 1);
+                let entry = methodArray[i];
+                Helper.convertJSONtoBSON(entry, convertObjectId, convertIsoDates);
 
-                for (var key in entry) {
+                for (let key in entry) {
                     if (entry.hasOwnProperty(key)) {
                         if (last && key == Object.keys(entry)[Object.keys(entry).length - 1]) {
                             entry[key].push(function (err, docs) {
@@ -321,7 +324,7 @@ var proceedQueryExecution = function (selectedCollection, methodArray, convertId
         }
     });
 
-    convertBSONtoJSON(result);
-    removeConnectionTopology(result);
+    Helper.convertBSONtoJSON(result);
+    Helper.removeConnectionTopology(result);
     return result;
 };

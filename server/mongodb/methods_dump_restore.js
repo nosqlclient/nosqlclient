@@ -1,16 +1,19 @@
 /**
  * Created by RSercan on 17.1.2016.
  */
-var backup = require('mongodb-backup');
-var restore = require('mongodb-restore');
-var fs = require('fs');
+import LOGGER from "../internal/logging/logger";
+import Helper from "./helper";
+
+const backup = require('mongodb-backup');
+const restore = require('mongodb-restore');
+const fs = require('fs');
 
 Meteor.methods({
-    'restoreDump': function (connectionId, dumpInfo) {
-        var connection = Connections.findOne({_id: connectionId});
-        var connectionUrl = getConnectionUrl(connection);
-        var path = dumpInfo.filePath.substring(0, dumpInfo.filePath.lastIndexOf('/'));
-        var fileName = dumpInfo.filePath.substring(dumpInfo.filePath.lastIndexOf('/') + 1);
+    restoreDump(connectionId, dumpInfo) {
+        const connection = Connections.findOne({_id: connectionId});
+        const connectionUrl = Helper.getConnectionUrl(connection);
+        const path = dumpInfo.filePath.substring(0, dumpInfo.filePath.lastIndexOf('/'));
+        const fileName = dumpInfo.filePath.substring(dumpInfo.filePath.lastIndexOf('/') + 1);
 
         LOGGER.info('[restoreDump]', connectionUrl, dumpInfo);
         try {
@@ -32,12 +35,12 @@ Meteor.methods({
         }
     },
 
-    'takeDump': function (connectionId, path) {
-        var connection = Connections.findOne({_id: connectionId});
-        var date = new Date();
-        var connectionUrl = getConnectionUrl(connection);
-        var fileName = connection.databaseName + "_" + date.getTime() + ".tar";
-        var fullFilePath = path + "/" + fileName;
+    takeDump(connectionId, path) {
+        const connection = Connections.findOne({_id: connectionId});
+        const date = new Date();
+        const connectionUrl = Helper.getConnectionUrl(connection);
+        const fileName = connection.databaseName + "_" + date.getTime() + ".tar";
+        const fullFilePath = path + "/" + fileName;
 
         LOGGER.info('[takeDump]', connectionUrl, path);
         try {
@@ -47,18 +50,16 @@ Meteor.methods({
                 logger: true,
                 tar: fileName,
                 callback: Meteor.bindEnvironment(function () {
-                    var stats = fs.statSync(fullFilePath);
+                    const stats = fs.statSync(fullFilePath);
 
-                    var dump = {
+                    Meteor.call('saveDump', {
                         filePath: fullFilePath,
                         date: date,
                         connectionName: connection.name,
                         connectionId: connection._id,
                         sizeInBytes: stats["size"],
                         status: DUMP_STATUS.NOT_IMPORTED
-                    };
-
-                    Meteor.call('saveDump', dump);
+                    });
                 })
             });
         }
