@@ -9,6 +9,8 @@ const mongodbApi = require('mongodb');
 const tunnelSsh = new require('tunnel-ssh');
 const fs = require('fs');
 
+export let database;
+
 Meteor.methods({
     importMongoclient(file)  {
         LOGGER.info('[importMongoclient]', file);

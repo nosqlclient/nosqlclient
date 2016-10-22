@@ -3,6 +3,7 @@
  */
 import LOGGER from "../internal/logging/logger";
 import Helper from "./helper";
+import {database} from "./methods_common";
 
 Meteor.methods({
     dbStats() {
