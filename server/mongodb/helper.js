@@ -2,7 +2,9 @@
  * Created by RSercan on 30.12.2015.
  */
 
-(() => {
+(function () {
+    import {Settings} from '/lib/collections/settings';
+
     const objectID = require('mongodb').ObjectID;
 
     const addConnectionParamsToOptions = function (connection, result) {

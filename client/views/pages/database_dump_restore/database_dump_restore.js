@@ -1,20 +1,28 @@
+import {Template} from 'meteor/templating';
+import {Meteor} from 'meteor/meteor';
+import {Session} from 'meteor/session';
+import Helper from '/client/helper';
+import {Settings} from '/lib/collections/settings';
+import {Dumps} from '/lib/collections/dumps';
+import Enums from '/lib/enums';
+
 var toastr = require('toastr');
 var Ladda = require('ladda');
 /**
  * Created by RSercan on 17.1.2016.
  */
 Template.databaseDumpRestore.onRendered(function () {
-    if (Session.get(Template.strSessionCollectionNames) == undefined) {
+    if (Session.get(Helper.strSessionCollectionNames) == undefined) {
         Router.go('databaseStats');
         return;
     }
 
-    Template.initiateDatatable($('#tblDumps'), Template.strSessionSelectedDump);
-    Template.databaseDumpRestore.populateDatatable();
+    Helper.initiateDatatable($('#tblDumps'), Helper.strSessionSelectedDump);
+    populateDatatable();
 });
 
 Template.databaseDumpRestore.events({
-    'click #btnTakeDump': function (e) {
+    'click #btnTakeDump'(e) {
 
         e.preventDefault();
         var settings = Settings.findOne();
@@ -23,7 +31,7 @@ Template.databaseDumpRestore.events({
         var laddaButton = Ladda.create(document.querySelector('#btnTakeDump'));
         laddaButton.start();
 
-        Meteor.call('takeDump', Session.get(Template.strSessionConnection), settings.dumpPath, function (err) {
+        Meteor.call('takeDump', Session.get(Helper.strSessionConnection), settings.dumpPath, function (err) {
             if (err) {
                 toastr.error("Couldn't take dump, " + err.message);
             }
@@ -35,9 +43,9 @@ Template.databaseDumpRestore.events({
         });
     },
 
-    'click .editor_import': function (e) {
+    'click .editor_import'(e) {
         e.preventDefault();
-        if (Session.get(Template.strSessionSelectedDump)) {
+        if (Session.get(Helper.strSessionSelectedDump)) {
             swal({
                 title: "Are you sure?",
                 text: "All collections will be dropped, and restored !",
@@ -51,10 +59,10 @@ Template.databaseDumpRestore.events({
                 var laddaButton = Ladda.create(document.querySelector('#btnTakeDump'));
                 laddaButton.start();
 
-                var dumpInfo = Session.get(Template.strSessionSelectedDump);
-                dumpInfo.status = DUMP_STATUS.IN_PROGRESS;
+                var dumpInfo = Session.get(Helper.strSessionSelectedDump);
+                dumpInfo.status = Enums.DUMP_STATUS.IN_PROGRESS;
                 Meteor.call('updateDump', dumpInfo); // this is a simple update to notify user on UI
-                Meteor.call('restoreDump', Session.get(Template.strSessionConnection), dumpInfo, function (err) {
+                Meteor.call('restoreDump', Session.get(Helper.strSessionConnection), dumpInfo, function (err) {
                     if (err) {
                         toastr.error("Couldn't restore dump, " + err.message);
                     }
@@ -69,7 +77,7 @@ Template.databaseDumpRestore.events({
     }
 });
 
-Template.databaseDumpRestore.populateDatatable = function () {
+const populateDatatable = function () {
     var tblDumps = $('#tblDumps');
 
     tblDumps.DataTable({

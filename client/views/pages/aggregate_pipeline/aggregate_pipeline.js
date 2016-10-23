@@ -1,3 +1,9 @@
+import {Template} from 'meteor/templating';
+import {Meteor} from 'meteor/meteor';
+import {Session} from 'meteor/session';
+import Helper from '/client/helper';
+import {setResult} from './aggregate_result_modal/aggregate_result_modal';
+
 var toastr = require('toastr');
 var CodeMirror = require("codemirror");
 
@@ -20,7 +26,7 @@ var Ladda = require('ladda');
  */
 var stageNumbers;
 Template.aggregatePipeline.onRendered(function () {
-    if (Session.get(Template.strSessionCollectionNames) == undefined) {
+    if (Session.get(Helper.strSessionCollectionNames) == undefined) {
         Router.go('databaseStats');
         return;
     }
@@ -37,12 +43,12 @@ Template.aggregatePipeline.onRendered(function () {
 
     stageNumbers = 0;
 
-    Template.changeConvertOptionsVisibility(true);
-    Template.aggregatePipeline.initializeCollectionsCombobox();
+    Helper.changeConvertOptionsVisibility(true);
+    initializeCollectionsCombobox();
 });
 
 Template.aggregatePipeline.events({
-    'click #btnExecuteAggregatePipeline': function (e) {
+    'click #btnExecuteAggregatePipeline' (e) {
         e.preventDefault();
 
         var selectedCollection = $("#cmbCollections").chosen().val();
@@ -57,13 +63,13 @@ Template.aggregatePipeline.events({
             return;
         }
 
-        
+
         var l = Ladda.create(document.querySelector('#btnExecuteAggregatePipeline'));
         l.start();
 
         var pipeline;
         try {
-            pipeline = Template.aggregatePipeline.createPipeline(stages);
+            pipeline = createPipeline(stages);
         }
         catch (e) {
             toastr.error('One of the stages has error: ' + e);
@@ -77,10 +83,10 @@ Template.aggregatePipeline.events({
         Meteor.call("aggregate", selectedCollection, pipeline, convertIds, convertDates,
             function (err, result) {
                 if (err || result.error) {
-                    Template.showMeteorFuncError(err, result, "Couldn't execute ");
+                    Helper.showMeteorFuncError(err, result, "Couldn't execute ");
                 }
                 else {
-                    Template.aggregateResultModal.setResult(result.result);
+                    setResult(result.result);
                     $('#aggregateResultModal').modal('show');
                 }
 
@@ -90,7 +96,7 @@ Template.aggregatePipeline.events({
 
     },
 
-    'change #cmbStageQueries': function (e) {
+    'change #cmbStageQueries'(e) {
         var cmb = $("#cmbStageQueries");
         var query = cmb.chosen().val();
         if (query) {
@@ -119,28 +125,27 @@ Template.aggregatePipeline.events({
             $('#stages').append(liElement);
 
             if (initCodeMirror) {
-                Template.aggregatePipeline.initCodeMirrorStage();
+                initCodeMirrorStage();
             }
 
-            Session.set(Template.strSessionAggregateStageName, query);
             cmb.val('').trigger('chosen:updated');
             stageNumbers++;
         }
     },
 
-    'click #remove-stage-element': function (e) {
+    'click #remove-stage-element' (e) {
         e.preventDefault();
         var stageId = '#stage' + $(e.target).data('number');
         $(stageId).remove();
     }
 });
 
-Template.aggregatePipeline.initializeCollectionsCombobox = function () {
+const initializeCollectionsCombobox = function () {
     var cmb = $('#cmbCollections');
     cmb.append($("<optgroup id='optGroupCollections' label='Collections'></optgroup>"));
     var cmbOptGroupCollection = cmb.find('#optGroupCollections');
 
-    var collectionNames = Session.get(Template.strSessionCollectionNames);
+    var collectionNames = Session.get(Helper.strSessionCollectionNames);
     $.each(collectionNames, function (index, value) {
         cmbOptGroupCollection.append($("<option></option>")
             .attr("value", value.name)
@@ -151,12 +156,12 @@ Template.aggregatePipeline.initializeCollectionsCombobox = function () {
     cmb.on('change', function (evt, params) {
         var selectedCollection = params.selected;
         if (selectedCollection) {
-            Template.getDistinctKeysForAutoComplete(selectedCollection);
+            Helper.getDistinctKeysForAutoComplete(selectedCollection);
         }
     });
 };
 
-Template.aggregatePipeline.initCodeMirrorStage = function () {
+const initCodeMirrorStage = function () {
     var divSelector = $('#wrapper' + stageNumbers);
 
     if (!divSelector.data('editor')) {
@@ -181,7 +186,7 @@ Template.aggregatePipeline.initCodeMirrorStage = function () {
     }
 };
 
-Template.aggregatePipeline.createPipeline = function (stageListElements) {
+const createPipeline = function (stageListElements) {
     var pipeline = [];
     stageListElements.each(function (index) {
         var stage = {};
@@ -192,7 +197,7 @@ Template.aggregatePipeline.createPipeline = function (stageListElements) {
             stage[queryName] = parseInt(liElement.find('[id^=inputNumberStage]').val());
         } else if (liElement.find('[id^=wrapper]').data('editor')) {
             var jsonValue = liElement.find('[id^=wrapper]').data('editor').getValue();
-            jsonValue = Template.convertAndCheckJSON(jsonValue);
+            jsonValue = Helper.convertAndCheckJSON(jsonValue);
             if (jsonValue["ERROR"]) {
                 throw queryName + " error: " + jsonValue["ERROR"];
             }

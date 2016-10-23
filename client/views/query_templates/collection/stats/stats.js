@@ -1,9 +1,15 @@
+import {Template} from 'meteor/templating';
+import {Meteor} from 'meteor/meteor';
+import {Session} from 'meteor/session';
+import Helper from '/client/helper';
+import {initExecuteQuery} from '/client/views/pages/browse_collection/browse_collection';
+
 /**
  * Created by sercan on 06.01.2016.
  */
 Template.stats.onRendered(function () {
-    Template.stats.initializeOptions();
-    Template.changeConvertOptionsVisibility(false);
+    initializeOptions();
+    Helper.changeConvertOptionsVisibility(false);
 });
 
 Template.scale.onRendered(function () {
@@ -12,39 +18,39 @@ Template.scale.onRendered(function () {
     });
 });
 
-Template.stats.initializeOptions = function () {
+const initializeOptions = function () {
     var cmb = $('#cmbStatsOptions');
-    $.each(Template.sortObjectByKey(STATS_OPTIONS), function (key, value) {
+    $.each(Helper.sortObjectByKey(Helper.STATS_OPTIONS), function (key, value) {
         cmb.append($("<option></option>")
             .attr("value", key)
             .text(value));
     });
 
     cmb.chosen();
-    Template.setOptionsComboboxChangeEvent(cmb);
+    Helper.setOptionsComboboxChangeEvent(cmb);
 };
 
 Template.stats.executeQuery = function (historyParams) {
-    Template.browseCollection.initExecuteQuery();
-    var selectedCollection = Session.get(Template.strSessionSelectedCollection);
-    var options = historyParams ? historyParams.options : Template.stats.getOptions();
+    initExecuteQuery();
+    var selectedCollection = Session.get(Helper.strSessionSelectedCollection);
+    var options = historyParams ? historyParams.options : getOptions();
 
     var params = {
         options: options
     };
 
     Meteor.call("stats", selectedCollection, options, function (err, result) {
-        Template.renderAfterQueryExecution(err, result, false, "stats", params, (historyParams ? false : true));
+        Helper.renderAfterQueryExecution(err, result, false, "stats", params, (historyParams ? false : true));
     });
 };
 
-Template.stats.getOptions = function () {
+const getOptions = function () {
     var result = {};
 
-    if ($.inArray("SCALE", Session.get(Template.strSessionSelectedOptions)) != -1) {
+    if ($.inArray("SCALE", Session.get(Helper.strSessionSelectedOptions)) != -1) {
         var scale = $('#inputScale').val();
         if (scale) {
-            result[STATS_OPTIONS.SCALE] = parseInt(scale);
+            result[Enums.STATS_OPTIONS.SCALE] = parseInt(scale);
         }
     }
 

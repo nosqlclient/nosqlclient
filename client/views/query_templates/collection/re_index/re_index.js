@@ -1,15 +1,21 @@
+import {Template} from 'meteor/templating';
+import {Meteor} from 'meteor/meteor';
+import {Session} from 'meteor/session';
+import Helper from '/client/helper';
+import {initExecuteQuery} from '/client/views/pages/browse_collection/browse_collection';
+
 /**
  * Created by RSercan on 5.1.2016.
  */
 Template.reIndex.onRendered(function () {
-    Template.changeConvertOptionsVisibility(false);
+    Helper.changeConvertOptionsVisibility(false);
 });
 
 Template.reIndex.executeQuery = function (historyParams) {
-    Template.browseCollection.initExecuteQuery();
-    var selectedCollection = Session.get(Template.strSessionSelectedCollection);
+    initExecuteQuery();
+    var selectedCollection = Session.get(Helper.strSessionSelectedCollection);
 
     Meteor.call("reIndex", selectedCollection, function (err, result) {
-        Template.renderAfterQueryExecution(err, result, false, "reIndex", {}, (historyParams ? false : true));
+        Helper.renderAfterQueryExecution(err, result, false, "reIndex", {}, (historyParams ? false : true));
     });
 };

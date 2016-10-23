@@ -1,6 +1,9 @@
 /**
  * Created by RSercan on 17.1.2016.
  */
+import {Meteor} from 'meteor/meteor';
+import {Settings} from '/lib/collections/settings';
+
 Meteor.startup(function () {
     // create a setting if not exist
     let home = process.env.HOME || process.env.USERPROFILE;

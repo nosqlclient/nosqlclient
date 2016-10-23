@@ -1,3 +1,5 @@
+import {Template} from 'meteor/templating';
+
 var JSONEditor = require('jsoneditor');
 /**
  * Created by RSercan on 19.5.2016.
@@ -12,6 +14,6 @@ Template.aggregateResultModal.onRendered(function () {
     $('#divJsonEditorWrapper').data('jsoneditor', jsonEditor);
 });
 
-Template.aggregateResultModal.setResult = function (value) {
+export const setResult = function (value) {
     $('#divJsonEditorWrapper').data('jsoneditor').set(value);
 };

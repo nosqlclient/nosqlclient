@@ -1,41 +1,50 @@
+import {Template} from 'meteor/templating';
+import {Meteor} from 'meteor/meteor';
+import {Session} from 'meteor/session';
+import Helper from '/client/helper';
+import Enums from '/lib/enums';
+import {initExecuteQuery} from '/client/views/pages/browse_collection/browse_collection';
+import {getSelectorValue} from '/client/views/query_templates_common/selector/selector';
+import {getOptions} from '/client/views/query_templates_options/findone_modify_options/findone_modify_options';
+
 var toastr = require('toastr');
 var Ladda = require('ladda');
 /**
  * Created by RSercan on 1.1.2016.
  */
 Template.findOneAndReplace.onRendered(function () {
-    Template.initializeCodeMirror($('#divReplacement'), 'txtReplacement');
-    Template.findOneAndReplace.initializeOptions();
-    Template.changeConvertOptionsVisibility(true);
+    Helper.initializeCodeMirror($('#divReplacement'), 'txtReplacement');
+    initializeOptions();
+    Helper.changeConvertOptionsVisibility(true);
 });
 
-Template.findOneAndReplace.initializeOptions = function () {
+const initializeOptions = function () {
     var cmb = $('#cmbFindOneModifyOptions');
-    $.each(Template.sortObjectByKey(FINDONE_MODIFY_OPTIONS), function (key, value) {
+    $.each(Helper.sortObjectByKey(Enums.FINDONE_MODIFY_OPTIONS), function (key, value) {
         cmb.append($("<option></option>")
             .attr("value", key)
             .text(value));
     });
 
     cmb.chosen();
-    Template.setOptionsComboboxChangeEvent(cmb);
+    Helper.setOptionsComboboxChangeEvent(cmb);
 };
 
 Template.findOneAndReplace.executeQuery = function (historyParams) {
-    Template.browseCollection.initExecuteQuery();
-    var selectedCollection = Session.get(Template.strSessionSelectedCollection);
-    var options = historyParams ? historyParams.options : Template.findOneModifyOptions.getOptions();
-    var selector = historyParams ? JSON.stringify(historyParams.selector) : Template.selector.getValue();
-    var replaceObject = historyParams ? JSON.stringify(historyParams.replaceObject) : Template.getCodeMirrorValue($('#divReplacement'));
+    initExecuteQuery();
+    var selectedCollection = Session.get(Helper.strSessionSelectedCollection);
+    var options = historyParams ? historyParams.options : getOptions();
+    var selector = historyParams ? JSON.stringify(historyParams.selector) : getSelectorValue();
+    var replaceObject = historyParams ? JSON.stringify(historyParams.replaceObject) : Helper.getCodeMirrorValue($('#divReplacement'));
 
-    selector = Template.convertAndCheckJSON(selector);
+    selector = Helper.convertAndCheckJSON(selector);
     if (selector["ERROR"]) {
         toastr.error("Syntax error on selector: " + selector["ERROR"]);
         Ladda.stopAll();
         return;
     }
 
-    replaceObject = Template.convertAndCheckJSON(replaceObject);
+    replaceObject = Helper.convertAndCheckJSON(replaceObject);
     if (replaceObject["ERROR"]) {
         toastr.error("Syntax error on set: " + replaceObject["ERROR"]);
         Ladda.stopAll();
@@ -57,9 +66,8 @@ Template.findOneAndReplace.executeQuery = function (historyParams) {
     var convertIds = $('#aConvertObjectIds').iCheck('update')[0].checked;
     var convertDates = $('#aConvertIsoDates').iCheck('update')[0].checked;
 
-    Meteor.call("findOneAndReplace", selectedCollection, selector, replaceObject, options, convertIds, convertDates,
-        function (err, result) {
-            Template.renderAfterQueryExecution(err, result, false, "findOneAndReplace", params, (historyParams ? false : true));
+    Meteor.call("findOneAndReplace", selectedCollection, selector, replaceObject, options, convertIds, convertDates, function (err, result) {
+            Helper.renderAfterQueryExecution(err, result, false, "findOneAndReplace", params, (historyParams ? false : true));
         }
     );
 };

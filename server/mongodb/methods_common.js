@@ -2,7 +2,10 @@
  * Created by RSercan on 5.3.2016.
  */
 
-import LOGGER from "../internal/logging/logger";
+import {Meteor} from 'meteor/meteor';
+import {Settings} from '/lib/collections/settings';
+import {Connections} from '/lib/collections/connections';
+import LOGGER from "../internal/logger";
 import Helper from "./helper";
 
 const mongodbApi = require('mongodb');
@@ -239,6 +242,8 @@ const proceedConnectingMongodb = function (connectionUrl, connectionOptions, don
             database.listCollections().toArray(function (err, collections) {
                 done(err, collections);
             });
+
+            export let database;
         }
         catch (ex) {
             LOGGER.error('[connect]', ex);

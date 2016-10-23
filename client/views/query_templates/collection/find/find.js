@@ -1,23 +1,33 @@
+import {Template} from 'meteor/templating';
+import {Meteor} from 'meteor/meteor';
+import {Session} from 'meteor/session';
+import Helper from '/client/helper';
+import Enums from '/lib/enums';
+import {Settings} from '/lib/collections/settings';
+import {initExecuteQuery} from '/client/views/pages/browse_collection/browse_collection';
+import {getSelectorValue} from '/client/views/query_templates_common/selector/selector';
+import {getCursorOptions} from '/client/views/query_templates_options/cursor_options/cursor_options';
+
 var toastr = require('toastr');
 var Ladda = require('ladda');
 /**
  * Created by sercan on 30.12.2015.
  */
 Template.find.onRendered(function () {
-    Template.find.initializeOptions();
-    Template.changeConvertOptionsVisibility(true);
+    initializeOptions();
+    Helper.changeConvertOptionsVisibility(true);
 });
 
-Template.find.initializeOptions = function () {
+const initializeOptions = function () {
     var cmb = $('#cmbFindCursorOptions');
-    $.each(Template.sortObjectByKey(CURSOR_OPTIONS), function (key, value) {
+    $.each(Helper.sortObjectByKey(Enums.CURSOR_OPTIONS), function (key, value) {
         cmb.append($("<option></option>")
             .attr("value", key)
             .text(value));
     });
 
     cmb.chosen();
-    Template.setOptionsComboboxChangeEvent(cmb);
+    Helper.setOptionsComboboxChangeEvent(cmb);
 
     $('#divExecuteExplain').iCheck({
         checkboxClass: 'icheckbox_square-green'
@@ -26,13 +36,13 @@ Template.find.initializeOptions = function () {
 };
 
 Template.find.executeQuery = function (historyParams) {
-    Template.browseCollection.initExecuteQuery();
-    var selectedCollection = Session.get(Template.strSessionSelectedCollection);
+    initExecuteQuery();
+    var selectedCollection = Session.get(Helper.strSessionSelectedCollection);
     var maxAllowedFetchSize = Math.round(Settings.findOne().maxAllowedFetchSize * 100) / 100;
-    var cursorOptions = historyParams ? historyParams.cursorOptions : Template.cursorOptions.getCursorOptions();
-    var selector = historyParams ? JSON.stringify(historyParams.selector) : Template.selector.getValue();
+    var cursorOptions = historyParams ? historyParams.cursorOptions : getCursorOptions();
+    var selector = historyParams ? JSON.stringify(historyParams.selector) : getSelectorValue();
 
-    selector = Template.convertAndCheckJSON(selector);
+    selector = Helper.convertAndCheckJSON(selector);
     if (selector["ERROR"]) {
         toastr.error("Syntax error on selector: " + selector["ERROR"]);
         Ladda.stopAll();
@@ -46,29 +56,29 @@ Template.find.executeQuery = function (historyParams) {
     }
 
     // max allowed fetch size  != 0 and there's no project option, check for size
-    if (maxAllowedFetchSize && maxAllowedFetchSize != 0 && !(CURSOR_OPTIONS.PROJECT in cursorOptions)) {
+    if (maxAllowedFetchSize && maxAllowedFetchSize != 0 && !(Enums.CURSOR_OPTIONS.PROJECT in cursorOptions)) {
         // get stats to calculate fetched documents size from avgObjSize (stats could be changed, therefore we can't get it from html )
         Meteor.call("stats", selectedCollection, {}, function (statsError, statsResult) {
             if (statsError || statsResult.error || !(statsResult.result.avgObjSize)) {
                 // if there's an error, nothing we can do
-                Template.find.proceedFindQuery(selectedCollection, selector, cursorOptions, (historyParams ? false : true));
+                proceedFindQuery(selectedCollection, selector, cursorOptions, (historyParams ? false : true));
             }
             else {
-                if (CURSOR_OPTIONS.LIMIT in cursorOptions) {
+                if (Enums.CURSOR_OPTIONS.LIMIT in cursorOptions) {
                     var count = cursorOptions.limit;
-                    if (Template.find.checkAverageSize(count, statsResult.result.avgObjSize, maxAllowedFetchSize)) {
-                        Template.find.proceedFindQuery(selectedCollection, selector, cursorOptions, (historyParams ? false : true));
+                    if (checkAverageSize(count, statsResult.result.avgObjSize, maxAllowedFetchSize)) {
+                        proceedFindQuery(selectedCollection, selector, cursorOptions, (historyParams ? false : true));
                     }
                 }
                 else {
                     Meteor.call("count", selectedCollection, selector, function (err, result) {
                         if (err || result.error) {
-                            Template.find.proceedFindQuery(selectedCollection, selector, cursorOptions, (historyParams ? false : true));
+                            proceedFindQuery(selectedCollection, selector, cursorOptions, (historyParams ? false : true));
                         }
                         else {
                             var count = result.result;
-                            if (Template.find.checkAverageSize(count, statsResult.result.avgObjSize, maxAllowedFetchSize)) {
-                                Template.find.proceedFindQuery(selectedCollection, selector, cursorOptions, (historyParams ? false : true));
+                            if (checkAverageSize(count, statsResult.result.avgObjSize, maxAllowedFetchSize)) {
+                                proceedFindQuery(selectedCollection, selector, cursorOptions, (historyParams ? false : true));
                             }
                         }
                     });
@@ -77,11 +87,11 @@ Template.find.executeQuery = function (historyParams) {
         });
     }
     else {
-        Template.find.proceedFindQuery(selectedCollection, selector, cursorOptions);
+        proceedFindQuery(selectedCollection, selector, cursorOptions);
     }
 };
 
-Template.find.proceedFindQuery = function (selectedCollection, selector, cursorOptions, saveHistory) {
+const proceedFindQuery = function (selectedCollection, selector, cursorOptions, saveHistory) {
     var params = {
         selector: selector,
         cursorOptions: cursorOptions
@@ -92,11 +102,11 @@ Template.find.proceedFindQuery = function (selectedCollection, selector, cursorO
     var executeExplain = $('#inputExecuteExplain').iCheck('update')[0].checked;
 
     Meteor.call("find", selectedCollection, selector, cursorOptions, executeExplain, convertIds, convertDates, function (err, result) {
-        Template.renderAfterQueryExecution(err, result, false, "find", params, saveHistory);
+        Helper.renderAfterQueryExecution(err, result, false, "find", params, saveHistory);
     });
 };
 
-Template.find.checkAverageSize = function (count, avgObjSize, maxAllowedFetchSize) {
+const checkAverageSize = function (count, avgObjSize, maxAllowedFetchSize) {
     var totalBytes = (count * avgObjSize) / (1024 * 1024);
     var totalMegabytes = Math.round(totalBytes * 100) / 100;
 

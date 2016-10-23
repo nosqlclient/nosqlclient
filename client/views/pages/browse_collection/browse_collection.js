@@ -1,3 +1,10 @@
+import {Template} from 'meteor/templating';
+import {Meteor} from 'meteor/meteor';
+import {Session} from 'meteor/session';
+import Helper from '/client/helper';
+import {Settings} from '/lib/collections/settings';
+import Enums from '/lib/enums';
+
 var JSONEditor = require('jsoneditor');
 var toastr = require('toastr');
 var Ladda = require('ladda');
@@ -5,12 +12,12 @@ var Ladda = require('ladda');
  * Created by RSercan on 29.12.2015.
  */
 Template.browseCollection.onCreated(function () {
-    Session.set(Template.strSessionSelectedOptions, []);
-    Session.set(Template.strSessionSelectedQuery, QUERY_TYPES.FIND);
+    Session.set(Helper.strSessionSelectedOptions, []);
+    Session.set(Helper.strSessionSelectedQuery, Enums.QUERY_TYPES.FIND);
 });
 
 Template.browseCollection.onRendered(function () {
-    if (!Session.get(Template.strSessionSelectedCollection)) {
+    if (!Session.get(Helper.strSessionSelectedCollection)) {
         Router.go('databaseStats');
         return;
     }
@@ -19,11 +26,11 @@ Template.browseCollection.onRendered(function () {
     cmb.append($("<optgroup id='optGroupCollectionQueries' label='Collection Queries'></optgroup>"));
     var cmbOptGroupCollection = cmb.find('#optGroupCollectionQueries');
 
-    $.each(Template.sortObjectByKey(QUERY_TYPES), function (key, value) {
+    $.each(Helper.sortObjectByKey(Enums.QUERY_TYPES), function (key, value) {
         var option = $("<option></option>")
             .attr("value", key)
             .text(value);
-        if (value === QUERY_TYPES.FIND) {
+        if (value === Enums.QUERY_TYPES.FIND) {
             option.attr('selected', true);
         }
         cmbOptGroupCollection.append(option);
@@ -31,7 +38,7 @@ Template.browseCollection.onRendered(function () {
     cmb.chosen();
 
     $('#queryHistoriesModal').on('show.bs.modal', function () {
-        Template.queryHistories.initQueryHistories();
+        initQueryHistories();
     });
 
     $('#aConvertIsoDates, #aConvertObjectIds').iCheck({
@@ -41,42 +48,42 @@ Template.browseCollection.onRendered(function () {
     $('[data-toggle="tooltip"]').tooltip({trigger: 'hover'});
 
     // see #108
-    if (Session.get(Template.strSessionSelectedQuery) != QUERY_TYPES.FIND) {
-        Template.changeConvertOptionsVisibility(false);
+    if (Session.get(Helper.strSessionSelectedQuery) != Enums.QUERY_TYPES.FIND) {
+        Helper.changeConvertOptionsVisibility(false);
     }
 
-    Template.browseCollection.clearQueryIfAdmin();
+    clearQueryIfAdmin();
 });
 
 Template.browseCollection.events({
-    'click #btnSaveFindFindOne': function (e) {
+    'click #btnSaveFindFindOne' (e) {
         e.preventDefault();
-        Template.browseCollection.saveEditor();
+        saveEditor();
     },
 
-    'click #btnDelFindFindOne': function (e) {
+    'click #btnDelFindFindOne'  (e) {
         e.preventDefault();
-        Template.browseCollection.deleteDocument();
+        deleteDocument();
     },
 
-    'click #btnShowQueryHistories': function () {
+    'click #btnShowQueryHistories' () {
         $('#queryHistoriesModal').modal('show');
     },
 
-    'change #cmbQueries': function () {
-        Session.set(Template.strSessionSelectedOptions, []);
+    'change #cmbQueries'  () {
+        Session.set(Helper.strSessionSelectedOptions, []);
 
         var value = $('#cmbQueries').find(":selected").text();
         if (value) {
-            Session.set(Template.strSessionSelectedQuery, value);
+            Session.set(Helper.strSessionSelectedQuery, value);
         }
     },
 
-    'click #btnSwitchView': function () {
+    'click #btnSwitchView'  () {
         var jsonViews = $('div[id^="divActiveJsonEditor"]');
         var aceViews = $('div[id^="divActiveAceEditor"]');
 
-        var whichIsDisplayed = Template.browseCollection.getWhichResultViewShowing();
+        var whichIsDisplayed = getWhichResultViewShowing();
 
         if (whichIsDisplayed != 'none') {
             if (whichIsDisplayed == 'jsonEditor') {
@@ -98,8 +105,8 @@ Template.browseCollection.events({
         }
     },
 
-    'click #btnExecuteQuery': function () {
-        var queryTemplate = Session.get(Template.strSessionSelectedQuery);
+    'click #btnExecuteQuery'  () {
+        var queryTemplate = Session.get(Helper.strSessionSelectedQuery);
         if (queryTemplate) {
             Template[queryTemplate].executeQuery();
         } else {
@@ -108,7 +115,7 @@ Template.browseCollection.events({
     }
 });
 
-Template.browseCollection.getWhichResultViewShowing = function () {
+const getWhichResultViewShowing = function () {
     var jsonViews = $('div[id^="divActiveJsonEditor"]');
     var aceViews = $('div[id^="divActiveAceEditor"]');
 
@@ -129,37 +136,37 @@ Template.browseCollection.getWhichResultViewShowing = function () {
 };
 
 Template.browseCollection.helpers({
-    'getQueryTemplate': function () {
-        return Session.get(Template.strSessionSelectedQuery);
+    'getQueryTemplate' () {
+        return Session.get(Helper.strSessionSelectedQuery);
     },
 
-    'getHelpBlockForSelectedQuery': function () {
-        switch (Session.get(Template.strSessionSelectedQuery)) {
-            case QUERY_TYPES.FINDONE_AND_REPLACE:
+    'getHelpBlockForSelectedQuery' () {
+        switch (Session.get(Helper.strSessionSelectedQuery)) {
+            case Enums.QUERY_TYPES.FINDONE_AND_REPLACE:
                 return Spacebars.SafeString('This query replaces whole document which matched by <strong>selector</strong> with the <strong>set</strong> object');
 
-            case QUERY_TYPES.FINDONE_AND_DELETE:
+            case Enums.QUERY_TYPES.FINDONE_AND_DELETE:
                 return Spacebars.SafeString('<strong><font color=\'red\'>CAUTION:</font></strong> This query removes whole document which matched by <strong>selector</strong>');
 
-            case QUERY_TYPES.CREATE_INDEX:
+            case Enums.QUERY_TYPES.CREATE_INDEX:
                 return Spacebars.SafeString('Since mongodb version <strong>3.0.0</strong>, this query can be used instead of <strong>ensureIndex</strong>');
 
-            case QUERY_TYPES.DELETE:
+            case Enums.QUERY_TYPES.DELETE:
                 return Spacebars.SafeString('<strong><font color=\'red\'>CAUTION:</font></strong> This query removes whole document(s) which matched by <strong>selector</strong>');
 
-            case QUERY_TYPES.GEO_HAYSTACK_SEARCH:
+            case Enums.QUERY_TYPES.GEO_HAYSTACK_SEARCH:
                 return Spacebars.SafeString('This query executes a geo search using a <strong>geo haystack index</strong> on a collection');
 
-            case QUERY_TYPES.IS_CAPPED:
+            case Enums.QUERY_TYPES.IS_CAPPED:
                 return Spacebars.SafeString('Returns the information of if the collection is a <strong>capped</strong> collection');
 
-            case QUERY_TYPES.OPTIONS:
+            case Enums.QUERY_TYPES.OPTIONS:
                 return Spacebars.SafeString('Returns <strong>collection</strong> options');
 
-            case QUERY_TYPES.RE_INDEX:
+            case Enums.QUERY_TYPES.RE_INDEX:
                 return Spacebars.SafeString('Reindex all indexes on the collection <strong>Warning:</strong> reIndex is a blocking operation <i>(indexes are rebuilt in the foreground)</i> and will be slow for large collections');
 
-            case QUERY_TYPES.UPDATE_MANY:
+            case Enums.QUERY_TYPES.UPDATE_MANY:
                 return Spacebars.SafeString('Updates all documents which matched by <strong>Selector</strong>');
 
             default:
@@ -169,22 +176,22 @@ Template.browseCollection.helpers({
 
 });
 
-Template.browseCollection.clearQueryIfAdmin = function () {
-    $.each(ADMIN_QUERY_TYPES, function (key, value) {
-        if (value == Session.get(Template.strSessionSelectedQuery)) {
-            Session.set(Template.strSessionSelectedQuery, undefined);
-            Session.set(Template.strSessionSelectedOptions, undefined);
+const clearQueryIfAdmin = function () {
+    $.each(Enums.ADMIN_QUERY_TYPES, function (key, value) {
+        if (value == Session.get(Helper.strSessionSelectedQuery)) {
+            Session.set(Helper.strSessionSelectedQuery, undefined);
+            Session.set(Helper.strSessionSelectedOptions, undefined);
         }
     });
 };
 
-Template.browseCollection.initExecuteQuery = function () {
+export const initExecuteQuery = function () {
     // loading button
     var l = Ladda.create(document.querySelector('#btnExecuteQuery'));
     l.start();
 };
 
-Template.browseCollection.setResult = function (result, queryInfo, queryParams, saveHistory) {
+export const setQueryResult = function (result, queryInfo, queryParams, saveHistory) {
     var jsonEditor = $('#divActiveJsonEditor');
     var aceEditor = $('#divActiveAceEditor');
     var settings = Settings.findOne();
@@ -197,14 +204,14 @@ Template.browseCollection.setResult = function (result, queryInfo, queryParams, 
         else {
             aceEditor.show('slow');
         }
-        Template.browseCollection.setResultToEditors(1, result);
+        setResultToEditors(1, result);
     }
     else {
         // open a new tab
-        var tabID = Template.browseCollection.clarifyTabID();
-        var tabContent = Template.browseCollection.getResultTabContent(tabID, settings.defaultResultView, queryInfo);
-        var tabTitle = queryInfo + " - " + Session.get(Template.strSessionSelectedCollection);
-        Template.browseCollection.setAllTabsInactive();
+        var tabID = clarifyTabID();
+        var tabContent = getResultTabContent(tabID, settings.defaultResultView, queryInfo);
+        var tabTitle = queryInfo + " - " + Session.get(Helper.strSessionSelectedCollection);
+        setAllTabsInactive();
         var resultTabs = $('#resultTabs');
 
         // set tab href
@@ -243,24 +250,23 @@ Template.browseCollection.setResult = function (result, queryInfo, queryParams, 
         var lastTab = resultTabs.find('a:last');
         lastTab.tab('show');
 
-        Template.browseCollection.setResultToEditors(tabID, result);
+        setResultToEditors(tabID, result);
     }
 
     if (saveHistory) {
-        Template.browseCollection.saveQueryHistory(queryInfo, queryParams);
+        saveQueryHistory(queryInfo, queryParams);
     }
-
 
 };
 
-Template.browseCollection.saveQueryHistory = function (queryInfo, queryParams) {
+const saveQueryHistory = function (queryInfo, queryParams) {
     if (!queryParams) {
         queryParams = {};
     }
 
     var history = {
-        connectionId: Session.get(Template.strSessionConnection),
-        collectionName: Session.get(Template.strSessionSelectedCollection),
+        connectionId: Session.get(Helper.strSessionConnection),
+        collectionName: Session.get(Helper.strSessionSelectedCollection),
         queryName: queryInfo,
         params: JSON.stringify(queryParams),
         date: new Date()
@@ -270,9 +276,9 @@ Template.browseCollection.saveQueryHistory = function (queryInfo, queryParams) {
 };
 
 
-Template.browseCollection.setResultToEditors = function (tabID, result) {
+const setResultToEditors = function (tabID, result) {
     // set json editor
-    Template.browseCollection.getEditor(tabID).set(result);
+    getEditor(tabID).set(result);
 
     AceEditor.instance('activeAceEditor', {
         mode: 'javascript',
@@ -287,23 +293,23 @@ Template.browseCollection.setResultToEditors = function (tabID, result) {
     });
 };
 
-Template.browseCollection.clarifyTabID = function () {
+const clarifyTabID = function () {
     var result = 1;
-    var tabIDArray = Session.get(Template.strSessionUsedTabIDs);
+    var tabIDArray = Session.get(Helper.strSessionUsedTabIDs);
     if (tabIDArray == undefined || tabIDArray.length == 0) {
         tabIDArray = [result];
-        Session.set(Template.strSessionUsedTabIDs, tabIDArray);
+        Session.set(Helper.strSessionUsedTabIDs, tabIDArray);
         return result;
     }
 
     result = tabIDArray[tabIDArray.length - 1] + 1;
 
     tabIDArray.push(result);
-    Session.set(Template.strSessionUsedTabIDs, tabIDArray);
+    Session.set(Helper.strSessionUsedTabIDs, tabIDArray);
     return result;
 };
 
-Template.browseCollection.setAllTabsInactive = function () {
+const setAllTabsInactive = function () {
     $('#resultTabContents').each(function () {
         var otherTab = $(this);
         otherTab.removeClass('active');
@@ -318,7 +324,7 @@ Template.browseCollection.setAllTabsInactive = function () {
     });
 };
 
-Template.browseCollection.getResultTabContent = function (tabID, defaultView) {
+const getResultTabContent = function (tabID, defaultView) {
     var jsonEditorHtml = '<div class="tab-pane fade in active" id="tab-' + tabID + '">' +
         '<div id="divActiveJsonEditor" class="form-group"> ' +
         '<div id="activeJsonEditor" style="width: 100%;height:500px" class="col-lg-12"> ' +
@@ -337,7 +343,7 @@ Template.browseCollection.getResultTabContent = function (tabID, defaultView) {
         '<pre id="activeAceEditor" style="height: 500px"></pre> ' +
         '</div> </div> </div>';
 
-    var whichIsDisplayed = Template.browseCollection.getWhichResultViewShowing();
+    var whichIsDisplayed = getWhichResultViewShowing();
     var result;
 
     if (whichIsDisplayed == 'none') {
@@ -360,7 +366,7 @@ Template.browseCollection.getResultTabContent = function (tabID, defaultView) {
     return result;
 };
 
-Template.browseCollection.getEditor = function (tabID) {
+const getEditor = function (tabID) {
     var tabView = $('#tab-' + tabID);
     if (!tabView.data('jsoneditor')) {
         var jsonEditor = new JSONEditor(document.getElementById('activeJsonEditor'), {
@@ -375,11 +381,11 @@ Template.browseCollection.getEditor = function (tabID) {
     return tabView.data('jsoneditor');
 };
 
-Template.browseCollection.getActiveEditorValue = function () {
+const getActiveEditorValue = function () {
     var resultTabs = $('#resultTabs');
     var resultContents = $('#resultTabContents');
 
-    var whichIsDisplayed = Template.browseCollection.getWhichResultViewShowing();
+    var whichIsDisplayed = getWhichResultViewShowing();
     if (whichIsDisplayed == 'aceEditor') {
         var foundAceEditor = resultContents.find('div.active').find('pre').attr('id');
         if (foundAceEditor) {
@@ -394,10 +400,10 @@ Template.browseCollection.getActiveEditorValue = function () {
     }
 };
 
-Template.browseCollection.saveEditor = function () {
+const saveEditor = function () {
     var convertedDocs;
     try {
-        convertedDocs = Template.convertAndCheckJSONAsArray(Template.browseCollection.getActiveEditorValue());
+        convertedDocs = Helper.convertAndCheckJSONAsArray(getActiveEditorValue());
     }
     catch (e) {
         toastr.error('Syntax error, can not save document(s): ' + e);
@@ -414,11 +420,11 @@ Template.browseCollection.saveEditor = function () {
         cancelButtonText: "No"
     }, function (isConfirm) {
         if (isConfirm) {
-            
+
             var l = Ladda.create(document.querySelector('#btnSaveFindFindOne'));
             l.start();
 
-            var selectedCollection = Session.get(Template.strSessionSelectedCollection);
+            var selectedCollection = Session.get(Helper.strSessionSelectedCollection);
             var convertIds = $('#aConvertObjectIds').iCheck('update')[0].checked;
             var convertDates = $('#aConvertIsoDates').iCheck('update')[0].checked;
             var i = 0;
@@ -426,7 +432,7 @@ Template.browseCollection.saveEditor = function () {
                 if (doc._id) {
                     Meteor.call("updateOne", selectedCollection, {_id: doc._id}, doc, {}, convertIds, convertDates, function (err, result) {
                         if (err || result.error) {
-                            Template.showMeteorFuncError(err, result, "Couldn't update one of the documents");
+                            Helper.showMeteorFuncError(err, result, "Couldn't update one of the documents");
                             Ladda.stopAll();
                         } else {
                             if ((i++) == (convertedDocs.length - 1)) {
@@ -444,10 +450,10 @@ Template.browseCollection.saveEditor = function () {
 };
 
 
-Template.browseCollection.deleteDocument = function () {
+const deleteDocument = function () {
     var convertedDocs;
     try {
-        convertedDocs = Template.convertAndCheckJSONAsArray(Template.browseCollection.getActiveEditorValue());
+        convertedDocs = Helper.convertAndCheckJSONAsArray(getActiveEditorValue());
     }
     catch (e) {
         toastr.error('Syntax error, can not save document(s): ' + e);
@@ -468,7 +474,7 @@ Template.browseCollection.deleteDocument = function () {
             var l = Ladda.create(document.querySelector('#btnDelFindFindOne'));
             l.start();
 
-            var selectedCollection = Session.get(Template.strSessionSelectedCollection);
+            var selectedCollection = Session.get(Helper.strSessionSelectedCollection);
             var convertIds = $('#aConvertObjectIds').iCheck('update')[0].checked;
             var convertDates = $('#aConvertIsoDates').iCheck('update')[0].checked;
             var i = 0;
@@ -476,7 +482,7 @@ Template.browseCollection.deleteDocument = function () {
                 if (doc._id) {
                     Meteor.call("delete", selectedCollection, {_id: doc._id}, convertIds, convertDates, function (err, result) {
                         if (err || result.error) {
-                            Template.showMeteorFuncError(err, result, "Couldn't delete one of the documents");
+                            Helper.showMeteorFuncError(err, result, "Couldn't delete one of the documents");
                             Ladda.stopAll();
                         } else {
                             if ((i++) == (convertedDocs.length - 1)) {

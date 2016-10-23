@@ -1,18 +1,27 @@
+import {Template} from 'meteor/templating';
+import {Meteor} from 'meteor/meteor';
+import {Session} from 'meteor/session';
+import Helper from '/client/helper';
+import Enums from '/lib/enums';
+import {initExecuteQuery} from '/client/views/pages/browse_collection/browse_collection';
+import {getSelectorValue} from '/client/views/query_templates_common/selector/selector';
+import {getCursorOptions} from '/client/views/query_templates_options/cursor_options/cursor_options';
+
 var toastr = require('toastr');
 var Ladda = require('ladda');
 /**
  * Created by RSercan on 1.1.2016.
  */
 Template.findOne.onRendered(function () {
-    Template.findOne.initializeOptions();
-    Template.changeConvertOptionsVisibility(true);
+    initializeOptions();
+    Helper.changeConvertOptionsVisibility(true);
 });
 
-Template.findOne.initializeOptions = function () {
+const initializeOptions = function () {
     var cmb = $('#cmbFindOneCursorOptions');
-    $.each(Template.sortObjectByKey(CURSOR_OPTIONS), function (key, value) {
+    $.each(Helper.sortObjectByKey(Enums.CURSOR_OPTIONS), function (key, value) {
         // dont add limit, it will be 1 already
-        if (value != CURSOR_OPTIONS.LIMIT) {
+        if (value != Enums.CURSOR_OPTIONS.LIMIT) {
             cmb.append($("<option></option>")
                 .attr("value", key)
                 .text(value));
@@ -20,16 +29,16 @@ Template.findOne.initializeOptions = function () {
     });
 
     cmb.chosen();
-    Template.setOptionsComboboxChangeEvent(cmb);
+    Helper.setOptionsComboboxChangeEvent(cmb);
 };
 
 Template.findOne.executeQuery = function (historyParams) {
-    Template.browseCollection.initExecuteQuery();
-    var selectedCollection = Session.get(Template.strSessionSelectedCollection);
-    var cursorOptions = historyParams ? historyParams.cursorOptions : Template.cursorOptions.getCursorOptions();
-    var selector = historyParams ? JSON.stringify(historyParams.selector) : Template.selector.getValue();
+    initExecuteQuery();
+    var selectedCollection = Session.get(Helper.strSessionSelectedCollection);
+    var cursorOptions = historyParams ? historyParams.cursorOptions : getCursorOptions();
+    var selector = historyParams ? JSON.stringify(historyParams.selector) : getSelectorValue();
 
-    selector = Template.convertAndCheckJSON(selector);
+    selector = Helper.convertAndCheckJSON(selector);
     if (selector["ERROR"]) {
         toastr.error("Syntax error on selector: " + selector["ERROR"]);
         Ladda.stopAll();
@@ -50,9 +59,8 @@ Template.findOne.executeQuery = function (historyParams) {
     var convertIds = $('#aConvertObjectIds').iCheck('update')[0].checked;
     var convertDates = $('#aConvertIsoDates').iCheck('update')[0].checked;
 
-    Meteor.call("findOne",  selectedCollection, selector, cursorOptions, convertIds, convertDates,
-        function (err, result) {
-            Template.renderAfterQueryExecution(err, result, false, "findOne", params, (historyParams ? false : true));
+    Meteor.call("findOne", selectedCollection, selector, cursorOptions, convertIds, convertDates, function (err, result) {
+            Helper.renderAfterQueryExecution(err, result, false, "findOne", params, (historyParams ? false : true));
         }
     );
 };

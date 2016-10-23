@@ -1,28 +1,36 @@
+import {Template} from 'meteor/templating';
+import {Meteor} from 'meteor/meteor';
+import {Session} from 'meteor/session';
+import Helper from '/client/helper';
+import Enums from '/lib/enums';
+import {initExecuteQuery} from '/client/views/pages/browse_collection/browse_collection';
+import {getOptions} from '/client/views/query_templates_options/geo_near_options/geo_near_options';
+
 var toastr = require('toastr');
 var Ladda = require('ladda');
 /**
  * Created by RSercan on 3.1.2016.
  */
 Template.geoNear.onRendered(function () {
-    Template.geoNear.initializeOptions();
-    Template.changeConvertOptionsVisibility(false);
+    initializeOptions();
+    Helper.changeConvertOptionsVisibility(false);
 });
 
-Template.geoNear.initializeOptions = function () {
+const initializeOptions = function () {
     var cmb = $('#cmbGeoNearOptions');
-    $.each(Template.sortObjectByKey(GEO_NEAR_OPTIONS), function (key, value) {
+    $.each(Helper.sortObjectByKey(Enums.GEO_NEAR_OPTIONS), function (key, value) {
         cmb.append($("<option></option>")
             .attr("value", key)
             .text(value));
     });
 
     cmb.chosen();
-    Template.setOptionsComboboxChangeEvent(cmb);
+    Helper.setOptionsComboboxChangeEvent(cmb);
 };
 
 Template.geoNear.executeQuery = function (historyParams) {
-    Template.browseCollection.initExecuteQuery();
-    var selectedCollection = Session.get(Template.strSessionSelectedCollection);
+    initExecuteQuery();
+    var selectedCollection = Session.get(Helper.strSessionSelectedCollection);
     var xAxis = historyParams ? historyParams.xAxis : $('#inputXAxis').val();
     if (xAxis) {
         xAxis = parseInt(xAxis);
@@ -33,7 +41,7 @@ Template.geoNear.executeQuery = function (historyParams) {
         yAxis = parseInt(yAxis);
     }
 
-    var options = historyParams ? historyParams.options : Template.geoNearOptions.getOptions();
+    var options = historyParams ? historyParams.options : getOptions();
     if (options["ERROR"]) {
         toastr.error("Syntax error: " + options["ERROR"]);
         Ladda.stopAll();
@@ -47,6 +55,6 @@ Template.geoNear.executeQuery = function (historyParams) {
     };
 
     Meteor.call("geoNear", selectedCollection, xAxis, yAxis, options, function (err, result) {
-        Template.renderAfterQueryExecution(err, result, false, "geoNear", params, (historyParams ? false : true));
+        Helper.renderAfterQueryExecution(err, result, false, "geoNear", params, (historyParams ? false : true));
     });
 };

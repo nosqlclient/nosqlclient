@@ -1,6 +1,9 @@
+import {Template} from 'meteor/templating';
+import Helper from '/client/helper';
+
 /**
  * Created by sercan on 06.01.2016.
  */
 Template.set.onRendered(function () {
-    Template.initializeCodeMirror($('#divSet'), 'txtSet');
+    Helper.initializeCodeMirror($('#divSet'), 'txtSet');
 });

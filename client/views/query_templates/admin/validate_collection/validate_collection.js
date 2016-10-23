@@ -1,18 +1,23 @@
+import {Template} from 'meteor/templating';
+import {Meteor} from 'meteor/meteor';
+import Helper from '/client/helper';
+import {initExecuteQuery} from '/client/views/pages/admin_queries/admin_queries';
+
 var toastr = require('toastr');
 var Ladda = require('ladda');
 /**
  * Created by RSercan on 10.1.2016.
  */
 Template.validateCollection.onRendered(function () {
-    Template.initializeCodeMirror($('#divOptions'), 'txtOptions');
-    Template.changeConvertOptionsVisibility(true);
-    Template.changeRunOnAdminOptionVisibility(false);
+    Helper.initializeCodeMirror($('#divOptions'), 'txtOptions');
+    Helper.changeConvertOptionsVisibility(true);
+    Helper.changeRunOnAdminOptionVisibility(false);
 });
 
 Template.validateCollection.executeQuery = function () {
-    Template.adminQueries.initExecuteQuery();
+    initExecuteQuery();
     var collectionName = $('#inputValidateCollection').val();
-    var options = Template.getCodeMirrorValue($('#divOptions'));
+    var options = Helper.getCodeMirrorValue($('#divOptions'));
 
     if (collectionName == null || collectionName.length === 0) {
         toastr.error('CollectionName can not be empty');
@@ -20,7 +25,7 @@ Template.validateCollection.executeQuery = function () {
         return;
     }
 
-    options = Template.convertAndCheckJSON(options);
+    options = Helper.convertAndCheckJSON(options);
     if (options["ERROR"]) {
         toastr.error("Syntax error on options: " + options["ERROR"]);
         Ladda.stopAll();
@@ -30,9 +35,7 @@ Template.validateCollection.executeQuery = function () {
     var convertIds = $('#aConvertObjectIds').iCheck('update')[0].checked;
     var convertDates = $('#aConvertIsoDates').iCheck('update')[0].checked;
 
-    Meteor.call("validateCollection", collectionName, options, convertIds, convertDates,
-        function (err, result) {
-            Template.renderAfterQueryExecution(err, result, true);
-        })
-    ;
+    Meteor.call("validateCollection", collectionName, options, convertIds, convertDates, function (err, result) {
+        Helper.renderAfterQueryExecution(err, result, true);
+    });
 };

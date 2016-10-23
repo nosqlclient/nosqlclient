@@ -1,19 +1,23 @@
+import {Template} from 'meteor/templating';
+import Helper from '/client/helper';
+import Enums from '/lib/enums';
+
 var toastr = require('toastr');
 /**
  * Created by RSercan on 10.1.2016.
  */
 Template.customData.onRendered(function () {
-    Template.initializeCodeMirror($('#divCustomData'), 'txtCustomData');
+    Helper.initializeCodeMirror($('#divCustomData'), 'txtCustomData');
 });
 
 Template.roles.onRendered(function () {
-    Template.initializeCodeMirror($('#divRoles'), 'txtRoles');
+    Helper.initializeCodeMirror($('#divRoles'), 'txtRoles');
 });
 
-Template.addUserOptions.getOptions = function () {
+export const getOptions = function () {
     var result = {};
-    Template.checkAndAddOption("CUSTOM_DATA", $('#divCustomData'), result, ADD_USER_OPTIONS);
-    Template.checkAndAddOption("ROLES", $('#divRoles'), result, ADD_USER_OPTIONS);
+    Helper.checkAndAddOption("CUSTOM_DATA", $('#divCustomData'), result, Enums.ADD_USER_OPTIONS);
+    Helper.checkAndAddOption("ROLES", $('#divRoles'), result, Enums.ADD_USER_OPTIONS);
 
     if (result.roles == null || result.roles == "" || Object.keys(result.roles).length == 0) {
         toastr.info('Creating a user without roles is deprecated in MongoDB >= 2.6');

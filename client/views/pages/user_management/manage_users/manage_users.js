@@ -1,3 +1,9 @@
+import {Template} from 'meteor/templating';
+import {Meteor} from 'meteor/meteor';
+import {Session} from 'meteor/session';
+import Helper from '/client/helper';
+import {Connections} from '/lib/collections/connections';
+
 var JSONEditor = require('jsoneditor');
 var toastr = require('toastr');
 var Ladda = require('ladda');
@@ -5,33 +11,33 @@ var Ladda = require('ladda');
  * Created by sercan on 14.04.2016.
  */
 Template.manageUsers.onRendered(function () {
-    Template.initiateDatatable($('#tblUsers'), Template.strSessionUsermanagementUser);
-    Template.initiateDatatable($('#tblUserRoles'));
-    Template.manageUsers.initiateRoleToAddTable();
+    Helper.initiateDatatable($('#tblUsers'), Helper.strSessionUsermanagementUser);
+    Helper.initiateDatatable($('#tblUserRoles'));
+    initiateRoleToAddTable();
 
     $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
         var target = $(e.target).attr("href");
         if (target == '#tab-2') {
-            Template.initializeCodeMirror($('#divCustomData'), 'txtCustomData');
+            Helper.initializeCodeMirror($('#divCustomData'), 'txtCustomData');
         }
     });
 });
 
 Template.manageUsers.helpers({
-    'getDB': function () {
-        return Session.get(Template.strSessionUsermanagementManageSelection);
+    'getDB' () {
+        return Session.get(Helper.strSessionUsermanagementManageSelection);
     },
 
-    'getUser': function () {
-        return Session.get(Template.strSessionUsermanagementUser);
+    'getUser'() {
+        return Session.get(Helper.strSessionUsermanagementUser);
     }
 });
 
 Template.manageUsers.events({
-    'click .editor_delete_user': function (e) {
+    'click .editor_delete_user' (e) {
         e.preventDefault();
 
-        if (!Session.get(Template.strSessionUsermanagementUser)) {
+        if (!Session.get(Helper.strSessionUsermanagementUser)) {
             return;
         }
 
@@ -49,16 +55,16 @@ Template.manageUsers.events({
                 var l = Ladda.create(document.querySelector('#btnCloseUMDB'));
                 l.start();
 
-                var command = {dropUser: Session.get(Template.strSessionUsermanagementUser).user};
+                var command = {dropUser: Session.get(Helper.strSessionUsermanagementUser).user};
 
                 var runOnAdminDB = $('#aRunOnAdminDBToFetchUsers').iCheck('update')[0].checked;
 
                 Meteor.call('command', command, false, false, runOnAdminDB, function (err, result) {
                     if (err || result.error) {
-                        Template.showMeteorFuncError(err, result, "Couldn't drop user");
+                        Helper.showMeteorFuncError(err, result, "Couldn't drop user");
                     }
                     else {
-                        Template.manageUsers.initUsers();
+                        initUsers();
                         toastr.success('Successfuly dropped user !');
                     }
                 });
@@ -67,13 +73,13 @@ Template.manageUsers.events({
 
     },
 
-    'click .editor_show_custom_data': function (e) {
+    'click .editor_show_custom_data' (e) {
         e.preventDefault();
 
         var l = Ladda.create(document.querySelector('#btnCloseUMDB'));
         l.start();
 
-        var selectedUser = Session.get(Template.strSessionUsermanagementUser);
+        var selectedUser = Session.get(Helper.strSessionUsermanagementUser);
         if (selectedUser) {
             var editorDiv = $('#jsonEditorOfCustomData');
             var jsonEditor = editorDiv.data('jsoneditor');
@@ -87,7 +93,7 @@ Template.manageUsers.events({
                 editorDiv.data('jsoneditor', jsonEditor);
             }
 
-            var connection = Connections.findOne({_id: Session.get(Template.strSessionConnection)});
+            var connection = Connections.findOne({_id: Session.get(Helper.strSessionConnection)});
             var runOnAdminDB = $('#aRunOnAdminDBToFetchUsers').iCheck('update')[0].checked;
             var dbName = runOnAdminDB ? 'admin' : connection.databaseName;
 
@@ -99,7 +105,7 @@ Template.manageUsers.events({
 
             Meteor.call('command', userInfoCommand, false, false, runOnAdminDB, function (err, result) {
                 if (err || result.error) {
-                    Template.showMeteorFuncError(err, result, "Couldn't fetch userInfo");
+                    Helper.showMeteorFuncError(err, result, "Couldn't fetch userInfo");
                 }
                 else {
                     var user = result.result.users[0];
@@ -112,7 +118,7 @@ Template.manageUsers.events({
         }
     },
 
-    'click #btnApplyAddEditUser': function (e) {
+    'click #btnApplyAddEditUser'  (e) {
         e.preventDefault();
 
         var usernameSelector = $('#inputUsernameUM');
@@ -129,7 +135,7 @@ Template.manageUsers.events({
             return;
         }
 
-        var customData = Template.getCodeMirrorValue($('#divCustomData'));
+        var customData = Helper.getCodeMirrorValue($('#divCustomData'));
         if (customData) {
             try {
                 customData = JSON.parse(customData);
@@ -147,7 +153,7 @@ Template.manageUsers.events({
             command.createUser = usernameSelector.val();
         }
 
-        command.roles = Template.manageUsers.populateUserRolesToSave();
+        command.roles = populateUserRolesToSave();
 
         if (customData) {
             command.customData = customData;
@@ -165,10 +171,10 @@ Template.manageUsers.events({
 
         Meteor.call('command', command, false, false, runOnAdminDB, function (err, result) {
             if (err || result.error) {
-                Template.showMeteorFuncError(err, result, "Couldn't update user");
+                Helper.showMeteorFuncError(err, result, "Couldn't update user");
             }
             else {
-                Template.manageUsers.initUsers();
+                initUsers();
                 if (titleSelector.text() == 'Edit User') {
                     toastr.success('Successfuly updated user !');
                 }
@@ -182,7 +188,7 @@ Template.manageUsers.events({
         });
     },
 
-    'click #btnApplyAddRoleToUser': function (e) {
+    'click #btnApplyAddRoleToUser' (e) {
         e.preventDefault();
 
         var db = $('#cmbDatabasesForAddRoleToUser').chosen().val();
@@ -207,7 +213,7 @@ Template.manageUsers.events({
 
         var objectToAdd = {db: db, role: roleName};
         if (tableSelector.rows().data().length == 0) {
-            Template.manageUsers.populateUserRolesTable(null, [objectToAdd]);
+            populateUserRolesTable(null, [objectToAdd]);
         }
         else {
             tableSelector.row.add(objectToAdd).draw();
@@ -216,7 +222,7 @@ Template.manageUsers.events({
         toastr.success('<b>' + roleName + '</b>@' + db + ' successfuly added');
     },
 
-    'click #btnAddNewRoleToUser': function (e) {
+    'click #btnAddNewRoleToUser' (e) {
         e.preventDefault();
         var cmb = $('#cmbDatabasesForAddRoleToUser');
         cmb.append($("<optgroup id='optGroupDatabases' label='Databases'></optgroup>"));
@@ -224,7 +230,7 @@ Template.manageUsers.events({
 
         Meteor.call('getDatabases', function (err, result) {
             if (err || result.error) {
-                Template.showMeteorFuncError(err, result, "Couldn't fetch databases");
+                Helper.showMeteorFuncError(err, result, "Couldn't fetch databases");
             }
             else {
                 for (var i = 0; i < result.result.length; i++) {
@@ -243,7 +249,7 @@ Template.manageUsers.events({
             showBuiltinRoles: true
         }, false, false, runOnAdminDB, function (err, result) {
             if (err || result.error) {
-                Template.showMeteorFuncError(err, result, "Couldn't fetch roles to populate table");
+                Helper.showMeteorFuncError(err, result, "Couldn't fetch roles to populate table");
             }
             else {
                 var tblCurrentRoles = $('#tblCurrentRoles');
@@ -264,7 +270,7 @@ Template.manageUsers.events({
         });
     },
 
-    'click #btnAddNewUser': function (e) {
+    'click #btnAddNewUser'  (e) {
         e.preventDefault();
 
         var inputUsernameSelector = $('#inputUsernameUM');
@@ -277,17 +283,140 @@ Template.manageUsers.events({
 
         $('#addEditUserModalTitle').text('Add User');
         $('.nav-tabs a[href="#tab-1"]').tab('show');
-        Template.setCodeMirrorValue($('#divCustomData'), '');
+        Helper.setCodeMirrorValue($('#divCustomData'), '');
     },
 
-    'click .editor_edit': function (e) {
+    'click .editor_edit'  (e) {
         e.preventDefault();
 
-        Template.manageUsers.popEditUserModal();
+        popEditUserModal();
     }
 });
 
-Template.manageUsers.initUsers = function () {
+const populateTableData = function (users) {
+    var result = [];
+    for (var i = 0; i < users.length; i++) {
+        var obj = {
+            user: users[i].user,
+            roles: []
+        };
+
+        for (var j = 0; j < users[i].roles.length; j++) {
+            obj.roles.push('<b>' + users[i].roles[j].role + '</b>@' + users[i].roles[j].db);
+        }
+
+        result.push(obj);
+    }
+
+    return result;
+};
+
+const initiateRoleToAddTable = function () {
+    var selector = $('#tblCurrentRoles');
+    selector.find('tbody').on('click', 'tr', function () {
+        var table = selector.DataTable();
+        if ($(this).hasClass('selected')) {
+            $(this).removeClass('selected');
+        }
+        else {
+            table.$('tr.selected').removeClass('selected');
+            $(this).addClass('selected');
+        }
+
+        if (table.row(this).data()) {
+            $('#inputAddRoleToUserRolename').val(table.row(this).data().role);
+            $('#cmbDatabasesForAddRoleToUser').val(table.row(this).data().db).trigger('chosen:updated');
+        }
+    });
+
+    selector.find('tbody').on('click', 'a.editor_delete', function () {
+        selector.DataTable().row($(this).parents('tr')).remove().draw();
+    });
+};
+
+const populateUserRolesToSave = function () {
+    var result = [];
+    var roles = $('#tblUserRoles').DataTable().rows().data();
+    for (var i = 0; i < roles.length; i++) {
+        result.push({
+            db: roles[i].db,
+            role: roles[i].role
+        });
+    }
+
+    return result;
+};
+
+const populateUserRolesTable = function (roles, dataArray) {
+    var tblUserRoles = $('#tblUserRoles');
+    // destroy jquery datatable to prevent reinitialization (https://datatables.net/manual/tech-notes/3)
+    if ($.fn.dataTable.isDataTable('#tblUserRoles')) {
+        tblUserRoles.DataTable().destroy();
+    }
+    tblUserRoles.DataTable({
+        data: dataArray ? dataArray : roles,
+        columns: [
+            {data: "role", "width": "50%"},
+            {data: "db", "width": "50%"}
+        ],
+        columnDefs: [
+            {
+                targets: [2],
+                data: null,
+                width: "5%",
+                defaultContent: '<a href="" title="Delete" class="editor_delete"><i class="fa fa-remove text-navy"></i></a>'
+            }
+        ]
+    });
+};
+
+
+export const popEditUserModal = function (user) {
+    $('#addEditUserModalTitle').text('Edit User');
+
+    var l = Ladda.create(document.querySelector('#btnCloseUMDB'));
+    l.start();
+
+    var connection = Connections.findOne({_id: Session.get(Helper.strSessionConnection)});
+    var runOnAdminDB = $('#aRunOnAdminDBToFetchUsers').iCheck('update')[0].checked;
+    var dbName = runOnAdminDB ? 'admin' : connection.databaseName;
+    var username = user ? user : Session.get(Helper.strSessionUsermanagementUser).user;
+
+    var userInfoCommand = {
+        usersInfo: {user: username, db: dbName},
+        showCredentials: true,
+        showPrivileges: true
+    };
+
+    Meteor.call('command', userInfoCommand, false, false, runOnAdminDB, function (err, result) {
+        if (err || result.error) {
+            Helper.showMeteorFuncError(err, result, "Couldn't fetch userInfo");
+        }
+        else {
+            $('#editUserModal').modal('show');
+
+            var user = result.result.users[0];
+            populateUserRolesTable(user.roles);
+
+            var inputUsernameSelector = $('#inputUsernameUM');
+            inputUsernameSelector.val(user.user);
+            inputUsernameSelector.prop('disabled', true);
+
+            var inputPasswordSelector = $('#inputPasswordUM');
+            inputPasswordSelector.val('');
+            inputPasswordSelector.attr('placeholder', 'Leave this blank to keep old one');
+
+            if (user.customData) {
+                $('.nav-tabs a[href="#tab-2"]').tab('show');
+                Helper.setCodeMirrorValue($('#divCustomData'), JSON.stringify(user.customData, null, '\t'));
+            }
+        }
+
+        Ladda.stopAll();
+    });
+};
+
+export const initUsers = function () {
     // loading button
 
     var l = Ladda.create(document.querySelector('#btnCloseUMDB'));
@@ -302,7 +431,7 @@ Template.manageUsers.initUsers = function () {
 
     Meteor.call('command', command, false, false, runOnAdminDB, function (err, result) {
         if (err || result.error) {
-            Template.showMeteorFuncError(err, result, "Couldn't fetch users");
+            Helper.showMeteorFuncError(err, result, "Couldn't fetch users");
         }
         else {
             var tblUsers = $('#tblUsers');
@@ -311,7 +440,7 @@ Template.manageUsers.initUsers = function () {
                 tblUsers.DataTable().destroy();
             }
             tblUsers.DataTable({
-                data: Template.manageUsers.populateTableData(result.result.users),
+                data: populateTableData(result.result.users),
                 columns: [
                     {data: "user", "width": "20%"},
                     {data: "roles[, ]", "width": "65%"}
@@ -341,127 +470,5 @@ Template.manageUsers.initUsers = function () {
 
 
         Ladda.stopAll();
-    });
-};
-
-Template.manageUsers.populateTableData = function (users) {
-    var result = [];
-    for (var i = 0; i < users.length; i++) {
-        var obj = {
-            user: users[i].user,
-            roles: []
-        };
-
-        for (var j = 0; j < users[i].roles.length; j++) {
-            obj.roles.push('<b>' + users[i].roles[j].role + '</b>@' + users[i].roles[j].db);
-        }
-
-        result.push(obj);
-    }
-
-    return result;
-};
-
-Template.manageUsers.initiateRoleToAddTable = function () {
-    var selector = $('#tblCurrentRoles');
-    selector.find('tbody').on('click', 'tr', function () {
-        var table = selector.DataTable();
-        if ($(this).hasClass('selected')) {
-            $(this).removeClass('selected');
-        }
-        else {
-            table.$('tr.selected').removeClass('selected');
-            $(this).addClass('selected');
-        }
-
-        if (table.row(this).data()) {
-            $('#inputAddRoleToUserRolename').val(table.row(this).data().role);
-            $('#cmbDatabasesForAddRoleToUser').val(table.row(this).data().db).trigger('chosen:updated');
-        }
-    });
-
-    selector.find('tbody').on('click', 'a.editor_delete', function () {
-        selector.DataTable().row($(this).parents('tr')).remove().draw();
-    });
-};
-
-Template.manageUsers.populateUserRolesToSave = function () {
-    var result = [];
-    var roles = $('#tblUserRoles').DataTable().rows().data();
-    for (var i = 0; i < roles.length; i++) {
-        result.push({
-            db: roles[i].db,
-            role: roles[i].role
-        });
-    }
-
-    return result;
-};
-
-Template.manageUsers.popEditUserModal = function (user) {
-    $('#addEditUserModalTitle').text('Edit User');
-
-    var l = Ladda.create(document.querySelector('#btnCloseUMDB'));
-    l.start();
-
-    var connection = Connections.findOne({_id: Session.get(Template.strSessionConnection)});
-    var runOnAdminDB = $('#aRunOnAdminDBToFetchUsers').iCheck('update')[0].checked;
-    var dbName = runOnAdminDB ? 'admin' : connection.databaseName;
-    var username = user ? user : Session.get(Template.strSessionUsermanagementUser).user;
-
-    var userInfoCommand = {
-        usersInfo: {user: username, db: dbName},
-        showCredentials: true,
-        showPrivileges: true
-    };
-
-    Meteor.call('command', userInfoCommand, false, false, runOnAdminDB, function (err, result) {
-        if (err || result.error) {
-            Template.showMeteorFuncError(err, result, "Couldn't fetch userInfo");
-        }
-        else {
-            $('#editUserModal').modal('show');
-
-            var user = result.result.users[0];
-            Template.manageUsers.populateUserRolesTable(user.roles);
-
-            var inputUsernameSelector = $('#inputUsernameUM');
-            inputUsernameSelector.val(user.user);
-            inputUsernameSelector.prop('disabled', true);
-
-            var inputPasswordSelector = $('#inputPasswordUM');
-            inputPasswordSelector.val('');
-            inputPasswordSelector.attr('placeholder', 'Leave this blank to keep old one');
-
-            if (user.customData) {
-                $('.nav-tabs a[href="#tab-2"]').tab('show');
-                Template.setCodeMirrorValue($('#divCustomData'), JSON.stringify(user.customData, null, '\t'));
-            }
-        }
-
-        Ladda.stopAll();
-    });
-};
-
-Template.manageUsers.populateUserRolesTable = function (roles, dataArray) {
-    var tblUserRoles = $('#tblUserRoles');
-    // destroy jquery datatable to prevent reinitialization (https://datatables.net/manual/tech-notes/3)
-    if ($.fn.dataTable.isDataTable('#tblUserRoles')) {
-        tblUserRoles.DataTable().destroy();
-    }
-    tblUserRoles.DataTable({
-        data: dataArray ? dataArray : roles,
-        columns: [
-            {data: "role", "width": "50%"},
-            {data: "db", "width": "50%"}
-        ],
-        columnDefs: [
-            {
-                targets: [2],
-                data: null,
-                width: "5%",
-                defaultContent: '<a href="" title="Delete" class="editor_delete"><i class="fa fa-remove text-navy"></i></a>'
-            }
-        ]
     });
 };

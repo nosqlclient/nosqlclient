@@ -1,8 +1,9 @@
 /**
  * Created by RSercan on 10.1.2016.
  */
-import LOGGER from "../internal/logging/logger";
-import Helper from "./helper";
+import {Meteor} from 'meteor/meteor';
+import {Actions} from '/lib/collections/actions';
+import LOGGER from "../internal/logger";
 
 const cheerio = require('cheerio');
 

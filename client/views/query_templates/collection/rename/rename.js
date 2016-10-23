@@ -1,11 +1,18 @@
+import {Template} from 'meteor/templating';
+import {Meteor} from 'meteor/meteor';
+import {Session} from 'meteor/session';
+import Helper from '/client/helper';
+import Enums from '/lib/enums';
+import {initExecuteQuery} from '/client/views/pages/browse_collection/browse_collection';
+
 var toastr = require('toastr');
 var Ladda = require('ladda');
 /**
  * Created by RSercan on 5.1.2016.
  */
 Template.rename.onRendered(function () {
-    Template.rename.initializeOptions();
-    Template.changeConvertOptionsVisibility(false);
+    initializeOptions();
+    Helper.changeConvertOptionsVisibility(false);
 });
 
 Template.dropTarget.onRendered(function () {
@@ -14,22 +21,22 @@ Template.dropTarget.onRendered(function () {
     });
 });
 
-Template.rename.initializeOptions = function () {
+const initializeOptions = function () {
     var cmb = $('#cmbRenameOptions');
-    $.each(Template.sortObjectByKey(RENAME_OPTIONS), function (key, value) {
+    $.each(Helper.sortObjectByKey(Enums.RENAME_OPTIONS), function (key, value) {
         cmb.append($("<option></option>")
             .attr("value", key)
             .text(value));
     });
 
     cmb.chosen();
-    Template.setOptionsComboboxChangeEvent(cmb);
+    Helper.setOptionsComboboxChangeEvent(cmb);
 };
 
 Template.rename.executeQuery = function () {
-    Template.browseCollection.initExecuteQuery();
-    var selectedCollection = Session.get(Template.strSessionSelectedCollection);
-    var options = Template.rename.getOptions();
+    initExecuteQuery();
+    var selectedCollection = Session.get(Helper.strSessionSelectedCollection);
+    var options = getOptions();
     var newName = $('#inputNewName').val();
 
     if (newName == selectedCollection) {
@@ -40,9 +47,9 @@ Template.rename.executeQuery = function () {
 
     if (newName) {
         Meteor.call("rename", selectedCollection, newName, options, function (err, result) {
-            Template.renderAfterQueryExecution(err, result, false, "rename");
+            Helper.renderAfterQueryExecution(err, result, false, "rename");
             if (err == undefined && result.error == undefined) {
-                Template.rename.renderCollectionnames(newName);
+                renderCollectionnames(newName);
             }
         });
     }
@@ -52,12 +59,12 @@ Template.rename.executeQuery = function () {
     }
 };
 
-Template.rename.renderCollectionnames = function (newName) {
-    Meteor.call('connect', Session.get(Template.strSessionConnection), function (err, result) {
+const renderCollectionnames = function (newName) {
+    Meteor.call('connect', Session.get(Helper.strSessionConnection), function (err, result) {
         if (err || result.error) {
-            Template.showMeteorFuncError(err, result, "Couldn't connect");
+            Helper.showMeteorFuncError(err, result, "Couldn't connect");
         } else {
-            result.result.sort(function compare(a, b) {
+            result.result.sort(function (a, b) {
                 if (a.name < b.name)
                     return -1;
                 else if (a.name > b.name)
@@ -67,23 +74,23 @@ Template.rename.renderCollectionnames = function (newName) {
             });
 
             // re-set collection names and selected collection
-            Session.set(Template.strSessionCollectionNames, result.result);
-            Session.set(Template.strSessionSelectedCollection, newName);
+            Session.set(Helper.strSessionCollectionNames, result.result);
+            Session.set(Helper.strSessionSelectedCollection, newName);
 
             // set all session values undefined except connection and collection
-            Session.set(Template.strSessionSelectedQuery, undefined);
-            Session.set(Template.strSessionSelectedOptions, undefined);
+            Session.set(Helper.strSessionSelectedQuery, undefined);
+            Session.set(Helper.strSessionSelectedOptions, undefined);
         }
 
     });
 };
 
-Template.rename.getOptions = function () {
+const getOptions = function () {
     var result = {};
-    if ($.inArray("DROP_TARGET", Session.get(Template.strSessionSelectedOptions)) != -1) {
+    if ($.inArray("DROP_TARGET", Session.get(Helper.strSessionSelectedOptions)) != -1) {
         var dropTarget = $('#divDropTarget').iCheck('update')[0].checked;
         if (dropTarget) {
-            result[RENAME_OPTIONS.DROP_TARGET] = dropTarget;
+            result[Enums.RENAME_OPTIONS.DROP_TARGET] = dropTarget;
         }
     }
 

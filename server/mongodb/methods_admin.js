@@ -1,8 +1,9 @@
 /**
  * Created by RSercan on 10.1.2016.
  */
-import LOGGER from "../internal/logging/logger";
+import LOGGER from "../internal/logger";
 import Helper from "./helper";
+import {Meteor} from 'meteor/meteor';
 import {database} from "./methods_common";
 
 Meteor.methods({

@@ -1,3 +1,9 @@
+import {Template} from 'meteor/templating';
+import {Meteor} from 'meteor/meteor';
+import {Session} from 'meteor/session';
+import Helper from '/client/helper';
+import {initExecuteQuery} from '/client/views/pages/browse_collection/browse_collection';
+
 /**
  * Created by RSercan on 3.1.2016.
  */
@@ -5,12 +11,12 @@ Template.indexInformation.onRendered(function () {
     $('#divFullInformation').iCheck({
         checkboxClass: 'icheckbox_square-green'
     });
-    Template.changeConvertOptionsVisibility(false);
+    Helper.changeConvertOptionsVisibility(false);
 });
 
 Template.indexInformation.executeQuery = function (historyParams) {
-    Template.browseCollection.initExecuteQuery();
-    var selectedCollection = Session.get(Template.strSessionSelectedCollection);
+    initExecuteQuery();
+    var selectedCollection = Session.get(Helper.strSessionSelectedCollection);
     var fullVal = historyParams ? historyParams.full : $('#divFullInformation').iCheck('update')[0].checked;
 
     var params = {
@@ -18,6 +24,6 @@ Template.indexInformation.executeQuery = function (historyParams) {
     };
 
     Meteor.call("indexInformation", selectedCollection, fullVal, function (err, result) {
-        Template.renderAfterQueryExecution(err, result, false, "indexInformation", params, (historyParams ? false : true));
+        Helper.renderAfterQueryExecution(err, result, false, "indexInformation", params, (historyParams ? false : true));
     });
 };

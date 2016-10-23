@@ -1,34 +1,38 @@
+import {Template} from 'meteor/templating';
+import {Meteor} from 'meteor/meteor';
+import {Settings} from '/lib/collections/settings';
+
 var toastr = require('toastr');
 var Ladda = require('ladda');
 /**
  * Created by RSercan on 9.1.2016.
  */
-Template.settings.onRendered(function () {
+Template.settings.onRendered(function() {
     $('#divAutoCompleteFields, #divShowDBStats').iCheck({
         checkboxClass: 'icheckbox_square-green'
     });
 
     $('#cmbScale, #cmbResultView').chosen();
 
-    Template.settings.load();
+    load();
 });
 
 Template.settings.events({
-    'click #btnSaveSettings': function (e) {
+    'click #btnSaveSettings' (e) {
         e.preventDefault();
-        
+
         var laddaButton = Ladda.create(document.querySelector('#btnSaveSettings'));
         laddaButton.start();
 
-        Meteor.call('updateSettings', Template.settings.getSettingsFromForm());
+        Meteor.call('updateSettings', getSettingsFromForm());
         toastr.success('Successfuly saved !');
 
-                     
+
         Ladda.stopAll();
     }
 });
 
-Template.settings.getSettingsFromForm = function () {
+const getSettingsFromForm = function() {
     var settings = {};
     settings.autoCompleteFields = $('#divAutoCompleteFields').iCheck('update')[0].checked;
     settings.scale = $("#cmbScale").chosen().val();
@@ -41,7 +45,7 @@ Template.settings.getSettingsFromForm = function () {
     return settings;
 };
 
-Template.settings.load = function () {
+const load = function() {
     // since we are using some external plugins such as chosen, icheck we can't load settings directly via meteor
     var settings = Settings.findOne();
     var cmbScale = $('#cmbScale');

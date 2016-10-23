@@ -1,9 +1,17 @@
+import {Meteor} from 'meteor/meteor';
+import {Template} from 'meteor/templating';
+import {Session} from 'meteor/session';
+import {Connections} from '/lib/collections/connections';
+import Helper from '/client/helper';
+import {connect} from '/client/views/layouts/top_navbar/top_navbar';
+
 var toastr = require('toastr');
+
 Template.navigation.events({
-    'click #anchorDatabaseDumpRestore': function (e) {
-        
+    'click #anchorDatabaseDumpRestore'(e) {
+
         e.preventDefault();
-        var connection = Connections.findOne({_id: Session.get(Template.strSessionConnection)});
+        var connection = Connections.findOne({_id: Session.get(Helper.strSessionConnection)});
 
         if (connection.sshAddress) {
             toastr.info('Unfortunately, this feature is not usable in SSH connections');
@@ -13,17 +21,17 @@ Template.navigation.events({
         Router.go('databaseDumpRestore');
     },
 
-    'click #btnAddCollection': function (e) {
+    'click #btnAddCollection' (e) {
         e.preventDefault();
         $('#collectionAddModal').modal('show');
     },
 
-    'click #btnRefreshCollections': function (e) {
+    'click #btnRefreshCollections' (e) {
         e.preventDefault();
-        Template.topNavbar.connect(true);
+        connect(true);
     },
 
-    'click #btnDropCollection': function (e) {
+    'click #btnDropCollection' (e) {
         e.preventDefault();
 
         var collectionName = this.name;
@@ -37,12 +45,12 @@ Template.navigation.events({
             closeOnConfirm: true
         }, function (isConfirm) {
             if (isConfirm) {
-                Template.navigation.dropCollection(collectionName);
+                dropCollection(collectionName);
             }
         });
     },
 
-    'click #btnDropAllCollections': function (e) {
+    'click #btnDropAllCollections' (e) {
         e.preventDefault();
         swal({
             title: "Are you sure?",
@@ -55,10 +63,10 @@ Template.navigation.events({
         }, function () {
             Meteor.call('dropAllCollections', function (err, result) {
                 if (err || result.error) {
-                    Template.showMeteorFuncError(err, result, "Couldn't drop all collections");
+                    Helper.showMeteorFuncError(err, result, "Couldn't drop all collections");
                 }
                 else {
-                    Template.clearSessions();
+                    Helper.clearSessions();
                     swal({
                         title: "Dropped!",
                         text: "Successfuly dropped all collections database ",
@@ -69,7 +77,7 @@ Template.navigation.events({
         });
     },
 
-    'click #btnDropDatabase': function (e) {
+    'click #btnDropDatabase' (e) {
         e.preventDefault();
         swal({
             title: "Are you sure?",
@@ -82,10 +90,10 @@ Template.navigation.events({
         }, function () {
             Meteor.call('dropDB', function (err, result) {
                 if (err || result.error) {
-                    Template.showMeteorFuncError(err, result, "Couldn't drop database");
+                    Helper.showMeteorFuncError(err, result, "Couldn't drop database");
                 }
                 else {
-                    Template.clearSessions();
+                    Helper.clearSessions();
                     swal({
                         title: "Dropped!",
                         text: "Successfuly dropped database ",
@@ -97,11 +105,11 @@ Template.navigation.events({
     },
 
 
-    'click .aNavigations': function () {
-        Template.navigation.handleNavigationAndSessions();
+    'click .aNavigations' () {
+        handleNavigationAndSessions();
     },
 
-    'click .navCollection': function (e) {
+    'click .navCollection' (e) {
         if (e.target.id == 'btnDropCollection') {
             return;
         }
@@ -128,12 +136,12 @@ Template.navigation.events({
         });
 
 
-        Session.set(Template.strSessionSelectedCollection, name);
+        Session.set(Helper.strSessionSelectedCollection, name);
     }
 });
 
 Template.navigation.helpers({
-    'initializeMetisMenu': function () {
+    'initializeMetisMenu'() {
         Meteor.setTimeout(function () {
             var sideMenu = $('#side-menu');
             sideMenu.removeData("mm");
@@ -141,8 +149,8 @@ Template.navigation.helpers({
         });
     },
 
-    'getCollectionNames': function () {
-        var collectionNames = Session.get(Template.strSessionCollectionNames);
+    'getCollectionNames' () {
+        var collectionNames = Session.get(Helper.strSessionCollectionNames);
         if (collectionNames != undefined) {
             var result = [];
             collectionNames.forEach(function (collectionName) {
@@ -157,8 +165,8 @@ Template.navigation.helpers({
         return collectionNames;
     },
 
-    'getSystemCollectionNames': function () {
-        var collectionNames = Session.get(Template.strSessionCollectionNames);
+    'getSystemCollectionNames' () {
+        var collectionNames = Session.get(Helper.strSessionCollectionNames);
         if (collectionNames != undefined) {
             var result = [];
             collectionNames.forEach(function (collectionName) {
@@ -174,7 +182,7 @@ Template.navigation.helpers({
     }
 });
 
-Template.navigation.handleNavigationAndSessions = function () {
+const handleNavigationAndSessions = function () {
     $('#listCollectionNames').find('li').each(function (index, li) {
         $(li).removeClass('active');
     });
@@ -183,33 +191,33 @@ Template.navigation.handleNavigationAndSessions = function () {
         $(li).removeClass('active');
     });
 
-    Session.set(Template.strSessionSelectedCollection, undefined);
-    Session.set(Template.strSessionSelectedQuery, undefined);
-    Session.set(Template.strSessionSelectedOptions, undefined);
+    Session.set(Helper.strSessionSelectedCollection, undefined);
+    Session.set(Helper.strSessionSelectedQuery, undefined);
+    Session.set(Helper.strSessionSelectedOptions, undefined);
 
     $('#cmbQueries').val('').trigger('chosen:updated');
     $('#cmbAdminQueries').val('').trigger('chosen:updated');
 };
 
-Template.navigation.dropCollection = function (collectionName) {
+const dropCollection = function (collectionName) {
     Meteor.call('dropCollection', collectionName, function (err, result) {
         if (err || result.error) {
-            Template.showMeteorFuncError(err, result, "Couldn't drop collection");
+            Helper.showMeteorFuncError(err, result, "Couldn't drop collection");
         }
         else {
-            Template.navigation.renderCollectionNames();
+            renderCollectionNames();
             toastr.success('Successfuly dropped collection: ' + collectionName);
         }
     });
 };
 
-Template.navigation.renderCollectionNames = function () {
-    Meteor.call('connect', Session.get(Template.strSessionConnection), function (err, result) {
+export const renderCollectionNames = function () {
+    Meteor.call('connect', Session.get(Helper.strSessionConnection), function (err, result) {
         if (err || result.error) {
-            Template.showMeteorFuncError(err, result, "Couldn't connect");
+            Helper.showMeteorFuncError(err, result, "Couldn't connect");
         }
         else {
-            result.result.sort(function compare(a, b) {
+            result.result.sort(function (a, b) {
                 if (a.name < b.name)
                     return -1;
                 else if (a.name > b.name)
@@ -219,11 +227,11 @@ Template.navigation.renderCollectionNames = function () {
             });
 
             // re-set collection names
-            Session.set(Template.strSessionCollectionNames, result.result);
+            Session.set(Helper.strSessionCollectionNames, result.result);
             // set all session values undefined except connection
-            Session.set(Template.strSessionSelectedQuery, undefined);
-            Session.set(Template.strSessionSelectedOptions, undefined);
-            Session.set(Template.strSessionSelectedCollection, undefined);
+            Session.set(Helper.strSessionSelectedQuery, undefined);
+            Session.set(Helper.strSessionSelectedOptions, undefined);
+            Session.set(Helper.strSessionSelectedCollection, undefined);
             Router.go('databaseStats');
         }
     });
