@@ -4,6 +4,7 @@ import {Session} from 'meteor/session';
 import Helper from '/client/helper';
 import {Settings} from '/lib/collections/settings';
 import Enums from '/lib/enums';
+import {initQueryHistories} from './query_histories/query_histories';
 
 var JSONEditor = require('jsoneditor');
 var toastr = require('toastr');
@@ -50,12 +51,25 @@ Template.browseCollection.onRendered(function () {
     // see #108
     if (Session.get(Helper.strSessionSelectedQuery) != Enums.QUERY_TYPES.FIND) {
         Helper.changeConvertOptionsVisibility(false);
+        $('#btnExportQueryResult').hide();
+    }else{
+        $('#btnExportQueryResult').show();
     }
 
     clearQueryIfAdmin();
 });
 
 Template.browseCollection.events({
+    'click #btnExportAsJSON' (e){
+        e.preventDefault();
+        //TODO export as JSON
+    },
+
+    'click #btnExportAsCSV' (e){
+        e.preventDefault();
+        //TODO export as CSV
+    },
+
     'click #btnSaveFindFindOne' (e) {
         e.preventDefault();
         saveEditor();
@@ -77,6 +91,13 @@ Template.browseCollection.events({
         if (value) {
             Session.set(Helper.strSessionSelectedQuery, value);
         }
+
+        if (value == Enums.QUERY_TYPES.FIND) {
+            $('#btnExportQueryResult').show();
+        } else {
+            $('#btnExportQueryResult').hide();
+        }
+
     },
 
     'click #btnSwitchView'  () {
