@@ -242,8 +242,6 @@ const proceedConnectingMongodb = function (connectionUrl, connectionOptions, don
             database.listCollections().toArray(function (err, collections) {
                 done(err, collections);
             });
-
-            export let database;
         }
         catch (ex) {
             LOGGER.error('[connect]', ex);

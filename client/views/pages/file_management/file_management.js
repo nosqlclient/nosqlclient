@@ -30,10 +30,7 @@ Template.fileManagement.events({
         e.preventDefault();
         var fileRow = Session.get(Helper.strSessionSelectedFile);
         if (fileRow) {
-            window.open(Router.url('download', {
-                fileId: fileRow._id,
-                bucketName: $('#txtBucketName').val()
-            }));
+            window.open('download?fileId=' + fileRow._id + '&bucketName=' + $('#txtBucketName').val());
         }
     },
 

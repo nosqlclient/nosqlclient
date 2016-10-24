@@ -55,7 +55,7 @@ Meteor.methods({
                 tar: fileName,
                 callback: Meteor.bindEnvironment(function () {
                     const stats = fs.statSync(fullFilePath);
-
+                    LOGGER.info('[takeDump]', 'ended successfully !');
                     Meteor.call('saveDump', {
                         filePath: fullFilePath,
                         date: date,
@@ -70,6 +70,5 @@ Meteor.methods({
         catch (ex) {
             LOGGER.error('[takeDump]', ex);
         }
-
     }
 });

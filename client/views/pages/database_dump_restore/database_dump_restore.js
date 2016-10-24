@@ -22,6 +22,11 @@ Template.databaseDumpRestore.onRendered(function () {
 });
 
 Template.databaseDumpRestore.events({
+    'click #btnRefreshDumps'(e){
+        e.preventDefault();
+        populateDatatable();
+    },
+
     'click #btnTakeDump'(e) {
 
         e.preventDefault();
@@ -78,11 +83,16 @@ Template.databaseDumpRestore.events({
 });
 
 const populateDatatable = function () {
-    var tblDumps = $('#tblDumps');
+    var laddaButton = Ladda.create(document.querySelector('#btnTakeDump'));
+    laddaButton.start();
 
+    var tblDumps = $('#tblDumps');
+    if ($.fn.dataTable.isDataTable('#tblDumps')) {
+        tblDumps.DataTable().destroy();
+    }
     tblDumps.DataTable({
         destroy: true,
-        data: Dumps.find({}, {sort: {date: -1}}).fetch(),
+        data: Dumps.find().fetch(),
         columns: [
             {
                 title: '_id',
@@ -156,4 +166,6 @@ const populateDatatable = function () {
             }
         ]
     }).draw();
+
+    Ladda.stopAll();
 };

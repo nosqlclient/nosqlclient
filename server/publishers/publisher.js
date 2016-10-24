@@ -17,8 +17,8 @@ Meteor.publish('actions', function () {
     return Actions.find();
 });
 
-Meteor.publish('dumps', function (connectionId) {
-    return Dumps.find({connectionId: connectionId}, {sort: {date: 1}});
+Meteor.publish('dumps', function () {
+    return Dumps.find({}, {sort: {date: 1}});
 });
 
 Meteor.publish('queryHistories', function () {

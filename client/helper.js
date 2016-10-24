@@ -391,7 +391,7 @@
     });
 
     Template.registerHelper('getConnection', function () {
-        if (Session.get(this.strSessionConnection)) {
+        if (Session.get(helper.strSessionConnection)) {
             return Connections.findOne({_id: Session.get(helper.strSessionConnection)});
         }
     });
