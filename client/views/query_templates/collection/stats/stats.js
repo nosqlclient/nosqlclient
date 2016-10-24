@@ -2,6 +2,7 @@ import {Template} from 'meteor/templating';
 import {Meteor} from 'meteor/meteor';
 import {Session} from 'meteor/session';
 import Helper from '/client/helper';
+import Enums from '/lib/enums';
 import {initExecuteQuery} from '/client/views/pages/browse_collection/browse_collection';
 
 /**
@@ -20,7 +21,7 @@ Template.scale.onRendered(function () {
 
 const initializeOptions = function () {
     var cmb = $('#cmbStatsOptions');
-    $.each(Helper.sortObjectByKey(Helper.STATS_OPTIONS), function (key, value) {
+    $.each(Helper.sortObjectByKey(Enums.STATS_OPTIONS), function (key, value) {
         cmb.append($("<option></option>")
             .attr("value", key)
             .text(value));

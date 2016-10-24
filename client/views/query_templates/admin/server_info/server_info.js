@@ -8,7 +8,7 @@ import {initExecuteQuery} from '/client/views/pages/admin_queries/admin_queries'
  */
 Template.serverStatus.onRendered(function () {
     Helper.changeConvertOptionsVisibility(false);
-    Hepler.changeRunOnAdminOptionVisibility(false);
+    Helper.changeRunOnAdminOptionVisibility(false);
 });
 
 Template.serverInfo.executeQuery = function () {

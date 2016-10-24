@@ -201,7 +201,7 @@
                 if (val == "") result[optionEnum[option]] = {};
                 else {
                     try {
-                        val = JSON.parse(val);
+                        val = fbbkJson.parse(val);
                         result[optionEnum[option]] = val;
                     }
                     catch (err) {
@@ -218,7 +218,7 @@
                 if (val == "") result[optionEnum[option]] = {};
                 else {
                     try {
-                        val = JSON.parse(val);
+                        val = fbbkJson.parse(val);
                         result[optionEnum[option]] = val;
                     }
                     catch (err) {
@@ -228,8 +228,8 @@
             }
         },
 
-        setOptionsComboboxChangeEvent  (cmb) {
-            cmb.on('change', function (evt, params) {
+        setOptionsComboboxChangeEvent (cmb) {
+            cmb.on('change', (evt, params) => {
                 var array = Session.get(this.strSessionSelectedOptions);
                 if (params.deselected) {
                     array.remove(params.deselected);
@@ -289,7 +289,7 @@
                 out: {inline: 1}
             };
 
-            Meteor.call("mapReduce", selectedCollection, mapFunc, reduceFunc, options, function (err, result) {
+            Meteor.call("mapReduce", selectedCollection, mapFunc, reduceFunc, options, (err, result) => {
                 if (err || result.error) {
                     this.showMeteorFuncError(err, result, "Couldn't fetch distinct fields for autocomplete");
                 }
@@ -327,14 +327,14 @@
 
 
                 if (keepValue) {
-                    codeMirror.on("change", function () {
+                    codeMirror.on("change", () => {
                         Session.set(this.strSessionSelectorValue, codeMirror.getValue());
                     });
                 }
 
                 codeMirror.setSize('%100', 100);
 
-                CodeMirror.hint.javascript = function (editor) {
+                CodeMirror.hint.javascript = (editor)=> {
                     var list = Session.get(this.strSessionDistinctFields) || [];
                     var cursor = editor.getCursor();
                     var currentLine = editor.getLine(cursor.line);

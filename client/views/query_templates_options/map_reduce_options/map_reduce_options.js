@@ -40,7 +40,7 @@ export const getOptions = function () {
 
     if ($.inArray("FINALIZE", Session.get(Helper.strSessionSelectedOptions)) != -1) {
         var finalize = Helper.getCodeMirrorValue($('#divFinalize'));
-        if (finalize.parse() == null) {
+        if (finalize.parseFunction() == null) {
             result["ERROR"] = "Syntax Error on finalize, not a valid ";
             return;
         }

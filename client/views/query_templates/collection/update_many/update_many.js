@@ -16,7 +16,7 @@ Template.updateMany.onRendered(function () {
     Helper.changeConvertOptionsVisibility(true);
 });
 
-Template.updateMany.initializeOptions = function () {
+const initializeOptions = function () {
     var cmb = $('#cmbUpdateManyOptions');
     $.each(Helper.sortObjectByKey(Enums.UPDATE_OPTIONS), function (key, value) {
         cmb.append($("<option></option>")

@@ -38,13 +38,13 @@ Template.mapReduce.executeQuery = function (historyParams) {
     var reduce = historyParams ? JSON.stringify(historyParams.reduce) : Helper.getCodeMirrorValue($('#divReduce'));
 
 
-    if (map.parse() == null) {
+    if (map.parseFunction() == null) {
         toastr.error("Syntax error on map, not a valid  ");
         Ladda.stopAll();
         return;
     }
 
-    if (reduce.parse() == null) {
+    if (reduce.parseFunction() == null) {
         toastr.error("Syntax error on reduce, not a valid  ");
         Ladda.stopAll();
         return;

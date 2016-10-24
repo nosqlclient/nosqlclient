@@ -9,8 +9,8 @@ import {initExecuteQuery} from '/client/views/pages/admin_queries/admin_queries'
  */
 Template.setProfilingLevel.onRendered(function () {
     initializeOptions();
-    Template.changeConvertOptionsVisibility(false);
-    Template.changeRunOnAdminOptionVisibility(false);
+    Helper.changeConvertOptionsVisibility(false);
+    Helper.changeRunOnAdminOptionVisibility(false);
 });
 
 Template.setProfilingLevel.executeQuery = function () {
@@ -24,7 +24,7 @@ Template.setProfilingLevel.executeQuery = function () {
 
 const initializeOptions = function () {
     var cmb = $('#cmbLevel');
-    $.each(Template.sortObjectByKey(Enums.PROFILING_LEVELS), function (key, value) {
+    $.each(Helper.sortObjectByKey(Enums.PROFILING_LEVELS), function (key, value) {
         cmb.append($("<option></option>")
             .attr("value", value)
             .text(key));
