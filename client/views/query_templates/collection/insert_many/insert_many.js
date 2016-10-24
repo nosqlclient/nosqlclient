@@ -1,19 +1,25 @@
+import {Template} from 'meteor/templating';
+import {Meteor} from 'meteor/meteor';
+import {Session} from 'meteor/session';
+import Helper from '/client/helper';
+import {initExecuteQuery} from '/client/views/pages/browse_collection/browse_collection';
+
 var toastr = require('toastr');
 var Ladda = require('ladda');
 /**
  * Created by RSercan on 3.1.2016.
  */
 Template.insertMany.onRendered(function () {
-    Template.initializeCodeMirror($('#divDocs'), 'txtDocs');
-    Template.changeConvertOptionsVisibility(true);
+    Helper.initializeCodeMirror($('#divDocs'), 'txtDocs');
+    Helper.changeConvertOptionsVisibility(true);
 });
 
 Template.insertMany.executeQuery = function (historyParams) {
-    Template.browseCollection.initExecuteQuery();
-    var selectedCollection = Session.get(Template.strSessionSelectedCollection);
-    var docs = historyParams ? JSON.stringify(historyParams.docs) : Template.getCodeMirrorValue($('#divDocs'));
+    initExecuteQuery();
+    var selectedCollection = Session.get(Helper.strSessionSelectedCollection);
+    var docs = historyParams ? JSON.stringify(historyParams.docs) : Helper.getCodeMirrorValue($('#divDocs'));
 
-    docs = Template.convertAndCheckJSONAsArray(docs);
+    docs = Helper.convertAndCheckJSONAsArray(docs);
     if (docs["ERROR"]) {
         toastr.error("Syntax error on docs: " + docs["ERROR"]);
         Ladda.stopAll();
@@ -28,6 +34,6 @@ Template.insertMany.executeQuery = function (historyParams) {
     var convertDates = $('#aConvertIsoDates').iCheck('update')[0].checked;
 
     Meteor.call("insertMany", selectedCollection, docs, convertIds, convertDates, function (err, result) {
-        Template.renderAfterQueryExecution(err, result, false, "insertMany", params, (historyParams ? false : true));
+        Helper.renderAfterQueryExecution(err, result, false, "insertMany", params, (historyParams ? false : true));
     });
 };

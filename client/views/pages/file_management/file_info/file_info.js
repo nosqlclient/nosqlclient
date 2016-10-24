@@ -1,10 +1,14 @@
+import {Template} from 'meteor/templating';
+import Helper from '/client/helper';
+import {proceedUploading} from '../upload_file/upload_file';
+
 var toastr = require('toastr');
 /**
  * Created by RSercan on 14.2.2016.
  */
 
 Template.fileInfo.events({
-    'click #btnAddAlias': function (e) {
+    'click #btnAddAlias'(e)  {
         e.preventDefault();
         var input = $('#inputAlias');
         var inputVal = input.val();
@@ -17,17 +21,17 @@ Template.fileInfo.events({
         }
     },
 
-    'click #btnRemoveAlias': function (e) {
+    'click #btnRemoveAlias' (e)  {
         e.preventDefault();
         $('#selectAliases').find('option:selected').remove();
     },
 
-    'click #btnKeepUploading': function (e) {
+    'click #btnKeepUploading' (e)  {
         e.preventDefault();
         var contentType = $('#inputContentType').val();
         var blob = $('#inputFile')[0].files[0];
-        var metaData = Template.getCodeMirrorValue($('#divMetadata'));
-        metaData = Template.convertAndCheckJSON(metaData);
+        var metaData = Helper.getCodeMirrorValue($('#divMetadata'));
+        metaData = Helper.convertAndCheckJSON(metaData);
         if (metaData["ERROR"]) {
             toastr.error("Syntax error on metaData: " + metaData["ERROR"]);
             return;
@@ -39,6 +43,6 @@ Template.fileInfo.events({
         });
 
         $('#fileInfoModal').modal('hide');
-        Template.uploadFile.proceedUploading(blob, contentType, metaData, aliases);
+        proceedUploading(blob, contentType, metaData, aliases);
     }
 });

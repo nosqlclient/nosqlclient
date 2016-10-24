@@ -1,10 +1,13 @@
 /**
  * Created by RSercan on 3.1.2016.
  */
+import {Template} from 'meteor/templating';
+import Helper from '/client/helper';
+
 Template.selector.onRendered(function () {
-    Template.initializeCodeMirror($('#divSelector'), 'txtSelector', true);
+    Helper.initializeCodeMirror($('#divSelector'), 'txtSelector', true);
 });
 
-Template.selector.getValue = function () {
-    return Template.getCodeMirrorValue($('#divSelector'));
+export const getSelectorValue = function () {
+    return Helper.getCodeMirrorValue($('#divSelector'));
 };

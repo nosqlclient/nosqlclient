@@ -1,33 +1,42 @@
+import {Template} from 'meteor/templating';
+import {Meteor} from 'meteor/meteor';
+import Helper from '/client/helper';
+import {Session} from 'meteor/session';
+import Enums from '/lib/enums';
+import {initExecuteQuery} from '/client/views/pages/browse_collection/browse_collection';
+import {getOptions} from '/client/views/query_templates_options/create_index_options/create_index_options';
+
+
 var toastr = require('toastr');
 var Ladda = require('ladda');
 /**
  * Created by RSercan on 2.1.2016.
  */
 Template.createIndex.onRendered(function () {
-    Template.initializeCodeMirror($('#divFields'), 'txtFields');
-    Template.createIndex.initializeOptions();
-    Template.changeConvertOptionsVisibility(false);
+    Helper.initializeCodeMirror($('#divFields'), 'txtFields');
+    Helper.changeConvertOptionsVisibility(false);
+    initializeOptions();
 });
 
-Template.createIndex.initializeOptions = function () {
+const initializeOptions = function () {
     var cmb = $('#cmbCreateIndexOptions');
-    $.each(Template.sortObjectByKey(CREATE_INDEX_OPTIONS), function (key, value) {
+    $.each(Helper.sortObjectByKey(Enums.CREATE_INDEX_OPTIONS), function (key, value) {
         cmb.append($("<option></option>")
             .attr("value", key)
             .text(value));
     });
 
     cmb.chosen();
-    Template.setOptionsComboboxChangeEvent(cmb);
+    Helper.setOptionsComboboxChangeEvent(cmb);
 };
 
 Template.createIndex.executeQuery = function (historyParams) {
-    Template.browseCollection.initExecuteQuery();
-    var selectedCollection = Session.get(Template.strSessionSelectedCollection);
-    var options = historyParams ? historyParams.options : Template.createIndexOptions.getOptions();
-    var fields = historyParams ? JSON.stringify(historyParams.fields) : Template.getCodeMirrorValue($('#divFields'));
+    initExecuteQuery();
+    var selectedCollection = Session.get(Helper.strSessionSelectedCollection);
+    var options = historyParams ? historyParams.options : getOptions();
+    var fields = historyParams ? JSON.stringify(historyParams.fields) : Helper.getCodeMirrorValue($('#divFields'));
 
-    fields = Template.convertAndCheckJSON(fields);
+    fields = Helper.convertAndCheckJSON(fields);
     if (fields["ERROR"]) {
         toastr.error("Syntax error on index field: " + fields["ERROR"]);
         Ladda.stopAll();
@@ -46,6 +55,6 @@ Template.createIndex.executeQuery = function (historyParams) {
     };
 
     Meteor.call("createIndex", selectedCollection, fields, options, function (err, result) {
-        Template.renderAfterQueryExecution(err, result, false, "createIndex", params, (historyParams ? false : true));
+        Helper.renderAfterQueryExecution(err, result, false, "createIndex", params, (historyParams ? false : true));
     });
 };

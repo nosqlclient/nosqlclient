@@ -1,40 +1,48 @@
+import {Template} from 'meteor/templating';
+import {Meteor} from 'meteor/meteor';
+import {Session} from 'meteor/session';
+import Helper from '/client/helper';
+import Enums from '/lib/enums';
+import {initExecuteQuery} from '/client/views/pages/browse_collection/browse_collection';
+import {getSelectorValue} from '/client/views/query_templates_common/selector/selector';
+
 var toastr = require('toastr');
 var Ladda = require('ladda');
 /**
  * Created by sercan on 06.01.2016.
  */
 Template.updateMany.onRendered(function () {
-    Template.updateMany.initializeOptions();
-    Template.changeConvertOptionsVisibility(true);
+    initializeOptions();
+    Helper.changeConvertOptionsVisibility(true);
 });
 
-Template.updateMany.initializeOptions = function () {
+const initializeOptions = function () {
     var cmb = $('#cmbUpdateManyOptions');
-    $.each(Template.sortObjectByKey(UPDATE_OPTIONS), function (key, value) {
+    $.each(Helper.sortObjectByKey(Enums.UPDATE_OPTIONS), function (key, value) {
         cmb.append($("<option></option>")
             .attr("value", key)
             .text(value));
     });
 
     cmb.chosen();
-    Template.setOptionsComboboxChangeEvent(cmb);
+    Helper.setOptionsComboboxChangeEvent(cmb);
 };
 
 Template.updateMany.executeQuery = function (historyParams) {
-    Template.browseCollection.initExecuteQuery();
-    var selectedCollection = Session.get(Template.strSessionSelectedCollection);
-    var options = historyParams ? historyParams.options : Template.updateMany.getOptions();
-    var selector = historyParams ? JSON.stringify(historyParams.selector) : Template.selector.getValue();
-    var setObject = historyParams ? JSON.stringify(historyParams.setObject) : Template.getCodeMirrorValue($('#divSet'));
+    initExecuteQuery();
+    var selectedCollection = Session.get(Helper.strSessionSelectedCollection);
+    var options = historyParams ? historyParams.options : getOptions();
+    var selector = historyParams ? JSON.stringify(historyParams.selector) : getSelectorValue();
+    var setObject = historyParams ? JSON.stringify(historyParams.setObject) : Helper.getCodeMirrorValue($('#divSet'));
 
-    selector = Template.convertAndCheckJSON(selector);
+    selector = Helper.convertAndCheckJSON(selector);
     if (selector["ERROR"]) {
         toastr.error("Syntax error on selector: " + selector["ERROR"]);
         Ladda.stopAll();
         return;
     }
 
-    setObject = Template.convertAndCheckJSON(setObject);
+    setObject = Helper.convertAndCheckJSON(setObject);
     if (setObject["ERROR"]) {
         toastr.error("Syntax error on set: " + setObject["ERROR"]);
         Ladda.stopAll();
@@ -58,20 +66,19 @@ Template.updateMany.executeQuery = function (historyParams) {
     var convertIds = $('#aConvertObjectIds').iCheck('update')[0].checked;
     var convertDates = $('#aConvertIsoDates').iCheck('update')[0].checked;
 
-    Meteor.call("updateMany", selectedCollection, selector, setObject, options, convertIds, convertDates,
-        function (err, result) {
-            Template.renderAfterQueryExecution(err, result, false, "updateMany", params, (historyParams ? false : true));
+    Meteor.call("updateMany", selectedCollection, selector, setObject, options, convertIds, convertDates, function (err, result) {
+            Helper.renderAfterQueryExecution(err, result, false, "updateMany", params, (historyParams ? false : true));
         }
     );
 };
 
-Template.updateMany.getOptions = function () {
+const getOptions = function () {
     var result = {};
 
-    if ($.inArray("UPSERT", Session.get(Template.strSessionSelectedOptions)) != -1) {
+    if ($.inArray("UPSERT", Session.get(Helper.strSessionSelectedOptions)) != -1) {
         var upsertVal = $('#divUpsert').iCheck('update')[0].checked;
         if (upsertVal) {
-            result[UPDATE_OPTIONS.UPSERT] = upsertVal;
+            result[Enums.UPDATE_OPTIONS.UPSERT] = upsertVal;
         }
     }
 

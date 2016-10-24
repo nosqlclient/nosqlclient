@@ -1,3 +1,9 @@
+import {Template} from 'meteor/templating';
+import {Meteor} from 'meteor/meteor';
+import {Session} from 'meteor/session';
+import Helper from '/client/helper';
+import {Settings} from '/lib/collections/settings';
+
 var toastr = require('toastr');
 /**
  * Created by RSercan on 26.12.2015.
@@ -49,11 +55,11 @@ var lineOptions = {
 Template.databaseStats.onRendered(function () {
     if (Settings.findOne().showDBStats) {
         interval = Meteor.setInterval(function () {
-            Template.databaseStats.fetchStatus();
+            fetchStatus();
         }, 3000);
 
         // fetch stats only once.
-        Template.databaseStats.fetchStats();
+        fetchStats();
     }
 });
 
@@ -63,8 +69,8 @@ Template.databaseStats.onDestroyed(function () {
     }
 });
 
-Template.databaseStats.initOperationCountersChart = function (data) {
-    if (Session.get(Template.strSessionCollectionNames) != undefined) {
+const initOperationCountersChart = function (data) {
+    if (Session.get(Helper.strSessionCollectionNames) != undefined) {
         var divChart = $('#divOperationCountersChart');
         if (data == undefined || data.length == 0) {
             divChart.html('This feature is not supported on this platform (OS)');
@@ -104,8 +110,8 @@ Template.databaseStats.initOperationCountersChart = function (data) {
     }
 };
 
-Template.databaseStats.initNetworkChart = function (data) {
-    if (Session.get(Template.strSessionCollectionNames) != undefined) {
+const initNetworkChart = function (data) {
+    if (Session.get(Helper.strSessionCollectionNames) != undefined) {
         var divChart = $('#divNetworkChart');
         if (data == undefined || data.length == 0) {
             divChart.html('This feature is not supported on this platform (OS)');
@@ -152,8 +158,8 @@ Template.databaseStats.initNetworkChart = function (data) {
     }
 };
 
-Template.databaseStats.initConnectionsChart = function (data, availableConnections) {
-    if (Session.get(Template.strSessionCollectionNames) != undefined) {
+const initConnectionsChart = function (data, availableConnections) {
+    if (Session.get(Helper.strSessionCollectionNames) != undefined) {
         var divChart = $('#divConnectionsChart');
         if (data == undefined || data.length == 0) {
             divChart.html('This feature is not supported on this platform (OS)');
@@ -194,8 +200,8 @@ Template.databaseStats.initConnectionsChart = function (data, availableConnectio
     }
 };
 
-Template.databaseStats.initMemoryChart = function (data, text) {
-    if (Session.get(Template.strSessionCollectionNames) != undefined) {
+const initMemoryChart = function (data, text) {
+    if (Session.get(Helper.strSessionCollectionNames) != undefined) {
         var divChart = $('#divHeapMemoryChart');
         if (data == undefined || data.length == 0) {
             divChart.html('This feature is not supported on this platform (OS)');
@@ -206,7 +212,7 @@ Template.databaseStats.initMemoryChart = function (data, text) {
             var customLineOptions = jQuery.extend(true, {}, lineOptions);
             customLineOptions.colors.push("#273be2");
             customLineOptions.yaxis = {
-                tickFormatter: function (val) {
+                tickFormatter(val) {
                     return val + " " + text;
                 }
             };
@@ -249,72 +255,72 @@ Template.databaseStats.initMemoryChart = function (data, text) {
 };
 
 Template.databaseStats.helpers({
-    'getServerStatus': function () {
+    'getServerStatus'  () {
         if (Settings.findOne().showDBStats) {
-            if (Session.get(Template.strSessionServerStatus) == undefined) {
-                Template.databaseStats.fetchStatus();
+            if (Session.get(Helper.strSessionServerStatus) == undefined) {
+                fetchStatus();
             }
 
-            return Session.get(Template.strSessionServerStatus);
+            return Session.get(Helper.strSessionServerStatus);
         }
     },
 
-    'getDBStats': function () {
+    'getDBStats'  () {
         if (Settings.findOne().showDBStats) {
-            if (Session.get(Template.strSessionDBStats) == undefined) {
-                Template.databaseStats.fetchStats();
+            if (Session.get(Helper.strSessionDBStats) == undefined) {
+                fetchStats();
             }
 
-            return Session.get(Template.strSessionDBStats);
+            return Session.get(Helper.strSessionDBStats);
         }
     }
 });
 
-Template.databaseStats.fetchStats = function () {
-    if (Session.get(Template.strSessionCollectionNames) != undefined) {
+const fetchStats = function () {
+    if (Session.get(Helper.strSessionCollectionNames) != undefined) {
         Meteor.call("dbStats", function (err, result) {
             if (err || result.error) {
-                Template.showMeteorFuncError(err, result, "Couldn't execute dbStats");
-                Session.set(Template.strSessionDBStats, undefined);
+                Helper.showMeteorFuncError(err, result, "Couldn't execute dbStats");
+                Session.set(Helper.strSessionDBStats, undefined);
             }
             else {
-                Template.databaseStats.convertInformationsToKB(result.result);
-                Session.set(Template.strSessionDBStats, result.result);
+                convertInformationsToKB(result.result);
+                Session.set(Helper.strSessionDBStats, result.result);
             }
         });
     }
 };
 
-Template.databaseStats.fetchStatus = function () {
-    if (Session.get(Template.strSessionCollectionNames) != undefined) {
+const fetchStatus = function () {
+    if (Session.get(Helper.strSessionCollectionNames) != undefined) {
         Meteor.call("serverStatus", function (err, result) {
             if (err || result.error) {
                 var errorMessage = result.error ? result.error.message : err.message;
                 $('#errorMessage').text("Successfully connected but, couldn't fetch server status: " + errorMessage);
-                Session.set(Template.strSessionServerStatus, undefined);
+                Session.set(Helper.strSessionServerStatus, undefined);
             }
             else {
-                Session.set(Template.strSessionServerStatus, result.result);
+                Session.set(Helper.strSessionServerStatus, result.result);
                 var memoryData = [], connectionsData = [], networkData = [], opCountersData = [];
 
-                var memoryText = Template.databaseStats.populateMemoryData(result.result, memoryData);
-                var availableConnections = Template.databaseStats.populateConnectionData(result.result, connectionsData);
-                Template.databaseStats.populateNetworkData(result.result, networkData);
-                Template.databaseStats.populateOPCountersData(result.result, opCountersData);
+                var memoryText = populateMemoryData(result.result, memoryData);
+                var availableConnections = populateConnectionData(result.result, connectionsData);
+                populateNetworkData(result.result, networkData);
+                populateOPCountersData(result.result, opCountersData);
 
                 // make sure gui is rendered
                 Meteor.setTimeout(function () {
-                    Template.databaseStats.initMemoryChart(memoryData, memoryText);
-                    Template.databaseStats.initConnectionsChart(connectionsData, availableConnections);
-                    Template.databaseStats.initNetworkChart(networkData);
-                    Template.databaseStats.initOperationCountersChart(opCountersData)
+                    initMemoryChart(memoryData, memoryText);
+                    initConnectionsChart(connectionsData, availableConnections);
+                    initNetworkChart(networkData);
+                    initOperationCountersChart(opCountersData)
                 }, 1000);
             }
         });
     }
 };
 
-Template.databaseStats.populateOPCountersData = function (result, data) {
+const populateOPCountersData = function (result, data) {
     if (result.opcounters) {
         var counts = [
             [0, result.opcounters.insert],
@@ -328,7 +334,7 @@ Template.databaseStats.populateOPCountersData = function (result, data) {
     }
 };
 
-Template.databaseStats.populateConnectionData = function (result, data) {
+const populateConnectionData = function (result, data) {
     if (result.connections) {
         var currentData = [];
         var totalCreatedData = [];
@@ -347,7 +353,7 @@ Template.databaseStats.populateConnectionData = function (result, data) {
     }
 };
 
-Template.databaseStats.populateNetworkData = function (result, data) {
+const populateNetworkData = function (result, data) {
     if (result.network) {
         var bytesInData = [];
         var bytesOutData = [];
@@ -384,7 +390,7 @@ Template.databaseStats.populateNetworkData = function (result, data) {
     }
 };
 
-Template.databaseStats.populateMemoryData = function (result, data) {
+const populateMemoryData = function (result, data) {
     if (result.mem) {
         var scale = 1;
         var text = "MB";
@@ -424,7 +430,7 @@ Template.databaseStats.populateMemoryData = function (result, data) {
     }
 };
 
-Template.databaseStats.convertInformationsToKB = function (stats) {
+const convertInformationsToKB = function (stats) {
     var scale = 1024;
     var text = "Bytes";
     var settings = Settings.findOne();

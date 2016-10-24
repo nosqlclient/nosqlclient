@@ -1,47 +1,52 @@
+import {Template} from 'meteor/templating';
+import Helper from '/client/helper';
+import Enums from '/lib/enums';
+import {Session} from 'meteor/session';
+
 /**
  * Created by RSercan on 2.1.2016.
  */
-Template.unique.onRendered(function () {
+Template.unique.onRendered(function() {
     $('#divUnique').iCheck({
         checkboxClass: 'icheckbox_square-green'
     });
 });
 
-Template.sparse.onRendered(function () {
+Template.sparse.onRendered(function() {
     $('#divSparse').iCheck({
         checkboxClass: 'icheckbox_square-green'
     });
 });
 
-Template.background.onRendered(function () {
+Template.background.onRendered(function() {
     $('#divBackground').iCheck({
         checkboxClass: 'icheckbox_square-green'
     });
 });
 
-Template.createIndexOptions.getOptions = function () {
+export const getOptions = function() {
     var result = {};
-    Template.checkAndAddOption("MAX", $('#divMax'), result, CURSOR_OPTIONS);
-    Template.checkAndAddOption("MIN", $('#divMin'), result, CURSOR_OPTIONS);
+    Helper.checkAndAddOption("MAX", $('#divMax'), result, Enums.CURSOR_OPTIONS);
+    Helper.checkAndAddOption("MIN", $('#divMin'), result, Enums.CURSOR_OPTIONS);
 
-    if ($.inArray("UNIQUE", Session.get(Template.strSessionSelectedOptions)) != -1) {
+    if ($.inArray("UNIQUE", Session.get(Helper.strSessionSelectedOptions)) != -1) {
         var uniqueVal = $('#divUnique').iCheck('update')[0].checked;
         if (uniqueVal) {
-            result[CREATE_INDEX_OPTIONS.UNIQUE] = uniqueVal;
+            result[Enums.CREATE_INDEX_OPTIONS.UNIQUE] = uniqueVal;
         }
     }
 
-    if ($.inArray("SPARSE", Session.get(Template.strSessionSelectedOptions)) != -1) {
+    if ($.inArray("SPARSE", Session.get(Helper.strSessionSelectedOptions)) != -1) {
         var sparseVal = $('#divSparse').iCheck('update')[0].checked;
         if (sparseVal) {
-            result[CREATE_INDEX_OPTIONS.SPARSE] = sparseVal;
+            result[Enums.CREATE_INDEX_OPTIONS.SPARSE] = sparseVal;
         }
     }
 
-    if ($.inArray("BACKGROUND", Session.get(Template.strSessionSelectedOptions)) != -1) {
+    if ($.inArray("BACKGROUND", Session.get(Helper.strSessionSelectedOptions)) != -1) {
         var backgroundVal = $('#divBackground').iCheck('update')[0].checked;
         if (backgroundVal) {
-            result[CREATE_INDEX_OPTIONS.BACKGROUND] = backgroundVal;
+            result[Enums.CREATE_INDEX_OPTIONS.BACKGROUND] = backgroundVal;
         }
     }
 

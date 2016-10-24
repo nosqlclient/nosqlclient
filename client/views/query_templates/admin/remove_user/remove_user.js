@@ -1,15 +1,20 @@
+import {Template} from 'meteor/templating';
+import {Meteor} from 'meteor/meteor';
+import Helper from '/client/helper';
+import {initExecuteQuery} from '/client/views/pages/admin_queries/admin_queries';
+
 var toastr = require('toastr');
 var Ladda = require('ladda');
 /**
  * Created by RSercan on 10.1.2016.
  */
 Template.removeUser.onRendered(function () {
-    Template.changeConvertOptionsVisibility(false);
-    Template.changeRunOnAdminOptionVisibility(true);
+    Helper.changeConvertOptionsVisibility(false);
+    Helper.changeRunOnAdminOptionVisibility(true);
 });
 
 Template.removeUser.executeQuery = function () {
-    Template.adminQueries.initExecuteQuery();
+    initExecuteQuery();
     var username = $('#inputAddUserUsername').val();
 
     if (username == null || username.length === 0) {
@@ -21,6 +26,6 @@ Template.removeUser.executeQuery = function () {
     var runOnAdminDB = $('#aRunOnAdminDB').iCheck('update')[0].checked;
 
     Meteor.call("removeUser", username, runOnAdminDB, function (err, result) {
-        Template.renderAfterQueryExecution(err, result, true);
+        Helper.renderAfterQueryExecution(err, result, true);
     });
 };

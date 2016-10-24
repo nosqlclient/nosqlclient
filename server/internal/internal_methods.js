@@ -1,26 +1,32 @@
 /**
  * Created by RSercan on 26.12.2015.
  */
+import {Actions} from '/lib/collections/actions';
+import {QueryHistory} from '/lib/collections/query_history';
+import {Dumps} from '/lib/collections/dumps';
+import {Settings} from '/lib/collections/settings';
+import {Connections} from '/lib/collections/connections';
+
+
 Meteor.methods({
-    'saveActions': function (action) {
+    saveActions(action) {
         Actions.insert(action);
     },
 
-    'saveQueryHistory': function (history) {
-        var queryHistoryCount = QueryHistory.find().count({
+    saveQueryHistory(history) {
+        const queryHistoryCount = QueryHistory.find({
             connectionId: history.connectionId,
             collectionName: history.collectionName
-        });
+        }).count();
 
         if (queryHistoryCount >= 20) {
-            var idToRemove = QueryHistory.findOne({}, {sort: {date: 1}})._id;
-            QueryHistory.remove(idToRemove);
+            QueryHistory.remove(QueryHistory.findOne({}, {sort: {date: 1}})._id);
         }
 
         QueryHistory.insert(history);
     },
 
-    'updateDump': function (dump) {
+    updateDump(dump) {
         Dumps.update({_id: dump._id}, {
             $set: {
                 connectionName: dump.connectionName,
@@ -33,11 +39,11 @@ Meteor.methods({
         });
     },
 
-    'saveDump': function (dump) {
+    saveDump(dump) {
         Dumps.insert(dump);
     },
 
-    'updateSettings': function (settings) {
+    updateSettings(settings) {
         Settings.update({}, {
             $set: {
                 scale: settings.scale,
@@ -52,7 +58,7 @@ Meteor.methods({
         });
     },
 
-    'saveConnection': function (connection) {
+    saveConnection(connection) {
         if (Connections.findOne({name: connection.name}) != null) {
             throw new Meteor.Error('Connection name already exist: ' + connection.name);
         }
@@ -60,12 +66,12 @@ Meteor.methods({
         Connections._collection.insert(connection);
     },
 
-    'updateConnection': function (connection) {
+    updateConnection(connection) {
         Connections.remove({_id: connection._id});
         Connections._collection.insert(connection);
     },
 
-    'removeConnection': function (connectionId) {
+    removeConnection(connectionId) {
         Connections.remove(connectionId);
         Dumps.remove({connectionId: connectionId});
         QueryHistory.remove({connectionId: connectionId});

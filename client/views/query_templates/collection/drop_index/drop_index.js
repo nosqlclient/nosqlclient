@@ -1,11 +1,17 @@
+import {Template} from 'meteor/templating';
+import {Meteor} from 'meteor/meteor';
+import {Session} from 'meteor/session';
+import Helper from '/client/helper';
+import {initExecuteQuery} from '/client/views/pages/browse_collection/browse_collection';
+
 /**
  * Created by RSercan on 2.1.2016.
  */
 Template.dropIndex.onRendered(function () {
-    Template.changeConvertOptionsVisibility(false);
+    Helper.changeConvertOptionsVisibility(false);
 });
 Template.dropIndex.events({
-    'keypress #inputIndexName': function (event) {
+    'keypress #inputIndexName'  (event) {
         if (event.keyCode == 13) {
             Template.dropIndex.executeQuery();
             return false;
@@ -14,8 +20,8 @@ Template.dropIndex.events({
 });
 
 Template.dropIndex.executeQuery = function (historyParams) {
-    Template.browseCollection.initExecuteQuery();
-    var selectedCollection = Session.get(Template.strSessionSelectedCollection);
+    initExecuteQuery();
+    var selectedCollection = Session.get(Helper.strSessionSelectedCollection);
     var indexName = historyParams ? historyParams.indexName : $('#inputIndexName').val();
 
     var params = {
@@ -23,6 +29,6 @@ Template.dropIndex.executeQuery = function (historyParams) {
     };
 
     Meteor.call("dropIndex", selectedCollection, indexName, function (err, result) {
-        Template.renderAfterQueryExecution(err, result, false, "dropIndex", params, (historyParams ? false : true));
+        Helper.renderAfterQueryExecution(err, result, false, "dropIndex", params, (historyParams ? false : true));
     });
 };

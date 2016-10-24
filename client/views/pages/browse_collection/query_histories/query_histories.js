@@ -1,10 +1,15 @@
+import {Template} from 'meteor/templating';
+import {Session} from 'meteor/session';
+import Helper from '/client/helper';
+import {QueryHistory} from '/lib/collections/query_history';
+
 var Ladda = require('ladda');
 
 /**
  * Created by RSercan on 24.2.2016.
  */
 Template.queryHistories.onRendered(function () {
-    if (Session.get(Template.strSessionCollectionNames) == undefined) {
+    if (Session.get(Helper.strSessionCollectionNames) == undefined) {
         Router.go('databaseStats');
         return;
     }
@@ -23,30 +28,30 @@ Template.queryHistories.onRendered(function () {
 
         if (table.row(this).data()) {
             var selectedId = table.row(this).data()._id;
-            Session.set(Template.strSessionSelectedQueryHistory, QueryHistory.findOne({_id: selectedId}));
+            Session.set(Helper.strSessionSelectedQueryHistory, QueryHistory.findOne({_id: selectedId}));
             $('#btnExecuteAgain').prop('disabled', false);
         }
     });
 });
 
 Template.queryHistories.events({
-    'click #btnExecuteAgain': function (e) {
+    'click #btnExecuteAgain'  (e) {
         e.preventDefault();
-        var history = Session.get(Template.strSessionSelectedQueryHistory);
+        var history = Session.get(Helper.strSessionSelectedQueryHistory);
         if (history) {
             Template[history.queryName].executeQuery(JSON.parse(history.params));
         }
     }
 });
 
-Template.queryHistories.initQueryHistories = function () {
+const initQueryHistories = function () {
     // loading button
-    
+
     var l = Ladda.create(document.querySelector('#btnExecuteAgain'));
     l.start();
 
-    var connectionId = Session.get(Template.strSessionConnection);
-    var selectedCollection = Session.get(Template.strSessionSelectedCollection);
+    var connectionId = Session.get(Helper.strSessionConnection);
+    var selectedCollection = Session.get(Helper.strSessionSelectedCollection);
     var tblQueryHistories = $('#tblQueryHistories');
 
     // destroy jquery datatable to prevent reinitialization (https://datatables.net/manual/tech-notes/3)

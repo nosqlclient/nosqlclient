@@ -1,18 +1,25 @@
+import {Template} from 'meteor/templating';
+import {Meteor} from 'meteor/meteor';
+import Helper from '/client/helper';
+import {Session} from 'meteor/session';
+import {initExecuteQuery} from '/client/views/pages/browse_collection/browse_collection';
+import {getSelectorValue} from '/client/views/query_templates_common/selector/selector';
+
 var toastr = require('toastr');
 var Ladda = require('ladda');
 /**
  * Created by RSercan on 2.1.2016.
  */
 Template.count.onRendered(function () {
-    Template.changeConvertOptionsVisibility(true);
+    Helper.changeConvertOptionsVisibility(true);
 });
 
 Template.count.executeQuery = function (historyParams) {
-    Template.browseCollection.initExecuteQuery();
-    var selectedCollection = Session.get(Template.strSessionSelectedCollection);
-    var selector = historyParams ? JSON.stringify(historyParams.selector) : Template.selector.getValue();
+    initExecuteQuery();
+    var selectedCollection = Session.get(Helper.strSessionSelectedCollection);
+    var selector = historyParams ? JSON.stringify(historyParams.selector) : getSelectorValue();
 
-    selector = Template.convertAndCheckJSON(selector);
+    selector = Helper.convertAndCheckJSON(selector);
     if (selector["ERROR"]) {
         toastr.error("Syntax error on selector: " + selector["ERROR"]);
         Ladda.stopAll();
@@ -28,7 +35,7 @@ Template.count.executeQuery = function (historyParams) {
 
     Meteor.call("count", selectedCollection, selector, convertIds, convertDates,
         function (err, result) {
-            Template.renderAfterQueryExecution(err, result, false, "count", params, (historyParams ? false : true));
+            Helper.renderAfterQueryExecution(err, result, false, "count", params, (historyParams ? false : true));
         }
     );
 };

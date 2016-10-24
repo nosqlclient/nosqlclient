@@ -1,3 +1,11 @@
+import {Template} from 'meteor/templating';
+import {Meteor} from 'meteor/meteor';
+import {Session} from 'meteor/session';
+import Helper from '/client/helper';
+import {Connections} from '/lib/collections/connections';
+import {initUsers, popEditUserModal} from './manage_users/manage_users';
+import {initRoles} from './manage_roles/manage_roles';
+
 var toastr = require('toastr');
 var Ladda = require('ladda');
 //var Clipboard = require('clipboard');
@@ -7,7 +15,7 @@ var Ladda = require('ladda');
 var defaultInformationText = 'Select a role or resource or privilege to see the details';
 var loading = false;
 Template.userManagement.onRendered(function () {
-    if (Session.get(Template.strSessionCollectionNames) == undefined) {
+    if (Session.get(Helper.strSessionCollectionNames) == undefined) {
         Router.go('databaseStats');
         return;
     }
@@ -23,28 +31,28 @@ Template.userManagement.onRendered(function () {
 
     chckRunOnAdminDB.iCheck('uncheck');
 
-    Template.userManagement.initUserTree();
+    initUserTree();
     //new Clipboard('.reference');
 });
 
 Template.userManagement.helpers({
-    'informationTitle': function () {
-        return Session.get(Template.strSessionSelectionUserManagement);
+    'informationTitle' () {
+        return Session.get(Helper.strSessionSelectionUserManagement);
     },
-    'informationBody': function () {
-        return Session.get(Template.strSessionUsermanagementInfo);
+    'informationBody'() {
+        return Session.get(Helper.strSessionUsermanagementInfo);
     }
 });
 
 Template.userManagement.events({
-    //'click a': function (e) {
+    //'click a':  (e) {
     //   e.preventDefault();
     //   if (e.currentTarget && e.currentTarget.host && e.currentTarget.host.indexOf('docs.mongodb.org') != -1) {
     //       toastr.success('Link has been copied to clipboard !');
     //    }
     //},
 
-    'click #btnRefreshUsers': function (e) {
+    'click #btnRefreshUsers'(e) {
         e.preventDefault();
 
 
@@ -52,36 +60,36 @@ Template.userManagement.events({
         l.start();
 
         $("#userTree").jstree('destroy');
-        Template.userManagement.initUserTree();
+        initUserTree();
     },
 
-    'click #btnManageUsers': function (e) {
+    'click #btnManageUsers'  (e) {
         e.preventDefault();
-        Template.manageUsers.initUsers();
+        initUsers();
     },
 
-    'click #btnManageRoles': function (e) {
+    'click #btnManageRoles' (e) {
         e.preventDefault();
-        Template.manageRoles.initRoles();
+        initRoles();
     },
 
-    'click #btnEditUser': function (e) {
+    'click #btnEditUser'  (e) {
         e.preventDefault();
-        if (Session.get(Template.strSessionUsermanagementManageSelection)) {
-            Template.manageUsers.popEditUserModal(Session.get(Template.strSessionUsermanagementManageSelection));
+        if (Session.get(Helper.strSessionUsermanagementManageSelection)) {
+            popEditUserModal(Session.get(Helper.strSessionUsermanagementManageSelection));
         }
     }
 });
 
-Template.userManagement.initUserTree = function () {
-    Session.set(Template.strSessionUsermanagementInfo, '');
-    Session.set(Template.strSessionSelectionUserManagement, defaultInformationText);
+const initUserTree = function () {
+    Session.set(Helper.strSessionUsermanagementInfo, '');
+    Session.set(Helper.strSessionSelectionUserManagement, defaultInformationText);
     $('#btnEditUser').hide();
     $('#btnManageUsers').hide();
     $('#btnManageRoles').hide();
 
 
-    var connection = Connections.findOne({_id: Session.get(Template.strSessionConnection)});
+    var connection = Connections.findOne({_id: Session.get(Helper.strSessionConnection)});
     var command = {
         usersInfo: 1,
         showCredentials: true
@@ -91,11 +99,11 @@ Template.userManagement.initUserTree = function () {
 
     Meteor.call('command', command, false, false, runOnAdminDB, function (err, result) {
         if (err || result.error) {
-            Template.showMeteorFuncError(err, result, "Couldn't fetch users");
+            Helper.showMeteorFuncError(err, result, "Couldn't fetch users");
         }
         else {
             var dbName = runOnAdminDB ? 'admin' : connection.databaseName;
-            var children = Template.userManagement.populateTreeChildrenForUsers(result.result.users);
+            var children = populateTreeChildrenForUsers(result.result.users);
             var finalObject = {
                 'core': {
                     'data': function (node, callback) {
@@ -121,10 +129,10 @@ Template.userManagement.initUserTree = function () {
 
                             Meteor.call('command', userInfoCommand, false, false, runOnAdminDB, function (err, result) {
                                 if (err || result.error) {
-                                    Template.showMeteorFuncError(err, result, "Couldn't fetch userInfo");
+                                    Helper.showMeteorFuncError(err, result, "Couldn't fetch userInfo");
                                 }
                                 else {
-                                    callback(Template.userManagement.populateTreeChildrenForRoles(result.result.users[0]));
+                                    callback(populateTreeChildrenForRoles(result.result.users[0]));
                                 }
                             });
                         }
@@ -137,10 +145,10 @@ Template.userManagement.initUserTree = function () {
 
                             Meteor.call('command', roleInfoCommand, false, false, runOnAdminDB, function (err, result) {
                                 if (err || result.error) {
-                                    Template.showMeteorFuncError(err, result, "Couldn't fetch roleInfo");
+                                    Helper.showMeteorFuncError(err, result, "Couldn't fetch roleInfo");
                                 }
                                 else {
-                                    callback(Template.userManagement.populateTreeChildrenForPrivileges(result.result.roles[0]));
+                                    callback(populateTreeChildrenForPrivileges(result.result.roles[0]));
                                 }
                             });
                         }
@@ -163,15 +171,15 @@ Template.userManagement.initUserTree = function () {
 
                     var node = data.instance.get_node(data.selected[0]);
 
-                    if (node.text == Session.get(Template.strSessionSelectionUserManagement)) {
+                    if (node.text == Session.get(Helper.strSessionSelectionUserManagement)) {
                         return;
                     }
 
                     // clear texts
-                    Session.set(Template.strSessionUsermanagementInfo, '');
-                    Session.set(Template.strSessionSelectionUserManagement, defaultInformationText);
+                    Session.set(Helper.strSessionUsermanagementInfo, '');
+                    Session.set(Helper.strSessionSelectionUserManagement, defaultInformationText);
 
-                    Session.set(Template.strSessionSelectionUserManagement, Template.userManagement.getNodeInformation(node));
+                    Session.set(Helper.strSessionSelectionUserManagement, getNodeInformation(node));
                 }
             );
             Ladda.stopAll();
@@ -179,14 +187,14 @@ Template.userManagement.initUserTree = function () {
     });
 };
 
-Template.userManagement.getNodeInformation = function (node) {
+const getNodeInformation = function (node) {
     if (!node.data || node.data[0].db || node.data[0].user) {
         if (node.data[0].user) {
-            Session.set(Template.strSessionUsermanagementManageSelection, node.text);
+            Session.set(Helper.strSessionUsermanagementManageSelection, node.text);
             $('#btnEditUser').show();
         }
         else if (node.data[0].db) {
-            Session.set(Template.strSessionUsermanagementManageSelection, node.text);
+            Session.set(Helper.strSessionUsermanagementManageSelection, node.text);
             $('#btnManageUsers').show();
             $('#btnManageRoles').show();
         }
@@ -195,20 +203,20 @@ Template.userManagement.getNodeInformation = function (node) {
     }
 
     if (node.data[0].role) {
-        Session.set(Template.strSessionUsermanagementManageSelection, node.data[0].text);
-        Template.userManagement.getRoleInfo(node.data[0].text);
+        Session.set(Helper.strSessionUsermanagementManageSelection, node.data[0].text);
+        getRoleInfo(node.data[0].text);
     }
     else if (node.data[0].privilege) {
-        Template.userManagement.getResourceInfo(node.data[0].privilegeType);
+        getResourceInfo(node.data[0].privilegeType);
     }
     else if (node.data[0].action) {
-        Template.userManagement.getActionInfo(node.text);
+        getActionInfo(node.text);
     }
 
     return node.text;
 };
 
-Template.userManagement.getActionInfo = function (action) {
+const getActionInfo = function (action) {
 
     var l = Ladda.create(document.querySelector('#btnRefreshUsers'));
     l.start();
@@ -216,9 +224,9 @@ Template.userManagement.getActionInfo = function (action) {
 
     Meteor.call('getActionInfo', action, function (err, result) {
         if (err) {
-            Session.set(Template.strSessionUsermanagementInfo, err.message);
+            Session.set(Helper.strSessionUsermanagementInfo, err.message);
         } else {
-            Session.set(Template.strSessionUsermanagementInfo, result);
+            Session.set(Helper.strSessionUsermanagementInfo, result);
         }
 
         loading = false;
@@ -227,7 +235,7 @@ Template.userManagement.getActionInfo = function (action) {
     });
 };
 
-Template.userManagement.getResourceInfo = function (resourceType) {
+const getResourceInfo = function (resourceType) {
 
     var l = Ladda.create(document.querySelector('#btnRefreshUsers'));
     l.start();
@@ -235,9 +243,9 @@ Template.userManagement.getResourceInfo = function (resourceType) {
 
     Meteor.call('getResourceInfo', resourceType, function (err, result) {
         if (err) {
-            Session.set(Template.strSessionUsermanagementInfo, err.message);
+            Session.set(Helper.strSessionUsermanagementInfo, err.message);
         } else {
-            Session.set(Template.strSessionUsermanagementInfo, result);
+            Session.set(Helper.strSessionUsermanagementInfo, result);
         }
 
         loading = false;
@@ -246,7 +254,7 @@ Template.userManagement.getResourceInfo = function (resourceType) {
     });
 };
 
-Template.userManagement.getRoleInfo = function (role) {
+const getRoleInfo = function (role) {
 
     var l = Ladda.create(document.querySelector('#btnRefreshUsers'));
     l.start();
@@ -254,9 +262,9 @@ Template.userManagement.getRoleInfo = function (role) {
 
     Meteor.call('getRoleInfo', role, function (err, result) {
         if (err) {
-            Session.set(Template.strSessionUsermanagementInfo, err.message);
+            Session.set(Helper.strSessionUsermanagementInfo, err.message);
         } else {
-            Session.set(Template.strSessionUsermanagementInfo, result);
+            Session.set(Helper.strSessionUsermanagementInfo, result);
         }
 
         loading = false;
@@ -265,7 +273,7 @@ Template.userManagement.getRoleInfo = function (role) {
 };
 
 
-Template.userManagement.populateTreeChildrenForPrivileges = function (role) {
+const populateTreeChildrenForPrivileges = function (role) {
     if (!role) {
         return [];
     }
@@ -294,12 +302,12 @@ Template.userManagement.populateTreeChildrenForPrivileges = function (role) {
                 data: [
                     {
                         privilege: true,
-                        privilegeType: Template.userManagement.getPrivilegeType(role.privileges[i].resource)
+                        privilegeType: getPrivilegeType(role.privileges[i].resource)
                     }
                 ],
-                text: Template.userManagement.getPrivilegeText(role.privileges[i].resource),
+                text: getPrivilegeText(role.privileges[i].resource),
                 icon: "fa fa-gears",
-                children: Template.userManagement.getPrivilegeActions(role.privileges[i].actions)
+                children: getPrivilegeActions(role.privileges[i].actions)
             });
         }
     }
@@ -310,12 +318,12 @@ Template.userManagement.populateTreeChildrenForPrivileges = function (role) {
                 data: [
                     {
                         privilege: true,
-                        privilegeType: Template.userManagement.getPrivilegeType(role.inheritedPrivileges[i].resource)
+                        privilegeType: getPrivilegeType(role.inheritedPrivileges[i].resource)
                     }
                 ],
-                text: Template.userManagement.getPrivilegeText(role.inheritedPrivileges[i].resource),
+                text: getPrivilegeText(role.inheritedPrivileges[i].resource),
                 icon: "fa fa-gears",
-                children: Template.userManagement.getPrivilegeActions(role.inheritedPrivileges[i].actions)
+                children: getPrivilegeActions(role.inheritedPrivileges[i].actions)
             });
         }
     }
@@ -323,7 +331,7 @@ Template.userManagement.populateTreeChildrenForPrivileges = function (role) {
     return result;
 };
 
-Template.userManagement.getPrivilegeActions = function (actions) {
+const getPrivilegeActions = function (actions) {
     if (!actions) {
         return [];
     }
@@ -345,7 +353,7 @@ Template.userManagement.getPrivilegeActions = function (actions) {
     return result;
 };
 
-Template.userManagement.getPrivilegeType = function (resource) {
+const getPrivilegeType = function (resource) {
     if (!resource) {
         return "";
     }
@@ -372,12 +380,12 @@ Template.userManagement.getPrivilegeType = function (resource) {
 
 };
 
-Template.userManagement.getPrivilegeText = function (resource) {
+const getPrivilegeText = function (resource) {
     if (!resource) {
         return "";
     }
 
-    var type = Template.userManagement.getPrivilegeType(resource);
+    var type = getPrivilegeType(resource);
 
     if (type == 'db+collection') {
         return resource.db + " " + resource.collection;
@@ -399,7 +407,7 @@ Template.userManagement.getPrivilegeText = function (resource) {
     return type;
 };
 
-Template.userManagement.populateTreeChildrenForRoles = function (user) {
+const populateTreeChildrenForRoles = function (user) {
     if (!user) {
         return [];
     }
@@ -449,7 +457,7 @@ Template.userManagement.populateTreeChildrenForRoles = function (user) {
     return result;
 };
 
-Template.userManagement.populateTreeChildrenForUsers = function (users) {
+const populateTreeChildrenForUsers = function (users) {
     var result = [];
     for (var i = 0; i < users.length; i++) {
         result.push({

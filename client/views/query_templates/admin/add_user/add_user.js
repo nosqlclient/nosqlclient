@@ -1,29 +1,36 @@
+import {Template} from 'meteor/templating';
+import {Meteor} from 'meteor/meteor';
+import Helper from '/client/helper';
+import Enums from '/lib/enums';
+import {initExecuteQuery} from '/client/views/pages/admin_queries/admin_queries';
+import {getOptions} from '/client/views/query_templates_options/add_user_options/add_user_options';
+
 var toastr = require('toastr');
 var Ladda = require('ladda');
 /**
  * Created by RSercan on 9.1.2016.
  */
 Template.addUser.onRendered(function () {
-    Template.addUser.initializeOptions();
-    Template.changeConvertOptionsVisibility(false);
-    Template.changeRunOnAdminOptionVisibility(true);
+    initializeOptions();
+    Helper.changeConvertOptionsVisibility(false);
+    Helper.changeRunOnAdminOptionVisibility(true);
 });
 
-Template.addUser.initializeOptions = function () {
+const initializeOptions = function () {
     var cmb = $('#cmbAddUserOptions');
-    $.each(Template.sortObjectByKey(ADD_USER_OPTIONS), function (key, value) {
+    $.each(Helper.sortObjectByKey(Enums.ADD_USER_OPTIONS), function (key, value) {
         cmb.append($("<option></option>")
             .attr("value", key)
             .text(value));
     });
 
     cmb.chosen();
-    Template.setOptionsComboboxChangeEvent(cmb);
+    Helper.setOptionsComboboxChangeEvent(cmb);
 };
 
 Template.addUser.executeQuery = function () {
-    Template.adminQueries.initExecuteQuery();
-    var options = Template.addUserOptions.getOptions();
+    initExecuteQuery();
+    var options = getOptions();
     var username = $('#inputAddUserUsername').val();
     var password = $('#inputAddUserPassword').val();
 
@@ -48,6 +55,6 @@ Template.addUser.executeQuery = function () {
     var runOnAdminDB = $('#aRunOnAdminDB').iCheck('update')[0].checked;
 
     Meteor.call("addUser", username, password, options, runOnAdminDB, function (err, result) {
-        Template.renderAfterQueryExecution(err, result, true);
+        Helper.renderAfterQueryExecution(err, result, true);
     });
 };

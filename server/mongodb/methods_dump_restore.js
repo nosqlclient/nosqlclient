@@ -1,16 +1,23 @@
 /**
  * Created by RSercan on 17.1.2016.
  */
-var backup = require('mongodb-backup');
-var restore = require('mongodb-restore');
-var fs = require('fs');
+
+import {Connections} from '/lib/collections/connections';
+import {Meteor} from 'meteor/meteor';
+import LOGGER from "../internal/logger";
+import Helper from "./helper";
+import Enums from "/lib/enums";
+
+const backup = require('mongodb-backup');
+const restore = require('mongodb-restore');
+const fs = require('fs');
 
 Meteor.methods({
-    'restoreDump': function (connectionId, dumpInfo) {
-        var connection = Connections.findOne({_id: connectionId});
-        var connectionUrl = getConnectionUrl(connection);
-        var path = dumpInfo.filePath.substring(0, dumpInfo.filePath.lastIndexOf('/'));
-        var fileName = dumpInfo.filePath.substring(dumpInfo.filePath.lastIndexOf('/') + 1);
+    restoreDump(connectionId, dumpInfo) {
+        const connection = Connections.findOne({_id: connectionId});
+        const connectionUrl = Helper.getConnectionUrl(connection);
+        const path = dumpInfo.filePath.substring(0, dumpInfo.filePath.lastIndexOf('/'));
+        const fileName = dumpInfo.filePath.substring(dumpInfo.filePath.lastIndexOf('/') + 1);
 
         LOGGER.info('[restoreDump]', connectionUrl, dumpInfo);
         try {
@@ -20,24 +27,24 @@ Meteor.methods({
                 tar: fileName,
                 drop: true,
                 callback: Meteor.bindEnvironment(function () {
-                    dumpInfo.status = DUMP_STATUS.FINISHED;
+                    dumpInfo.status = Enums.DUMP_STATUS.FINISHED;
                     Meteor.call('updateDump', dumpInfo);
                 })
             });
         }
         catch (ex) {
             LOGGER.error('[restoreDump]', ex);
-            dumpInfo.status = DUMP_STATUS.ERROR;
+            dumpInfo.status = Enums.DUMP_STATUS.ERROR;
             Meteor.call('updateDump', dumpInfo);
         }
     },
 
-    'takeDump': function (connectionId, path) {
-        var connection = Connections.findOne({_id: connectionId});
-        var date = new Date();
-        var connectionUrl = getConnectionUrl(connection);
-        var fileName = connection.databaseName + "_" + date.getTime() + ".tar";
-        var fullFilePath = path + "/" + fileName;
+    takeDump(connectionId, path) {
+        const connection = Connections.findOne({_id: connectionId});
+        const date = new Date();
+        const connectionUrl = Helper.getConnectionUrl(connection);
+        const fileName = connection.databaseName + "_" + date.getTime() + ".tar";
+        const fullFilePath = path + "/" + fileName;
 
         LOGGER.info('[takeDump]', connectionUrl, path);
         try {
@@ -47,24 +54,21 @@ Meteor.methods({
                 logger: true,
                 tar: fileName,
                 callback: Meteor.bindEnvironment(function () {
-                    var stats = fs.statSync(fullFilePath);
-
-                    var dump = {
+                    const stats = fs.statSync(fullFilePath);
+                    LOGGER.info('[takeDump]', 'ended successfully !');
+                    Meteor.call('saveDump', {
                         filePath: fullFilePath,
                         date: date,
                         connectionName: connection.name,
                         connectionId: connection._id,
                         sizeInBytes: stats["size"],
-                        status: DUMP_STATUS.NOT_IMPORTED
-                    };
-
-                    Meteor.call('saveDump', dump);
+                        status: Enums.DUMP_STATUS.NOT_IMPORTED
+                    });
                 })
             });
         }
         catch (ex) {
             LOGGER.error('[takeDump]', ex);
         }
-
     }
 });

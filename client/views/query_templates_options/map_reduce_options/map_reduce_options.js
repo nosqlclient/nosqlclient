@@ -1,16 +1,21 @@
+import {Template} from 'meteor/templating';
+import Helper from '/client/helper';
+import Enums from '/lib/enums';
+import {Session} from 'meteor/session';
+
 /**
  * Created by RSercan on 3.1.2016.
  */
 Template.out.onRendered(function () {
-    Template.initializeCodeMirror($('#divOut'), 'txtOut');
+    Helper.initializeCodeMirror($('#divOut'), 'txtOut');
 });
 
 Template.scope.onRendered(function () {
-    Template.initializeCodeMirror($('#divScope'), 'txtScope');
+    Helper.initializeCodeMirror($('#divScope'), 'txtScope');
 });
 
 Template.finalize.onRendered(function () {
-    Template.initializeCodeMirror($('#divFinalize'), 'txtFinalize');
+    Helper.initializeCodeMirror($('#divFinalize'), 'txtFinalize');
 });
 
 Template.verbose.onRendered(function () {
@@ -26,40 +31,40 @@ Template.bypassDocumentValidation.onRendered(function () {
 });
 
 
-Template.mapReduceOptions.getOptions = function () {
+export const getOptions = function () {
     var result = {};
-    Template.checkAndAddOption("OUT", $('#divOut'), result, MAP_REDUCE_OPTIONS);
-    Template.checkCodeMirrorSelectorForOption("QUERY", result, MAP_REDUCE_OPTIONS);
-    Template.checkAndAddOption("SORT", $('#divSort'), result, MAP_REDUCE_OPTIONS);
-    Template.checkAndAddOption("SCOPE", $('#divScope'), result, MAP_REDUCE_OPTIONS);
+    Helper.checkAndAddOption("OUT", $('#divOut'), result, Enums.MAP_REDUCE_OPTIONS);
+    Helper.checkCodeMirrorSelectorForOption("QUERY", result, Enums.MAP_REDUCE_OPTIONS);
+    Helper.checkAndAddOption("SORT", $('#divSort'), result, Enums.MAP_REDUCE_OPTIONS);
+    Helper.checkAndAddOption("SCOPE", $('#divScope'), result, Enums.MAP_REDUCE_OPTIONS);
 
-    if ($.inArray("FINALIZE", Session.get(Template.strSessionSelectedOptions)) != -1) {
-        var finalize = Template.getCodeMirrorValue($('#divFinalize'));
+    if ($.inArray("FINALIZE", Session.get(Helper.strSessionSelectedOptions)) != -1) {
+        var finalize = Helper.getCodeMirrorValue($('#divFinalize'));
         if (finalize.parseFunction() == null) {
-            result["ERROR"] = "Syntax Error on finalize, not a valid function";
+            result["ERROR"] = "Syntax Error on finalize, not a valid ";
             return;
         }
     }
 
-    if ($.inArray("LIMIT", Session.get(Template.strSessionSelectedOptions)) != -1) {
+    if ($.inArray("LIMIT", Session.get(Helper.strSessionSelectedOptions)) != -1) {
         var limit = $('#inputLimit').val();
         if (limit) {
-            result[MAP_REDUCE_OPTIONS.LIMIT] = parseInt(limit);
+            result[Enums.MAP_REDUCE_OPTIONS.LIMIT] = parseInt(limit);
         }
     }
 
 
-    if ($.inArray("VERBOSE", Session.get(Template.strSessionSelectedOptions)) != -1) {
+    if ($.inArray("VERBOSE", Session.get(Helper.strSessionSelectedOptions)) != -1) {
         var verBose = $('#divVerbose').iCheck('update')[0].checked;
         if (verBose) {
-            result[MAP_REDUCE_OPTIONS.VERBOSE] = verBose;
+            result[Enums.MAP_REDUCE_OPTIONS.VERBOSE] = verBose;
         }
     }
 
-    if ($.inArray("BYPASS_DOCUMENT_VALIDATION", Session.get(Template.strSessionSelectedOptions)) != -1) {
+    if ($.inArray("BYPASS_DOCUMENT_VALIDATION", Session.get(Helper.strSessionSelectedOptions)) != -1) {
         var byPassDocValidation = $('#divBypassDocumentValidation').iCheck('update')[0].checked;
         if (byPassDocValidation) {
-            result[MAP_REDUCE_OPTIONS.BYPASS_DOCUMENT_VALIDATION] = byPassDocValidation;
+            result[Enums.MAP_REDUCE_OPTIONS.BYPASS_DOCUMENT_VALIDATION] = byPassDocValidation;
         }
     }
 

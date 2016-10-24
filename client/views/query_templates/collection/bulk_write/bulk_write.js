@@ -1,17 +1,23 @@
+import {Template} from 'meteor/templating';
+import {Meteor} from 'meteor/meteor';
+import {Session} from 'meteor/session';
+import Helper from '/client/helper';
+import {initExecuteQuery} from '/client/views/pages/browse_collection/browse_collection';
+
 /**
  * Created by RSercan on 15.10.2016.
  */
 
 Template.bulkWrite.onRendered(function () {
-    Template.initializeCodeMirror($('#divBulkWrite'), 'txtBulkWrite');
+    Helper.initializeCodeMirror($('#divBulkWrite'), 'txtBulkWrite');
 });
 
 Template.bulkWrite.executeQuery = function (historyParams) {
-    Template.browseCollection.initExecuteQuery();
-    var selectedCollection = Session.get(Template.strSessionSelectedCollection);
-    var operations = historyParams ? JSON.stringify(historyParams.selector) : Template.getCodeMirrorValue($('#divBulkWrite'));
+    initExecuteQuery();
+    var selectedCollection = Session.get(Helper.strSessionSelectedCollection);
+    var operations = historyParams ? JSON.stringify(historyParams.selector) : Helper.getCodeMirrorValue($('#divBulkWrite'));
 
-    operations = Template.convertAndCheckJSONAsArray(operations);
+    operations = Helper.convertAndCheckJSONAsArray(operations);
     if (operations["ERROR"]) {
         toastr.error("Syntax error on operations: " + operations["ERROR"]);
         Ladda.stopAll();
@@ -25,9 +31,8 @@ Template.bulkWrite.executeQuery = function (historyParams) {
     var convertIds = $('#aConvertObjectIds').iCheck('update')[0].checked;
     var convertDates = $('#aConvertIsoDates').iCheck('update')[0].checked;
 
-    Meteor.call("bulkWrite", selectedCollection, operations, convertIds, convertDates,
-        function (err, result) {
-            Template.renderAfterQueryExecution(err, result, false, "bulkWrite", params, (historyParams ? false : true));
+    Meteor.call("bulkWrite", selectedCollection, operations, convertIds, convertDates, function (err, result) {
+            Helper.renderAfterQueryExecution(err, result, false, "bulkWrite", params, (historyParams ? false : true));
         }
     );
 };

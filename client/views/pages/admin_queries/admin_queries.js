@@ -1,3 +1,9 @@
+import {Template} from 'meteor/templating';
+import {Session} from 'meteor/session';
+import Helper from '/client/helper';
+import {Settings} from '/lib/collections/settings';
+import Enums from '/lib/enums';
+
 var toastr = require('toastr');
 var Ladda = require('ladda');
 var JSONEditor = require('jsoneditor');
@@ -5,7 +11,7 @@ var JSONEditor = require('jsoneditor');
  * Created by RSercan on 10.1.2016.
  */
 Template.adminQueries.onRendered(function () {
-    if (Session.get(Template.strSessionCollectionNames) == undefined) {
+    if (Session.get(Helper.strSessionCollectionNames) == undefined) {
         Router.go('databaseStats');
         return;
     }
@@ -14,7 +20,7 @@ Template.adminQueries.onRendered(function () {
     cmb.append($("<optgroup id='optGroupAdminQueries' label='Admin Queries'></optgroup>"));
     var cmbOptGroupCollection = cmb.find('#optGroupAdminQueries');
 
-    $.each(Template.sortObjectByKey(ADMIN_QUERY_TYPES), function (key, value) {
+    $.each(Helper.sortObjectByKey(Enums.ADMIN_QUERY_TYPES), function (key, value) {
         cmbOptGroupCollection.append($("<option></option>")
             .attr("value", key)
             .text(value));
@@ -26,21 +32,21 @@ Template.adminQueries.onRendered(function () {
     });
 
     $('[data-toggle="tooltip"]').tooltip({trigger: 'hover'});
-    Template.changeConvertOptionsVisibility(false);
+    Helper.changeConvertOptionsVisibility(false);
 });
 
 
 Template.adminQueries.events({
-    'change #cmbAdminQueries': function () {
-        Session.set(Template.strSessionSelectedOptions, []);
+    'change #cmbAdminQueries'  () {
+        Session.set(Helper.strSessionSelectedOptions, []);
 
         var value = $('#cmbAdminQueries').find(":selected").text();
         if (value) {
-            Session.set(Template.strSessionSelectedQuery, value);
+            Session.set(Helper.strSessionSelectedQuery, value);
         }
     },
 
-    'click #btnSwitchView': function () {
+    'click #btnSwitchView'  () {
         var jsonView = $('#divJsonEditor');
         var aceView = $('#divAceEditor');
 
@@ -56,8 +62,8 @@ Template.adminQueries.events({
             aceView.show('slow');
         }
     },
-    'click #btnExecuteAdminQuery': function () {
-        var queryTemplate = Session.get(Template.strSessionSelectedQuery);
+    'click #btnExecuteAdminQuery'() {
+        var queryTemplate = Session.get(Helper.strSessionSelectedQuery);
         if (queryTemplate) {
             Template[queryTemplate].executeQuery();
         } else {
@@ -67,40 +73,40 @@ Template.adminQueries.events({
 });
 
 Template.adminQueries.helpers({
-    'getQueryTemplate': function () {
-        return Session.get(Template.strSessionSelectedQuery);
+    'getQueryTemplate' () {
+        return Session.get(Helper.strSessionSelectedQuery);
     },
 
-    'getHelpBlockForSelectedQuery': function () {
-        switch (Session.get(Template.strSessionSelectedQuery)) {
-            case ADMIN_QUERY_TYPES.ADD_USER:
+    'getHelpBlockForSelectedQuery' () {
+        switch (Session.get(Helper.strSessionSelectedQuery)) {
+            case Enums.ADMIN_QUERY_TYPES.ADD_USER:
                 return Spacebars.SafeString('Add a user to the database');
 
-            case ADMIN_QUERY_TYPES.BUILD_INFO:
+            case Enums.ADMIN_QUERY_TYPES.BUILD_INFO:
                 return Spacebars.SafeString('Retrieve the server information for the current instance of the db client');
 
-            case ADMIN_QUERY_TYPES.LIST_DATABASES:
+            case Enums.ADMIN_QUERY_TYPES.LIST_DATABASES:
                 return Spacebars.SafeString('List the available databases');
 
-            case ADMIN_QUERY_TYPES.COMMAND:
+            case Enums.ADMIN_QUERY_TYPES.COMMAND:
                 return Spacebars.SafeString('Execute a command');
 
-            case ADMIN_QUERY_TYPES.PING:
+            case Enums.ADMIN_QUERY_TYPES.PING:
                 return Spacebars.SafeString('Ping the server and retrieve results');
 
-            case ADMIN_QUERY_TYPES.PROFILING_INFO:
+            case Enums.ADMIN_QUERY_TYPES.PROFILING_INFO:
                 return Spacebars.SafeString('Retrive the current profiling information');
 
-            case ADMIN_QUERY_TYPES.REPL_SET_GET_STATUS:
+            case Enums.ADMIN_QUERY_TYPES.REPL_SET_GET_STATUS:
                 return Spacebars.SafeString('Get <strong>ReplicaSet</strong> status');
 
-            case ADMIN_QUERY_TYPES.SERVER_STATUS:
+            case Enums.ADMIN_QUERY_TYPES.SERVER_STATUS:
                 return Spacebars.SafeString('Retrieve this <strong>db\'s</strong> server status.');
 
-            case ADMIN_QUERY_TYPES.SET_PROFILING_LEVEL:
+            case Enums.ADMIN_QUERY_TYPES.SET_PROFILING_LEVEL:
                 return Spacebars.SafeString('Set the current profiling level');
 
-            case ADMIN_QUERY_TYPES.VALIDATE_COLLECTION:
+            case Enums.ADMIN_QUERY_TYPES.VALIDATE_COLLECTION:
                 return Spacebars.SafeString('Validate an existing collection');
 
             default:
@@ -109,16 +115,14 @@ Template.adminQueries.helpers({
     }
 });
 
-Template.adminQueries.initExecuteQuery = function () {
-    // loading button
-    
+export const initExecuteQuery = function () {
     var l = Ladda.create(document.querySelector('#btnExecuteAdminQuery'));
     l.start();
 };
 
-Template.adminQueries.setResult = function (result) {
+export const setAdminResult = function (result) {
     // set json editor
-    Template.adminQueries.getEditor().set(result);
+    getEditor().set(result);
 
     // set ace editor
     AceEditor.instance('aceeditor', {
@@ -147,7 +151,7 @@ Template.adminQueries.setResult = function (result) {
 };
 
 var jsonEditor;
-Template.adminQueries.getEditor = function () {
+const getEditor = function () {
     if ($('.jsoneditor').length == 0) {
         jsonEditor = new JSONEditor(document.getElementById('jsoneditor'), {
             mode: 'tree',

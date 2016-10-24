@@ -1,8 +1,11 @@
+import {Template} from 'meteor/templating';
+
 var toastr = require('toastr');
-Template.mainLayout.rendered = function () {
-    
+
+Template.mainLayout.rendered = function() {
+
     $(document).idleTimer(30 * 60 * 1000);
-    $(document).on("idle.idleTimer", function () {
+    $(document).on("idle.idleTimer", function() {
         toastr.info('You are idle for 30 minutes :(', 'Idle');
     });
     $(document).on("active.idleTimer", function () {
@@ -10,7 +13,7 @@ Template.mainLayout.rendered = function () {
     });
 
     // Minimalize menu when screen is less than 768px
-    $(window).bind("resize load", function () {
+    $(window).bind("resize load", function() {
         if ($(this).width() < 769) {
             $('body').addClass('body-small')
         } else {
@@ -19,7 +22,7 @@ Template.mainLayout.rendered = function () {
     });
 
     // Fix height of layout when resize, scroll and load
-    $(window).bind("load resize scroll", function () {
+    $(window).bind("load resize scroll", function() {
         var body = $("body");
         if (!body.hasClass('body-small')) {
 
@@ -43,26 +46,4 @@ Template.mainLayout.rendered = function () {
             }
         }
     });
-
-    //$("body").addClass('light-navbar')
-
-
-    // SKIN OPTIONS
-    // Uncomment this if you want to have different skin option:
-    // Available skin: (skin-1 or skin-3, skin-2 deprecated)
-    //$('body').addClass('skin-1');
-
-    // FIXED-SIDEBAR
-    // Uncomment this if you want to have fixed left navigation
-    // $('body').addClass('fixed-sidebar');
-    // $('.sidebar-collapse').slimScroll({
-    //     height: '100%',
-    //     railOpacity: 0.9
-    // });
-
-    // BOXED LAYOUT
-    // Uncomment this if you want to have boxed layout
-    // $('body').addClass('boxed-layout');
-
-
 };

@@ -1,43 +1,51 @@
+import {Template} from 'meteor/templating';
+import {Meteor} from 'meteor/meteor';
+import {Session} from 'meteor/session';
+import Helper from '/client/helper';
+import Enums from '/lib/enums';
+import {initExecuteQuery} from '/client/views/pages/browse_collection/browse_collection';
+import {getOptions} from '/client/views/query_templates_options/map_reduce_options/map_reduce_options';
+
 var toastr = require('toastr');
 var Ladda = require('ladda');
 /**
  * Created by RSercan on 3.1.2016.
  */
 Template.mapReduce.onRendered(function () {
-    Template.initializeCodeMirror($('#divMap'), 'txtMap');
-    Template.initializeCodeMirror($('#divReduce'), 'txtReduce');
-    Template.mapReduce.initializeOptions();
-    Template.changeConvertOptionsVisibility(false);
+    Helper.initializeCodeMirror($('#divMap'), 'txtMap');
+    Helper.initializeCodeMirror($('#divReduce'), 'txtReduce');
+    initializeOptions();
+    Helper.changeConvertOptionsVisibility(false);
 });
 
-Template.mapReduce.initializeOptions = function () {
+const initializeOptions = function () {
     var cmb = $('#cmbMapReduceOptions');
-    $.each(Template.sortObjectByKey(MAP_REDUCE_OPTIONS), function (key, value) {
+    $.each(Helper.sortObjectByKey(Enums.MAP_REDUCE_OPTIONS), function (key, value) {
         cmb.append($("<option></option>")
             .attr("value", key)
             .text(value));
     });
 
     cmb.chosen();
-    Template.setOptionsComboboxChangeEvent(cmb);
+    Helper.setOptionsComboboxChangeEvent(cmb);
 };
 
 Template.mapReduce.executeQuery = function (historyParams) {
-    Template.browseCollection.initExecuteQuery();
-    var selectedCollection = Session.get(Template.strSessionSelectedCollection);
-    var options = historyParams ? historyParams.options : Template.mapReduceOptions.getOptions();
-    var map = historyParams ? JSON.stringify(historyParams.map) : Template.getCodeMirrorValue($('#divMap'));
-    var reduce = historyParams ? JSON.stringify(historyParams.reduce) : Template.getCodeMirrorValue($('#divReduce'));
+    initExecuteQuery();
+    var selectedCollection = Session.get(Helper.strSessionSelectedCollection);
+    var options = historyParams ? historyParams.options : getOptions();
+    var map = historyParams ? JSON.stringify(historyParams.map) : Helper.getCodeMirrorValue($('#divMap'));
+    var reduce = historyParams ? JSON.stringify(historyParams.reduce) : Helper.getCodeMirrorValue($('#divReduce'));
 
 
     if (map.parseFunction() == null) {
-        toastr.error("Syntax error on map, not a valid function ");
+        toastr.error("Syntax error on map, not a valid  ");
         Ladda.stopAll();
         return;
     }
 
     if (reduce.parseFunction() == null) {
-        toastr.error("Syntax error on reduce, not a valid function ");
+        toastr.error("Syntax error on reduce, not a valid  ");
         Ladda.stopAll();
         return;
     }
@@ -55,6 +63,6 @@ Template.mapReduce.executeQuery = function (historyParams) {
     };
 
     Meteor.call("mapReduce", selectedCollection, map, reduce, options, function (err, result) {
-        Template.renderAfterQueryExecution(err, result, false, "mapReduce", params, (historyParams ? false : true));
+        Helper.renderAfterQueryExecution(err, result, false, "mapReduce", params, (historyParams ? false : true));
     });
 };

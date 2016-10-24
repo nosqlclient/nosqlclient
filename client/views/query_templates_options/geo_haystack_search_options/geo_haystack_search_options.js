@@ -1,22 +1,27 @@
+import {Template} from 'meteor/templating';
+import Helper from '/client/helper';
+import Enums from '/lib/enums';
+import {Session} from 'meteor/session';
+
 /**
  * Created by RSercan on 2.1.2016.
  */
 Template.search.onRendered(function () {
-    Template.initializeCodeMirror($('#divSearch'), 'txtSearch');
+    Helper.initializeCodeMirror($('#divSearch'), 'txtSearch');
 });
 
-Template.geoHaystackSearchOptions.getOptions = function () {
+export const getOptions = function () {
     var result = {};
-    Template.checkAndAddOption("SEARCH", $('#divSearch'), result, GEO_HAYSTACK_SEARCH_OPTIONS);
+    Helper.checkAndAddOption("SEARCH", $('#divSearch'), result, Enums.GEO_HAYSTACK_SEARCH_OPTIONS);
 
-    if ($.inArray("MAX_DISTANCE", Session.get(Template.strSessionSelectedOptions)) != -1) {
+    if ($.inArray("MAX_DISTANCE", Session.get(Helper.strSessionSelectedOptions)) != -1) {
         var maxDistanceValue = $('#inputMaxDistance').val();
         if (maxDistanceValue) {
-            result[GEO_HAYSTACK_SEARCH_OPTIONS.MAX_DISTANCE] = parseInt(maxDistanceValue);
+            result[Enums.GEO_HAYSTACK_SEARCH_OPTIONS.MAX_DISTANCE] = parseInt(maxDistanceValue);
         }
     }
 
-    if ($.inArray("LIMIT", Session.get(Template.strSessionSelectedOptions)) != -1) {
+    if ($.inArray("LIMIT", Session.get(Helper.strSessionSelectedOptions)) != -1) {
         var limitVal = $('#inputLimit').val();
         if (limitVal) {
             result[GEO_HAYSTACK_SEARCH_OPTIONS.LIMIT] = parseInt(limitVal);

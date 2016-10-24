@@ -1,17 +1,26 @@
+import {Template} from 'meteor/templating';
+import {Meteor} from 'meteor/meteor';
+import {Session} from 'meteor/session';
+import Helper from '/client/helper';
+import Enums from '/lib/enums';
+import {initExecuteQuery} from '/client/views/pages/browse_collection/browse_collection';
+import {getSelectorValue} from '/client/views/query_templates_common/selector/selector';
+import {getOptions} from '/client/views/query_templates_options/findone_modify_options/findone_modify_options';
+
 var toastr = require('toastr');
 /**
  * Created by RSercan on 1.1.2016.
  */
 Template.findOneAndDelete.onRendered(function () {
-    Template.findOneAndDelete.initializeOptions();
-    Template.changeConvertOptionsVisibility(true);
+    initializeOptions();
+    Helper.changeConvertOptionsVisibility(true);
 });
 
-Template.findOneAndDelete.initializeOptions = function () {
+const initializeOptions = function () {
     var cmb = $('#cmbFindOneModifyOptions');
-    $.each(Template.sortObjectByKey(FINDONE_MODIFY_OPTIONS), function (key, value) {
+    $.each(Helper.sortObjectByKey(Enums.FINDONE_MODIFY_OPTIONS), function (key, value) {
         // upsert and returnOriginal is not for delete
-        if (value != FINDONE_MODIFY_OPTIONS.UPSERT && value != FINDONE_MODIFY_OPTIONS.RETURN_ORIGINAL) {
+        if (value != Enums.FINDONE_MODIFY_OPTIONS.UPSERT && value != Enums.FINDONE_MODIFY_OPTIONS.RETURN_ORIGINAL) {
             cmb.append($("<option></option>")
                 .attr("value", key)
                 .text(value));
@@ -19,16 +28,16 @@ Template.findOneAndDelete.initializeOptions = function () {
     });
 
     cmb.chosen();
-    Template.setOptionsComboboxChangeEvent(cmb);
+    Helper.setOptionsComboboxChangeEvent(cmb);
 };
 
 Template.findOneAndDelete.executeQuery = function (historyParams) {
-    Template.browseCollection.initExecuteQuery();
-    var selectedCollection = Session.get(Template.strSessionSelectedCollection);
-    var options = historyParams ? historyParams.options : Template.findOneModifyOptions.getOptions();
-    var selector = historyParams ? JSON.stringify(historyParams.selector) : Template.selector.getValue();
+    initExecuteQuery();
+    var selectedCollection = Session.get(Helper.strSessionSelectedCollection);
+    var options = historyParams ? historyParams.options : getOptions();
+    var selector = historyParams ? JSON.stringify(historyParams.selector) : getSelectorValue();
 
-    selector = Template.convertAndCheckJSON(selector);
+    selector = Helper.convertAndCheckJSON(selector);
     if (selector["ERROR"]) {
         toastr.error("Syntax error on selector: " + selector["ERROR"]);
         Ladda.stopAll();
@@ -49,9 +58,8 @@ Template.findOneAndDelete.executeQuery = function (historyParams) {
     var convertIds = $('#aConvertObjectIds').iCheck('update')[0].checked;
     var convertDates = $('#aConvertIsoDates').iCheck('update')[0].checked;
 
-    Meteor.call("findOneAndDelete", selectedCollection, selector, options , convertIds, convertDates,
-        function (err, result) {
-            Template.renderAfterQueryExecution(err, result, false, "findOneAndDelete", params, (historyParams ? false : true));
+    Meteor.call("findOneAndDelete", selectedCollection, selector, options, convertIds, convertDates, function (err, result) {
+            Helper.renderAfterQueryExecution(err, result, false, "findOneAndDelete", params, (historyParams ? false : true));
         }
     );
 };

@@ -1,19 +1,24 @@
+import {Template} from 'meteor/templating';
+import {Meteor} from 'meteor/meteor';
+import Helper from '/client/helper';
+import {initExecuteQuery} from '/client/views/pages/admin_queries/admin_queries';
+
 var toastr = require('toastr');
 var Ladda = require('ladda');
 /**
  * Created by RSercan on 10.1.2016.
  */
 Template.command.onRendered(function () {
-    Template.initializeCodeMirror($('#divCommand'), 'txtCommand');
-    Template.changeConvertOptionsVisibility(true);
-    Template.changeRunOnAdminOptionVisibility(true);
+    Helper.initializeCodeMirror($('#divCommand'), 'txtCommand');
+    Helper.changeConvertOptionsVisibility(true);
+    Helper.changeRunOnAdminOptionVisibility(true);
 });
 
 Template.command.executeQuery = function () {
-    Template.adminQueries.initExecuteQuery();
-    var command = Template.getCodeMirrorValue($('#divCommand'));
+    initExecuteQuery();
+    var command = Helper.getCodeMirrorValue($('#divCommand'));
 
-    command = Template.convertAndCheckJSON(command);
+    command = Helper.convertAndCheckJSON(command);
     if (command["ERROR"]) {
         toastr.error("Syntax error on command: " + command["ERROR"]);
         Ladda.stopAll();
@@ -24,9 +29,8 @@ Template.command.executeQuery = function () {
     var convertDates = $('#aConvertIsoDates').iCheck('update')[0].checked;
     var runOnAdminDB = $('#aRunOnAdminDB').iCheck('update')[0].checked;
 
-    Meteor.call("command", command, convertIds, convertDates, runOnAdminDB,
-        function (err, result) {
-            Template.renderAfterQueryExecution(err, result, true);
+    Meteor.call("command", command, convertIds, convertDates, runOnAdminDB, function (err, result) {
+            Helper.renderAfterQueryExecution(err, result, true);
         }
     );
 };

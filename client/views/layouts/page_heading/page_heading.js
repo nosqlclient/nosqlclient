@@ -1,34 +1,40 @@
-var Ladda = require('ladda');
+import {Template} from 'meteor/templating';
+import {Meteor} from 'meteor/meteor';
+import {Session} from 'meteor/session';
+import Helper from '/client/helper';
+import {Settings} from '/lib/collections/settings';
+
+const Ladda = require('ladda');
 
 Template.pageHeading.helpers({
     // Route for Home link in breadcrumbs
     'home': 'databaseStats',
 
-    'getCollectionInformation': function () {
-        if (Template.getParentTemplateName(1) != 'browseCollection' || Session.get(Template.strSessionSelectedCollection) == undefined) {
+    getCollectionInformation () {
+        if (Helper.getParentTemplateName(1) != 'browseCollection' || Session.get(Helper.strSessionSelectedCollection) == undefined) {
             $('#divCollectionInfo').html("");
             return;
         }
 
-        var selectedCollection = Session.get(Template.strSessionSelectedCollection);
+        var selectedCollection = Session.get(Helper.strSessionSelectedCollection);
 
         // get distinct field keys for auto complete on every collection change.
-        Template.getDistinctKeysForAutoComplete(selectedCollection);
-        
+        Helper.getDistinctKeysForAutoComplete(selectedCollection);
+
         Meteor.call("stats", selectedCollection, {}, function (err, result) {
             if (err || result.error) {
-                Template.showMeteorFuncError(err, result, "Couldn't fetch connection informations");
+                Helper.showMeteorFuncError(err, result, "Couldn't fetch connection informations");
             }
             else {
-                Template.pageHeading.populateCollectionInfo(result.result);
-                             
+                populateCollectionInfo(result.result);
+
                 Ladda.stopAll();
             }
         });
     }
 });
 
-Template.pageHeading.populateCollectionInfo = function (result) {
+const populateCollectionInfo = function (result) {
     var scale = 1;
     var text = "Bytes";
 

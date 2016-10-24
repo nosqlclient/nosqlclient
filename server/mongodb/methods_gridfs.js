@@ -1,15 +1,20 @@
 /**
  * Created by RSercan on 9.2.2016.
  */
-var mongodbApi = require('mongodb');
+import LOGGER from "../internal/logger";
+import Helper from "./helper";
+import {database} from "./methods_common";
+import {Meteor} from 'meteor/meteor';
+
+const mongodbApi = require('mongodb');
 
 Meteor.methods({
-    'deleteFile': function (bucketName, fileId) {
+    deleteFile(bucketName, fileId) {
         LOGGER.info('[deleteFile]', bucketName, fileId);
 
-        var result = Async.runSync(function (done) {
+        let result = Async.runSync(function (done) {
             try {
-                var bucket = new mongodbApi.GridFSBucket(database, {bucketName: bucketName});
+                const bucket = new mongodbApi.GridFSBucket(database, {bucketName: bucketName});
                 bucket.delete(new mongodbApi.ObjectId(fileId), function (err) {
                     done(err, null);
                 });
@@ -20,18 +25,18 @@ Meteor.methods({
             }
         });
 
-        convertBSONtoJSON(result);
+        Helper.convertBSONtoJSON(result);
         return result;
     },
 
-    'getFileInfos': function (bucketName, selector, limit) {
+    getFileInfos(bucketName, selector, limit) {
         limit = parseInt(limit) || 100;
         selector = selector || {};
         LOGGER.info('[getFileInfos]', bucketName, selector, limit);
 
-        var result = Async.runSync(function (done) {
+        let result = Async.runSync(function (done) {
             try {
-                var bucket = new mongodbApi.GridFSBucket(database, {bucketName: bucketName});
+                const bucket = new mongodbApi.GridFSBucket(database, {bucketName: bucketName});
                 bucket.find(selector, {limit: limit}).toArray(function (err, files) {
                     done(err, files);
                 });
@@ -43,13 +48,13 @@ Meteor.methods({
             }
         });
 
-        convertBSONtoJSON(result);
+        Helper.convertBSONtoJSON(result);
         return result;
     },
 
-    'uploadFile': function (bucketName, blob, fileName, contentType, metaData, aliases) {
+    uploadFile(bucketName, blob, fileName, contentType, metaData, aliases) {
         if (metaData) {
-            convertJSONtoBSON(metaData);
+            Helper.convertJSONtoBSON(metaData);
         }
 
         blob = new Buffer(blob);
@@ -58,8 +63,8 @@ Meteor.methods({
 
         return Async.runSync(function (done) {
             try {
-                var bucket = new mongodbApi.GridFSBucket(database, {bucketName: bucketName});
-                var uploadStream = bucket.openUploadStream(fileName, {
+                const bucket = new mongodbApi.GridFSBucket(database, {bucketName: bucketName});
+                let uploadStream = bucket.openUploadStream(fileName, {
                     metadata: metaData,
                     contentType: contentType,
                     aliases: aliases
@@ -76,12 +81,12 @@ Meteor.methods({
         });
     },
 
-    'getFile': function (bucketName, fileId) {
+    getFile(bucketName, fileId) {
         LOGGER.info('[getFile]', bucketName, fileId);
 
-        var result = Async.runSync(function (done) {
+        let result = Async.runSync(function (done) {
             try {
-                var filesCollection = database.collection(bucketName + '.files');
+                let filesCollection = database.collection(bucketName + '.files');
                 filesCollection.find({_id: new mongodbApi.ObjectId(fileId)}).limit(1).next(function (err, doc) {
                     if (doc) {
                         done(null, doc);
@@ -96,7 +101,53 @@ Meteor.methods({
             }
         });
 
-        convertBSONtoJSON(result);
+        Helper.convertBSONtoJSON(result);
         return result;
     }
+});
+
+WebApp.connectHandlers.use("/download", function (req, res) {
+    var urlParts = req.url.split('&');
+    var fileId = urlParts[0].substr(urlParts[0].indexOf('=') + 1);
+    var bucketName = urlParts[1].substr(urlParts[1].indexOf('=') + 1);
+
+    LOGGER.info('[downloadFile]', fileId, bucketName);
+
+    if (!bucketName || !fileId) {
+        LOGGER.info('[downloadFile]', 'file not found !');
+        res.writeHead(400);
+        res.write('File not found !');
+        return;
+    }
+
+    try {
+        let filesCollection = database.collection(bucketName + '.files');
+        filesCollection.find({_id: new mongodbApi.ObjectId(fileId)}).limit(1).next(function (err, doc) {
+            if (doc) {
+                var bucket = new mongodbApi.GridFSBucket(database, {bucketName: bucketName});
+                var headers = {
+                    'Content-type': 'application/octet-stream',
+                    'Content-Disposition': 'attachment; filename=' + doc.filename
+                };
+                LOGGER.info('[downloadFile]', 'file found and started downloading...');
+                var downloadStream = bucket.openDownloadStream(new mongodbApi.ObjectID(fileId));
+                res.writeHead(200, headers);
+                var pipeStream = downloadStream.pipe(res);
+                pipeStream.on('finish', function () {
+                    LOGGER.info('[downloadFile]', 'file has been downloaded successfully');
+                });
+
+            } else {
+                LOGGER.info('[downloadFile]', 'file not found !');
+                res.writeHead(400);
+                res.write('File not found !');
+            }
+        });
+    }
+    catch (ex) {
+        LOGGER.error('[downloadFile]', ex);
+        res.writeHead(500);
+        res.write('Unexpected error: ' + ex.message);
+    }
+
 });

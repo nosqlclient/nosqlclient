@@ -1,3 +1,10 @@
+import {Template} from 'meteor/templating';
+import {Meteor} from 'meteor/meteor';
+import {Session} from 'meteor/session';
+import Helper from '/client/helper';
+import {getSelectorValue} from '/client/views/query_templates_common/selector/selector';
+
+
 var JSONEditor = require('jsoneditor');
 var toastr = require('toastr');
 var Ladda = require('ladda');
@@ -5,33 +12,30 @@ var Ladda = require('ladda');
  * Created by sercan on 09.02.2016.
  */
 Template.fileManagement.onRendered(function () {
-    if (Session.get(Template.strSessionCollectionNames) == undefined) {
+    if (Session.get(Helper.strSessionCollectionNames) == undefined) {
         Router.go('databaseStats');
         return;
     }
 
-    Template.fileManagement.initFileInformations();
-    Template.initiateDatatable($('#tblFiles'), Template.strSessionSelectedFile, true);
+    initFileInformations();
+    Helper.initiateDatatable($('#tblFiles'), Helper.strSessionSelectedFile, true);
 });
 
 Template.fileManagement.events({
-    'click #btnReloadFiles': function () {
-        Template.fileManagement.initFileInformations();
+    'click #btnReloadFiles'  () {
+        initFileInformations();
     },
 
-    'click .editor_download': function (e) {
+    'click .editor_download'  (e) {
         e.preventDefault();
-        var fileRow = Session.get(Template.strSessionSelectedFile);
+        var fileRow = Session.get(Helper.strSessionSelectedFile);
         if (fileRow) {
-            window.open(Router.url('download', {
-                fileId: fileRow._id,
-                bucketName: $('#txtBucketName').val()
-            }));
+            window.open('download?fileId=' + fileRow._id + '&bucketName=' + $('#txtBucketName').val());
         }
     },
 
-    'click .editor_delete': function (e) {
-        var fileRow = Session.get(Template.strSessionSelectedFile);
+    'click .editor_delete'  (e) {
+        var fileRow = Session.get(Helper.strSessionSelectedFile);
         if (fileRow) {
             swal({
                 title: "Are you sure ?",
@@ -43,7 +47,7 @@ Template.fileManagement.events({
                 cancelButtonText: "No"
             }, function (isConfirm) {
                 if (isConfirm) {
-                    
+
                     var l = Ladda.create(document.querySelector('#btnReloadFiles'));
                     l.start();
                     Meteor.call('deleteFile', $('#txtBucketName').val(), fileRow._id, function (err) {
@@ -51,7 +55,7 @@ Template.fileManagement.events({
                             toastr.error("Couldn't delete: " + err.message);
                         } else {
                             toastr.success('Successfuly deleted !');
-                            Template.fileManagement.initFileInformations();
+                            initFileInformations();
                         }
                     });
                 }
@@ -59,7 +63,7 @@ Template.fileManagement.events({
         }
     },
 
-    'click #btnUpdateMetadata': function (e) {
+    'click #btnUpdateMetadata'  (e) {
         e.preventDefault();
 
         swal({
@@ -72,7 +76,7 @@ Template.fileManagement.events({
             cancelButtonText: "No"
         }, function (isConfirm) {
             if (isConfirm) {
-                
+
                 var l = Ladda.create(document.querySelector('#btnUpdateMetadata'));
                 l.start();
                 var jsonEditor = $('#jsonEditorOfMetadata').data('jsoneditor');
@@ -80,29 +84,28 @@ Template.fileManagement.events({
                 delete setValue._id;
 
                 Meteor.call('updateOne', $('#txtBucketName').val() + '.files',
-                    {'_id': Session.get(Template.strSessionSelectedFile)._id}, {"$set": setValue}, {}, true, true,
-                    function (err, result) {
+                    {'_id': Session.get(Helper.strSessionSelectedFile)._id}, {"$set": setValue}, {}, true, true, function (err, result) {
                         if (err) {
                             toastr.error("Couldn't update file info: " + err.message);
                         } else {
                             toastr.success('Successfully updated file information !');
-                            Template.fileManagement.proceedShowingMetadata(Session.get(Template.strSessionSelectedFile)._id, jsonEditor);
+                            proceedShowingMetadata(Session.get(Helper.strSessionSelectedFile)._id, jsonEditor);
                         }
 
-                        
-           Ladda.stopAll();
+
+                        Ladda.stopAll();
                     });
             }
         });
     },
 
-    'click .editor_show_metadata': function (e) {
+    'click .editor_show_metadata' (e) {
         e.preventDefault();
-        
+
         var l = Ladda.create(document.querySelector('#btnClose'));
         l.start();
 
-        var fileRow = Session.get(Template.strSessionSelectedFile);
+        var fileRow = Session.get(Helper.strSessionSelectedFile);
         if (fileRow) {
             var editorDiv = $('#jsonEditorOfMetadata');
             var jsonEditor = editorDiv.data('jsoneditor');
@@ -117,42 +120,42 @@ Template.fileManagement.events({
             }
 
             $('#metaDataModal').modal('show');
-            Template.fileManagement.proceedShowingMetadata(fileRow._id, jsonEditor);
+            proceedShowingMetadata(fileRow._id, jsonEditor);
         }
     }
 
 });
 
-Template.fileManagement.proceedShowingMetadata = function (id, jsonEditor) {
+const proceedShowingMetadata = function (id, jsonEditor) {
     Meteor.call('getFile', $('#txtBucketName').val(), id, function (err, result) {
         if (err || result.error) {
-            Template.showMeteorFuncError(err, result, "Couldn't find file");
+            Helper.showMeteorFuncError(err, result, "Couldn't find file");
         }
         else {
             jsonEditor.set(result.result);
         }
-                     
+
         Ladda.stopAll();
     });
 };
 
-Template.fileManagement.initFileInformations = function () {
+export const initFileInformations = function () {
     var l = Ladda.create(document.querySelector('#btnReloadFiles'));
     l.start();
 
-    var selector = Template.selector.getValue();
+    var selector = getSelectorValue();
 
-    selector = Template.convertAndCheckJSON(selector);
+    selector = Helper.convertAndCheckJSON(selector);
     if (selector["ERROR"]) {
         toastr.error("Syntax error on selector: " + selector["ERROR"]);
-                     
+
         Ladda.stopAll();
         return;
     }
 
-    Meteor.call('getFileInfos', $('#txtBucketName').val(), selector,$('#txtFileFetchLimit').val(), function (err, result) {
+    Meteor.call('getFileInfos', $('#txtBucketName').val(), selector, $('#txtFileFetchLimit').val(), function (err, result) {
             if (err || result.error) {
-                Template.showMeteorFuncError(err, result, "Couldn't get file informations");
+                Helper.showMeteorFuncError(err, result, "Couldn't get file informations");
                 return;
             }
 
