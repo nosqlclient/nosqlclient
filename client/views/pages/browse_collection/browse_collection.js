@@ -4,6 +4,7 @@ import {Session} from 'meteor/session';
 import Helper from '/client/helper';
 import {Settings} from '/lib/collections/settings';
 import Enums from '/lib/enums';
+import {initQueryHistories} from './query_histories/query_histories';
 
 var JSONEditor = require('jsoneditor');
 var toastr = require('toastr');

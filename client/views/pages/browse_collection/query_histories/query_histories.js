@@ -44,7 +44,7 @@ Template.queryHistories.events({
     }
 });
 
-const initQueryHistories = function () {
+export const initQueryHistories = function () {
     // loading button
 
     var l = Ladda.create(document.querySelector('#btnExecuteAgain'));
