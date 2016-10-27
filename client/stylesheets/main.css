@@ -20,7 +20,7 @@ tr.selected {
     top: 0;
 }
 
-#btnManageRoles, #btnEditUser, #btnManageUsers, #btnExecuteAggregatePipeline {
+#btnManageRoles, #btnEditUser, #btnManageUsers, #btnExecuteAggregatePipeline, #btnExportQueryResult {
     margin-bottom: 0 !important;
 }
 
