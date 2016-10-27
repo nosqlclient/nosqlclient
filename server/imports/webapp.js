@@ -10,7 +10,7 @@ const mongodbApi = require('mongodb');
 
 WebApp.connectHandlers.use('/healthcheck', function (req, res) {
     res.writeHead(200);
-    res.write('Server is up and running !');
+    res.end('Server is up and running !');
 });
 
 WebApp.connectHandlers.use("/download", function (req, res) {
@@ -23,7 +23,7 @@ WebApp.connectHandlers.use("/download", function (req, res) {
     if (!bucketName || !fileId) {
         LOGGER.info('[downloadFile]', 'file not found !');
         res.writeHead(400);
-        res.write('File not found !');
+        res.end('File not found !');
         return;
     }
 
@@ -47,14 +47,14 @@ WebApp.connectHandlers.use("/download", function (req, res) {
             } else {
                 LOGGER.info('[downloadFile]', 'file not found !');
                 res.writeHead(400);
-                res.write('File not found !');
+                res.end('File not found !');
             }
         });
     }
     catch (ex) {
         LOGGER.error('[downloadFile]', ex);
         res.writeHead(500);
-        res.write('Unexpected error: ' + ex.message);
+        res.end('Unexpected error: ' + ex.message);
     }
 
 });
