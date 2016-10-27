@@ -27,13 +27,13 @@ Template.databaseDumpRestore.events({
     'click #btnRefreshDumps'(e){
         e.preventDefault();
         populateDatatable();
+
+        toastr.success('Successfully refreshed !');
     },
 
     'click #btnTakeDump'(e) {
-
         e.preventDefault();
         var settings = Settings.findOne();
-
 
         var laddaButton = Ladda.create(document.querySelector('#btnTakeDump'));
         laddaButton.start();
