@@ -3,6 +3,7 @@
  */
 
 // main layout
+import '/client/imports/views/layouts/not_found/not_found.html';
 import '/client/imports/views/layouts/main/main';
 import '/client/imports/views/layouts/page_heading/page_heading';
 

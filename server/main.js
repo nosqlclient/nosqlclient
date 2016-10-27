@@ -2,7 +2,7 @@
  * Created by Sercan on 26.10.2016.
  */
 
-//stuff
+// stuff
 import '/server/imports/internal/startup';
 import '/server/imports/publishers/publisher';
 import '/server/imports/webapp';

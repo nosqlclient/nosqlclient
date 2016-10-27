@@ -1,9 +1,3 @@
-@import '~awesome-bootstrap-checkbox/awesome-bootstrap-checkbox.css';
-@import '~datatables.net-bs/css/dataTables.bootstrap.css';
-@import '~datatables.net-buttons-bs/css/buttons.bootstrap.css';
-@import '~datatables.net-responsive-bs/css/responsive.bootstrap.css';
-
-
 .hide_column {
     display: none;
 }
