@@ -3,8 +3,8 @@ import {Meteor} from 'meteor/meteor';
 import Helper from '/client/imports/helper';
 import {Session} from 'meteor/session';
 import Enums from '/lib/imports/enums';
-import {initExecuteQuery} from '/client/views/pages/browse_collection/browse_collection';
-import {getOptions} from '/client/views/query_templates_options/create_index_options/create_index_options';
+import {initExecuteQuery} from '/client/imports/views/pages/browse_collection/browse_collection';
+import {getOptions} from '/client/imports/views/query_templates_options/create_index_options/create_index_options';
 
 import './create_index.html';
 

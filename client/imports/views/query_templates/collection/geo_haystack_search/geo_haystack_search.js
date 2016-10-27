@@ -3,8 +3,8 @@ import {Meteor} from 'meteor/meteor';
 import {Session} from 'meteor/session';
 import Helper from '/client/imports/helper';
 import Enums from '/lib/imports/enums';
-import {initExecuteQuery} from '/client/views/pages/browse_collection/browse_collection';
-import {getOptions} from '/client/views/query_templates_options/geo_haystack_search_options/geo_haystack_search_options';
+import {initExecuteQuery} from '/client/imports/views/pages/browse_collection/browse_collection';
+import {getOptions} from '/client/imports/views/query_templates_options/geo_haystack_search_options/geo_haystack_search_options';
 
 import './geo_haystack_search.html';
 

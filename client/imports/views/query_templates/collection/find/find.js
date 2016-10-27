@@ -4,9 +4,9 @@ import {Session} from 'meteor/session';
 import Helper from '/client/imports/helper';
 import Enums from '/lib/imports/enums';
 import {Settings} from '/lib/imports/collections/settings';
-import {initExecuteQuery} from '/client/views/pages/browse_collection/browse_collection';
-import {getSelectorValue} from '/client/views/query_templates_common/selector/selector';
-import {getCursorOptions} from '/client/views/query_templates_options/cursor_options/cursor_options';
+import {initExecuteQuery} from '/client/imports/views/pages/browse_collection/browse_collection';
+import {getSelectorValue} from '/client/imports/views/query_templates_common/selector/selector';
+import {getCursorOptions} from '/client/imports/views/query_templates_options/cursor_options/cursor_options';
 
 import './find.html';
 
