@@ -3,6 +3,10 @@ import Helper from '/client/imports/helper';
 import Enums from '/lib/imports/enums';
 import {Session} from 'meteor/session';
 
+import '/client/imports/views/query_templates_options/sort/sort';
+import '/client/imports/views/query_templates_options/limit/limit.html';
+import '/client/imports/views/query_templates_common/selector/selector';
+
 import './map_reduce_options.html';
 /**
  * Created by RSercan on 3.1.2016.

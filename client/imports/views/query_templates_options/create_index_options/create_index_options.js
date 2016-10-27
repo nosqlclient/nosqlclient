@@ -3,30 +3,33 @@ import Helper from '/client/imports/helper';
 import Enums from '/lib/imports/enums';
 import {Session} from 'meteor/session';
 
+import '/client/imports/views/query_templates_options/min/min';
+import '/client/imports/views/query_templates_options/max/max';
 import './create_index_options.html';
 
 /**
  * Created by RSercan on 2.1.2016.
  */
-Template.unique.onRendered(function() {
+Template.unique.onRendered(function () {
+    console.log('GELDİ');
     $('#divUnique').iCheck({
         checkboxClass: 'icheckbox_square-green'
     });
 });
 
-Template.sparse.onRendered(function() {
+Template.sparse.onRendered(function () {
     $('#divSparse').iCheck({
         checkboxClass: 'icheckbox_square-green'
     });
 });
 
-Template.background.onRendered(function() {
+Template.background.onRendered(function () {
     $('#divBackground').iCheck({
         checkboxClass: 'icheckbox_square-green'
     });
 });
 
-export const getOptions = function() {
+export const getOptions = function () {
     var result = {};
     Helper.checkAndAddOption("MAX", $('#divMax'), result, Enums.CURSOR_OPTIONS);
     Helper.checkAndAddOption("MIN", $('#divMin'), result, Enums.CURSOR_OPTIONS);
