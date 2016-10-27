@@ -5,7 +5,7 @@ import {Connections} from '/lib/imports/collections/connections';
 import Helper from '/client/imports/helper';
 import {connect} from '/client/imports/views/layouts/top_navbar/top_navbar';
 
-import './add_collection/add_collection.html';
+import './add_collection/add_collection';
 import './navigation.html';
 
 var toastr = require('toastr');

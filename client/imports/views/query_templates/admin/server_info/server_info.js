@@ -1,14 +1,14 @@
 import {Template} from 'meteor/templating';
 import {Meteor} from 'meteor/meteor';
 import Helper from '/client/imports/helper';
-import {initExecuteQuery} from '/client/views/pages/admin_queries/admin_queries';
+import {initExecuteQuery} from '/client/imports/views/pages/admin_queries/admin_queries';
 
 import './server_info.html';
 
 /**
  * Created by RSercan on 10.1.2016.
  */
-Template.serverStatus.onRendered(function () {
+Template.serverInfo.onRendered(function () {
     Helper.changeConvertOptionsVisibility(false);
     Helper.changeRunOnAdminOptionVisibility(false);
 });

@@ -2,7 +2,7 @@ import {Template} from 'meteor/templating';
 import {Meteor} from 'meteor/meteor';
 import Helper from '/client/imports/helper';
 import Enums from '/lib/imports/enums';
-import {initExecuteQuery} from '/client/views/pages/admin_queries/admin_queries';
+import {initExecuteQuery} from '/client/imports/views/pages/admin_queries/admin_queries';
 
 import './set_profiling_level.html';
 
