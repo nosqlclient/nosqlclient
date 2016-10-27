@@ -1,8 +1,9 @@
 import {Template} from 'meteor/templating';
 
-import '/client/imports/views/layouts/navigation/navigation.html';
-import '/client/imports/views/layouts/top_navbar/top_navbar.html';
+import '/client/imports/views/layouts/navigation/navigation';
+import '/client/imports/views/layouts/top_navbar/top_navbar';
 import '/client/imports/views/layouts/footer/footer.html';
+
 import './main.html';
 
 const toastr = require('toastr');

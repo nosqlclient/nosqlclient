@@ -257,7 +257,7 @@ const initMemoryChart = function (data, text) {
 };
 
 Template.databaseStats.helpers({
-    'getServerStatus'  () {
+    getServerStatus  () {
         if (Settings.findOne().showDBStats) {
             if (Session.get(Helper.strSessionServerStatus) == undefined) {
                 fetchStatus();
@@ -267,7 +267,7 @@ Template.databaseStats.helpers({
         }
     },
 
-    'getDBStats'  () {
+    getDBStats  () {
         if (Settings.findOne().showDBStats) {
             if (Session.get(Helper.strSessionDBStats) == undefined) {
                 fetchStats();

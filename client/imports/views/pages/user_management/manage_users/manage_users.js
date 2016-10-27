@@ -26,11 +26,11 @@ Template.manageUsers.onRendered(function () {
 });
 
 Template.manageUsers.helpers({
-    'getDB' () {
+    getDB () {
         return Session.get(Helper.strSessionUsermanagementManageSelection);
     },
 
-    'getUser'() {
+    getUser() {
         return Session.get(Helper.strSessionUsermanagementUser);
     }
 });

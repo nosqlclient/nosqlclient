@@ -38,10 +38,10 @@ Template.userManagement.onRendered(function () {
 });
 
 Template.userManagement.helpers({
-    'informationTitle' () {
+    informationTitle () {
         return Session.get(Helper.strSessionSelectionUserManagement);
     },
-    'informationBody'() {
+    informationBody() {
         return Session.get(Helper.strSessionUsermanagementInfo);
     }
 });

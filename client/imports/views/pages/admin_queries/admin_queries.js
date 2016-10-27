@@ -75,11 +75,11 @@ Template.adminQueries.events({
 });
 
 Template.adminQueries.helpers({
-    'getQueryTemplate' () {
+    getQueryTemplate () {
         return Session.get(Helper.strSessionSelectedQuery);
     },
 
-    'getHelpBlockForSelectedQuery' () {
+    getHelpBlockForSelectedQuery () {
         switch (Session.get(Helper.strSessionSelectedQuery)) {
             case Enums.ADMIN_QUERY_TYPES.ADD_USER:
                 return Spacebars.SafeString('Add a user to the database');

@@ -18,11 +18,11 @@ Template.manageRoles.onRendered(function () {
 });
 
 Template.manageRoles.helpers({
-    'getDB'() {
+    getDB () {
         return Session.get(Helper.strSessionUsermanagementManageSelection);
     },
 
-    'getRole' () {
+    getRole () {
         return Session.get(Helper.strSessionUsermanagementRole);
     }
 });

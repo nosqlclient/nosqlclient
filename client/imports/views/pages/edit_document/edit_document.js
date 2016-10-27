@@ -2,7 +2,7 @@ import {Template} from 'meteor/templating';
 import {Meteor} from 'meteor/meteor';
 import {Session} from 'meteor/session';
 import Helper from '/client/imports/helper';
-import {getSelectorValue} from '/client/views/query_templates_common/selector/selector';
+import {getSelectorValue} from '/client/imports/views/query_templates_common/selector/selector';
 
 import './edit_document.html';
 

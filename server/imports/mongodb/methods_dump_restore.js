@@ -2,7 +2,7 @@
  * Created by RSercan on 17.1.2016.
  */
 
-import {Connections} from '/lib/collections/connections';
+import {Connections} from '/lib/imports/collections/connections';
 import {Meteor} from 'meteor/meteor';
 import LOGGER from "../internal/logger";
 import Helper from "./helper";

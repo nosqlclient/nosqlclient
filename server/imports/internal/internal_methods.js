@@ -2,7 +2,7 @@
  * Created by RSercan on 26.12.2015.
  */
 import {Meteor} from 'meteor/meteor';
-import {Actions} from '/lib/collections/actions';
+import {Actions} from '/lib/imports/collections/actions';
 import {QueryHistory} from '/lib/imports/collections/query_history';
 import {Dumps} from '/lib/imports/collections/dumps';
 import {Settings} from '/lib/imports/collections/settings';

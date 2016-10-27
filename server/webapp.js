@@ -1,6 +1,13 @@
 /**
  * Created by Sercan on 24.10.2016.
  */
+import {WebApp} from 'meteor/webapp';
+import LOGGER from "/server/imports/internal/logger";
+import {database} from "/server/imports/mongodb/methods_common";
+
+
+const mongodbApi = require('mongodb');
+
 WebApp.connectHandlers.use("/download", function (req, res) {
     var urlParts = req.url.split('&');
     var fileId = urlParts[0].substr(urlParts[0].indexOf('=') + 1);
@@ -46,6 +53,8 @@ WebApp.connectHandlers.use("/download", function (req, res) {
     }
 });
 
-WebApp.connectHandlers.use("/download", function (req, res) {
-
+WebApp.connectHandlers.use("/healthcheck", function (req, res) {
+    LOGGER.error('[healthcheck]');
+    res.writeHead(200);
+    res.write('Server is up and running !');
 });

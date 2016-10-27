@@ -144,7 +144,7 @@ Template.navigation.events({
 });
 
 Template.navigation.helpers({
-    'initializeMetisMenu'() {
+    initializeMetisMenu() {
         Meteor.setTimeout(function () {
             var sideMenu = $('#side-menu');
             sideMenu.removeData("mm");
@@ -152,7 +152,7 @@ Template.navigation.helpers({
         });
     },
 
-    'getCollectionNames' () {
+    getCollectionNames () {
         var collectionNames = Session.get(Helper.strSessionCollectionNames);
         if (collectionNames != undefined) {
             var result = [];
@@ -168,7 +168,7 @@ Template.navigation.helpers({
         return collectionNames;
     },
 
-    'getSystemCollectionNames' () {
+    getSystemCollectionNames () {
         var collectionNames = Session.get(Helper.strSessionCollectionNames);
         if (collectionNames != undefined) {
             var result = [];

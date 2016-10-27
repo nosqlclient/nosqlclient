@@ -1,5 +1,5 @@
 import Helper from '/client/imports/helper';
-import Enums from '/lib/enums';
+import Enums from '/lib/imports/enums';
 import {Session} from 'meteor/session';
 
 import './cursor_options.html';

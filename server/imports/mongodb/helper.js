@@ -3,7 +3,7 @@
  */
 
 (function () {
-    import {Settings} from '/lib/collections/settings';
+    //import {Settings} from '/lib/collections/settings';
 
     const objectID = require('mongodb').ObjectID;
 
@@ -184,18 +184,18 @@
 
             addConnectionParamsToOptions(connection, result);
 
-            const settings = Settings.findOne();
-            let connectionTimeout = settings.connectionTimeoutInSeconds;
-            if (connectionTimeout) {
-                connectionTimeout = Math.round(connectionTimeout * 100 * 1000) / 100;
-                result.server.socketOptions.connectTimeoutMS = connectionTimeout;
-            }
-
-            let socketTimeout = settings.socketTimeoutInSeconds;
-            if (socketTimeout) {
-                socketTimeout = Math.round(socketTimeout * 100 * 1000) / 100;
-                result.server.socketOptions.socketTimeoutMS = socketTimeout;
-            }
+            // const settings = Settings.findOne();
+            // let connectionTimeout = settings.connectionTimeoutInSeconds;
+            // if (connectionTimeout) {
+            //     connectionTimeout = Math.round(connectionTimeout * 100 * 1000) / 100;
+            //     result.server.socketOptions.connectTimeoutMS = connectionTimeout;
+            // }
+            //
+            // let socketTimeout = settings.socketTimeoutInSeconds;
+            // if (socketTimeout) {
+            //     socketTimeout = Math.round(socketTimeout * 100 * 1000) / 100;
+            //     result.server.socketOptions.socketTimeoutMS = socketTimeout;
+            // }
 
             return result;
         },
