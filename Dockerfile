@@ -15,9 +15,9 @@ RUN cp -R /tmp/mongoclient /opt/mongoclient
 WORKDIR /opt/mongoclient
 
 # pre-update some libraries
-RUN /usr/local/bin/meteor update
-RUN /usr/local/bin/meteor npm install
+RUN /usr/local/bin/meteor update --unsafe-perm
+RUN /usr/local/bin/meteor npm install --unsafe-perm
 
 # Setup for run mongoclient
 EXPOSE 3000
-CMD ["/usr/local/bin/meteor", "run", "--port", "3000"]
+CMD ["/usr/local/bin/meteor --unsafe-perm", "run", "--port", "3000"]
