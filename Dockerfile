@@ -20,4 +20,4 @@ RUN /usr/local/bin/meteor npm install --unsafe-perm
 
 # Setup for run mongoclient
 EXPOSE 3000
-CMD ["/usr/local/bin/meteor --unsafe-perm", "run", "--port", "3000"]
+CMD ["/usr/local/bin/meteor", "--unsafe-perm", "run", "--port", "3000"]
