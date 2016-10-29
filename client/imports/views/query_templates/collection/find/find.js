@@ -101,7 +101,10 @@ const proceedFindQuery = function (selectedCollection, selector, cursorOptions, 
 
     var convertIds = $('#aConvertObjectIds').iCheck('update')[0].checked;
     var convertDates = $('#aConvertIsoDates').iCheck('update')[0].checked;
-    var executeExplain = $('#inputExecuteExplain').iCheck('update')[0].checked;
+    var executeExplain = false;
+    if (!saveHistory) {
+        executeExplain = $('#inputExecuteExplain').iCheck('update')[0].checked;
+    }
 
     Meteor.call("find", selectedCollection, selector, cursorOptions, executeExplain, convertIds, convertDates, function (err, result) {
         Helper.renderAfterQueryExecution(err, result, false, "find", params, saveHistory);
