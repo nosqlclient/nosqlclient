@@ -4,8 +4,7 @@
 
 (function () {
     import {Settings} from '/lib/imports/collections/settings';
-
-    const objectID = require('mongodb').ObjectID;
+    import {serialize, deserialize} from './extended_json';
 
     const addConnectionParamsToOptions = function (connection, result) {
         if (connection.useSsl || connection.sslCertificate) {
@@ -28,97 +27,6 @@
 
         if (connection.certificateKey) {
             result.server.sslKey = new Buffer(connection.certificateKey);
-        }
-    };
-
-    const convertDatesToString = function (obj) {
-        for (let property in obj) {
-            if (obj.hasOwnProperty(property) && obj[property] != null) {
-                if (obj[property].constructor == Object) {
-                    convertDatesToString(obj[property]);
-                }
-                else if (obj[property].constructor == Array) {
-                    for (let i = 0; i < obj[property].length; i++) {
-
-                        if (obj[property][i] != null && Object.prototype.toString.call(obj[property][i]) === '[object Date]') {
-                            obj[property][i] = {"$date": moment(obj[property][i]).toISOString()};
-                        }
-                        else {
-                            convertDatesToString(obj[property][i]);
-                        }
-                    }
-                }
-                else {
-                    if (obj[property] != null && Object.prototype.toString.call(obj[property]) === '[object Date]') {
-                        obj[property] = {"$date": moment(obj[property]).toISOString()};
-                    }
-                }
-            }
-        }
-    };
-
-    const convertObjectIDsToString = function (obj) {
-        for (let property in obj) {
-            if (obj.hasOwnProperty(property) && obj[property] != null) {
-                if (obj[property].constructor == Object) {
-                    convertObjectIDsToString(obj[property]);
-                }
-                else if (obj[property].constructor == Array) {
-                    for (let i = 0; i < obj[property].length; i++) {
-                        if (obj[property][i] != null && objectID.isValid(obj[property][i].toString()) && (obj[property][i] instanceof objectID)) {
-                            obj[property][i] = {"$oid": obj[property][i].toString()};
-                        }
-                        else {
-                            convertObjectIDsToString(obj[property][i]);
-                        }
-                    }
-                }
-                else {
-                    if (obj[property] != null && objectID.isValid(obj[property].toString()) && (obj[property] instanceof objectID)) {
-                        obj[property] = {"$oid": obj[property].toString()};
-                    }
-                }
-            }
-        }
-    };
-
-    const convertValidObjectIds = function (obj) {
-        for (let property in obj) {
-            if (obj.hasOwnProperty(property) && obj[property] != null) {
-                if (obj[property].constructor == Object) {
-                    if (obj[property].hasOwnProperty("$oid") && obj[property]["$oid"] != null && objectID.isValid(obj[property]["$oid"])) {
-                        obj[property] = new objectID(obj[property]["$oid"].toString());
-                    } else {
-                        convertValidObjectIds(obj[property]);
-                    }
-                }
-                else if (obj[property].constructor == Array) {
-                    for (let i = 0; i < obj[property].length; i++) {
-                        convertValidObjectIds(obj[property][i]);
-                    }
-                }
-            }
-        }
-    };
-
-    const convertValidDates = function (obj) {
-        for (let property in obj) {
-            if (obj.hasOwnProperty(property) && obj[property] != null) {
-                if (obj[property].constructor == Object) {
-                    if (obj[property].hasOwnProperty("$date") && obj[property]["$date"] != null && moment(obj[property].toString(), moment.ISO_8601).isValid()) {
-                        obj[property] = moment(obj[property].toString(), moment.ISO_8601).toDate();
-                    } else {
-                        convertValidDates(obj[property]);
-                    }
-                }
-                else if (obj[property].constructor == Array) {
-                    for (let i = 0; i < obj[property].length; i++) {
-                        if (obj[property][i] != null) {
-                            convertValidDates(obj[property][i]);
-                        }
-                    }
-                }
-            }
         }
     };
 
@@ -211,13 +119,13 @@
 
 
         convertBSONtoJSON (obj) {
-            convertObjectIDsToString(obj);
-            convertDatesToString(obj);
+            serialize(obj);
+            return obj;
         },
 
         convertJSONtoBSON (obj) {
-            convertValidObjectIds(obj);
-            convertValidDates(obj);
+            deserialize(obj);
+            return obj;
         }
     };
 

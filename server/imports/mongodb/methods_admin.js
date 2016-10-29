@@ -39,8 +39,7 @@ const proceedQueryExecution = function (methodArray, runOnAdminDB) {
         }
     });
 
-    Helper.convertBSONtoJSON(result);
-    return result;
+    return Helper.convertBSONtoJSON(result);
 };
 
 Meteor.methods({
@@ -59,8 +58,7 @@ Meteor.methods({
             }
         });
 
-        Helper.convertBSONtoJSON(result);
-        return result;
+        return Helper.convertBSONtoJSON(result);
     },
 
     validateCollection(collectionName, options) {
@@ -78,7 +76,7 @@ Meteor.methods({
                 "setProfilingLevel": [level]
             }
         ];
-        return proceedQueryExecution(methodArray, false, false, true);
+        return proceedQueryExecution(methodArray, true);
     },
 
     serverStatus() {
@@ -87,7 +85,7 @@ Meteor.methods({
                 "serverStatus": []
             }
         ];
-        return proceedQueryExecution(methodArray, false, false, true);
+        return proceedQueryExecution(methodArray, true);
     },
 
     serverInfo() {
@@ -96,7 +94,7 @@ Meteor.methods({
                 "serverInfo": []
             }
         ];
-        return proceedQueryExecution(methodArray, false, false, true);
+        return proceedQueryExecution(methodArray, true);
     },
 
     replSetGetStatus() {
@@ -105,7 +103,7 @@ Meteor.methods({
                 "replSetGetStatus": []
             }
         ];
-        return proceedQueryExecution(methodArray, false, false, true);
+        return proceedQueryExecution(methodArray, true);
     },
 
     removeUser(username, runOnAdminDB) {
@@ -114,7 +112,7 @@ Meteor.methods({
                 "removeUser": [username]
             }
         ];
-        return proceedQueryExecution(methodArray, false, false, runOnAdminDB);
+        return proceedQueryExecution(methodArray, runOnAdminDB);
     },
 
     profilingInfo() {
@@ -123,7 +121,7 @@ Meteor.methods({
                 "profilingInfo": []
             }
         ];
-        return proceedQueryExecution(methodArray, false, false, true);
+        return proceedQueryExecution(methodArray, true);
     },
 
     ping() {
@@ -132,7 +130,7 @@ Meteor.methods({
                 "ping": []
             }
         ];
-        return proceedQueryExecution(methodArray, false, false, true);
+        return proceedQueryExecution(methodArray, true);
     },
 
     listDatabases() {
@@ -141,7 +139,7 @@ Meteor.methods({
                 "listDatabases": []
             }
         ];
-        return proceedQueryExecution(methodArray, false, false, true);
+        return proceedQueryExecution(methodArray, true);
     },
 
     command (command, runOnAdminDB) {
@@ -159,7 +157,7 @@ Meteor.methods({
                 "addUser": [username, password, options]
             }
         ];
-        return proceedQueryExecution(methodArray, false, false, runOnAdminDB);
+        return proceedQueryExecution(methodArray, runOnAdminDB);
     },
 
     buildInfo() {
@@ -168,6 +166,6 @@ Meteor.methods({
                 "buildInfo": []
             }
         ];
-        return proceedQueryExecution(methodArray, false, false, true);
+        return proceedQueryExecution(methodArray, true);
     }
 });

@@ -48,6 +48,15 @@
         return null;
     };
 
+    // https://docs.mongodb.com/manual/reference/mongodb-extended-json/
+    const convertToExtendedJson = function (obj) {
+        if (!obj || Object.prototype.toString.call(obj) !== '[object String]') {
+            return;
+        }
+
+        // support shell stuff
+    };
+
     let Helper = function () {
         this.strSessionConnection = "connection";
         this.strSessionCollectionNames = "collectionNames";
@@ -154,10 +163,11 @@
         },
 
         convertAndCheckJSON  (json) {
-            if (json == "") return {};
+            if (!json) return {};
+            json = json.replace(/ /g, '');
             var result = {};
             try {
-                if (!json.startsWith('{') && !json.startsWith(']')) {
+                if (!json.startsWith('{') && !json.startsWith('[')) {
                     json = '{' + json;
                 }
 
@@ -166,29 +176,11 @@
                     json = json + '}';
                 }
 
+                convertToExtendedJson(json);
                 result = fbbkJson.parse(json);
             }
             catch (err) {
                 result["ERROR"] = err.message;
-            }
-
-            return result;
-        },
-
-        convertAndCheckJSONAsArray  (json) {
-            if (json == "") return [];
-            var result = [];
-            try {
-                result = fbbkJson.parse(json);
-            }
-            catch (err) {
-                throw err.message;
-            }
-
-            if (!$.isArray(result)) {
-                var res = [];
-                res.push(result);
-                return res;
             }
 
             return result;

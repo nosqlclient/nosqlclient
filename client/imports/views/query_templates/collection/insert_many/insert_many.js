@@ -20,7 +20,7 @@ Template.insertMany.executeQuery = function (historyParams) {
     var selectedCollection = Session.get(Helper.strSessionSelectedCollection);
     var docs = historyParams ? JSON.stringify(historyParams.docs) : Helper.getCodeMirrorValue($('#divDocs'));
 
-    docs = Helper.convertAndCheckJSONAsArray(docs);
+    docs = Helper.convertAndCheckJSON(docs);
     if (docs["ERROR"]) {
         toastr.error("Syntax error on docs: " + docs["ERROR"]);
         Ladda.stopAll();

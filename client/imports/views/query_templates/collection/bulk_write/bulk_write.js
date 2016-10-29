@@ -19,7 +19,7 @@ Template.bulkWrite.executeQuery = function (historyParams) {
     var selectedCollection = Session.get(Helper.strSessionSelectedCollection);
     var operations = historyParams ? JSON.stringify(historyParams.selector) : Helper.getCodeMirrorValue($('#divBulkWrite'));
 
-    operations = Helper.convertAndCheckJSONAsArray(operations);
+    operations = Helper.convertAndCheckJSON(operations);
     if (operations["ERROR"]) {
         toastr.error("Syntax error on operations: " + operations["ERROR"]);
         Ladda.stopAll();

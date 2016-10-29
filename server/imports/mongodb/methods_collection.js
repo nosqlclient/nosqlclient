@@ -36,8 +36,7 @@ const proceedMapReduceExecution = function (selectedCollection, map, reduce, opt
         }
     });
 
-    Helper.convertBSONtoJSON(result);
-    return result;
+    return Helper.convertBSONtoJSON(result);
 };
 
 const proceedQueryExecution = function (selectedCollection, methodArray) {
@@ -49,14 +48,14 @@ const proceedQueryExecution = function (selectedCollection, methodArray) {
             for (let i = 0; i < methodArray.length; i++) {
                 let last = i == (methodArray.length - 1);
                 let entry = methodArray[i];
-                Helper.convertJSONtoBSON(entry);
-
+                 Helper.convertJSONtoBSON(entry);
                 for (let key in entry) {
                     if (entry.hasOwnProperty(key)) {
                         if (last && key == Object.keys(entry)[Object.keys(entry).length - 1]) {
                             entry[key].push(function (err, docs) {
                                 done(err, docs);
                             });
+
                             execution[key].apply(execution, entry[key]);
                         }
                         else {
@@ -72,9 +71,8 @@ const proceedQueryExecution = function (selectedCollection, methodArray) {
         }
     });
 
-    Helper.convertBSONtoJSON(result);
     Helper.removeConnectionTopology(result);
-    return result;
+    return Helper.convertBSONtoJSON(result);
 };
 
 Meteor.methods({
@@ -123,7 +121,6 @@ Meteor.methods({
 
         let result = proceedQueryExecution(selectedCollection, methodArray);
         Helper.removeCollectionTopology(result);
-        console.log(result);
         return result;
     },
 

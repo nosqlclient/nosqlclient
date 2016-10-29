@@ -11,7 +11,6 @@ import './create_index_options.html';
  * Created by RSercan on 2.1.2016.
  */
 Template.unique.onRendered(function () {
-    console.log('GELDİ');
     $('#divUnique').iCheck({
         checkboxClass: 'icheckbox_square-green'
     });
