@@ -11,7 +11,6 @@ import './set_profiling_level.html';
  */
 Template.setProfilingLevel.onRendered(function () {
     initializeOptions();
-    Helper.changeConvertOptionsVisibility(false);
     Helper.changeRunOnAdminOptionVisibility(false);
 });
 

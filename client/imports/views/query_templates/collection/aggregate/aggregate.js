@@ -13,7 +13,6 @@ var Ladda = require('ladda');
  */
 Template.aggregate.onRendered(function () {
     Helper.initializeCodeMirror($('#divPipeline'), 'txtPipeline');
-    Helper.changeConvertOptionsVisibility(true);
 });
 
 Template.aggregate.executeQuery = function (historyParams) {
@@ -32,10 +31,7 @@ Template.aggregate.executeQuery = function (historyParams) {
         pipeline: pipeline
     };
 
-    var convertIds = $('#aConvertObjectIds').iCheck('update')[0].checked;
-    var convertDates = $('#aConvertIsoDates').iCheck('update')[0].checked;
-
-    Meteor.call("aggregate", selectedCollection, pipeline, convertIds, convertDates, function (err, result) {
+    Meteor.call("aggregate", selectedCollection, pipeline, function (err, result) {
             Helper.renderAfterQueryExecution(err, result, false, "aggregate", params, (historyParams ? false : true));
         }
     );

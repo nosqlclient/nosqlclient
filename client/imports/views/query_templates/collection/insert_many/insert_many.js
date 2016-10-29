@@ -13,7 +13,6 @@ var Ladda = require('ladda');
  */
 Template.insertMany.onRendered(function () {
     Helper.initializeCodeMirror($('#divDocs'), 'txtDocs');
-    Helper.changeConvertOptionsVisibility(true);
 });
 
 Template.insertMany.executeQuery = function (historyParams) {
@@ -32,10 +31,7 @@ Template.insertMany.executeQuery = function (historyParams) {
         docs: docs
     };
 
-    var convertIds = $('#aConvertObjectIds').iCheck('update')[0].checked;
-    var convertDates = $('#aConvertIsoDates').iCheck('update')[0].checked;
-
-    Meteor.call("insertMany", selectedCollection, docs, convertIds, convertDates, function (err, result) {
+    Meteor.call("insertMany", selectedCollection, docs, function (err, result) {
         Helper.renderAfterQueryExecution(err, result, false, "insertMany", params, (historyParams ? false : true));
     });
 };

@@ -15,7 +15,6 @@ var toastr = require('toastr');
  */
 Template.findOneAndDelete.onRendered(function () {
     initializeOptions();
-    Helper.changeConvertOptionsVisibility(true);
 });
 
 const initializeOptions = function () {
@@ -57,10 +56,7 @@ Template.findOneAndDelete.executeQuery = function (historyParams) {
         options: options
     };
 
-    var convertIds = $('#aConvertObjectIds').iCheck('update')[0].checked;
-    var convertDates = $('#aConvertIsoDates').iCheck('update')[0].checked;
-
-    Meteor.call("findOneAndDelete", selectedCollection, selector, options, convertIds, convertDates, function (err, result) {
+    Meteor.call("findOneAndDelete", selectedCollection, selector, options, function (err, result) {
             Helper.renderAfterQueryExecution(err, result, false, "findOneAndDelete", params, (historyParams ? false : true));
         }
     );

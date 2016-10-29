@@ -6,7 +6,6 @@ import {initExecuteQuery} from '/client/imports/views/pages/admin_queries/admin_
 import './build_info.html';
 
 Template.buildInfo.onRendered(function()  {
-    Helper.changeConvertOptionsVisibility(false);
     Helper.changeRunOnAdminOptionVisibility(false);
 });
 

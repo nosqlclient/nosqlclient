@@ -14,7 +14,6 @@ var Ladda = require('ladda');
  */
 Template.rename.onRendered(function () {
     initializeOptions();
-    Helper.changeConvertOptionsVisibility(false);
 });
 
 Template.dropTarget.onRendered(function () {

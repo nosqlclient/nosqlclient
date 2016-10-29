@@ -72,16 +72,7 @@ Template.browseCollection.onRendered(function () {
         initQueryHistories();
     });
 
-    $('#aConvertIsoDates, #aConvertObjectIds').iCheck({
-        checkboxClass: 'icheckbox_square-green'
-    });
-
     $('[data-toggle="tooltip"]').tooltip({trigger: 'hover'});
-
-    // see #108
-    if (Session.get(Helper.strSessionSelectedQuery) != Enums.QUERY_TYPES.FIND) {
-        Helper.changeConvertOptionsVisibility(false);
-    }
 
     clearQueryIfAdmin();
 });
@@ -456,12 +447,10 @@ const saveEditor = function () {
             l.start();
 
             var selectedCollection = Session.get(Helper.strSessionSelectedCollection);
-            var convertIds = $('#aConvertObjectIds').iCheck('update')[0].checked;
-            var convertDates = $('#aConvertIsoDates').iCheck('update')[0].checked;
             var i = 0;
             _.each(convertedDocs, function (doc) {
                 if (doc._id) {
-                    Meteor.call("updateOne", selectedCollection, {_id: doc._id}, doc, {}, convertIds, convertDates, function (err, result) {
+                    Meteor.call("updateOne", selectedCollection, {_id: doc._id}, doc, {}, function (err, result) {
                         if (err || result.error) {
                             Helper.showMeteorFuncError(err, result, "Couldn't update one of the documents");
                             Ladda.stopAll();
@@ -506,12 +495,10 @@ const deleteDocument = function () {
             l.start();
 
             var selectedCollection = Session.get(Helper.strSessionSelectedCollection);
-            var convertIds = $('#aConvertObjectIds').iCheck('update')[0].checked;
-            var convertDates = $('#aConvertIsoDates').iCheck('update')[0].checked;
             var i = 0;
             _.each(convertedDocs, function (doc) {
                 if (doc._id) {
-                    Meteor.call("delete", selectedCollection, {_id: doc._id}, convertIds, convertDates, function (err, result) {
+                    Meteor.call("delete", selectedCollection, {_id: doc._id}, function (err, result) {
                         if (err || result.error) {
                             Helper.showMeteorFuncError(err, result, "Couldn't delete one of the documents");
                             Ladda.stopAll();

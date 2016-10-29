@@ -263,16 +263,6 @@
 
         },
 
-        changeConvertOptionsVisibility  (show) {
-            if (show) {
-                $('#aConvertIsoDates').show();
-                $('#aConvertObjectIds').show();
-            } else {
-                $('#aConvertIsoDates').hide();
-                $('#aConvertObjectIds').hide();
-            }
-        },
-
         getDistinctKeysForAutoComplete  (selectedCollection) {
             var settings = Settings.findOne();
             if (!settings.autoCompleteFields) {

@@ -10,7 +10,6 @@ import './re_index.html';
  * Created by RSercan on 5.1.2016.
  */
 Template.reIndex.onRendered(function () {
-    Helper.changeConvertOptionsVisibility(false);
 });
 
 Template.reIndex.executeQuery = function (historyParams) {

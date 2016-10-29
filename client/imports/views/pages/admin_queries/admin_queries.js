@@ -43,12 +43,11 @@ Template.adminQueries.onRendered(function () {
     });
     cmb.chosen();
 
-    $('#aConvertIsoDates, #aConvertObjectIds, #aRunOnAdminDB').iCheck({
+    $('#aRunOnAdminDB').iCheck({
         checkboxClass: 'icheckbox_square-green'
     });
 
     $('[data-toggle="tooltip"]').tooltip({trigger: 'hover'});
-    Helper.changeConvertOptionsVisibility(false);
 });
 
 

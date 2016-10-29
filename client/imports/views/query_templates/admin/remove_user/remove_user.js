@@ -12,7 +12,6 @@ var Ladda = require('ladda');
  * Created by RSercan on 10.1.2016.
  */
 Template.removeUser.onRendered(function () {
-    Helper.changeConvertOptionsVisibility(false);
     Helper.changeRunOnAdminOptionVisibility(true);
 });
 

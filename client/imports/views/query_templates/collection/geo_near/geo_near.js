@@ -15,7 +15,6 @@ var Ladda = require('ladda');
  */
 Template.geoNear.onRendered(function () {
     initializeOptions();
-    Helper.changeConvertOptionsVisibility(false);
 });
 
 const initializeOptions = function () {

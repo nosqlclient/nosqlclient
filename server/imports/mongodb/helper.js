@@ -3,7 +3,7 @@
  */
 
 (function () {
-    //import {Settings} from '/lib/collections/settings';
+    import {Settings} from '/lib/imports/collections/settings';
 
     const objectID = require('mongodb').ObjectID;
 
@@ -30,6 +30,7 @@
             result.server.sslKey = new Buffer(connection.certificateKey);
         }
     };
+
     const convertDatesToString = function (obj) {
         for (let property in obj) {
             if (obj.hasOwnProperty(property) && obj[property] != null) {
@@ -40,7 +41,7 @@
                     for (let i = 0; i < obj[property].length; i++) {
 
                         if (obj[property][i] != null && Object.prototype.toString.call(obj[property][i]) === '[object Date]') {
-                            obj[property][i] = moment(obj[property][i]).format('YYYY-MM-DD HH:mm:ss');
+                            obj[property][i] = {"$date": moment(obj[property][i]).toISOString()};
                         }
                         else {
                             convertDatesToString(obj[property][i]);
@@ -48,8 +49,8 @@
                     }
                 }
                 else {
-                    if (Object.prototype.toString.call(obj[property]) === '[object Date]') {
-                        obj[property] = moment(obj[property]).format('YYYY-MM-DD HH:mm:ss');
+                    if (obj[property] != null && Object.prototype.toString.call(obj[property]) === '[object Date]') {
+                        obj[property] = {"$date": moment(obj[property]).toISOString()};
                     }
                 }
             }
@@ -57,7 +58,6 @@
     };
 
     const convertObjectIDsToString = function (obj) {
-
         for (let property in obj) {
             if (obj.hasOwnProperty(property) && obj[property] != null) {
                 if (obj[property].constructor == Object) {
@@ -65,9 +65,8 @@
                 }
                 else if (obj[property].constructor == Array) {
                     for (let i = 0; i < obj[property].length; i++) {
-
-                        if (obj[property][i] != null && objectID.isValid(obj[property][i].toString())) {
-                            obj[property][i] = obj[property][i].toString();
+                        if (obj[property][i] != null && objectID.isValid(obj[property][i].toString()) && (obj[property][i] instanceof objectID)) {
+                            obj[property][i] = {"$oid": obj[property][i].toString()};
                         }
                         else {
                             convertObjectIDsToString(obj[property][i]);
@@ -75,8 +74,8 @@
                     }
                 }
                 else {
-                    if (objectID.isValid(obj[property].toString())) {
-                        obj[property] = obj[property].toString();
+                    if (obj[property] != null && objectID.isValid(obj[property].toString()) && (obj[property] instanceof objectID)) {
+                        obj[property] = {"$oid": obj[property].toString()};
                     }
                 }
             }
@@ -87,23 +86,15 @@
         for (let property in obj) {
             if (obj.hasOwnProperty(property) && obj[property] != null) {
                 if (obj[property].constructor == Object) {
-                    convertValidObjectIds(obj[property]);
+                    if (obj[property].hasOwnProperty("$oid") && obj[property]["$oid"] != null && objectID.isValid(obj[property]["$oid"])) {
+                        obj[property] = new objectID(obj[property]["$oid"].toString());
+                    } else {
+                        convertValidObjectIds(obj[property]);
+                    }
                 }
                 else if (obj[property].constructor == Array) {
                     for (let i = 0; i < obj[property].length; i++) {
-
-                        if (obj[property][i] != null && objectID.isValid(obj[property][i].toString())) {
-                            obj[property][i] = new objectID(obj[property][i].toString());
-                        }
-                        else {
-                            convertValidObjectIds(obj[property][i]);
-                        }
-
-                    }
-                }
-                else {
-                    if (objectID.isValid(obj[property].toString())) {
-                        obj[property] = new objectID(obj[property].toString());
+                        convertValidObjectIds(obj[property][i]);
                     }
                 }
             }
@@ -114,22 +105,17 @@
         for (let property in obj) {
             if (obj.hasOwnProperty(property) && obj[property] != null) {
                 if (obj[property].constructor == Object) {
-                    convertValidDates(obj[property]);
+                    if (obj[property].hasOwnProperty("$date") && obj[property]["$date"] != null && moment(obj[property].toString(), moment.ISO_8601).isValid()) {
+                        obj[property] = moment(obj[property].toString(), moment.ISO_8601).toDate();
+                    } else {
+                        convertValidDates(obj[property]);
+                    }
                 }
                 else if (obj[property].constructor == Array) {
                     for (let i = 0; i < obj[property].length; i++) {
-
-                        if (obj[property][i] != null && moment(obj[property][i].toString(), 'YYYY-MM-DD HH:mm:ss', true).isValid()) {
-                            obj[property][i] = moment(obj[property][i].toString(), 'YYYY-MM-DD HH:mm:ss', true).toDate();
-                        }
-                        else {
+                        if (obj[property][i] != null) {
                             convertValidDates(obj[property][i]);
                         }
-                    }
-                }
-                else {
-                    if (moment(obj[property].toString(), 'YYYY-MM-DD HH:mm:ss', true).isValid()) {
-                        obj[property] = moment(obj[property].toString(), 'YYYY-MM-DD HH:mm:ss', true).toDate();
                     }
                 }
             }
@@ -184,18 +170,18 @@
 
             addConnectionParamsToOptions(connection, result);
 
-            // const settings = Settings.findOne();
-            // let connectionTimeout = settings.connectionTimeoutInSeconds;
-            // if (connectionTimeout) {
-            //     connectionTimeout = Math.round(connectionTimeout * 100 * 1000) / 100;
-            //     result.server.socketOptions.connectTimeoutMS = connectionTimeout;
-            // }
-            //
-            // let socketTimeout = settings.socketTimeoutInSeconds;
-            // if (socketTimeout) {
-            //     socketTimeout = Math.round(socketTimeout * 100 * 1000) / 100;
-            //     result.server.socketOptions.socketTimeoutMS = socketTimeout;
-            // }
+            const settings = Settings.findOne();
+            let connectionTimeout = settings.connectionTimeoutInSeconds;
+            if (connectionTimeout) {
+                connectionTimeout = Math.round(connectionTimeout * 100 * 1000) / 100;
+                result.server.socketOptions.connectTimeoutMS = connectionTimeout;
+            }
+
+            let socketTimeout = settings.socketTimeoutInSeconds;
+            if (socketTimeout) {
+                socketTimeout = Math.round(socketTimeout * 100 * 1000) / 100;
+                result.server.socketOptions.socketTimeoutMS = socketTimeout;
+            }
 
             return result;
         },
@@ -229,13 +215,9 @@
             convertDatesToString(obj);
         },
 
-        convertJSONtoBSON (obj, convertObjectId, convertIsoDates) {
-            if (convertObjectId) {
-                convertValidObjectIds(obj);
-            }
-            if (convertIsoDates) {
-                convertValidDates(obj);
-            }
+        convertJSONtoBSON (obj) {
+            convertValidObjectIds(obj);
+            convertValidDates(obj);
         }
     };
 

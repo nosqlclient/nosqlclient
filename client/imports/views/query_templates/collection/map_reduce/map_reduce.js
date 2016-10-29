@@ -17,7 +17,6 @@ Template.mapReduce.onRendered(function () {
     Helper.initializeCodeMirror($('#divMap'), 'txtMap');
     Helper.initializeCodeMirror($('#divReduce'), 'txtReduce');
     initializeOptions();
-    Helper.changeConvertOptionsVisibility(false);
 });
 
 const initializeOptions = function () {

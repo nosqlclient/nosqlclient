@@ -16,7 +16,6 @@ var Ladda = require('ladda');
  */
 Template.findOne.onRendered(function () {
     initializeOptions();
-    Helper.changeConvertOptionsVisibility(true);
 });
 
 const initializeOptions = function () {
@@ -58,10 +57,7 @@ Template.findOne.executeQuery = function (historyParams) {
         cursorOptions: cursorOptions
     };
 
-    var convertIds = $('#aConvertObjectIds').iCheck('update')[0].checked;
-    var convertDates = $('#aConvertIsoDates').iCheck('update')[0].checked;
-
-    Meteor.call("findOne", selectedCollection, selector, cursorOptions, convertIds, convertDates, function (err, result) {
+    Meteor.call("findOne", selectedCollection, selector, cursorOptions, function (err, result) {
             Helper.renderAfterQueryExecution(err, result, false, "findOne", params, (historyParams ? false : true));
         }
     );

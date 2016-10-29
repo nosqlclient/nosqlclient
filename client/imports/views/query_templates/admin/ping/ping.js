@@ -9,7 +9,6 @@ import './ping.html';
  * Created by RSercan on 10.1.2016.
  */
 Template.ping.onRendered(function () {
-    Helper.changeConvertOptionsVisibility(false);
     Helper.changeRunOnAdminOptionVisibility(false);
 });
 

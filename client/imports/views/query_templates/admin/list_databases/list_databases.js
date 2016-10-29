@@ -9,7 +9,6 @@ import './list_databases.html';
  * Created by RSercan on 10.1.2016.
  */
 Template.listDatabases.onRendered(function () {
-    Helper.changeConvertOptionsVisibility(false);
     Helper.changeRunOnAdminOptionVisibility(false);
 });
 

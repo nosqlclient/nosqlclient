@@ -10,7 +10,6 @@ import './options.html';
  * Created by RSercan on 5.1.2016.
  */
 Template.options.onRendered(function () {
-    Helper.changeConvertOptionsVisibility(false);
 });
 
 Template.options.executeQuery = function (historyParams) {

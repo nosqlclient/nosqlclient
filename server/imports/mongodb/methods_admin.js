@@ -6,6 +6,43 @@ import Helper from "./helper";
 import {Meteor} from 'meteor/meteor';
 import {database} from "./methods_common";
 
+
+const proceedQueryExecution = function (methodArray, runOnAdminDB) {
+    LOGGER.info(methodArray, runOnAdminDB);
+
+    let result = Async.runSync(function (done) {
+        try {
+            let execution = runOnAdminDB ? database.admin() : database;
+            for (let i = 0; i < methodArray.length; i++) {
+                let last = i == (methodArray.length - 1);
+                let entry = methodArray[i];
+                Helper.convertJSONtoBSON(entry);
+
+                for (let key in entry) {
+                    if (entry.hasOwnProperty(key)) {
+                        if (last && key == Object.keys(entry)[Object.keys(entry).length - 1]) {
+                            entry[key].push(function (err, docs) {
+                                done(err, docs);
+                            });
+                            execution[key].apply(execution, entry[key]);
+                        }
+                        else {
+                            execution = execution[key].apply(execution, entry[key]);
+                        }
+                    }
+                }
+            }
+        }
+        catch (ex) {
+            LOGGER.error(methodArray, ex);
+            done(new Meteor.Error(ex.message), null);
+        }
+    });
+
+    Helper.convertBSONtoJSON(result);
+    return result;
+};
+
 Meteor.methods({
     dbStats() {
         LOGGER.info('[stats]');
@@ -26,13 +63,13 @@ Meteor.methods({
         return result;
     },
 
-    validateCollection(collectionName, options, convertIds, convertDates) {
+    validateCollection(collectionName, options) {
         const methodArray = [
             {
                 "validateCollection": [collectionName, options]
             }
         ];
-        return proceedQueryExecution(methodArray, convertIds, convertDates, true);
+        return proceedQueryExecution(methodArray, true);
     },
 
     setProfilingLevel(level) {
@@ -107,13 +144,13 @@ Meteor.methods({
         return proceedQueryExecution(methodArray, false, false, true);
     },
 
-    command (command, convertIds, convertDates, runOnAdminDB) {
+    command (command, runOnAdminDB) {
         const methodArray = [
             {
                 "command": [command]
             }
         ];
-        return proceedQueryExecution(methodArray, convertIds, convertDates, runOnAdminDB);
+        return proceedQueryExecution(methodArray, runOnAdminDB);
     },
 
     addUser(username, password, options, runOnAdminDB) {
@@ -134,51 +171,3 @@ Meteor.methods({
         return proceedQueryExecution(methodArray, false, false, true);
     }
 });
-
-
-const proceedQueryExecution = function (methodArray, convertIds, convertDates, runOnAdminDB) {
-    LOGGER.info(methodArray, convertIds, convertDates, runOnAdminDB);
-
-    let convertObjectId = true;
-    let convertIsoDates = true;
-
-    if (convertIds !== undefined && !convertIds) {
-        convertObjectId = false;
-    }
-
-    if (convertDates !== undefined && !convertDates) {
-        convertIsoDates = false;
-    }
-
-    let result = Async.runSync(function (done) {
-        try {
-            let execution = runOnAdminDB ? database.admin() : database;
-            for (let i = 0; i < methodArray.length; i++) {
-                let last = i == (methodArray.length - 1);
-                let entry = methodArray[i];
-                Helper.convertJSONtoBSON(entry, convertObjectId, convertIsoDates);
-
-                for (let key in entry) {
-                    if (entry.hasOwnProperty(key)) {
-                        if (last && key == Object.keys(entry)[Object.keys(entry).length - 1]) {
-                            entry[key].push(function (err, docs) {
-                                done(err, docs);
-                            });
-                            execution[key].apply(execution, entry[key]);
-                        }
-                        else {
-                            execution = execution[key].apply(execution, entry[key]);
-                        }
-                    }
-                }
-            }
-        }
-        catch (ex) {
-            LOGGER.error(methodArray, ex);
-            done(new Meteor.Error(ex.message), null);
-        }
-    });
-
-    Helper.convertBSONtoJSON(result);
-    return result;
-};

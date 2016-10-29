@@ -30,10 +30,7 @@ Template.bulkWrite.executeQuery = function (historyParams) {
         selector: operations
     };
 
-    var convertIds = $('#aConvertObjectIds').iCheck('update')[0].checked;
-    var convertDates = $('#aConvertIsoDates').iCheck('update')[0].checked;
-
-    Meteor.call("bulkWrite", selectedCollection, operations, convertIds, convertDates, function (err, result) {
+    Meteor.call("bulkWrite", selectedCollection, operations, function (err, result) {
             Helper.renderAfterQueryExecution(err, result, false, "bulkWrite", params, (historyParams ? false : true));
         }
     );

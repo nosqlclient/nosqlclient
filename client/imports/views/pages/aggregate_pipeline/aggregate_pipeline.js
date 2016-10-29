@@ -39,13 +39,8 @@ Template.aggregatePipeline.onRendered(function () {
 
     $('#cmbStageQueries').chosen();
 
-    $('#aConvertIsoDates, #aConvertObjectIds').iCheck({
-        checkboxClass: 'icheckbox_square-green'
-    });
-
     stageNumbers = 0;
 
-    Helper.changeConvertOptionsVisibility(true);
     initializeCollectionsCombobox();
 });
 
@@ -79,11 +74,8 @@ Template.aggregatePipeline.events({
             return;
         }
 
-        var convertIds = $('#aConvertObjectIds').iCheck('update')[0].checked;
-        var convertDates = $('#aConvertIsoDates').iCheck('update')[0].checked;
 
-        Meteor.call("aggregate", selectedCollection, pipeline, convertIds, convertDates,
-            function (err, result) {
+        Meteor.call("aggregate", selectedCollection, pipeline, function (err, result) {
                 if (err || result.error) {
                     Helper.showMeteorFuncError(err, result, "Couldn't execute ");
                 }

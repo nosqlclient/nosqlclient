@@ -12,7 +12,6 @@ import './stats.html';
  */
 Template.stats.onRendered(function () {
     initializeOptions();
-    Helper.changeConvertOptionsVisibility(false);
 });
 
 Template.scale.onRendered(function () {

@@ -13,7 +13,6 @@ Template.indexInformation.onRendered(function () {
     $('#divFullInformation').iCheck({
         checkboxClass: 'icheckbox_square-green'
     });
-    Helper.changeConvertOptionsVisibility(false);
 });
 
 Template.indexInformation.executeQuery = function (historyParams) {
