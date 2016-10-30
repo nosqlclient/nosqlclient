@@ -4,12 +4,9 @@
 
 (function () {
     import {Settings} from '/lib/imports/collections/settings';
-<<<<<<< HEAD
     import {serialize, deserialize} from './extended_json';
-=======
 
     const objectID = require('mongodb').ObjectID;
->>>>>>> refs/remotes/origin/master
 
     const addConnectionParamsToOptions = function (connection, result) {
         if (connection.useSsl || connection.sslCertificate) {
@@ -89,10 +86,7 @@
                 connectionTimeout = Math.round(connectionTimeout * 100 * 1000) / 100;
                 result.server.socketOptions.connectTimeoutMS = connectionTimeout;
             }
-<<<<<<< HEAD
 
-=======
->>>>>>> refs/remotes/origin/master
             let socketTimeout = settings.socketTimeoutInSeconds;
             if (socketTimeout) {
                 socketTimeout = Math.round(socketTimeout * 100 * 1000) / 100;
