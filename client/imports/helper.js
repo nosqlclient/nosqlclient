@@ -48,13 +48,43 @@
         return null;
     };
 
-    // https://docs.mongodb.com/manual/reference/mongodb-extended-json/
-    const convertToExtendedJson = function (obj) {
-        if (!obj || Object.prototype.toString.call(obj) !== '[object String]') {
+    const extractMiddleString = function (str) {
+        if (!str) {
+            return "";
+        }
+
+        return str.substring(str.indexOf("\"") + 1, str.lastIndexOf("\""));
+    };
+
+    //supporting shell commands for ObjectID and ISODate, https://docs.mongodb.com/manual/reference/mongodb-extended-json/
+    const convertToExtendedJson = function (str) {
+        if (!str || Object.prototype.toString.call(str) !== '[object String]') {
             return;
         }
 
         // support shell stuff
+
+        // replace objectID variations with $oid
+        let objectIDRegex = /:objectid\("[A-Z0-9]*"\)/gi;
+        let objIdMatches = objectIDRegex.exec(str);
+
+        if (objIdMatches) {
+            for (let i = 0; i < objIdMatches.length; i++) {
+                str = str.replace(objIdMatches[i], ":{$oid:\"" + extractMiddleString(objIdMatches[i]) + "\"}");
+            }
+        }
+
+        // replace ISODate|date variations with $date
+        let isoDateRegex = /:isodate\("[A-Z0-9-:.]*"\)|:date\("[A-Z0-9-:.]*"\)|:newdate\("[A-Z0-9-:.]*"\)|:newisodate\("[A-Z0-9-:.]*"\)/gi;
+        let isoDateMatches = isoDateRegex.exec(str);
+
+        if (isoDateMatches) {
+            for (let i = 0; i < isoDateMatches.length; i++) {
+                str = str.replace(isoDateMatches[i], ":{$date:\"" + extractMiddleString(isoDateMatches[i]) + "\"}");
+            }
+        }
+
+        return str;
     };
 
     let Helper = function () {
@@ -127,7 +157,6 @@
         },
 
         showMeteorFuncError  (err, result, message) {
-
             var errorMessage;
             if (err) {
                 errorMessage = err.message;
@@ -137,7 +166,7 @@
             if (errorMessage) {
                 toastr.error(message + ": " + errorMessage);
             } else {
-                toastr.error(message);
+                toastr.error(message + ": unknown reason");
             }
 
 
@@ -176,7 +205,7 @@
                     json = json + '}';
                 }
 
-                convertToExtendedJson(json);
+                json = convertToExtendedJson(json);
                 result = fbbkJson.parse(json);
             }
             catch (err) {
