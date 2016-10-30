@@ -25,8 +25,7 @@ Meteor.methods({
             }
         });
 
-        Helper.convertBSONtoJSON(result);
-        return result;
+        return Helper.convertBSONtoJSON(result);
     },
 
     getFileInfos(bucketName, selector, limit) {
@@ -48,8 +47,7 @@ Meteor.methods({
             }
         });
 
-        Helper.convertBSONtoJSON(result);
-        return result;
+        return Helper.convertBSONtoJSON(result);
     },
 
     uploadFile(bucketName, blob, fileName, contentType, metaData, aliases) {
@@ -101,8 +99,7 @@ Meteor.methods({
             }
         });
 
-        Helper.convertBSONtoJSON(result);
-        return result;
+        return Helper.convertBSONtoJSON(result);
     }
 });
 

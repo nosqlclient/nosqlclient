@@ -10,7 +10,6 @@ import './is_capped.html';
  * Created by RSercan on 3.1.2016.
  */
 Template.isCapped.onRendered(function () {
-    Helper.changeConvertOptionsVisibility(false);
 });
 
 Template.isCapped.executeQuery = function (historyParams) {

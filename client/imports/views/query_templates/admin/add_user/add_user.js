@@ -16,7 +16,6 @@ var Ladda = require('ladda');
  */
 Template.addUser.onRendered(function () {
     initializeOptions();
-    Helper.changeConvertOptionsVisibility(false);
     Helper.changeRunOnAdminOptionVisibility(true);
 });
 

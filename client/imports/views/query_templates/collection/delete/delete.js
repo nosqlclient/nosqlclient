@@ -13,7 +13,6 @@ var Ladda = require('ladda');
  * Created by RSercan on 2.1.2016.
  */
 Template.delete.onRendered(function () {
-    Helper.changeConvertOptionsVisibility(true);
 });
 
 Template.delete.executeQuery = function (historyParams) {
@@ -32,10 +31,7 @@ Template.delete.executeQuery = function (historyParams) {
         selector: selector
     };
 
-    var convertIds = $('#aConvertObjectIds').iCheck('update')[0].checked;
-    var convertDates = $('#aConvertIsoDates').iCheck('update')[0].checked;
-
-    Meteor.call("delete", selectedCollection, selector, convertIds, convertDates, function (err, result) {
+    Meteor.call("delete", selectedCollection, selector, function (err, result) {
             Helper.renderAfterQueryExecution(err, result, false, "delete", params, (historyParams ? false : true));
         }
     );

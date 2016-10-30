@@ -12,7 +12,6 @@ var Ladda = require('ladda');
  */
 Template.validateCollection.onRendered(function () {
     Helper.initializeCodeMirror($('#divOptions'), 'txtOptions');
-    Helper.changeConvertOptionsVisibility(true);
     Helper.changeRunOnAdminOptionVisibility(false);
 });
 
@@ -34,10 +33,7 @@ Template.validateCollection.executeQuery = function () {
         return;
     }
 
-    var convertIds = $('#aConvertObjectIds').iCheck('update')[0].checked;
-    var convertDates = $('#aConvertIsoDates').iCheck('update')[0].checked;
-
-    Meteor.call("validateCollection", collectionName, options, convertIds, convertDates, function (err, result) {
+    Meteor.call("validateCollection", collectionName, options, function (err, result) {
         Helper.renderAfterQueryExecution(err, result, true);
     });
 };

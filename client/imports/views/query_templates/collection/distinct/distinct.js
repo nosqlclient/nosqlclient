@@ -13,7 +13,6 @@ var Ladda = require('ladda');
  * Created by RSercan on 2.1.2016.
  */
 Template.distinct.onRendered(function () {
-    Helper.changeConvertOptionsVisibility(true);
 });
 
 Template.distinct.events({
@@ -43,10 +42,7 @@ Template.distinct.executeQuery = function (historyParams) {
         fieldName: fieldName
     };
 
-    var convertIds = $('#aConvertObjectIds').iCheck('update')[0].checked;
-    var convertDates = $('#aConvertIsoDates').iCheck('update')[0].checked;
-
-    Meteor.call("distinct", selectedCollection, selector, fieldName, convertIds, convertDates, function (err, result) {
+    Meteor.call("distinct", selectedCollection, selector, fieldName, function (err, result) {
             Helper.renderAfterQueryExecution(err, result, false, "distinct", params, (historyParams ? false : true));
         }
     );

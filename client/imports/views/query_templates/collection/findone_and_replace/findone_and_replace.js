@@ -17,7 +17,6 @@ var Ladda = require('ladda');
 Template.findOneAndReplace.onRendered(function () {
     Helper.initializeCodeMirror($('#divReplacement'), 'txtReplacement');
     initializeOptions();
-    Helper.changeConvertOptionsVisibility(true);
 });
 
 const initializeOptions = function () {
@@ -65,10 +64,7 @@ Template.findOneAndReplace.executeQuery = function (historyParams) {
         options: options
     };
 
-    var convertIds = $('#aConvertObjectIds').iCheck('update')[0].checked;
-    var convertDates = $('#aConvertIsoDates').iCheck('update')[0].checked;
-
-    Meteor.call("findOneAndReplace", selectedCollection, selector, replaceObject, options, convertIds, convertDates, function (err, result) {
+    Meteor.call("findOneAndReplace", selectedCollection, selector, replaceObject, options, function (err, result) {
             Helper.renderAfterQueryExecution(err, result, false, "findOneAndReplace", params, (historyParams ? false : true));
         }
     );

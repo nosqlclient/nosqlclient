@@ -15,7 +15,6 @@ var Ladda = require('ladda');
  */
 Template.createIndex.onRendered(function () {
     Helper.initializeCodeMirror($('#divFields'), 'txtFields');
-    Helper.changeConvertOptionsVisibility(false);
     initializeOptions();
 });
 

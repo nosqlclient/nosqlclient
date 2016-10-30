@@ -18,7 +18,6 @@ var Ladda = require('ladda');
  */
 Template.updateOne.onRendered(function () {
     initializeOptions();
-    Helper.changeConvertOptionsVisibility(true);
 });
 
 const initializeOptions = function () {
@@ -68,10 +67,7 @@ Template.updateOne.executeQuery = function (historyParams) {
         options: options
     };
 
-    var convertIds = $('#aConvertObjectIds').iCheck('update')[0].checked;
-    var convertDates = $('#aConvertIsoDates').iCheck('update')[0].checked;
-
-    Meteor.call("updateOne", selectedCollection, selector, setObject, options, convertIds, convertDates, function (err, result) {
+    Meteor.call("updateOne", selectedCollection, selector, setObject, options, function (err, result) {
         Helper.renderAfterQueryExecution(err, result, false, "updateOne", params, (historyParams ? false : true));
     });
 };

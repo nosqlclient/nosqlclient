@@ -72,31 +72,12 @@ Template.browseCollection.onRendered(function () {
         initQueryHistories();
     });
 
-    $('#aConvertIsoDates, #aConvertObjectIds').iCheck({
-        checkboxClass: 'icheckbox_square-green'
-    });
-
     $('[data-toggle="tooltip"]').tooltip({trigger: 'hover'});
-
-    // see #108
-    if (Session.get(Helper.strSessionSelectedQuery) != Enums.QUERY_TYPES.FIND) {
-        Helper.changeConvertOptionsVisibility(false);
-    }
 
     clearQueryIfAdmin();
 });
 
 Template.browseCollection.events({
-    'click #btnSaveFindFindOne' (e) {
-        e.preventDefault();
-        saveEditor();
-    },
-
-    'click #btnDelFindFindOne'  (e) {
-        e.preventDefault();
-        deleteDocument();
-    },
-
     'click #btnShowQueryHistories' () {
         $('#queryHistoriesModal').modal('show');
     },
@@ -430,103 +411,3 @@ const getActiveEditorValue = function () {
         }
     }
 };
-
-const saveEditor = function () {
-    var convertedDocs;
-    try {
-        convertedDocs = Helper.convertAndCheckJSONAsArray(getActiveEditorValue());
-    }
-    catch (e) {
-        toastr.error('Syntax error, can not save document(s): ' + e);
-        return;
-    }
-
-    swal({
-        title: "Are you sure ?",
-        text: convertedDocs.length + ' document(s) will be updated (_id field is unchangeable),  are you sure ?',
-        type: "info",
-        showCancelButton: true,
-        confirmButtonColor: "#DD6B55",
-        confirmButtonText: "Yes!",
-        cancelButtonText: "No"
-    }, function (isConfirm) {
-        if (isConfirm) {
-
-            var l = Ladda.create(document.querySelector('#btnSaveFindFindOne'));
-            l.start();
-
-            var selectedCollection = Session.get(Helper.strSessionSelectedCollection);
-            var convertIds = $('#aConvertObjectIds').iCheck('update')[0].checked;
-            var convertDates = $('#aConvertIsoDates').iCheck('update')[0].checked;
-            var i = 0;
-            _.each(convertedDocs, function (doc) {
-                if (doc._id) {
-                    Meteor.call("updateOne", selectedCollection, {_id: doc._id}, doc, {}, convertIds, convertDates, function (err, result) {
-                        if (err || result.error) {
-                            Helper.showMeteorFuncError(err, result, "Couldn't update one of the documents");
-                            Ladda.stopAll();
-                        } else {
-                            if ((i++) == (convertedDocs.length - 1)) {
-                                // last time
-                                toastr.success('Successfully updated document(s)');
-                                Ladda.stopAll();
-                            }
-                        }
-                    });
-                }
-            });
-        }
-    });
-
-};
-
-
-const deleteDocument = function () {
-    var convertedDocs;
-    try {
-        convertedDocs = Helper.convertAndCheckJSONAsArray(getActiveEditorValue());
-    }
-    catch (e) {
-        toastr.error('Syntax error, can not save document(s): ' + e);
-        return;
-    }
-
-    swal({
-        title: "Are you sure ?",
-        text: convertedDocs.length + ' document(s) will be deleted,  are you sure ?',
-        type: "info",
-        showCancelButton: true,
-        confirmButtonColor: "#DD6B55",
-        confirmButtonText: "Yes!",
-        cancelButtonText: "No"
-    }, function (isConfirm) {
-        if (isConfirm) {
-
-            var l = Ladda.create(document.querySelector('#btnDelFindFindOne'));
-            l.start();
-
-            var selectedCollection = Session.get(Helper.strSessionSelectedCollection);
-            var convertIds = $('#aConvertObjectIds').iCheck('update')[0].checked;
-            var convertDates = $('#aConvertIsoDates').iCheck('update')[0].checked;
-            var i = 0;
-            _.each(convertedDocs, function (doc) {
-                if (doc._id) {
-                    Meteor.call("delete", selectedCollection, {_id: doc._id}, convertIds, convertDates, function (err, result) {
-                        if (err || result.error) {
-                            Helper.showMeteorFuncError(err, result, "Couldn't delete one of the documents");
-                            Ladda.stopAll();
-                        } else {
-                            if ((i++) == (convertedDocs.length - 1)) {
-                                // last time
-                                toastr.success('Successfully deleted document(s)');
-                                Ladda.stopAll();
-                            }
-                        }
-                    });
-                }
-            });
-        }
-    });
-
-};
-

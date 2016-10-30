@@ -48,6 +48,45 @@
         return null;
     };
 
+    const extractMiddleString = function (str) {
+        if (!str) {
+            return "";
+        }
+
+        return str.substring(str.indexOf("\"") + 1, str.lastIndexOf("\""));
+    };
+
+    //supporting shell commands for ObjectID and ISODate, https://docs.mongodb.com/manual/reference/mongodb-extended-json/
+    const convertToExtendedJson = function (str) {
+        if (!str || Object.prototype.toString.call(str) !== '[object String]') {
+            return;
+        }
+
+        // support shell stuff
+
+        // replace objectID variations with $oid
+        let objectIDRegex = /:objectid\("[A-Z0-9]*"\)/gmi;
+        let objIdMatches = objectIDRegex.exec(str);
+
+        if (objIdMatches) {
+            for (let i = 0; i < objIdMatches.length; i++) {
+                str = str.replace(objIdMatches[i], ":{$oid:\"" + extractMiddleString(objIdMatches[i]) + "\"}");
+            }
+        }
+
+        // replace ISODate|date variations with $date
+        let isoDateRegex = /:isodate\("[A-Z0-9-:.]*"\)|:date\("[A-Z0-9-:.]*"\)|:newdate\("[A-Z0-9-:.]*"\)|:newisodate\("[A-Z0-9-:.]*"\)/gmi;
+        let isoDateMatches = isoDateRegex.exec(str);
+
+        if (isoDateMatches) {
+            for (let i = 0; i < isoDateMatches.length; i++) {
+                str = str.replace(isoDateMatches[i], ":{$date:\"" + extractMiddleString(isoDateMatches[i]) + "\"}");
+            }
+        }
+
+        return str;
+    };
+
     let Helper = function () {
         this.strSessionConnection = "connection";
         this.strSessionCollectionNames = "collectionNames";
@@ -118,7 +157,6 @@
         },
 
         showMeteorFuncError  (err, result, message) {
-
             var errorMessage;
             if (err) {
                 errorMessage = err.message;
@@ -128,7 +166,7 @@
             if (errorMessage) {
                 toastr.error(message + ": " + errorMessage);
             } else {
-                toastr.error(message);
+                toastr.error(message + ": unknown reason");
             }
 
 
@@ -154,10 +192,11 @@
         },
 
         convertAndCheckJSON  (json) {
-            if (json == "") return {};
+            if (!json) return {};
+            json = json.replace(/ /g, '');
             var result = {};
             try {
-                if (!json.startsWith('{') && !json.startsWith(']')) {
+                if (!json.startsWith('{') && !json.startsWith('[')) {
                     json = '{' + json;
                 }
 
@@ -166,29 +205,11 @@
                     json = json + '}';
                 }
 
+                json = convertToExtendedJson(json);
                 result = fbbkJson.parse(json);
             }
             catch (err) {
                 result["ERROR"] = err.message;
-            }
-
-            return result;
-        },
-
-        convertAndCheckJSONAsArray  (json) {
-            if (json == "") return [];
-            var result = [];
-            try {
-                result = fbbkJson.parse(json);
-            }
-            catch (err) {
-                throw err.message;
-            }
-
-            if (!$.isArray(result)) {
-                var res = [];
-                res.push(result);
-                return res;
             }
 
             return result;
@@ -261,16 +282,6 @@
                 $('#aRunOnAdminDB').hide();
             }
 
-        },
-
-        changeConvertOptionsVisibility  (show) {
-            if (show) {
-                $('#aConvertIsoDates').show();
-                $('#aConvertObjectIds').show();
-            } else {
-                $('#aConvertIsoDates').hide();
-                $('#aConvertObjectIds').hide();
-            }
         },
 
         getDistinctKeysForAutoComplete  (selectedCollection) {

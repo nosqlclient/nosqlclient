@@ -34,12 +34,7 @@ Template.editDocument.onRendered(function () {
     initializeCollectionsCombobox();
     Session.set(Helper.strSessionEasyEditID, undefined);
 
-    $('#aConvertIsoDates, #aConvertObjectIds').iCheck({
-        checkboxClass: 'icheckbox_square-green'
-    });
-
     $('[data-toggle="tooltip"]').tooltip({trigger: 'hover'});
-    Helper.changeConvertOptionsVisibility(true);
 });
 
 Template.editDocument.events({
@@ -200,17 +195,13 @@ const saveDocument = function () {
         return;
     }
 
-    var convertIds = $('#aConvertObjectIds').iCheck('update')[0].checked;
-    var convertDates = $('#aConvertIsoDates').iCheck('update')[0].checked;
-
     if (Session.get(Helper.strSessionEasyEditID)) {
         // remove id just in case
         delete setValue._id;
         setValue = {"$set": setValue};
         var idQuery = {_id: Session.get(Helper.strSessionEasyEditID)};
 
-        Meteor.call('updateOne', collectionName, idQuery, setValue, {}, convertIds, convertDates,
-            function (err) {
+        Meteor.call('updateOne', collectionName, idQuery, setValue, {}, function (err) {
                 if (err) {
                     toastr.error("Couldn't update: " + err.message);
                 } else {
@@ -227,8 +218,7 @@ const saveDocument = function () {
             setValue = newArray;
         }
 
-        Meteor.call('insertMany', collectionName, setValue, convertIds, convertDates,
-            function (err) {
+        Meteor.call('insertMany', collectionName, setValue, function (err) {
                 if (err) {
                     toastr.error("Couldn't insert: " + err.message);
                 } else {
@@ -263,10 +253,7 @@ const fetchDocument = function () {
         return;
     }
 
-    var convertIds = $('#aConvertObjectIds').iCheck('update')[0].checked;
-    var convertDates = $('#aConvertIsoDates').iCheck('update')[0].checked;
-
-    Meteor.call("findOne", collectionName, selector, {}, convertIds, convertDates, function (err, result) {
+    Meteor.call("findOne", collectionName, selector, {}, function (err, result) {
             var divResult = $('#divResult');
 
             if (err || result.error) {

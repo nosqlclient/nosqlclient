@@ -13,7 +13,6 @@ var Ladda = require('ladda');
  * Created by RSercan on 2.1.2016.
  */
 Template.count.onRendered(function () {
-    Helper.changeConvertOptionsVisibility(true);
 });
 
 Template.count.executeQuery = function (historyParams) {
@@ -32,11 +31,7 @@ Template.count.executeQuery = function (historyParams) {
         selector: selector
     };
 
-    var convertIds = $('#aConvertObjectIds').iCheck('update')[0].checked;
-    var convertDates = $('#aConvertIsoDates').iCheck('update')[0].checked;
-
-    Meteor.call("count", selectedCollection, selector, convertIds, convertDates,
-        function (err, result) {
+    Meteor.call("count", selectedCollection, selector, function (err, result) {
             Helper.renderAfterQueryExecution(err, result, false, "count", params, (historyParams ? false : true));
         }
     );

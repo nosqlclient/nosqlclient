@@ -31,23 +31,23 @@ Template.mainLayout.rendered = function () {
     $(window).bind("load resize scroll", function () {
         var body = $("body");
         if (!body.hasClass('body-small')) {
-
+            var pageWrapper = $('#page-wrapper');
             var navbarHeigh = $('nav.navbar-default').height();
-            var wrapperHeigh = $('#page-wrapper').height();
+            var wrapperHeigh = pageWrapper.height();
 
             if (navbarHeigh > wrapperHeigh) {
-                $('#page-wrapper').css("min-height", navbarHeigh + "px");
+                pageWrapper.css("min-height", navbarHeigh + "px");
             }
 
             if (navbarHeigh < wrapperHeigh) {
-                $('#page-wrapper').css("min-height", $(window).height() + "px");
+                pageWrapper.css("min-height", $(window).height() + "px");
             }
 
             if (body.hasClass('fixed-nav')) {
                 if (navbarHeigh > wrapperHeigh) {
-                    $('#page-wrapper').css("min-height", navbarHeigh - 60 + "px");
+                    pageWrapper.css("min-height", navbarHeigh - 60 + "px");
                 } else {
-                    $('#page-wrapper').css("min-height", $(window).height() - 60 + "px");
+                    pageWrapper.css("min-height", $(window).height() - 60 + "px");
                 }
             }
         }

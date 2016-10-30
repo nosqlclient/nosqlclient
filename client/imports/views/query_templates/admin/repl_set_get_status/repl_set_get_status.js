@@ -9,7 +9,6 @@ import './repl_set_get_status.html';
  * Created by RSercan on 10.1.2016.
  */
 Template.replSetGetStatus.onRendered(function () {
-    Helper.changeConvertOptionsVisibility(false);
     Helper.changeRunOnAdminOptionVisibility(false);
 });
 

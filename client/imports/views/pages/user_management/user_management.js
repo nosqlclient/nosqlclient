@@ -14,74 +14,8 @@ var Ladda = require('ladda');
 /**
  * Created by RSercan on 9.4.2016.
  */
-var defaultInformationText = 'Select a role or resource or privilege to see the details';
-var loading = false;
-Template.userManagement.onRendered(function () {
-    if (Session.get(Helper.strSessionCollectionNames) == undefined) {
-        Router.go('databaseStats');
-        return;
-    }
-
-
-    var l = Ladda.create(document.querySelector('#btnRefreshUsers'));
-    l.start();
-
-    var chckRunOnAdminDB = $('#aRunOnAdminDBToFetchUsers');
-    chckRunOnAdminDB.iCheck({
-        checkboxClass: 'icheckbox_square-green'
-    });
-
-    chckRunOnAdminDB.iCheck('uncheck');
-
-    initUserTree();
-    //new Clipboard('.reference');
-});
-
-Template.userManagement.helpers({
-    informationTitle () {
-        return Session.get(Helper.strSessionSelectionUserManagement);
-    },
-    informationBody() {
-        return Session.get(Helper.strSessionUsermanagementInfo);
-    }
-});
-
-Template.userManagement.events({
-    //'click a':  (e) {
-    //   e.preventDefault();
-    //   if (e.currentTarget && e.currentTarget.host && e.currentTarget.host.indexOf('docs.mongodb.org') != -1) {
-    //       toastr.success('Link has been copied to clipboard !');
-    //    }
-    //},
-
-    'click #btnRefreshUsers'(e) {
-        e.preventDefault();
-
-
-        var l = Ladda.create(document.querySelector('#btnRefreshUsers'));
-        l.start();
-
-        $("#userTree").jstree('destroy');
-        initUserTree();
-    },
-
-    'click #btnManageUsers'  (e) {
-        e.preventDefault();
-        initUsers();
-    },
-
-    'click #btnManageRoles' (e) {
-        e.preventDefault();
-        initRoles();
-    },
-
-    'click #btnEditUser'  (e) {
-        e.preventDefault();
-        if (Session.get(Helper.strSessionUsermanagementManageSelection)) {
-            popEditUserModal(Session.get(Helper.strSessionUsermanagementManageSelection));
-        }
-    }
-});
+const defaultInformationText = 'Select a role or resource or privilege to see the details';
+let loading = false;
 
 const initUserTree = function () {
     Session.set(Helper.strSessionUsermanagementInfo, '');
@@ -99,7 +33,7 @@ const initUserTree = function () {
 
     var runOnAdminDB = $('#aRunOnAdminDBToFetchUsers').iCheck('update')[0].checked;
 
-    Meteor.call('command', command, false, false, runOnAdminDB, function (err, result) {
+    Meteor.call('command', command, runOnAdminDB, function (err, result) {
         if (err || result.error) {
             Helper.showMeteorFuncError(err, result, "Couldn't fetch users");
         }
@@ -129,7 +63,7 @@ const initUserTree = function () {
                                 showPrivileges: true
                             };
 
-                            Meteor.call('command', userInfoCommand, false, false, runOnAdminDB, function (err, result) {
+                            Meteor.call('command', userInfoCommand, runOnAdminDB, function (err, result) {
                                 if (err || result.error) {
                                     Helper.showMeteorFuncError(err, result, "Couldn't fetch userInfo");
                                 }
@@ -145,7 +79,7 @@ const initUserTree = function () {
                                 showBuiltinRoles: true
                             };
 
-                            Meteor.call('command', roleInfoCommand, false, false, runOnAdminDB, function (err, result) {
+                            Meteor.call('command', roleInfoCommand, runOnAdminDB, function (err, result) {
                                 if (err || result.error) {
                                     Helper.showMeteorFuncError(err, result, "Couldn't fetch roleInfo");
                                 }
@@ -477,3 +411,70 @@ const populateTreeChildrenForUsers = function (users) {
 
     return result;
 };
+
+Template.userManagement.onRendered(function () {
+    if (Session.get(Helper.strSessionCollectionNames) == undefined) {
+        Router.go('databaseStats');
+        return;
+    }
+
+
+    var l = Ladda.create(document.querySelector('#btnRefreshUsers'));
+    l.start();
+
+    var chckRunOnAdminDB = $('#aRunOnAdminDBToFetchUsers');
+    chckRunOnAdminDB.iCheck({
+        checkboxClass: 'icheckbox_square-green'
+    });
+
+    chckRunOnAdminDB.iCheck('uncheck');
+
+    initUserTree();
+    //new Clipboard('.reference');
+});
+
+Template.userManagement.helpers({
+    informationTitle () {
+        return Session.get(Helper.strSessionSelectionUserManagement);
+    },
+    informationBody() {
+        return Session.get(Helper.strSessionUsermanagementInfo);
+    }
+});
+
+Template.userManagement.events({
+    //'click a':  (e) {
+    //   e.preventDefault();
+    //   if (e.currentTarget && e.currentTarget.host && e.currentTarget.host.indexOf('docs.mongodb.org') != -1) {
+    //       toastr.success('Link has been copied to clipboard !');
+    //    }
+    //},
+
+    'click #btnRefreshUsers'(e) {
+        e.preventDefault();
+
+
+        var l = Ladda.create(document.querySelector('#btnRefreshUsers'));
+        l.start();
+
+        $("#userTree").jstree('destroy');
+        initUserTree();
+    },
+
+    'click #btnManageUsers'  (e) {
+        e.preventDefault();
+        initUsers();
+    },
+
+    'click #btnManageRoles' (e) {
+        e.preventDefault();
+        initRoles();
+    },
+
+    'click #btnEditUser'  (e) {
+        e.preventDefault();
+        if (Session.get(Helper.strSessionUsermanagementManageSelection)) {
+            popEditUserModal(Session.get(Helper.strSessionUsermanagementManageSelection));
+        }
+    }
+});

@@ -9,7 +9,6 @@ import './server_status.html';
  * Created by RSercan on 10.1.2016.
  */
 Template.serverStatus.onRendered(function () {
-    Helper.changeConvertOptionsVisibility(false);
     Helper.changeRunOnAdminOptionVisibility(false);
 });
 

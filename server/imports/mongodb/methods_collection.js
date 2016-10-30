@@ -6,32 +6,104 @@ import Helper from "./helper";
 import {Meteor} from 'meteor/meteor';
 import {database} from "./methods_common";
 
+
+const proceedMapReduceExecution = function (selectedCollection, map, reduce, options) {
+    Helper.convertJSONtoBSON(options);
+
+    LOGGER.info('[mapReduce]', selectedCollection, map, reduce, options);
+
+    let result = Async.runSync(function (done) {
+        try {
+            const collection = database.collection(selectedCollection);
+            collection.mapReduce(map, reduce, options, function (err, resultCollection) {
+                if (err) {
+                    done(err, null);
+                    return;
+                }
+                if ((typeof options.out) == 'string') {
+                    resultCollection.find().toArray(function (err, result) {
+                        done(err, result);
+                    });
+                }
+                else {
+                    done(err, resultCollection);
+                }
+            });
+        }
+        catch (ex) {
+            LOGGER.error('[mapReduce]', ex);
+            done(new Meteor.Error(ex.message), null);
+        }
+    });
+
+    return Helper.convertBSONtoJSON(result);
+};
+
+const proceedQueryExecution = function (selectedCollection, methodArray, removeCollectionTopology) {
+    LOGGER.info(methodArray, selectedCollection);
+
+    let result = Async.runSync(function (done) {
+        try {
+            let execution = database.collection(selectedCollection);
+            for (let i = 0; i < methodArray.length; i++) {
+                let last = i == (methodArray.length - 1);
+                let entry = methodArray[i];
+                Helper.convertJSONtoBSON(entry);
+                for (let key in entry) {
+                    if (entry.hasOwnProperty(key)) {
+                        if (last && key == Object.keys(entry)[Object.keys(entry).length - 1]) {
+                            entry[key].push(function (err, docs) {
+                                done(err, docs);
+                            });
+
+                            execution[key].apply(execution, entry[key]);
+                        }
+                        else {
+                            execution = execution[key].apply(execution, entry[key]);
+                        }
+                    }
+                }
+            }
+        }
+        catch (ex) {
+            LOGGER.error(methodArray, ex);
+            done(new Meteor.Error(ex.message), null);
+        }
+    });
+
+    if (removeCollectionTopology) {
+        Helper.removeCollectionTopology(result);
+    }
+    Helper.removeConnectionTopology(result);
+    return Helper.convertBSONtoJSON(result);
+};
+
 Meteor.methods({
-    bulkWrite(selectedCollection, operations, convertIds, convertDates) {
+    bulkWrite(selectedCollection, operations) {
         const methodArray = [
             {
                 "bulkWrite": [operations]
             }
         ];
-        return proceedQueryExecution(selectedCollection, methodArray, convertIds, convertDates);
+        return proceedQueryExecution(selectedCollection, methodArray);
     },
 
-    updateOne(selectedCollection, selector, setObject, options, convertIds, convertDates) {
+    updateOne(selectedCollection, selector, setObject, options) {
         const methodArray = [
             {
                 "updateOne": [selector, setObject, options]
             }
         ];
-        return proceedQueryExecution(selectedCollection, methodArray, convertIds, convertDates);
+        return proceedQueryExecution(selectedCollection, methodArray);
     },
 
-    updateMany(selectedCollection, selector, setObject, options, convertIds, convertDates) {
+    updateMany(selectedCollection, selector, setObject, options) {
         const methodArray = [
             {
                 "updateMany": [selector, setObject, options]
             }
         ];
-        return proceedQueryExecution(selectedCollection, methodArray, convertIds, convertDates);
+        return proceedQueryExecution(selectedCollection, methodArray);
     },
 
     stats(selectedCollection, options) {
@@ -50,10 +122,7 @@ Meteor.methods({
             }
         ];
 
-        let result = proceedQueryExecution(selectedCollection, methodArray);
-        Helper.removeCollectionTopology(result);
-        console.log(result);
-        return result;
+        return proceedQueryExecution(selectedCollection, methodArray, true);
     },
 
     reIndex(selectedCollection) {
@@ -87,13 +156,13 @@ Meteor.methods({
         return proceedQueryExecution(selectedCollection, methodArray);
     },
 
-    insertMany(selectedCollection, docs, convertIds, convertDates) {
+    insertMany(selectedCollection, docs) {
         const methodArray = [
             {
                 "insertMany": [docs]
             }
         ];
-        return proceedQueryExecution(selectedCollection, methodArray, convertIds, convertDates);
+        return proceedQueryExecution(selectedCollection, methodArray);
     },
 
     indexInformation(selectedCollection, isFull) {
@@ -133,24 +202,24 @@ Meteor.methods({
         return proceedQueryExecution(selectedCollection, methodArray);
     },
 
-    distinct(selectedCollection, selector, fieldName, convertIds, convertDates) {
+    distinct(selectedCollection, selector, fieldName) {
         const methodArray = [
             {
                 "distinct": [fieldName, selector]
             }
         ];
 
-        return proceedQueryExecution(selectedCollection, methodArray, convertIds, convertDates);
+        return proceedQueryExecution(selectedCollection, methodArray);
     },
 
-    delete(selectedCollection, selector, convertIds, convertDates) {
+    delete(selectedCollection, selector) {
         const methodArray = [
             {
                 "deleteMany": [selector]
             }
         ];
 
-        return proceedQueryExecution(selectedCollection, methodArray, convertIds, convertDates);
+        return proceedQueryExecution(selectedCollection, methodArray);
     },
 
     createIndex(selectedCollection, fields, options) {
@@ -163,7 +232,7 @@ Meteor.methods({
         return proceedQueryExecution(selectedCollection, methodArray);
     },
 
-    findOne(selectedCollection, selector, cursorOptions, convertIds, convertDates) {
+    findOne(selectedCollection, selector, cursorOptions) {
         const methodArray = [
             {
                 "find": [selector]
@@ -178,10 +247,10 @@ Meteor.methods({
         }
         methodArray.push({'limit': [1]});
         methodArray.push({'next': []});
-        return proceedQueryExecution(selectedCollection, methodArray, convertIds, convertDates);
+        return proceedQueryExecution(selectedCollection, methodArray);
     },
 
-    find(selectedCollection, selector, cursorOptions, executeExplain, convertIds, convertDates) {
+    find(selectedCollection, selector, cursorOptions, executeExplain) {
         const methodArray = [
             {
                 "find": [selector]
@@ -201,132 +270,51 @@ Meteor.methods({
             methodArray.push({'toArray': []});
         }
 
-        return proceedQueryExecution(selectedCollection, methodArray, convertIds, convertDates);
+        return proceedQueryExecution(selectedCollection, methodArray);
     },
 
-    findOneAndUpdate(selectedCollection, selector, setObject, options, convertIds, convertDates) {
+    findOneAndUpdate(selectedCollection, selector, setObject, options) {
         const methodArray = [
             {
                 "findOneAndUpdate": [selector, setObject, options]
             }
         ];
-        return proceedQueryExecution(selectedCollection, methodArray, convertIds, convertDates);
+        return proceedQueryExecution(selectedCollection, methodArray);
     },
 
-    findOneAndReplace(selectedCollection, selector, setObject, options, convertIds, convertDates) {
+    findOneAndReplace(selectedCollection, selector, setObject, options) {
         const methodArray = [
             {
                 "findOneAndReplace": [selector, setObject, options]
             }
         ];
-        return proceedQueryExecution(selectedCollection, methodArray, convertIds, convertDates);
+        return proceedQueryExecution(selectedCollection, methodArray);
     },
 
-    findOneAndDelete(selectedCollection, selector, options, convertIds, convertIsoDates) {
+    findOneAndDelete(selectedCollection, selector, options) {
         const methodArray = [
             {
                 "findOneAndDelete": [selector, options]
             }
         ];
-        return proceedQueryExecution(selectedCollection, methodArray, convertIds, convertIsoDates);
+        return proceedQueryExecution(selectedCollection, methodArray);
     },
 
-    aggregate(selectedCollection, pipeline, convertIds, convertDates) {
+    aggregate(selectedCollection, pipeline) {
         const methodArray = [
             {
                 "aggregate": [pipeline]
             }
         ];
-        return proceedQueryExecution(selectedCollection, methodArray, convertIds, convertDates);
+        return proceedQueryExecution(selectedCollection, methodArray);
     },
 
-    count(selectedCollection, selector, convertIds, convertDates) {
+    count(selectedCollection, selector) {
         const methodArray = [
             {
                 "count": [selector]
             }
         ];
-        return proceedQueryExecution(selectedCollection, methodArray, convertIds, convertDates);
+        return proceedQueryExecution(selectedCollection, methodArray);
     }
 });
-
-const proceedMapReduceExecution = function (selectedCollection, map, reduce, options) {
-    Helper.convertJSONtoBSON(options);
-
-    LOGGER.info('[mapReduce]', selectedCollection, map, reduce, options);
-
-    let result = Async.runSync(function (done) {
-        try {
-            const collection = database.collection(selectedCollection);
-            collection.mapReduce(map, reduce, options, function (err, resultCollection) {
-                if (err) {
-                    done(err, null);
-                    return;
-                }
-                if ((typeof options.out) == 'string') {
-                    resultCollection.find().toArray(function (err, result) {
-                        done(err, result);
-                    });
-                }
-                else {
-                    done(err, resultCollection);
-                }
-            });
-        }
-        catch (ex) {
-            LOGGER.error('[mapReduce]', ex);
-            done(new Meteor.Error(ex.message), null);
-        }
-    });
-
-    Helper.convertBSONtoJSON(result);
-    return result;
-};
-
-const proceedQueryExecution = function (selectedCollection, methodArray, convertIds, convertDates) {
-    let convertObjectId = true;
-    let convertIsoDates = true;
-
-    if (convertIds !== undefined && !convertIds) {
-        convertObjectId = false;
-    }
-
-    if (convertDates !== undefined && !convertDates) {
-        convertIsoDates = false;
-    }
-
-    LOGGER.info(methodArray, 'convertIds: ' + convertObjectId, 'convertDates: ' + convertIsoDates, selectedCollection);
-
-    let result = Async.runSync(function (done) {
-        try {
-            let execution = database.collection(selectedCollection);
-            for (let i = 0; i < methodArray.length; i++) {
-                let last = i == (methodArray.length - 1);
-                let entry = methodArray[i];
-                Helper.convertJSONtoBSON(entry, convertObjectId, convertIsoDates);
-
-                for (let key in entry) {
-                    if (entry.hasOwnProperty(key)) {
-                        if (last && key == Object.keys(entry)[Object.keys(entry).length - 1]) {
-                            entry[key].push(function (err, docs) {
-                                done(err, docs);
-                            });
-                            execution[key].apply(execution, entry[key]);
-                        }
-                        else {
-                            execution = execution[key].apply(execution, entry[key]);
-                        }
-                    }
-                }
-            }
-        }
-        catch (ex) {
-            LOGGER.error(methodArray, ex);
-            done(new Meteor.Error(ex.message), null);
-        }
-    });
-
-    Helper.convertBSONtoJSON(result);
-    Helper.removeConnectionTopology(result);
-    return result;
-};

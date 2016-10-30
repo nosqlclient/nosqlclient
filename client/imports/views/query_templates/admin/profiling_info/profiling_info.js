@@ -9,7 +9,6 @@ import './profiling_info.html';
  * Created by RSercan on 10.1.2016.
  */
 Template.profilingInfo.onRendered(function () {
-    Helper.changeConvertOptionsVisibility(false);
     Helper.changeRunOnAdminOptionVisibility(false);
 });
 

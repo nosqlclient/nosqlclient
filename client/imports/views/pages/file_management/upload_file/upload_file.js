@@ -2,7 +2,7 @@ import {Template} from 'meteor/templating';
 import {Meteor} from 'meteor/meteor';
 import {Session} from 'meteor/session';
 import Helper from '/client/imports/helper';
-import {initFileInformations} from '../file_management';
+import {initFilesInformation} from '../file_management';
 
 import './upload_file.html';
 
@@ -35,10 +35,11 @@ Template.uploadFile.events({
                 cancelButtonText: "No"
             }, function (isConfirm) {
                 if (isConfirm) {
-                    $('#fileInfoModal').on('shown.bs.modal', function () {
+                    let modal = $('#fileInfoModal');
+                    modal.on('shown.bs.modal', function () {
                         Helper.initializeCodeMirror($('#divMetadata'), 'txtMetadata');
                     });
-                    $('#fileInfoModal').modal('show');
+                    modal.modal('show');
                 }
             });
         }
@@ -57,7 +58,7 @@ export const proceedUploading = function (blob, contentType, metaData, aliases) 
             }
             else {
                 toastr.success('Successfuly uploaded file');
-                initFileInformations();
+                initFilesInformation();
 
                 Ladda.stopAll();
             }
