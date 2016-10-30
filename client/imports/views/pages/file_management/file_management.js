@@ -1,3 +1,7 @@
+/**
+ * Created by sercan on 09.02.2016.
+ */
+
 import {Template} from 'meteor/templating';
 import {Meteor} from 'meteor/meteor';
 import {Session} from 'meteor/session';
@@ -12,22 +16,108 @@ import './file_management.html';
 var JSONEditor = require('jsoneditor');
 var toastr = require('toastr');
 var Ladda = require('ladda');
-/**
- * Created by sercan on 09.02.2016.
- */
+
+const proceedShowingMetadata = function (id, jsonEditor) {
+    Meteor.call('getFile', $('#txtBucketName').val(), id, function (err, result) {
+        if (err || result.error) {
+            Helper.showMeteorFuncError(err, result, "Couldn't find file");
+        }
+        else {
+            jsonEditor.set(result.result);
+        }
+
+        Ladda.stopAll();
+    });
+};
+
+const convertObjectIdAndDateToString = function (arr) {
+    for (let i = 0; i < arr.length; i++) {
+        if (arr[i]._id) {
+            arr[i]._id = arr[i]._id.$oid;
+        }
+
+        if (arr[i].uploadDate) {
+            arr[i].uploadDate = arr[i].uploadDate.$date;
+        }
+    }
+};
+
+export const initFilesInformation = function () {
+    var l = Ladda.create(document.querySelector('#btnReloadFiles'));
+    l.start();
+
+    var selector = getSelectorValue();
+
+    selector = Helper.convertAndCheckJSON(selector);
+    if (selector["ERROR"]) {
+        toastr.error("Syntax error on selector: " + selector["ERROR"]);
+
+        Ladda.stopAll();
+        return;
+    }
+
+    Meteor.call('getFileInfos', $('#txtBucketName').val(), selector, $('#txtFileFetchLimit').val(), function (err, result) {
+            if (err || result.error) {
+                Helper.showMeteorFuncError(err, result, "Couldn't get file informations");
+                return;
+            }
+
+            var tblFiles = $('#tblFiles');
+            // destroy jquery datatable to prevent reinitialization (https://datatables.net/manual/tech-notes/3)
+            if ($.fn.dataTable.isDataTable('#tblFiles')) {
+                tblFiles.DataTable().destroy();
+            }
+
+            convertObjectIdAndDateToString(result.result);
+            tblFiles.DataTable({
+                data: result.result,
+                columns: [
+                    {data: "_id", "width": "15%"},
+                    {data: "filename", "width": "20%"},
+                    {data: "chunkSize", "width": "15%"},
+                    {data: "uploadDate", "width": "15%"},
+                    {data: "length", "width": "15%"}
+                ],
+                columnDefs: [
+                    {
+                        targets: [5],
+                        data: null,
+                        width: "5%",
+                        defaultContent: '<a href="" title="Edit Metadata" class="editor_show_metadata"><i class="fa fa-book text-navy"></i></a>'
+                    },
+                    {
+                        targets: [6],
+                        data: null,
+                        width: "5%",
+                        defaultContent: '<a href="" title="Download" class="editor_download"><i class="fa fa-download text-navy"></i></a>'
+                    },
+                    {
+                        targets: [7],
+                        data: null,
+                        width: "5%",
+                        defaultContent: '<a href="" title="Delete" class="editor_delete"><i class="fa fa-remove text-navy"></i></a>'
+                    }
+                ]
+            });
+
+            Ladda.stopAll();
+        }
+    );
+};
+
 Template.fileManagement.onRendered(function () {
     if (Session.get(Helper.strSessionCollectionNames) == undefined) {
         Router.go('databaseStats');
         return;
     }
 
-    initFileInformations();
+    initFilesInformation();
     Helper.initiateDatatable($('#tblFiles'), Helper.strSessionSelectedFile, true);
 });
 
 Template.fileManagement.events({
     'click #btnReloadFiles'  () {
-        initFileInformations();
+        initFilesInformation();
     },
 
     'click .editor_download'  (e) {
@@ -39,6 +129,7 @@ Template.fileManagement.events({
     },
 
     'click .editor_delete'  (e) {
+        e.preventDefault();
         var fileRow = Session.get(Helper.strSessionSelectedFile);
         if (fileRow) {
             swal({
@@ -59,7 +150,7 @@ Template.fileManagement.events({
                             toastr.error("Couldn't delete: " + err.message);
                         } else {
                             toastr.success('Successfuly deleted !');
-                            initFileInformations();
+                            initFilesInformation();
                         }
                     });
                 }
@@ -88,7 +179,7 @@ Template.fileManagement.events({
                 delete setValue._id;
 
                 Meteor.call('updateOne', $('#txtBucketName').val() + '.files',
-                    {'_id': Session.get(Helper.strSessionSelectedFile)._id}, {"$set": setValue}, {}, true, true, function (err, result) {
+                    {'_id': {"$oid": Session.get(Helper.strSessionSelectedFile)._id}}, {"$set": setValue}, {}, function (err) {
                         if (err) {
                             toastr.error("Couldn't update file info: " + err.message);
                         } else {
@@ -129,77 +220,3 @@ Template.fileManagement.events({
     }
 
 });
-
-const proceedShowingMetadata = function (id, jsonEditor) {
-    Meteor.call('getFile', $('#txtBucketName').val(), id, function (err, result) {
-        if (err || result.error) {
-            Helper.showMeteorFuncError(err, result, "Couldn't find file");
-        }
-        else {
-            jsonEditor.set(result.result);
-        }
-
-        Ladda.stopAll();
-    });
-};
-
-export const initFileInformations = function () {
-    var l = Ladda.create(document.querySelector('#btnReloadFiles'));
-    l.start();
-
-    var selector = getSelectorValue();
-
-    selector = Helper.convertAndCheckJSON(selector);
-    if (selector["ERROR"]) {
-        toastr.error("Syntax error on selector: " + selector["ERROR"]);
-
-        Ladda.stopAll();
-        return;
-    }
-
-    Meteor.call('getFileInfos', $('#txtBucketName').val(), selector, $('#txtFileFetchLimit').val(), function (err, result) {
-            if (err || result.error) {
-                Helper.showMeteorFuncError(err, result, "Couldn't get file informations");
-                return;
-            }
-
-            var tblFiles = $('#tblFiles');
-            // destroy jquery datatable to prevent reinitialization (https://datatables.net/manual/tech-notes/3)
-            if ($.fn.dataTable.isDataTable('#tblFiles')) {
-                tblFiles.DataTable().destroy();
-            }
-            tblFiles.DataTable({
-                data: result.result,
-                columns: [
-                    {data: "_id", "width": "15%"},
-                    {data: "filename", "width": "20%"},
-                    {data: "chunkSize", "width": "15%"},
-                    {data: "uploadDate", "width": "15%"},
-                    {data: "length", "width": "15%"}
-                ],
-                columnDefs: [
-                    {
-                        targets: [5],
-                        data: null,
-                        width: "5%",
-                        defaultContent: '<a href="" title="Edit Metadata" class="editor_show_metadata"><i class="fa fa-book text-navy"></i></a>'
-                    },
-                    {
-                        targets: [6],
-                        data: null,
-                        width: "5%",
-                        defaultContent: '<a href="" title="Download" class="editor_download"><i class="fa fa-download text-navy"></i></a>'
-                    },
-                    {
-                        targets: [7],
-                        data: null,
-                        width: "5%",
-                        defaultContent: '<a href="" title="Delete" class="editor_delete"><i class="fa fa-remove text-navy"></i></a>'
-                    }
-                ]
-            });
-
-            Ladda.stopAll();
-        }
-    );
-};
