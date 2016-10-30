@@ -1,6 +1,6 @@
 <template name="databaseStats">
 
-    {{> pageHeading title='Browse' }}
+    {{> pageHeading title='Mongoclient' }}
 
     {{#if isConnected}}
 
@@ -144,9 +144,7 @@
                 <div class="row">
                     <div class="col-lg-12">
                         <div class="text-center m-t-lg">
-                            <h1>
-                                Welcome to Featured Mongo Client
-                            </h1>
+                            <h1>Statistics are disabled by settings</h1>
                             <small id="errorMessage">
                                 To see the statistics of your database, simply
                                 <strong>enable</strong> <i>show database statistics</i> setting
@@ -164,14 +162,20 @@
                 <div class="col-lg-12">
                     <div class="text-center m-t-lg">
                         <h1>
-                            Welcome to Featured Mongo Client
+                            Welcome to Featured Mongoclient
                         </h1>
                         <small>
                             You can connect a new database by pressing <strong>Connect</strong> button.
                         </small>
+                        <br/>
+                        <br/>
+                        <button id="btnBreakingChangesDBStats" type="button" class="btn btn-primary"
+                                data-toggle="modal" data-target="#breakingChangesModal">Checkout Breaking Changes
+                        </button>
                     </div>
                 </div>
             </div>
         </div>
+
     {{/if}}
 </template>

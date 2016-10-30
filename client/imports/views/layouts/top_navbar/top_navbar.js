@@ -4,6 +4,7 @@ import {Session} from 'meteor/session';
 import Helper from '/client/imports/helper';
 import {Connections} from '/lib/imports/collections/connections';
 
+import '/client/imports/views/layouts/breaking_changes/breaking_changes';
 import './top_navbar.html';
 
 var toastr = require('toastr');
