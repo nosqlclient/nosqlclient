@@ -1,0 +1,100 @@
+<template name="breakingChanges">
+    <div class="modal inmodal" id="breakingChangesModal" tabindex="-1" role="dialog" aria-hidden="true"
+         style="display: none;">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content animated bounceInRight">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span><span
+                            class="sr-only">Close</span></button>
+                    <h4 class="modal-title">Breaking Changes</h4>
+                    <small class="font-bold">v2.0.0</small>
+                </div>
+                <div class="modal-body">
+
+
+                    <div id="page1">
+
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <div class="panel panel-primary">
+                                    <div class="panel-heading">
+                                        Querying BSON types has changed !
+                                    </div>
+                                    <div class="panel-body">
+                                        <p>Querying for whole <b>BSON types</b> are now supported. Right upper corner
+                                            checkboxes for automatic conversion are gone. Example valid queries:
+                                        </p>
+                                        <br/>
+                                        <div id="divQueryExamples">
+                                            <textarea id="txtQueryExamples" class="form-control"></textarea>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+
+                    </div>
+
+
+                    <div id="page2" style="display: none;">
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <div class="panel panel-primary">
+                                    <div class="panel-heading">
+                                        Import/Export Mongoclient Data
+                                    </div>
+                                    <div class="panel-body">
+                                        <p>You don't have to worry about your connections and settings of mongoclient
+                                            for
+                                            any brand new version installation. Simply, mongoclient data is exportable
+                                            by
+                                            following <b>More - Export Mongoclient Data</b>. And in new installation you
+                                            can do <b>More - Import Mongoclient Data</b></p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <div class="panel panel-primary">
+                                    <div class="panel-heading">
+                                        Chat is back !
+                                    </div>
+                                    <div class="panel-body">
+                                        <p>Upon great demand of dear mongoclient users, chat is back again. <b>Please
+                                            try to keep your questions only about mongoclient</b>, or you can leave
+                                            feedback, and I'm gonna try to return you back as soon as possible.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <div class="panel panel-primary">
+                                    <div class="panel-heading">
+                                        MeteorJS has been updated to 1.4.2
+                                    </div>
+                                    <div class="panel-body">
+                                        <p>As of meteorJS 1.3 <b>ES6 modules are way to go in meteorJS and now in
+                                            mongoclient as well</b>. A new extension framework is upcoming for
+                                            mongoclient
+                                            and whole code base has been reworked</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <div class="pull-left">
+                        <button disabled class="btn btn-white btn-lg"><i class="fa fa-arrow-left"></i></button>
+                    </div>
+                    <button class="btn btn-white btn-lg"><i class="fa fa-arrow-right"></i></button>
+                </div>
+            </div>
+        </div>
+    </div>
+</template>

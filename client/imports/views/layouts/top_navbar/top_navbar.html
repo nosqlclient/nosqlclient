@@ -48,6 +48,12 @@
                         </li>
                         <li class="divider"></li>
                         <li>
+                            <a id="btnBreakingChanges" data-toggle="modal" data-target="#breakingChangesModal">
+                                <i class="fa fa-warning"></i> Breaking Changes
+                            </a>
+                        </li>
+                        <li class="divider"></li>
+                        <li>
                             <a id="btnAboutMongoclient" href="">
                                 <i class="fa fa-globe"></i> About
                             </a>
@@ -69,6 +75,7 @@
         </nav>
     </div>
 
+
     <!-- MODAL About-->
     <div class="modal inmodal" id="aboutModal" tabindex="-1" role="dialog" aria-hidden="true"
          style="display: none;">
@@ -79,7 +86,7 @@
                             class="sr-only">Close</span></button>
                     <img src="logo/head_5.png" class="modal-icon"/>
                     <h4 class="modal-title">Mongoclient</h4>
-                    <huge class="font-bold">Version 1.4.0-SNAPSHOT<br/>Copyright R. Sercan Özdemir © 2016 <br/>MIT
+                    <huge class="font-bold">Version 2.0.0-SNAPSHOT<br/>Copyright R. Sercan Özdemir © 2016 <br/>MIT
                         License
                     </huge>
                 </div>
@@ -569,5 +576,5 @@
         </div>
     </div>
 
-
+    {{> breakingChanges}}
 </template>
