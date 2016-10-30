@@ -65,7 +65,7 @@
         // support shell stuff
 
         // replace objectID variations with $oid
-        let objectIDRegex = /:objectid\("[A-Z0-9]*"\)/gi;
+        let objectIDRegex = /:objectid\("[A-Z0-9]*"\)/gmi;
         let objIdMatches = objectIDRegex.exec(str);
 
         if (objIdMatches) {
@@ -75,7 +75,7 @@
         }
 
         // replace ISODate|date variations with $date
-        let isoDateRegex = /:isodate\("[A-Z0-9-:.]*"\)|:date\("[A-Z0-9-:.]*"\)|:newdate\("[A-Z0-9-:.]*"\)|:newisodate\("[A-Z0-9-:.]*"\)/gi;
+        let isoDateRegex = /:isodate\("[A-Z0-9-:.]*"\)|:date\("[A-Z0-9-:.]*"\)|:newdate\("[A-Z0-9-:.]*"\)|:newisodate\("[A-Z0-9-:.]*"\)/gmi;
         let isoDateMatches = isoDateRegex.exec(str);
 
         if (isoDateMatches) {
