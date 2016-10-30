@@ -17,6 +17,24 @@ Template.breakingChanges.onRendered(function () {
     });
 });
 
+Template.breakingChanges.events({
+    'click #btnNext'(e) {
+        $('#page1').hide();
+        $('#page2').show();
+
+        $('#btnPrevious').prop('disabled', false);
+        $('#btnNext').prop('disabled', true);
+    },
+
+    'click #btnPrevious'(e) {
+        $('#page2').hide();
+        $('#page1').show();
+
+        $('#btnPrevious').prop('disabled', true);
+        $('#btnNext').prop('disabled', false);
+    },
+});
+
 const getExamples = function () {
     let str = "// all extended json types are will be converted to BSON types\n";
     str += "{_id:{$oid:\"507f191e810c19729de860ea\"}}\n";

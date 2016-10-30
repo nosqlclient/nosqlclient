@@ -22,7 +22,8 @@
                                     </div>
                                     <div class="panel-body">
                                         <p>Querying for whole <b>BSON types</b> are now supported. Right upper corner
-                                            checkboxes for automatic conversion are gone. Example valid queries:
+                                            checkboxes for automatic conversion are gone. Check extended json
+                                            documentation of mongodb for more info. Example valid queries:
                                         </p>
                                         <br/>
                                         <div id="divQueryExamples">
@@ -34,15 +35,25 @@
                         </div>
 
 
-                    </div>
-
-
-                    <div id="page2" style="display: none;">
                         <div class="row">
                             <div class="col-lg-12">
                                 <div class="panel panel-primary">
                                     <div class="panel-heading">
-                                        Import/Export Mongoclient Data
+                                        File management section has been improved
+                                    </div>
+                                    <div class="panel-body">
+                                        <p>Added limit option and upload improved.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <div class="panel panel-primary">
+                                    <div class="panel-heading">
+                                        Import/Export mongoclient data
                                     </div>
                                     <div class="panel-body">
                                         <p>You don't have to worry about your connections and settings of mongoclient
@@ -55,7 +66,10 @@
                                 </div>
                             </div>
                         </div>
+                    </div>
 
+
+                    <div id="page2" style="display: none;">
                         <div class="row">
                             <div class="col-lg-12">
                                 <div class="panel panel-primary">
@@ -86,13 +100,31 @@
                                 </div>
                             </div>
                         </div>
+
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <div class="panel panel-primary">
+                                    <div class="panel-heading">
+                                        Other improvements
+                                    </div>
+                                    <div class="panel-body">
+                                        <p>Insertmany, autocompletion of fields, docker image fix for meteor update, UI
+                                            improvements and a bunch of other bugs fixed. All code editors for queries
+                                            and their options have been changed as codemirror editor instead of ace.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
                     </div>
                 </div>
                 <div class="modal-footer">
                     <div class="pull-left">
-                        <button disabled class="btn btn-white btn-lg"><i class="fa fa-arrow-left"></i></button>
+                        <button id="btnPrevious" disabled class="btn btn-white btn-lg"><i class="fa fa-arrow-left"></i>
+                        </button>
                     </div>
-                    <button class="btn btn-white btn-lg"><i class="fa fa-arrow-right"></i></button>
+                    <button id="btnNext" class="btn btn-white btn-lg"><i class="fa fa-arrow-right"></i></button>
                 </div>
             </div>
         </div>
