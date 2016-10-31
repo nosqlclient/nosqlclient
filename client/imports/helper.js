@@ -65,24 +65,25 @@
         // support shell stuff
 
         // replace objectID variations with $oid
-        let objectIDRegex = /:objectid\("[A-Z0-9]*"\)/gmi;
+        let objectIDRegex = /objectid\("[A-Z0-9]*"\)/gmi;
         let objIdMatches = objectIDRegex.exec(str);
 
         if (objIdMatches) {
             for (let i = 0; i < objIdMatches.length; i++) {
-                str = str.replace(objIdMatches[i], ":{$oid:\"" + extractMiddleString(objIdMatches[i]) + "\"}");
+                str = str.replace(objIdMatches[i], "{$oid:\"" + extractMiddleString(objIdMatches[i]) + "\"}");
             }
         }
 
         // replace ISODate|date variations with $date
-        let isoDateRegex = /:isodate\("[A-Z0-9-:.]*"\)|:date\("[A-Z0-9-:.]*"\)|:newdate\("[A-Z0-9-:.]*"\)|:newisodate\("[A-Z0-9-:.]*"\)/gmi;
+        let isoDateRegex = /isodate\("[A-Z0-9-:.]*"\)|date\("[A-Z0-9-:.]*"\)|newdate\("[A-Z0-9-:.]*"\)|newisodate\("[A-Z0-9-:.]*"\)/gmi;
         let isoDateMatches = isoDateRegex.exec(str);
 
         if (isoDateMatches) {
             for (let i = 0; i < isoDateMatches.length; i++) {
-                str = str.replace(isoDateMatches[i], ":{$date:\"" + extractMiddleString(isoDateMatches[i]) + "\"}");
+                str = str.replace(isoDateMatches[i], "{$date:\"" + extractMiddleString(isoDateMatches[i]) + "\"}");
             }
         }
+
 
         return str;
     };
