@@ -99,11 +99,6 @@
             }
         }
 
-        //TODO test here replace regex with $regex
-        while (str.indexOf('/') != -1) {
-            str = replaceRegex(str);
-        }
-
         return str;
     };
 
