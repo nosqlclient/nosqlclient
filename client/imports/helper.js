@@ -56,21 +56,6 @@
         return str.substring(str.indexOf("\"") + 1, str.lastIndexOf("\""));
     };
 
-    const getPosition = function (str, searchText, indice) {
-        return str.split(searchText, indice).join(searchText).length;
-    };
-
-    const replaceRegex = function (str) {
-        var firstIndex = getPosition(str, '/', 1);
-        var secondIndex = getPosition(str, '/', 2);
-        var options = str.substr(secondIndex + 1, 4);
-        secondIndex += options.length;
-        var regex = "{$regex:\"" + str.substring(firstIndex + 1, secondIndex + 1) + "\"";
-        regex += options ? ",$options:\"+options+\"}" : "}";
-
-        return str.replace(str.substring(firstIndex, secondIndex + 1), regex);
-    };
-
     //supporting shell commands for ObjectID and ISODate, https://docs.mongodb.com/manual/reference/mongodb-extended-json/
     const convertToExtendedJson = function (str) {
         if (!str || Object.prototype.toString.call(str) !== '[object String]') {
