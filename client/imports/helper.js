@@ -79,7 +79,6 @@
 
         // support shell stuff
 
-        console.log(str);
         // replace objectID variations with $oid
         let objectIDRegex = /objectid\("[A-Z0-9]*"\)/gmi;
         let objIdMatches = str.match(objectIDRegex);
@@ -106,7 +105,6 @@
         }
 
 
-        console.log(str);
         return str;
     };
 
