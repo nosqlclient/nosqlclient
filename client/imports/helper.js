@@ -63,12 +63,23 @@
     const replaceRegex = function (str) {
         var firstIndex = getPosition(str, '/', 1);
         var secondIndex = getPosition(str, '/', 2);
-        var options = str.substr(secondIndex + 1, 4);
-        secondIndex += options.length;
-        var regex = "{$regex:\"" + str.substring(firstIndex + 1, secondIndex + 1) + "\"";
-        regex += options ? ",$options:\"+options+\"}" : "}";
+        var options = "";
 
-        return str.replace(str.substring(firstIndex, secondIndex + 1), regex);
+        let i = 0;
+        while (str.substr(secondIndex + 1)) {
+            let nextChar = str.substr(secondIndex + 1)[i];
+            if (nextChar === 'i' || nextChar === 'm' || nextChar === 'x' || nextChar === 's') {
+                options += nextChar;
+                i++;
+            } else {
+                break;
+            }
+        }
+
+        var regex = "{$regex:\"" + str.substring(firstIndex + 1, secondIndex) + "\"";
+        regex += options ? ",$options:\"" + options + "\"}" : "}";
+
+        return str.replace(str.substring(firstIndex, secondIndex + options.length + 1), regex);
     };
 
     //supporting shell commands for ObjectID and ISODate, https://docs.mongodb.com/manual/reference/mongodb-extended-json/
@@ -97,6 +108,10 @@
             for (let i = 0; i < isoDateMatches.length; i++) {
                 str = str.replace(isoDateMatches[i], "{$date:\"" + extractMiddleString(isoDateMatches[i]) + "\"}");
             }
+        }
+
+        while (str.indexOf(':/') != -1) {
+            str = replaceRegex(str);
         }
 
         return str;
