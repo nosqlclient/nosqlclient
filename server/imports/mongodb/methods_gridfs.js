@@ -52,7 +52,7 @@ Meteor.methods({
 
     uploadFile(bucketName, blob, fileName, contentType, metaData, aliases) {
         if (metaData) {
-            Helper.convertJSONtoBSON(metaData);
+            metaData = Helper.convertJSONtoBSON(metaData);
         }
 
         blob = new Buffer(blob);

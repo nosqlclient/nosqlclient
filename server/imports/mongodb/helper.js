@@ -121,13 +121,11 @@
 
 
         convertBSONtoJSON (obj) {
-            serialize(obj);
-            return obj;
+            return serialize(obj);
         },
 
         convertJSONtoBSON (obj) {
-            deserialize(obj);
-            return obj;
+            return deserialize(obj);
         }
     };
 

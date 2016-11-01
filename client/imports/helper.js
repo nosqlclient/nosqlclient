@@ -56,6 +56,21 @@
         return str.substring(str.indexOf("\"") + 1, str.lastIndexOf("\""));
     };
 
+    const getPosition = function (str, searchText, indice) {
+        return str.split(searchText, indice).join(searchText).length;
+    };
+
+    const replaceRegex = function (str) {
+        var firstIndex = getPosition(str, '/', 1);
+        var secondIndex = getPosition(str, '/', 2);
+        var options = str.substr(secondIndex + 1, 4);
+        secondIndex += options.length;
+        var regex = "{$regex:\"" + str.substring(firstIndex + 1, secondIndex + 1) + "\"";
+        regex += options ? ",$options:\"+options+\"}" : "}";
+
+        return str.replace(str.substring(firstIndex, secondIndex + 1), regex);
+    };
+
     //supporting shell commands for ObjectID and ISODate, https://docs.mongodb.com/manual/reference/mongodb-extended-json/
     const convertToExtendedJson = function (str) {
         if (!str || Object.prototype.toString.call(str) !== '[object String]') {
@@ -64,9 +79,10 @@
 
         // support shell stuff
 
+        console.log(str);
         // replace objectID variations with $oid
         let objectIDRegex = /objectid\("[A-Z0-9]*"\)/gmi;
-        let objIdMatches = objectIDRegex.exec(str);
+        let objIdMatches = str.match(objectIDRegex);
 
         if (objIdMatches) {
             for (let i = 0; i < objIdMatches.length; i++) {
@@ -76,7 +92,7 @@
 
         // replace ISODate|date variations with $date
         let isoDateRegex = /isodate\("[A-Z0-9-:.]*"\)|date\("[A-Z0-9-:.]*"\)|newdate\("[A-Z0-9-:.]*"\)|newisodate\("[A-Z0-9-:.]*"\)/gmi;
-        let isoDateMatches = isoDateRegex.exec(str);
+        let isoDateMatches = str.match(isoDateRegex);
 
         if (isoDateMatches) {
             for (let i = 0; i < isoDateMatches.length; i++) {
@@ -84,9 +100,16 @@
             }
         }
 
+        //TODO test here replace regex with $regex
+        while (str.indexOf('/') != -1) {
+            str = replaceRegex(str);
+        }
 
+
+        console.log(str);
         return str;
     };
+
 
     let Helper = function () {
         this.strSessionConnection = "connection";
@@ -161,8 +184,11 @@
             var errorMessage;
             if (err) {
                 errorMessage = err.message;
-            } else {
+            } else if (result.error.message) {
                 errorMessage = result.error.message;
+            }
+            else if (result.error) {
+                errorMessage = JSON.stringify(result.error);
             }
             if (errorMessage) {
                 toastr.error(message + ": " + errorMessage);
@@ -194,7 +220,7 @@
 
         convertAndCheckJSON  (json) {
             if (!json) return {};
-            json = json.replace(/ /g, '');
+            json = json.replace(/\s/g, '');
             var result = {};
             try {
                 if (!json.startsWith('{') && !json.startsWith('[')) {

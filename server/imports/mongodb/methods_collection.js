@@ -3,12 +3,12 @@
  */
 import LOGGER from "../internal/logger";
 import Helper from "./helper";
-import {Meteor} from 'meteor/meteor';
+import {Meteor} from "meteor/meteor";
 import {database} from "./methods_common";
 
 
 const proceedMapReduceExecution = function (selectedCollection, map, reduce, options) {
-    Helper.convertJSONtoBSON(options);
+    options = Helper.convertJSONtoBSON(options);
 
     LOGGER.info('[mapReduce]', selectedCollection, map, reduce, options);
 
@@ -48,7 +48,7 @@ const proceedQueryExecution = function (selectedCollection, methodArray, removeC
             for (let i = 0; i < methodArray.length; i++) {
                 let last = i == (methodArray.length - 1);
                 let entry = methodArray[i];
-                Helper.convertJSONtoBSON(entry);
+                entry = Helper.convertJSONtoBSON(entry);
                 for (let key in entry) {
                     if (entry.hasOwnProperty(key)) {
                         if (last && key == Object.keys(entry)[Object.keys(entry).length - 1]) {

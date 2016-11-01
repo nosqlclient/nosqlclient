@@ -3,8 +3,6 @@
  */
 // a simple fork of https://github.com/mongodb/js-bson/blob/0.5/extended-json/index.js
 
-"use strict";
-
 var bson = require('bson');
 var Binary = bson.Binary
     , Long = bson.Long
@@ -16,110 +14,133 @@ var Binary = bson.Binary
     , Code = bson.Code
     , Decimal128 = bson.Decimal128;
 
-export const serialize = function (document) {
-    if (document && typeof document == 'object') {
-        var keys = Object.keys(document);
-        if (keys.length == 0) return {};
 
-        // for(var name in document) {
-        for (let i = 0; i < keys.length; i++) {
-            var name = keys[i];
+export const serialize = function (obj) {
+    // there are some other objects such as Math, Date etc..
+    if (obj && (typeof obj === 'object') && Object.prototype.toString.call(obj) !== '[object Array]' && serializeResult(obj)) {
+        return serializeResult(obj);
+    }
 
-            if (Array.isArray(document[name])) {
-                for (let i = 0; i < document[name].length; i++) {
-                    serialize(document[name][i]);
-                }
-            } else if (document[name] && typeof document[name] == 'object') {
-                if (document[name] instanceof Binary || document[name]._bsontype == 'Binary') {
-                    document[name] = {
-                        '$binary': document[name].buffer.toString('base64'),
-                        '$type': new Buffer([document[name].sub_type]).toString('hex')
-                    };
-                } else if (document[name] instanceof Code || document[name]._bsontype == 'Code') {
-                    document[name] = {'$code': document[name].code};
-                    if (document[name].scope) document[name]['$scope'] = document[name].scope;
-                } else if (document[name] instanceof Date) {
-                    document[name] = {'$date': document[name].toISOString()};
-                } else if (document[name] instanceof Long || document[name]._bsontype == 'Long') {
-                    document[name] = {'$numberLong': document[name].toString()};
-                } else if (document[name] instanceof MaxKey || document[name]._bsontype == 'MaxKey') {
-                    document[name] = {'$maxKey': true};
-                } else if (document[name] instanceof MinKey || document[name]._bsontype == 'MinKey') {
-                    document[name] = {'$minKey': true};
-                } else if (document[name] instanceof ObjectId || document[name]._bsontype == 'ObjectID') {
-                    document[name] = {'$oid': document[name].toString()};
-                } else if (document[name] instanceof BSONRegExp) {
-                    document[name] = {'$regex': document[name].pattern, '$options': document[name].options};
-                } else if (document[name] instanceof Timestamp || document[name]._bsontype == 'Timestamp') {
-                    document[name] = {'$timestamp': {t: document[name].high_, i: document[name].low_}};
-                } else if (document[name] instanceof Decimal128 || document[name]._bsontype == 'Decimal128') {
-                    document[name] = {'$numberDecimal': document[name].toString()};
-                } else if (document[name] === undefined) {
-                    document[name] = {'$undefined': true};
+    for (let property in obj) {
+        if (obj.hasOwnProperty(property) && obj[property] !== null) {
+            if ((typeof obj[property] === 'object') && Object.prototype.toString.call(obj[property]) !== '[object Array]') {
+                if (serializeResult(obj[property])) {
+                    obj[property] = serializeResult(obj[property]);
                 } else {
-                    serialize(document[name]);
+                    obj[property] = serialize(obj[property]);
+                }
+            }
+            else if (Object.prototype.toString.call(obj[property]) === '[object Array]') {
+                for (let i = 0; i < obj[property].length; i++) {
+                    if ((typeof obj[property][i] === 'object') && Object.prototype.toString.call(obj[property][i]) !== '[object Array]' && serializeResult(obj[property][i])) {
+                        obj[property][i] = serializeResult(obj[property][i]);
+                    }
+                    else {
+                        obj[property][i] = serialize(obj[property][i]);
+                    }
                 }
             }
         }
     }
-    else if (document && Object.prototype.toString.call(document) === '[object Array]') {
-        for (let i = 0; i < document.length; i++) {
-            serialize(document[i]);
+
+    return obj;
+};
+
+export const deserialize = function (obj) {
+    if (obj && Object.prototype.toString.call(obj) === '[object Object]' && deserializeResult(obj)) {
+        return deserializeResult(obj);
+    }
+
+    for (let property in obj) {
+        if (obj.hasOwnProperty(property) && obj[property]) {
+            if (Object.prototype.toString.call(obj[property]) === '[object Object]') {
+                if (deserializeResult(obj[property])) {
+                    obj[property] = deserializeResult(obj[property]);
+                } else {
+                    obj[property] = deserialize(obj[property]);
+                }
+            }
+            else if (Object.prototype.toString.call(obj[property]) === '[object Array]') {
+                for (let i = 0; i < obj[property].length; i++) {
+                    if (Object.prototype.toString.call(obj[property][i]) === '[object Object]' && deserializeResult(obj[property][i])) {
+                        obj[property][i] = deserializeResult(obj[property][i]);
+                    }
+                    else {
+                        obj[property][i] = deserialize(obj[property][i]);
+                    }
+                }
+            }
         }
+    }
+
+    return obj;
+};
+
+const deserializeResult = function (doc) {
+    if (doc['$binary'] != undefined) {
+        var buffer = new Buffer(doc['$binary'], 'base64');
+        var type = new Buffer(doc['$type'], 'hex')[0];
+        return new Binary(buffer, type);
+    } else if (doc['$code'] != undefined) {
+        var code = doc['$code'];
+        var scope = doc['$scope'];
+        return new Code(code, scope);
+    } else if (doc['$date'] != undefined) {
+        if (typeof doc['$date'] == 'string') {
+            return new Date(doc['$date']);
+        } else if (typeof doc['$date'] == 'object'
+            && doc['$date']['$numberLong']) {
+            var time = parseInt(doc['$date']['$numberLong'], 10);
+            var date = new Date();
+            date.setTime(time);
+            return date;
+        }
+    } else if (doc['$numberLong'] != undefined) {
+        return Long.fromString(doc['$numberLong']);
+    } else if (doc['$maxKey'] != undefined) {
+        return new MaxKey();
+    } else if (doc['$minKey'] != undefined) {
+        return new MinKey();
+    } else if (doc['$oid'] != undefined) {
+        return new ObjectId(new Buffer(doc['$oid'], 'hex'));
+    } else if (doc['$regex'] != undefined) {
+        return new BSONRegExp(doc['$regex'], doc['$options'])
+    } else if (doc['$timestamp'] != undefined) {
+        return new Timestamp(doc['$timestamp'].i, doc['$timestamp'].t);
+    } else if (doc['$numberDecimal'] != undefined) {
+        return new Decimal128.fromString(doc['$numberDecimal']);
+    } else if (doc['$undefined'] != undefined) {
+        return undefined;
     }
 };
 
-export const deserialize = function (document) {
-    if (document && typeof document == 'object') {
-        for (let name in document) {
-            if (document.hasOwnProperty(name) && document[name] && Array.isArray(document[name])) {
-                for (var i = 0; i < document[name].length; i++) {
-                    deserialize(document[name][i]);
-                }
-            } else if (document.hasOwnProperty(name) && document[name] && typeof document[name] == 'object') {
-                if (document[name]['$binary'] != undefined) {
-                    var buffer = new Buffer(document[name]['$binary'], 'base64');
-                    var type = new Buffer(document[name]['$type'], 'hex')[0];
-                    document[name] = new Binary(buffer, type);
-                } else if (document[name]['$code'] != undefined) {
-                    var code = document[name]['$code'];
-                    var scope = document[name]['$scope'];
-                    document[name] = new Code(code, scope);
-                } else if (document[name]['$date'] != undefined) {
-                    if (typeof document[name]['$date'] == 'string') {
-                        document[name] = new Date(document[name]['$date']);
-                    } else if (typeof document[name]['$date'] == 'object'
-                        && document[name]['$date']['$numberLong']) {
-                        var time = parseInt(document[name]['$date']['$numberLong'], 10);
-                        var date = new Date();
-                        date.setTime(time);
-                        document[name] = date;
-                    }
-                } else if (document[name]['$numberLong'] != undefined) {
-                    document[name] = Long.fromString(document[name]['$numberLong']);
-                } else if (document[name]['$maxKey'] != undefined) {
-                    document[name] = new MaxKey();
-                } else if (document[name]['$minKey'] != undefined) {
-                    document[name] = new MinKey();
-                } else if (document[name]['$oid'] != undefined) {
-                    document[name] = new ObjectId(new Buffer(document[name]['$oid'], 'hex'));
-                } else if (document[name]['$regex'] != undefined) {
-                    document[name] = new BSONRegExp(document[name]['$regex'], document[name]['$options'])
-                } else if (document[name]['$timestamp'] != undefined) {
-                    document[name] = new Timestamp(document[name]['$timestamp'].i, document[name]['$timestamp'].t);
-                } else if (document[name]['$numberDecimal'] != undefined) {
-                    document[name] = new Decimal128.fromString(document[name]['$numberDecimal']);
-                } else if (document[name]['$undefined'] != undefined) {
-                    document[name] = undefined;
-                } else {
-                    deserialize(document[name]);
-                }
-            }
-        }
-    }
-    else if (document && Object.prototype.toString.call(document) === '[object Array]') {
-        for (let i = 0; i < document.length; i++) {
-            deserialize(document[i]);
-        }
+const serializeResult = function (doc) {
+    if (doc instanceof Binary || doc._bsontype == 'Binary') {
+        return {
+            '$binary': doc.buffer.toString('base64'),
+            '$type': new Buffer([doc.sub_type]).toString('hex')
+        };
+    } else if (doc instanceof Code || doc._bsontype == 'Code') {
+        var res = {'$code': doc.code};
+        if (doc.scope) res['$scope'] = doc.scope;
+        return res;
+    } else if (doc instanceof Date) {
+        return {'$date': doc.toISOString()};
+    } else if (doc instanceof Long || doc._bsontype == 'Long') {
+        return {'$numberLong': doc.toString()};
+    } else if (doc instanceof MaxKey || doc._bsontype == 'MaxKey') {
+        return {'$maxKey': true};
+    } else if (doc instanceof MinKey || doc._bsontype == 'MinKey') {
+        return {'$minKey': true};
+    } else if (doc instanceof ObjectId || doc._bsontype == 'ObjectID') {
+        return {'$oid': doc.toString()};
+    } else if (doc instanceof BSONRegExp) {
+        return {'$regex': doc.pattern, '$options': doc.options};
+    } else if (doc instanceof Timestamp || doc._bsontype == 'Timestamp') {
+        return {'$timestamp': {t: doc.high_, i: doc.low_}};
+    } else if (doc instanceof Decimal128 || doc._bsontype == 'Decimal128') {
+        return {'$numberDecimal': doc.toString()};
+    } else if (doc === undefined) {
+        return {'$undefined': true};
     }
 };
