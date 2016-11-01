@@ -104,7 +104,6 @@
             str = replaceRegex(str);
         }
 
-
         return str;
     };
 
