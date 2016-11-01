@@ -31,7 +31,7 @@ export const serialize = function (obj) {
             }
             else if (Object.prototype.toString.call(obj[property]) === '[object Array]') {
                 for (let i = 0; i < obj[property].length; i++) {
-                    if (Object.prototype.toString.call(obj[property][i]) === '[object Object]' && serializeResult(obj[property[i]])) {
+                    if (Object.prototype.toString.call(obj[property][i]) === '[object Object]' && serializeResult(obj[property][i])) {
                         obj[property][i] = serializeResult(obj[property][i]);
                     }
                     else {
@@ -61,7 +61,7 @@ export const deserialize = function (obj) {
             }
             else if (Object.prototype.toString.call(obj[property]) === '[object Array]') {
                 for (let i = 0; i < obj[property].length; i++) {
-                    if (Object.prototype.toString.call(obj[property][i]) === '[object Object]' && deserializeResult(obj[property[i]])) {
+                    if (Object.prototype.toString.call(obj[property][i]) === '[object Object]' && deserializeResult(obj[property][i])) {
                         obj[property][i] = deserializeResult(obj[property][i]);
                     }
                     else {
