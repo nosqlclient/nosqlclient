@@ -16,7 +16,7 @@ const proceedQueryExecution = function (methodArray, runOnAdminDB) {
             for (let i = 0; i < methodArray.length; i++) {
                 let last = i == (methodArray.length - 1);
                 let entry = methodArray[i];
-                Helper.convertJSONtoBSON(entry);
+                entry = Helper.convertJSONtoBSON(entry);
 
                 for (let key in entry) {
                     if (entry.hasOwnProperty(key)) {

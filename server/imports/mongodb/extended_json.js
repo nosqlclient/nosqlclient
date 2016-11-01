@@ -16,13 +16,14 @@ var Binary = bson.Binary
 
 
 export const serialize = function (obj) {
-    if (obj && Object.prototype.toString.call(obj) === '[object Object]' && serializeResult(obj)) {
+    // there are some other objects such as Math, Date etc..
+    if (obj && (typeof obj === 'object') && Object.prototype.toString.call(obj) !== '[object Array]' && serializeResult(obj)) {
         return serializeResult(obj);
     }
 
     for (let property in obj) {
         if (obj.hasOwnProperty(property) && obj[property] !== null) {
-            if (Object.prototype.toString.call(obj[property]) === '[object Object]') {
+            if ((typeof obj[property] === 'object') && Object.prototype.toString.call(obj[property]) !== '[object Array]') {
                 if (serializeResult(obj[property])) {
                     obj[property] = serializeResult(obj[property]);
                 } else {
@@ -31,7 +32,7 @@ export const serialize = function (obj) {
             }
             else if (Object.prototype.toString.call(obj[property]) === '[object Array]') {
                 for (let i = 0; i < obj[property].length; i++) {
-                    if (Object.prototype.toString.call(obj[property][i]) === '[object Object]' && serializeResult(obj[property][i])) {
+                    if ((typeof obj[property][i] === 'object') && Object.prototype.toString.call(obj[property][i]) !== '[object Array]' && serializeResult(obj[property][i])) {
                         obj[property][i] = serializeResult(obj[property][i]);
                     }
                     else {
