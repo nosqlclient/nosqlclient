@@ -104,7 +104,11 @@ const deserializeResult = function (doc) {
     } else if (doc['$oid'] != undefined) {
         return new ObjectId(new Buffer(doc['$oid'], 'hex'));
     } else if (doc['$regex'] != undefined) {
-        return new BSONRegExp(doc['$regex'], doc['$options'])
+        let options = doc['$options'];
+        if (!options) {
+            options = "";
+        }
+        return new BSONRegExp(doc['$regex'], options)
     } else if (doc['$timestamp'] != undefined) {
         return new Timestamp(doc['$timestamp'].i, doc['$timestamp'].t);
     } else if (doc['$numberDecimal'] != undefined) {

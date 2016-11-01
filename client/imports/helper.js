@@ -56,32 +56,6 @@
         return str.substring(str.indexOf("\"") + 1, str.lastIndexOf("\""));
     };
 
-    const getPosition = function (str, searchText, indice) {
-        return str.split(searchText, indice).join(searchText).length;
-    };
-
-    const replaceRegex = function (str) {
-        var firstIndex = getPosition(str, '/', 1);
-        var secondIndex = getPosition(str, '/', 2);
-        var options = "";
-
-        let i = 0;
-        while (str.substr(secondIndex + 1)) {
-            let nextChar = str.substr(secondIndex + 1)[i];
-            if (nextChar === 'i' || nextChar === 'm' || nextChar === 'x' || nextChar === 's') {
-                options += nextChar;
-                i++;
-            } else {
-                break;
-            }
-        }
-
-        var regex = "{$regex:\"" + str.substring(firstIndex + 1, secondIndex) + "\"";
-        regex += options ? ",$options:\"" + options + "\"}" : "}";
-
-        return str.replace(str.substring(firstIndex, secondIndex + options.length + 1), regex);
-    };
-
     //supporting shell commands for ObjectID and ISODate, https://docs.mongodb.com/manual/reference/mongodb-extended-json/
     const convertToExtendedJson = function (str) {
         if (!str || Object.prototype.toString.call(str) !== '[object String]') {
@@ -108,10 +82,6 @@
             for (let i = 0; i < isoDateMatches.length; i++) {
                 str = str.replace(isoDateMatches[i], "{$date:\"" + extractMiddleString(isoDateMatches[i]) + "\"}");
             }
-        }
-
-        while (str.indexOf(':/') != -1) {
-            str = replaceRegex(str);
         }
 
         return str;
