@@ -39,12 +39,42 @@ import './browse_collection.html';
 var JSONEditor = require('jsoneditor');
 var toastr = require('toastr');
 var Ladda = require('ladda');
+require('jquery-contextmenu');
 /**
  * Created by RSercan on 29.12.2015.
  */
 Template.browseCollection.onCreated(function () {
     Session.set(Helper.strSessionSelectedOptions, []);
     Session.set(Helper.strSessionSelectedQuery, Enums.QUERY_TYPES.FIND);
+
+    $.contextMenu({
+        selector: "#resultTabs li",
+        items: {
+            close_all: {
+                name: "Close All Tabs", icon: "fa-times", callback: function (key, opt) {
+                    var resultTabs = $('#resultTabs li');
+                    resultTabs.each(function (idx, li) {
+                        let select = $(li);
+                        $(select.children('a').attr('href')).remove();
+                        select.remove();
+                    });
+                }
+            },
+            close_others: {
+                name: "Close Others", icon: "fa-times-circle", callback: function (key, opt) {
+                    var tabId = $(this).children('a').attr('href');
+                    var resultTabs = $('#resultTabs li');
+                    resultTabs.each(function (idx, li) {
+                        let select = $(li);
+                        if (select.children('a').attr('href') !== tabId) {
+                            $(select.children('a').attr('href')).remove();
+                            select.remove();
+                        }
+                    });
+                }
+            }
+        }
+    });
 });
 
 Template.browseCollection.onRendered(function () {
@@ -236,9 +266,8 @@ export const setQueryResult = function (result, queryInfo, queryParams, saveHist
 
         // set onclose
         resultTabs.on('click', '.close', function () {
-            var tabID = $(this).parents('a').attr('href');
             $(this).parents('li').remove();
-            $(tabID).remove();
+            $($(this).parents('a').attr('href')).remove();
 
             if (resultTabs.find('li').length == 0 || resultTabs.find('li.active').length == 0) {
                 $('#divBrowseCollectionFooter').hide();
