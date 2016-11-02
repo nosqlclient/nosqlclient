@@ -31,7 +31,7 @@ Meteor.methods({
     getFileInfos(bucketName, selector, limit) {
         limit = parseInt(limit) || 100;
         selector = selector || {};
-        LOGGER.info('[getFileInfos]', bucketName, selector, limit);
+        LOGGER.info('[getFileInfos]', bucketName, JSON.stringify(selector), limit);
 
         let result = Async.runSync(function (done) {
             try {
@@ -57,7 +57,7 @@ Meteor.methods({
 
         blob = new Buffer(blob);
 
-        LOGGER.info('[uploadFile]', bucketName, fileName, contentType, metaData, aliases);
+        LOGGER.info('[uploadFile]', bucketName, fileName, contentType, JSON.stringify(metaData), aliases);
 
         return Async.runSync(function (done) {
             try {

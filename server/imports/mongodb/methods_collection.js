@@ -40,7 +40,7 @@ const proceedMapReduceExecution = function (selectedCollection, map, reduce, opt
 };
 
 const proceedQueryExecution = function (selectedCollection, methodArray, removeCollectionTopology) {
-    LOGGER.info(methodArray, selectedCollection);
+    LOGGER.info(JSON.stringify(methodArray), selectedCollection);
 
     let result = Async.runSync(function (done) {
         try {

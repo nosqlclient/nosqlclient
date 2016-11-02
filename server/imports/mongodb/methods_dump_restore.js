@@ -19,7 +19,7 @@ Meteor.methods({
         const path = dumpInfo.filePath.substring(0, dumpInfo.filePath.lastIndexOf('/'));
         const fileName = dumpInfo.filePath.substring(dumpInfo.filePath.lastIndexOf('/') + 1);
 
-        LOGGER.info('[restoreDump]', connectionUrl, dumpInfo);
+        LOGGER.info('[restoreDump]', connectionUrl, JSON.stringify(dumpInfo));
         try {
             restore({
                 uri: connectionUrl,
@@ -46,7 +46,7 @@ Meteor.methods({
         const fileName = connection.databaseName + "_" + date.getTime() + ".tar";
         const fullFilePath = path + "/" + fileName;
 
-        LOGGER.info('[takeDump]', connectionUrl, path);
+        LOGGER.info('[takeDump]', connectionUrl, path, fileName);
         try {
             backup({
                 uri: connectionUrl,

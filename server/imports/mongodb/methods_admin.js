@@ -8,7 +8,7 @@ import {database} from "./methods_common";
 
 
 const proceedQueryExecution = function (methodArray, runOnAdminDB) {
-    LOGGER.info(methodArray, runOnAdminDB);
+    LOGGER.info(JSON.stringify(methodArray), runOnAdminDB);
 
     let result = Async.runSync(function (done) {
         try {

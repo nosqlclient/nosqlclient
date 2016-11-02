@@ -197,7 +197,8 @@
 
         convertAndCheckJSON  (json) {
             if (!json) return {};
-            json = json.replace(/\s/g, '');
+            json = json.match(/[^\s"']+|"([^"]*)"|'([^']*)'/gm).join('');
+            console.log(json);
             var result = {};
             try {
                 if (!json.startsWith('{') && !json.startsWith('[')) {
