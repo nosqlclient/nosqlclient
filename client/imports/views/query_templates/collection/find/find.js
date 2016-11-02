@@ -36,7 +36,7 @@ const initializeOptions = function () {
     $('#inputExecuteExplain').iCheck('uncheck');
 };
 
-Template.find.executeQuery = function (historyParams) {
+Template.find.executeQuery = function (historyParams, exportFormat) {
     initExecuteQuery();
     var selectedCollection = Session.get(Helper.strSessionSelectedCollection);
     var maxAllowedFetchSize = Math.round(Settings.findOne().maxAllowedFetchSize * 100) / 100;
@@ -62,24 +62,24 @@ Template.find.executeQuery = function (historyParams) {
         Meteor.call("stats", selectedCollection, {}, function (statsError, statsResult) {
             if (statsError || statsResult.error || !(statsResult.result.avgObjSize)) {
                 // if there's an error, nothing we can do
-                proceedFindQuery(selectedCollection, selector, cursorOptions, (historyParams ? false : true));
+                proceedFindQuery(selectedCollection, selector, cursorOptions, (historyParams ? false : true), exportFormat);
             }
             else {
                 if (Enums.CURSOR_OPTIONS.LIMIT in cursorOptions) {
                     var count = cursorOptions.limit;
                     if (checkAverageSize(count, statsResult.result.avgObjSize, maxAllowedFetchSize)) {
-                        proceedFindQuery(selectedCollection, selector, cursorOptions, (historyParams ? false : true));
+                        proceedFindQuery(selectedCollection, selector, cursorOptions, (historyParams ? false : true), exportFormat);
                     }
                 }
                 else {
                     Meteor.call("count", selectedCollection, selector, function (err, result) {
                         if (err || result.error) {
-                            proceedFindQuery(selectedCollection, selector, cursorOptions, (historyParams ? false : true));
+                            proceedFindQuery(selectedCollection, selector, cursorOptions, (historyParams ? false : true), exportFormat);
                         }
                         else {
                             var count = result.result;
                             if (checkAverageSize(count, statsResult.result.avgObjSize, maxAllowedFetchSize)) {
-                                proceedFindQuery(selectedCollection, selector, cursorOptions, (historyParams ? false : true));
+                                proceedFindQuery(selectedCollection, selector, cursorOptions, (historyParams ? false : true), exportFormat);
                             }
                         }
                     });
@@ -88,11 +88,11 @@ Template.find.executeQuery = function (historyParams) {
         });
     }
     else {
-        proceedFindQuery(selectedCollection, selector, cursorOptions);
+        proceedFindQuery(selectedCollection, selector, cursorOptions, false, exportFormat);
     }
 };
 
-const proceedFindQuery = function (selectedCollection, selector, cursorOptions, saveHistory) {
+const proceedFindQuery = function (selectedCollection, selector, cursorOptions, saveHistory, exportFormat) {
     var params = {
         selector: selector,
         cursorOptions: cursorOptions
@@ -103,9 +103,14 @@ const proceedFindQuery = function (selectedCollection, selector, cursorOptions, 
         executeExplain = $('#inputExecuteExplain').iCheck('update')[0].checked;
     }
 
-    Meteor.call("find", selectedCollection, selector, cursorOptions, executeExplain, function (err, result) {
-        Helper.renderAfterQueryExecution(err, result, false, "find", params, saveHistory);
-    });
+    if (exportFormat) {
+        window.open('export?format=' + exportFormat + '&selectedCollection=' + selectedCollection + "&selector=" + JSON.stringify(selector) + "&cursorOptions=" + JSON.stringify(cursorOptions));
+        Ladda.stopAll();
+    } else {
+        Meteor.call("find", selectedCollection, selector, cursorOptions, executeExplain, function (err, result) {
+            Helper.renderAfterQueryExecution(err, result, false, "find", params, saveHistory);
+        });
+    }
 };
 
 const checkAverageSize = function (count, avgObjSize, maxAllowedFetchSize) {

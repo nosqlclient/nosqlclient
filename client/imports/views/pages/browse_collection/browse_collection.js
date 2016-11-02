@@ -1,40 +1,38 @@
-import {Template} from 'meteor/templating';
-import {Meteor} from 'meteor/meteor';
-import {Session} from 'meteor/session';
-import Helper from '/client/imports/helper';
-import {Settings} from '/lib/imports/collections/settings';
-import Enums from '/lib/imports/enums';
-import {initQueryHistories} from './query_histories/query_histories';
+import {Template} from "meteor/templating";
+import {Meteor} from "meteor/meteor";
+import {Session} from "meteor/session";
+import Helper from "/client/imports/helper";
+import {Settings} from "/lib/imports/collections/settings";
+import Enums from "/lib/imports/enums";
+import {initQueryHistories} from "./query_histories/query_histories";
+import "/client/imports/views/query_templates/collection/aggregate/aggregate";
+import "/client/imports/views/query_templates/collection/bulk_write/bulk_write";
+import "/client/imports/views/query_templates/collection/count/count";
+import "/client/imports/views/query_templates/collection/create_index/create_index";
+import "/client/imports/views/query_templates/collection/delete/delete";
+import "/client/imports/views/query_templates/collection/distinct/distinct";
+import "/client/imports/views/query_templates/collection/drop_index/drop_index";
+import "/client/imports/views/query_templates/collection/find/find";
+import "/client/imports/views/query_templates/collection/findone/findone";
+import "/client/imports/views/query_templates/collection/findone_and_delete/findone_and_delete";
+import "/client/imports/views/query_templates/collection/findone_and_replace/findone_and_replace";
+import "/client/imports/views/query_templates/collection/findone_and_update/findone_and_update";
+import "/client/imports/views/query_templates/collection/geo_haystack_search/geo_haystack_search";
+import "/client/imports/views/query_templates/collection/geo_near/geo_near";
+import "/client/imports/views/query_templates/collection/index_information/index_information";
+import "/client/imports/views/query_templates/collection/insert_many/insert_many";
+import "/client/imports/views/query_templates/collection/is_capped/isCapped";
+import "/client/imports/views/query_templates/collection/map_reduce/map_reduce";
+import "/client/imports/views/query_templates/collection/options/options";
+import "/client/imports/views/query_templates/collection/re_index/re_index";
+import "/client/imports/views/query_templates/collection/rename/rename";
+import "/client/imports/views/query_templates/collection/stats/stats";
+import "/client/imports/views/query_templates/collection/update_many/update_many";
+import "/client/imports/views/query_templates/collection/update_one/update_one";
+import "./browse_collection.html";
 
 
 // queries
-import '/client/imports/views/query_templates/collection/aggregate/aggregate';
-import '/client/imports/views/query_templates/collection/bulk_write/bulk_write';
-import '/client/imports/views/query_templates/collection/count/count';
-import '/client/imports/views/query_templates/collection/create_index/create_index';
-import '/client/imports/views/query_templates/collection/delete/delete';
-import '/client/imports/views/query_templates/collection/distinct/distinct';
-import '/client/imports/views/query_templates/collection/drop_index/drop_index';
-import '/client/imports/views/query_templates/collection/find/find';
-import '/client/imports/views/query_templates/collection/findone/findone';
-import '/client/imports/views/query_templates/collection/findone_and_delete/findone_and_delete';
-import '/client/imports/views/query_templates/collection/findone_and_replace/findone_and_replace';
-import '/client/imports/views/query_templates/collection/findone_and_update/findone_and_update';
-import '/client/imports/views/query_templates/collection/geo_haystack_search/geo_haystack_search';
-import '/client/imports/views/query_templates/collection/geo_near/geo_near';
-import '/client/imports/views/query_templates/collection/index_information/index_information';
-import '/client/imports/views/query_templates/collection/insert_many/insert_many';
-import '/client/imports/views/query_templates/collection/is_capped/isCapped';
-import '/client/imports/views/query_templates/collection/map_reduce/map_reduce';
-import '/client/imports/views/query_templates/collection/options/options';
-import '/client/imports/views/query_templates/collection/re_index/re_index';
-import '/client/imports/views/query_templates/collection/rename/rename';
-import '/client/imports/views/query_templates/collection/stats/stats';
-import '/client/imports/views/query_templates/collection/update_many/update_many';
-import '/client/imports/views/query_templates/collection/update_one/update_one';
-
-
-import './browse_collection.html';
 
 var JSONEditor = require('jsoneditor');
 var toastr = require('toastr');
@@ -108,6 +106,14 @@ Template.browseCollection.onRendered(function () {
 });
 
 Template.browseCollection.events({
+    'click #btnExportAsCSV'(){
+        Template.find.executeQuery(null, 'CSV');
+    },
+
+    'click #btnExportAsJSON'(){
+        Template.find.executeQuery(null, 'JSON');
+    },
+
     'click #btnShowQueryHistories' () {
         $('#queryHistoriesModal').modal('show');
     },
@@ -118,6 +124,12 @@ Template.browseCollection.events({
         var value = $('#cmbQueries').find(":selected").text();
         if (value) {
             Session.set(Helper.strSessionSelectedQuery, value);
+        }
+
+        if (value == Enums.QUERY_TYPES.FIND) {
+            $('#btnExportQueryResult').show();
+        } else {
+            $('#btnExportQueryResult').hide();
         }
     },
 
@@ -268,23 +280,11 @@ export const setQueryResult = function (result, queryInfo, queryParams, saveHist
         resultTabs.on('click', '.close', function () {
             $(this).parents('li').remove();
             $($(this).parents('a').attr('href')).remove();
-
-            if (resultTabs.find('li').length == 0 || resultTabs.find('li.active').length == 0) {
-                $('#divBrowseCollectionFooter').hide();
-            }
         });
 
         resultTabs.on('shown.bs.tab', function (e) {
             var activeTabText = $(e.target).text();
             var activeTabQueryInfo = activeTabText.substring(0, activeTabText.indexOf(' '));
-            // see #104
-
-            if (activeTabQueryInfo == 'findOne' || activeTabQueryInfo == 'find') {
-                $('#divBrowseCollectionFooter').show();
-            } else {
-                $('#divBrowseCollectionFooter').hide();
-            }
-
         });
 
         // show last tab
