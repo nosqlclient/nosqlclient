@@ -56,6 +56,10 @@ Template.browseCollection.onCreated(function () {
                         $(select.children('a').attr('href')).remove();
                         select.remove();
                     });
+
+                    if (resultTabs.find('li').length == 0 || resultTabs.find('li.active').length == 0) {
+                        $('#divBrowseCollectionFooter').hide();
+                    }
                 }
             },
             close_others: {
@@ -106,6 +110,16 @@ Template.browseCollection.onRendered(function () {
 });
 
 Template.browseCollection.events({
+    'click #btnSaveFindOne': function (e) {
+        e.preventDefault();
+        saveEditor();
+    },
+
+    'click #btnDelFindOne': function (e) {
+        e.preventDefault();
+        deleteDocument();
+    },
+
     'click #btnExportAsCSV'(){
         Template.find.executeQuery(null, 'CSV');
     },
@@ -280,11 +294,22 @@ export const setQueryResult = function (result, queryInfo, queryParams, saveHist
         resultTabs.on('click', '.close', function () {
             $(this).parents('li').remove();
             $($(this).parents('a').attr('href')).remove();
+
+            if (resultTabs.find('li').length == 0 || resultTabs.find('li.active').length == 0) {
+                $('#divBrowseCollectionFooter').hide();
+            }
         });
 
         resultTabs.on('shown.bs.tab', function (e) {
             var activeTabText = $(e.target).text();
             var activeTabQueryInfo = activeTabText.substring(0, activeTabText.indexOf(' '));
+
+            if (activeTabQueryInfo == 'findOne') {
+                $('#divBrowseCollectionFooter').show();
+            } else {
+                $('#divBrowseCollectionFooter').hide();
+            }
+
         });
 
         // show last tab
@@ -439,4 +464,92 @@ const getActiveEditorValue = function () {
             return JSON.stringify($(tabId).data('jsoneditor').get());
         }
     }
+};
+
+
+const saveEditor = function () {
+    var convertedDoc;
+    try {
+        convertedDoc = Helper.convertAndCheckJSON(getActiveEditorValue());
+    }
+    catch (e) {
+        toastr.error('Syntax error, can not save document: ' + e);
+        return;
+    }
+
+    swal({
+        title: "Are you sure ?",
+        text: 'Document will be updated depending on _id field of result view,  are you sure ?',
+        type: "info",
+        showCancelButton: true,
+        confirmButtonColor: "#DD6B55",
+        confirmButtonText: "Yes!",
+        cancelButtonText: "No"
+    }, function (isConfirm) {
+        if (isConfirm) {
+
+            var l = Ladda.create(document.querySelector('#btnSaveFindOne'));
+            l.start();
+
+            var selectedCollection = Session.get(Helper.strSessionSelectedCollection);
+            var i = 0;
+            if (doc._id) {
+                Meteor.call("updateOne", selectedCollection, {_id: doc._id}, doc, {}, function (err, result) {
+                    if (err || result.error) {
+                        Helper.showMeteorFuncError(err, result, "Couldn't update one of the documents");
+                    } else {
+                        toastr.success('Successfully updated document');
+                    }
+
+                    Ladda.stopAll();
+                });
+            }
+        }
+    });
+
+};
+
+
+const deleteDocument = function () {
+    var convertedDoc;
+    try {
+        convertedDoc = Helper.convertAndCheckJSON(getActiveEditorValue());
+    }
+    catch (e) {
+        toastr.error('Syntax error, can not delete document: ' + e);
+        return;
+    }
+
+    swal({
+        title: "Are you sure ?",
+        text: 'Document will be deleted,  are you sure ?',
+        type: "info",
+        showCancelButton: true,
+        confirmButtonColor: "#DD6B55",
+        confirmButtonText: "Yes!",
+        cancelButtonText: "No"
+    }, function (isConfirm) {
+        if (isConfirm) {
+
+            var l = Ladda.create(document.querySelector('#btnDelFindOne'));
+            l.start();
+
+            var selectedCollection = Session.get(Helper.strSessionSelectedCollection);
+            var i = 0;
+            _.each(convertedDoc, function (doc) {
+                if (doc._id) {
+                    Meteor.call("delete", selectedCollection, {_id: doc._id}, function (err, result) {
+                        if (err || result.error) {
+                            Helper.showMeteorFuncError(err, result, "Couldn't delete document");
+                        } else {
+                            toastr.success('Successfully deleted document');
+                        }
+
+                        Ladda.stopAll();
+                    });
+                }
+            });
+        }
+    });
+
 };
