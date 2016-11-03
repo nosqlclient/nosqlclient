@@ -73,6 +73,10 @@ Template.browseCollection.onCreated(function () {
                             select.remove();
                         }
                     });
+
+                    if (getActiveTabHeader() !== 'findOne') {
+                        $('#divBrowseCollectionFooter').hide();
+                    }
                 }
             }
         }
@@ -447,6 +451,13 @@ const getEditor = function (tabID) {
     return tabView.data('jsoneditor');
 };
 
+const getActiveTabHeader = function () {
+    var text = $('#resultTabs').find('li.active').find('a').text();
+    if (text && text.indexOf(' ') !== -1) {
+        return text.substring(0, text.indexOf(' '));
+    }
+};
+
 const getActiveEditorValue = function () {
     var resultTabs = $('#resultTabs');
     var resultContents = $('#resultTabContents');
@@ -468,9 +479,9 @@ const getActiveEditorValue = function () {
 
 
 const saveEditor = function () {
-    var convertedDoc;
+    var doc;
     try {
-        convertedDoc = Helper.convertAndCheckJSON(getActiveEditorValue());
+        doc = Helper.convertAndCheckJSON(getActiveEditorValue());
     }
     catch (e) {
         toastr.error('Syntax error, can not save document: ' + e);
@@ -479,7 +490,7 @@ const saveEditor = function () {
 
     swal({
         title: "Are you sure ?",
-        text: 'Document will be updated depending on _id field of result view,  are you sure ?',
+        text: 'Document will be updated using _id field of result view, are you sure ?',
         type: "info",
         showCancelButton: true,
         confirmButtonColor: "#DD6B55",
@@ -496,24 +507,24 @@ const saveEditor = function () {
             if (doc._id) {
                 Meteor.call("updateOne", selectedCollection, {_id: doc._id}, doc, {}, function (err, result) {
                     if (err || result.error) {
-                        Helper.showMeteorFuncError(err, result, "Couldn't update one of the documents");
+                        Helper.showMeteorFuncError(err, result, "Couldn't update document");
                     } else {
                         toastr.success('Successfully updated document');
                     }
 
                     Ladda.stopAll();
                 });
+            } else {
+                toastr.error('Could not find _id of document, save failed !');
             }
         }
     });
-
 };
 
-
 const deleteDocument = function () {
-    var convertedDoc;
+    var doc;
     try {
-        convertedDoc = Helper.convertAndCheckJSON(getActiveEditorValue());
+        doc = Helper.convertAndCheckJSON(getActiveEditorValue());
     }
     catch (e) {
         toastr.error('Syntax error, can not delete document: ' + e);
@@ -522,7 +533,7 @@ const deleteDocument = function () {
 
     swal({
         title: "Are you sure ?",
-        text: 'Document will be deleted,  are you sure ?',
+        text: 'Document will be deleted using _id field of result view,  are you sure ?',
         type: "info",
         showCancelButton: true,
         confirmButtonColor: "#DD6B55",
@@ -536,19 +547,24 @@ const deleteDocument = function () {
 
             var selectedCollection = Session.get(Helper.strSessionSelectedCollection);
             var i = 0;
-            _.each(convertedDoc, function (doc) {
-                if (doc._id) {
-                    Meteor.call("delete", selectedCollection, {_id: doc._id}, function (err, result) {
-                        if (err || result.error) {
-                            Helper.showMeteorFuncError(err, result, "Couldn't delete document");
-                        } else {
-                            toastr.success('Successfully deleted document');
-                        }
+            if (doc._id) {
+                Meteor.call("delete", selectedCollection, {_id: doc._id}, function (err, result) {
+                    if (err || result.error) {
+                        Helper.showMeteorFuncError(err, result, "Couldn't delete document");
+                    } else {
+                        toastr.success('Successfully deleted document');
+                        var tabToRemove = $('#resultTabs').find('li.active');
+                        tabToRemove.remove();
+                        $(tabToRemove.find('a').attr('href')).remove();
 
-                        Ladda.stopAll();
-                    });
-                }
-            });
+                        $('#divBrowseCollectionFooter').hide();
+                    }
+
+                    Ladda.stopAll();
+                });
+            } else {
+                toastr.error('Could not find _id of document, delete failed !');
+            }
         }
     });
 
