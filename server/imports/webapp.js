@@ -7,6 +7,39 @@ import LOGGER from "/server/imports/internal/logger";
 
 const mongodbApi = require('mongodb');
 
+WebApp.connectHandlers.use('/export', function (req, res) {
+    var urlParts = decodeURI(req.url).split('&');
+    var format = urlParts[0].substr(urlParts[0].indexOf('=') + 1);
+    var selectedCollection = urlParts[1].substr(urlParts[1].indexOf('=') + 1);
+    var selector = urlParts[2].substr(urlParts[2].indexOf('=') + 1);
+    var cursorOptions = urlParts[3].substr(urlParts[3].indexOf('=') + 1);
+
+    LOGGER.info('[export]', format, selectedCollection, selector, cursorOptions);
+
+    Meteor.call("find", selectedCollection, JSON.parse(selector), JSON.parse(cursorOptions), false, function (err, result) {
+        if (err || result.error) {
+            LOGGER.error('[export]', err, result.error);
+            res.writeHead(400);
+            res.end('Query error: ' + JSON.stringify(err) + " " + JSON.stringify(result.error));
+        } else {
+            var headers = {
+                'Content-type': 'application/octet-stream',
+                'Content-Disposition': 'attachment; filename=export_result.' + format
+            };
+            if (format === 'JSON') {
+                res.writeHead(200, headers);
+                res.end(JSON.stringify(result.result));
+            } else if (format === 'CSV') {
+                res.writeHead(200, headers);
+                res.end(Papa.unparse(result.result, {delimiter: ";", newLine: "\n"}));
+            } else {
+                res.writeHead(400);
+                res.end('Unsupported format: ' + format);
+            }
+        }
+    });
+});
+
 
 WebApp.connectHandlers.use('/healthcheck', function (req, res) {
     res.writeHead(200);
@@ -14,7 +47,7 @@ WebApp.connectHandlers.use('/healthcheck', function (req, res) {
 });
 
 WebApp.connectHandlers.use("/download", function (req, res) {
-    var urlParts = req.url.split('&');
+    var urlParts = decodeURI(req.url).split('&');
     var fileId = urlParts[0].substr(urlParts[0].indexOf('=') + 1);
     var bucketName = urlParts[1].substr(urlParts[1].indexOf('=') + 1);
 

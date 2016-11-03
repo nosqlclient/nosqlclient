@@ -39,3 +39,19 @@ tr.selected {
 .CodeMirror {
     width: 100%;
 }
+
+.context-menu-icon::before {
+    color: #1AB394 !important;
+}
+
+.context-menu-icon.context-menu-icon--fa::before {
+    color: #1AB394 !important;
+}
+
+.context-menu-item.context-menu-hover {
+    color: #1AB394 !important;
+}
+
+.context-menu-item {
+    padding: .5em 2em !important;
+}
