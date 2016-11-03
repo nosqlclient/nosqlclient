@@ -1,4 +1,5 @@
 ## Mongoclient, Featured MongoDB Management Tool
+
 Cross-platform, MongoDB 3.2+ support and more features!
 
 [![Join the chat at https://gitter.im/rsercano/mongoclient](https://badges.gitter.im/rsercano/mongoclient.svg)](https://gitter.im/rsercano/mongoclient?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)&nbsp;[![Build Status](https://travis-ci.org/rsercano/mongoclient.svg?branch=master)](https://travis-ci.org/rsercano/mongoclient)
@@ -32,7 +33,14 @@ Version 1.3.0 has been released ! Please check [FAQ](https://github.com/rsercano
 
 To learn more see the [wiki](https://github.com/rsercano/mongoclient/wiki) page.
 
+## Contribution guide
+
+`git clone git@github.com:rsercano/mongoclient.git`
+
+`npm start`
+
 ## Docker
+
 Mongoclient now officialy has a docker hub. To install it:
 
 ```docker pull mongoclient/mongoclient```
@@ -42,6 +50,7 @@ Then you can run it as a daemon:
 ```docker run -d -p 3000:3000 mongoclient/mongoclient```
 
 ## Version History
+
 ### [1.2.2](https://github.com/rsercano/mongoclient/releases/1.2.2)  
 Includes bugfixes. [See details](https://github.com/rsercano/mongoclient/issues?q=milestone%3Av1.2.2)
 
@@ -56,7 +65,6 @@ Includes usermanagement, and bugfixes generally. [See details](https://github.co
 
 ### [1.0.0](https://github.com/rsercano/mongoclient/releases/1.0.0)  
 Includes basic mongodb management features. [See details](https://github.com/rsercano/mongoclient/issues?q=milestone%3Av1.0.0)
-
 
 ## License
 Project is licensed under [MIT](https://en.wikipedia.org/wiki/MIT_License), which means you are free to do anything with full of my work as long as you provide attribution back to me. Thanks !
