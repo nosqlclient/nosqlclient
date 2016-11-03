@@ -225,12 +225,11 @@
 
                 if (val == "") result[optionEnum[option]] = {};
                 else {
-                    try {
-                        val = fbbkJson.parse(val);
-                        result[optionEnum[option]] = val;
-                    }
-                    catch (err) {
+                    val = this.convertAndCheckJSON(val);
+                    if (val['ERROR']) {
                         result["ERROR"] = "Syntax Error on " + optionEnum[option] + ": " + err.message;
+                    } else {
+                        result[optionEnum[option]] = val;
                     }
                 }
             }
@@ -242,12 +241,11 @@
 
                 if (val == "") result[optionEnum[option]] = {};
                 else {
-                    try {
-                        val = fbbkJson.parse(val);
-                        result[optionEnum[option]] = val;
-                    }
-                    catch (err) {
+                    val = this.convertAndCheckJSON(val);
+                    if (val['ERROR']) {
                         result["ERROR"] = "Syntax Error on " + optionEnum[option] + ": " + err.message;
+                    } else {
+                        result[optionEnum[option]] = val;
                     }
                 }
             }

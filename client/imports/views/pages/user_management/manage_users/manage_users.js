@@ -321,10 +321,9 @@ Template.manageUsers.events({
 
         var customData = Helper.getCodeMirrorValue($('#divCustomData'));
         if (customData) {
-            try {
-                customData = JSON.parse(customData);
-            }
-            catch (err) {
+            customData = Helper.convertAndCheckJSON(customData);
+
+            if (customData["ERROR"]) {
                 toastr.error("Syntax Error on customData: " + err.message);
                 return;
             }

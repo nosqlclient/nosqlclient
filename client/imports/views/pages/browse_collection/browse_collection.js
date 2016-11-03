@@ -44,6 +44,34 @@ require('jquery-contextmenu');
 Template.browseCollection.onCreated(function () {
     Session.set(Helper.strSessionSelectedOptions, []);
     Session.set(Helper.strSessionSelectedQuery, Enums.QUERY_TYPES.FIND);
+});
+
+Template.browseCollection.onRendered(function () {
+    if (!Session.get(Helper.strSessionSelectedCollection)) {
+        Router.go('databaseStats');
+        return;
+    }
+
+    var cmb = $('#cmbQueries');
+    cmb.append($("<optgroup id='optGroupCollectionQueries' label='Collection Queries'></optgroup>"));
+    var cmbOptGroupCollection = cmb.find('#optGroupCollectionQueries');
+
+    $.each(Helper.sortObjectByKey(Enums.QUERY_TYPES), function (key, value) {
+        var option = $("<option></option>")
+            .attr("value", key)
+            .text(value);
+        if (value === Enums.QUERY_TYPES.FIND) {
+            option.attr('selected', true);
+        }
+        cmbOptGroupCollection.append(option);
+    });
+    cmb.chosen();
+
+    $('#queryHistoriesModal').on('show.bs.modal', function () {
+        initQueryHistories();
+    });
+
+    $('[data-toggle="tooltip"]').tooltip({trigger: 'hover'});
 
     $.contextMenu({
         selector: "#resultTabs li",
@@ -81,34 +109,33 @@ Template.browseCollection.onCreated(function () {
             }
         }
     });
-});
 
-Template.browseCollection.onRendered(function () {
-    if (!Session.get(Helper.strSessionSelectedCollection)) {
-        Router.go('databaseStats');
-        return;
-    }
+    var resultTabs = $('#resultTabs');
+    // if active tab is not findOne hide footer
+    resultTabs.on('shown.bs.tab', function (e) {
+        var query = $($(e.target).attr('href')).data('query');
+        console.log(query);
+        //TODO
+        var activeTabText = $(e.target).text();
+        var activeTabQueryInfo = activeTabText.substring(0, activeTabText.indexOf(' '));
 
-    var cmb = $('#cmbQueries');
-    cmb.append($("<optgroup id='optGroupCollectionQueries' label='Collection Queries'></optgroup>"));
-    var cmbOptGroupCollection = cmb.find('#optGroupCollectionQueries');
-
-    $.each(Helper.sortObjectByKey(Enums.QUERY_TYPES), function (key, value) {
-        var option = $("<option></option>")
-            .attr("value", key)
-            .text(value);
-        if (value === Enums.QUERY_TYPES.FIND) {
-            option.attr('selected', true);
+        if (activeTabQueryInfo == 'findOne') {
+            $('#divBrowseCollectionFooter').show();
+        } else {
+            $('#divBrowseCollectionFooter').hide();
         }
-        cmbOptGroupCollection.append(option);
-    });
-    cmb.chosen();
-
-    $('#queryHistoriesModal').on('show.bs.modal', function () {
-        initQueryHistories();
     });
 
-    $('[data-toggle="tooltip"]').tooltip({trigger: 'hover'});
+    // set onclose
+    resultTabs.on('click', '.close', function () {
+        $(this).parents('li').remove();
+        $($(this).parents('a').attr('href')).remove();
+
+        if (resultTabs.find('li').length == 0 || resultTabs.find('li.active').length == 0) {
+            $('#divBrowseCollectionFooter').hide();
+        }
+    });
+
 
     clearQueryIfAdmin();
 });
@@ -276,7 +303,7 @@ export const setQueryResult = function (result, queryInfo, queryParams, saveHist
         else {
             aceEditor.show('slow');
         }
-        setResultToEditors(1, result);
+        setResultToEditors(1, result, queryParams, queryInfo);
     }
     else {
         // open a new tab
@@ -294,33 +321,11 @@ export const setQueryResult = function (result, queryInfo, queryParams, saveHist
         // set tab content
         $('#resultTabContents').append(tabContent);
 
-        // set onclose
-        resultTabs.on('click', '.close', function () {
-            $(this).parents('li').remove();
-            $($(this).parents('a').attr('href')).remove();
-
-            if (resultTabs.find('li').length == 0 || resultTabs.find('li.active').length == 0) {
-                $('#divBrowseCollectionFooter').hide();
-            }
-        });
-
-        resultTabs.on('shown.bs.tab', function (e) {
-            var activeTabText = $(e.target).text();
-            var activeTabQueryInfo = activeTabText.substring(0, activeTabText.indexOf(' '));
-
-            if (activeTabQueryInfo == 'findOne') {
-                $('#divBrowseCollectionFooter').show();
-            } else {
-                $('#divBrowseCollectionFooter').hide();
-            }
-
-        });
-
         // show last tab
         var lastTab = resultTabs.find('a:last');
         lastTab.tab('show');
 
-        setResultToEditors(tabID, result);
+        setResultToEditors(tabID, result, queryParams, queryInfo);
     }
 
     if (saveHistory) {
@@ -346,10 +351,11 @@ const saveQueryHistory = function (queryInfo, queryParams) {
 };
 
 
-const setResultToEditors = function (tabID, result) {
+const setResultToEditors = function (tabID, result, queryParams, queryInfo) {
     // set json editor
     getEditor(tabID).set(result);
 
+    // set ace
     AceEditor.instance('activeAceEditor', {
         mode: 'javascript',
         theme: 'dawn'
@@ -360,6 +366,11 @@ const setResultToEditors = function (tabID, result) {
             showPrintMargin: false
         });
         editor.setValue(JSON.stringify(result, null, '\t'), -1);
+    });
+
+    $('#tab-' + tabID).data('query', {
+        queryInfo: queryInfo,
+        queryParams: queryParams
     });
 };
 
@@ -416,8 +427,8 @@ const getResultTabContent = function (tabID, defaultView) {
     var whichIsDisplayed = getWhichResultViewShowing();
     var result;
 
-    if (whichIsDisplayed == 'none') {
-        var defaultIsAce = (defaultView != 'Jsoneditor');
+    if (whichIsDisplayed === 'none') {
+        var defaultIsAce = (defaultView !== 'Jsoneditor');
         if (!defaultIsAce) {
             result = jsonEditorHtml;
         } else {
@@ -425,7 +436,7 @@ const getResultTabContent = function (tabID, defaultView) {
         }
     }
     else {
-        if (whichIsDisplayed == 'jsonEditor') {
+        if (whichIsDisplayed === 'jsonEditor') {
             result = jsonEditorHtml;
         }
         else {
