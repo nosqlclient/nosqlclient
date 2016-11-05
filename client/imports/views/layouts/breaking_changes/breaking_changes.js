@@ -36,7 +36,7 @@ Template.breakingChanges.events({
 });
 
 const getExamples = function () {
-    let str = "// all extended json types are will be converted to BSON types\n";
+    let str = "// all extended json types will be converted to BSON types\n";
     str += "{_id:{$oid:\"507f191e810c19729de860ea\"}}\n";
     str += "{myDate:{$gte:{$date:\"2017-01-01T12:25:05Z\"}}}  // ISO-8601 as mongodb supports it\n";
     str += "{myDate:{$gte:{$date:\"2017-01-01T13:20\"}}}  // all date convertible formats are supported\n";

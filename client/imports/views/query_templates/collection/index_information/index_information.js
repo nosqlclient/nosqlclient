@@ -28,3 +28,12 @@ Template.indexInformation.executeQuery = function (historyParams) {
         Helper.renderAfterQueryExecution(err, result, false, "indexInformation", params, (historyParams ? false : true));
     });
 };
+
+Template.indexInformation.renderQuery = function (query) {
+    if (query.queryParams) {
+        // let all stuff initialize
+        Meteor.setTimeout(function () {
+            $('#divFullInformation').iCheck(query.queryParams.full ? 'check' : 'uncheck');
+        }, 100);
+    }
+};

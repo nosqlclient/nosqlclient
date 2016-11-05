@@ -1,3 +1,7 @@
+/**
+ * Created by RSercan on 29.12.2015.
+ */
+
 import {Template} from "meteor/templating";
 import {Meteor} from "meteor/meteor";
 import {Session} from "meteor/session";
@@ -38,215 +42,6 @@ var JSONEditor = require('jsoneditor');
 var toastr = require('toastr');
 var Ladda = require('ladda');
 require('jquery-contextmenu');
-/**
- * Created by RSercan on 29.12.2015.
- */
-Template.browseCollection.onCreated(function () {
-    Session.set(Helper.strSessionSelectedOptions, []);
-    Session.set(Helper.strSessionSelectedQuery, Enums.QUERY_TYPES.FIND);
-
-    $.contextMenu({
-        selector: "#resultTabs li",
-        items: {
-            close_all: {
-                name: "Close All Tabs", icon: "fa-times", callback: function (key, opt) {
-                    var resultTabs = $('#resultTabs li');
-                    resultTabs.each(function (idx, li) {
-                        let select = $(li);
-                        $(select.children('a').attr('href')).remove();
-                        select.remove();
-                    });
-
-                    if (resultTabs.find('li').length == 0 || resultTabs.find('li.active').length == 0) {
-                        $('#divBrowseCollectionFooter').hide();
-                    }
-                }
-            },
-            close_others: {
-                name: "Close Others", icon: "fa-times-circle", callback: function (key, opt) {
-                    var tabId = $(this).children('a').attr('href');
-                    var resultTabs = $('#resultTabs li');
-                    resultTabs.each(function (idx, li) {
-                        let select = $(li);
-                        if (select.children('a').attr('href') !== tabId) {
-                            $(select.children('a').attr('href')).remove();
-                            select.remove();
-                        }
-                    });
-
-                    if (getActiveTabHeader() !== 'findOne') {
-                        $('#divBrowseCollectionFooter').hide();
-                    }
-                }
-            }
-        }
-    });
-});
-
-Template.browseCollection.onRendered(function () {
-    if (!Session.get(Helper.strSessionSelectedCollection)) {
-        Router.go('databaseStats');
-        return;
-    }
-
-    var cmb = $('#cmbQueries');
-    cmb.append($("<optgroup id='optGroupCollectionQueries' label='Collection Queries'></optgroup>"));
-    var cmbOptGroupCollection = cmb.find('#optGroupCollectionQueries');
-
-    $.each(Helper.sortObjectByKey(Enums.QUERY_TYPES), function (key, value) {
-        var option = $("<option></option>")
-            .attr("value", key)
-            .text(value);
-        if (value === Enums.QUERY_TYPES.FIND) {
-            option.attr('selected', true);
-        }
-        cmbOptGroupCollection.append(option);
-    });
-    cmb.chosen();
-
-    $('#queryHistoriesModal').on('show.bs.modal', function () {
-        initQueryHistories();
-    });
-
-    $('[data-toggle="tooltip"]').tooltip({trigger: 'hover'});
-
-    clearQueryIfAdmin();
-});
-
-Template.browseCollection.events({
-    'click #btnSaveFindOne': function (e) {
-        e.preventDefault();
-        saveEditor();
-    },
-
-    'click #btnDelFindOne': function (e) {
-        e.preventDefault();
-        deleteDocument();
-    },
-
-    'click #btnExportAsCSV'(){
-        Template.find.executeQuery(null, 'CSV');
-    },
-
-    'click #btnExportAsJSON'(){
-        Template.find.executeQuery(null, 'JSON');
-    },
-
-    'click #btnShowQueryHistories' () {
-        $('#queryHistoriesModal').modal('show');
-    },
-
-    'change #cmbQueries'  () {
-        Session.set(Helper.strSessionSelectedOptions, []);
-
-        var value = $('#cmbQueries').find(":selected").text();
-        if (value) {
-            Session.set(Helper.strSessionSelectedQuery, value);
-        }
-
-        if (value == Enums.QUERY_TYPES.FIND) {
-            $('#btnExportQueryResult').show();
-        } else {
-            $('#btnExportQueryResult').hide();
-        }
-    },
-
-    'click #btnSwitchView'  () {
-        var jsonViews = $('div[id^="divActiveJsonEditor"]');
-        var aceViews = $('div[id^="divActiveAceEditor"]');
-
-        var whichIsDisplayed = getWhichResultViewShowing();
-
-        if (whichIsDisplayed != 'none') {
-            if (whichIsDisplayed == 'jsonEditor') {
-                aceViews.each(function () {
-                    $(this).show('slow');
-                });
-                jsonViews.each(function () {
-                    $(this).hide();
-                });
-            }
-            else {
-                jsonViews.each(function () {
-                    $(this).show('slow');
-                });
-                aceViews.each(function () {
-                    $(this).hide();
-                });
-            }
-        }
-    },
-
-    'click #btnExecuteQuery'  () {
-        var queryTemplate = Session.get(Helper.strSessionSelectedQuery);
-        if (queryTemplate) {
-            Template[queryTemplate].executeQuery();
-        } else {
-            toastr.warning('Select Query', 'Please select a query first ');
-        }
-    }
-});
-
-const getWhichResultViewShowing = function () {
-    var jsonViews = $('div[id^="divActiveJsonEditor"]');
-    var aceViews = $('div[id^="divActiveAceEditor"]');
-
-    var whichIsDisplayed = 'none';
-    jsonViews.each(function () {
-        if ($(this).css('display') != 'none') {
-            whichIsDisplayed = 'jsonEditor';
-        }
-    });
-
-    aceViews.each(function () {
-        if ($(this).css('display') != 'none') {
-            whichIsDisplayed = 'aceEditor';
-        }
-    });
-
-    return whichIsDisplayed;
-};
-
-Template.browseCollection.helpers({
-    'getQueryTemplate' () {
-        return Session.get(Helper.strSessionSelectedQuery);
-    },
-
-    'getHelpBlockForSelectedQuery' () {
-        switch (Session.get(Helper.strSessionSelectedQuery)) {
-            case Enums.QUERY_TYPES.FINDONE_AND_REPLACE:
-                return Spacebars.SafeString('This query replaces whole document which matched by <strong>selector</strong> with the <strong>set</strong> object');
-
-            case Enums.QUERY_TYPES.FINDONE_AND_DELETE:
-                return Spacebars.SafeString('<strong><font color=\'red\'>CAUTION:</font></strong> This query removes whole document which matched by <strong>selector</strong>');
-
-            case Enums.QUERY_TYPES.CREATE_INDEX:
-                return Spacebars.SafeString('Since mongodb version <strong>3.0.0</strong>, this query can be used instead of <strong>ensureIndex</strong>');
-
-            case Enums.QUERY_TYPES.DELETE:
-                return Spacebars.SafeString('<strong><font color=\'red\'>CAUTION:</font></strong> This query removes whole document(s) which matched by <strong>selector</strong>');
-
-            case Enums.QUERY_TYPES.GEO_HAYSTACK_SEARCH:
-                return Spacebars.SafeString('This query executes a geo search using a <strong>geo haystack index</strong> on a collection');
-
-            case Enums.QUERY_TYPES.IS_CAPPED:
-                return Spacebars.SafeString('Returns the information of if the collection is a <strong>capped</strong> collection');
-
-            case Enums.QUERY_TYPES.OPTIONS:
-                return Spacebars.SafeString('Returns <strong>collection</strong> options');
-
-            case Enums.QUERY_TYPES.RE_INDEX:
-                return Spacebars.SafeString('Reindex all indexes on the collection <strong>Warning:</strong> reIndex is a blocking operation <i>(indexes are rebuilt in the foreground)</i> and will be slow for large collections');
-
-            case Enums.QUERY_TYPES.UPDATE_MANY:
-                return Spacebars.SafeString('Updates all documents which matched by <strong>Selector</strong>');
-
-            default:
-                return '';
-        }
-    }
-
-});
 
 const clearQueryIfAdmin = function () {
     $.each(Enums.ADMIN_QUERY_TYPES, function (key, value) {
@@ -276,7 +71,7 @@ export const setQueryResult = function (result, queryInfo, queryParams, saveHist
         else {
             aceEditor.show('slow');
         }
-        setResultToEditors(1, result);
+        setResultToEditors(1, result, queryParams, queryInfo);
     }
     else {
         // open a new tab
@@ -294,39 +89,37 @@ export const setQueryResult = function (result, queryInfo, queryParams, saveHist
         // set tab content
         $('#resultTabContents').append(tabContent);
 
-        // set onclose
-        resultTabs.on('click', '.close', function () {
-            $(this).parents('li').remove();
-            $($(this).parents('a').attr('href')).remove();
-
-            if (resultTabs.find('li').length == 0 || resultTabs.find('li.active').length == 0) {
-                $('#divBrowseCollectionFooter').hide();
-            }
-        });
-
-        resultTabs.on('shown.bs.tab', function (e) {
-            var activeTabText = $(e.target).text();
-            var activeTabQueryInfo = activeTabText.substring(0, activeTabText.indexOf(' '));
-
-            if (activeTabQueryInfo == 'findOne') {
-                $('#divBrowseCollectionFooter').show();
-            } else {
-                $('#divBrowseCollectionFooter').hide();
-            }
-
-        });
-
         // show last tab
         var lastTab = resultTabs.find('a:last');
         lastTab.tab('show');
 
-        setResultToEditors(tabID, result);
+        setResultToEditors(tabID, result, queryParams, queryInfo);
     }
 
     if (saveHistory) {
         saveQueryHistory(queryInfo, queryParams);
     }
 
+};
+
+const getWhichResultViewShowing = function () {
+    var jsonViews = $('div[id^="divActiveJsonEditor"]');
+    var aceViews = $('div[id^="divActiveAceEditor"]');
+
+    var whichIsDisplayed = 'none';
+    jsonViews.each(function () {
+        if ($(this).css('display') != 'none') {
+            whichIsDisplayed = 'jsonEditor';
+        }
+    });
+
+    aceViews.each(function () {
+        if ($(this).css('display') != 'none') {
+            whichIsDisplayed = 'aceEditor';
+        }
+    });
+
+    return whichIsDisplayed;
 };
 
 const saveQueryHistory = function (queryInfo, queryParams) {
@@ -346,10 +139,11 @@ const saveQueryHistory = function (queryInfo, queryParams) {
 };
 
 
-const setResultToEditors = function (tabID, result) {
+const setResultToEditors = function (tabID, result, queryParams, queryInfo) {
     // set json editor
     getEditor(tabID).set(result);
 
+    // set ace
     AceEditor.instance('activeAceEditor', {
         mode: 'javascript',
         theme: 'dawn'
@@ -360,6 +154,11 @@ const setResultToEditors = function (tabID, result) {
             showPrintMargin: false
         });
         editor.setValue(JSON.stringify(result, null, '\t'), -1);
+    });
+
+    $('#tab-' + tabID).data('query', {
+        queryInfo: queryInfo,
+        queryParams: queryParams
     });
 };
 
@@ -416,8 +215,8 @@ const getResultTabContent = function (tabID, defaultView) {
     var whichIsDisplayed = getWhichResultViewShowing();
     var result;
 
-    if (whichIsDisplayed == 'none') {
-        var defaultIsAce = (defaultView != 'Jsoneditor');
+    if (whichIsDisplayed === 'none') {
+        var defaultIsAce = (defaultView !== 'Jsoneditor');
         if (!defaultIsAce) {
             result = jsonEditorHtml;
         } else {
@@ -425,7 +224,7 @@ const getResultTabContent = function (tabID, defaultView) {
         }
     }
     else {
-        if (whichIsDisplayed == 'jsonEditor') {
+        if (whichIsDisplayed === 'jsonEditor') {
             result = jsonEditorHtml;
         }
         else {
@@ -503,7 +302,6 @@ const saveEditor = function () {
             l.start();
 
             var selectedCollection = Session.get(Helper.strSessionSelectedCollection);
-            var i = 0;
             if (doc._id) {
                 Meteor.call("updateOne", selectedCollection, {_id: doc._id}, doc, {}, function (err, result) {
                     if (err || result.error) {
@@ -567,5 +365,235 @@ const deleteDocument = function () {
             }
         }
     });
-
 };
+
+const renderQuery = function (query) {
+    if (!query || !query.queryInfo || query.queryInfo === 'rename') {
+        return;
+    }
+
+    $('#cmbQueries').val((_.invert(Enums.QUERY_TYPES))[query.queryInfo]).trigger('chosen:updated');
+    cmbQueriesChangeEvent();
+
+    Template[query.queryInfo].renderQuery(query);
+};
+
+const cmbQueriesChangeEvent = function () {
+    Session.set(Helper.strSessionSelectedOptions, []);
+
+    var value = $('#cmbQueries').find(":selected").text();
+    if (value) {
+        Session.set(Helper.strSessionSelectedQuery, value);
+    }
+
+    if (value == Enums.QUERY_TYPES.FIND) {
+        $('#btnExportQueryResult').show();
+    } else {
+        $('#btnExportQueryResult').hide();
+    }
+};
+
+Template.browseCollection.onCreated(function () {
+    Session.set(Helper.strSessionSelectedOptions, []);
+    Session.set(Helper.strSessionSelectedQuery, Enums.QUERY_TYPES.FIND);
+});
+
+Template.browseCollection.onRendered(function () {
+    if (!Session.get(Helper.strSessionSelectedCollection)) {
+        Router.go('databaseStats');
+        return;
+    }
+
+    var cmb = $('#cmbQueries');
+    cmb.append($("<optgroup id='optGroupCollectionQueries' label='Collection Queries'></optgroup>"));
+    var cmbOptGroupCollection = cmb.find('#optGroupCollectionQueries');
+
+    $.each(Helper.sortObjectByKey(Enums.QUERY_TYPES), function (key, value) {
+        var option = $("<option></option>")
+            .attr("value", key)
+            .text(value);
+        if (value === Enums.QUERY_TYPES.FIND) {
+            option.attr('selected', true);
+        }
+        cmbOptGroupCollection.append(option);
+    });
+    cmb.chosen();
+
+    $('#queryHistoriesModal').on('show.bs.modal', function () {
+        initQueryHistories();
+    });
+
+    $('[data-toggle="tooltip"]').tooltip({trigger: 'hover'});
+
+    $.contextMenu({
+        selector: "#resultTabs li",
+        items: {
+            close_others: {
+                name: "Close Others", icon: "fa-times-circle", callback: function () {
+                    var tabId = $(this).children('a').attr('href');
+                    var resultTabs = $('#resultTabs li');
+                    resultTabs.each(function (idx, li) {
+                        let select = $(li);
+                        if (select.children('a').attr('href') !== tabId) {
+                            $(select.children('a').attr('href')).remove();
+                            select.remove();
+                        }
+                    });
+
+                    if (getActiveTabHeader() !== 'findOne') {
+                        $('#divBrowseCollectionFooter').hide();
+                    }
+                }
+            },
+            close_all: {
+                name: "Close All Tabs", icon: "fa-times", callback: function () {
+                    var resultTabs = $('#resultTabs li');
+                    resultTabs.each(function (idx, li) {
+                        let select = $(li);
+                        $(select.children('a').attr('href')).remove();
+                        select.remove();
+                    });
+
+                    if (resultTabs.find('li').length == 0 || resultTabs.find('li.active').length == 0) {
+                        $('#divBrowseCollectionFooter').hide();
+                    }
+                }
+            }
+        }
+    });
+
+    var resultTabs = $('#resultTabs');
+    resultTabs.on('show.bs.tab', function (e) {
+        var activeTabText = $(e.target).text();
+        var activeTabQueryInfo = activeTabText.substring(0, activeTabText.indexOf(' '));
+
+        var query = $($(e.target).attr('href')).data('query');
+        if (query) {
+            renderQuery(query);
+        }
+
+        // if active tab is not findOne hide footer
+        if (activeTabQueryInfo == 'findOne') {
+            $('#divBrowseCollectionFooter').show();
+        } else {
+            $('#divBrowseCollectionFooter').hide();
+        }
+    });
+
+    // set onclose
+    resultTabs.on('click', '.close', function () {
+        $(this).parents('li').remove();
+        $($(this).parents('a').attr('href')).remove();
+
+        if (resultTabs.find('li').length == 0 || resultTabs.find('li.active').length == 0) {
+            $('#divBrowseCollectionFooter').hide();
+        }
+    });
+
+
+    clearQueryIfAdmin();
+});
+
+Template.browseCollection.events({
+    'click #btnSaveFindOne': function (e) {
+        e.preventDefault();
+        saveEditor();
+    },
+
+    'click #btnDelFindOne': function (e) {
+        e.preventDefault();
+        deleteDocument();
+    },
+
+    'click #btnExportAsCSV'(){
+        Template.find.executeQuery(null, 'CSV');
+    },
+
+    'click #btnExportAsJSON'(){
+        Template.find.executeQuery(null, 'JSON');
+    },
+
+    'click #btnShowQueryHistories' () {
+        $('#queryHistoriesModal').modal('show');
+    },
+
+    'change #cmbQueries'  () {
+        cmbQueriesChangeEvent();
+    },
+
+    'click #btnSwitchView'  () {
+        var jsonViews = $('div[id^="divActiveJsonEditor"]');
+        var aceViews = $('div[id^="divActiveAceEditor"]');
+
+        var whichIsDisplayed = getWhichResultViewShowing();
+
+        if (whichIsDisplayed != 'none') {
+            if (whichIsDisplayed == 'jsonEditor') {
+                aceViews.each(function () {
+                    $(this).show('slow');
+                });
+                jsonViews.each(function () {
+                    $(this).hide();
+                });
+            }
+            else {
+                jsonViews.each(function () {
+                    $(this).show('slow');
+                });
+                aceViews.each(function () {
+                    $(this).hide();
+                });
+            }
+        }
+    },
+
+    'click #btnExecuteQuery'  () {
+        var queryTemplate = Session.get(Helper.strSessionSelectedQuery);
+        if (queryTemplate) {
+            Template[queryTemplate].executeQuery();
+        } else {
+            toastr.warning('Select Query', 'Please select a query first ');
+        }
+    }
+});
+
+Template.browseCollection.helpers({
+    'getQueryTemplate' () {
+        return Session.get(Helper.strSessionSelectedQuery);
+    },
+
+    'getHelpBlockForSelectedQuery' () {
+        switch (Session.get(Helper.strSessionSelectedQuery)) {
+            case Enums.QUERY_TYPES.FINDONE_AND_REPLACE:
+                return Spacebars.SafeString('This query replaces whole document which matched by <strong>selector</strong> with the <strong>set</strong> object');
+
+            case Enums.QUERY_TYPES.FINDONE_AND_DELETE:
+                return Spacebars.SafeString('<strong><font color=\'red\'>CAUTION:</font></strong> This query removes whole document which matched by <strong>selector</strong>');
+
+            case Enums.QUERY_TYPES.CREATE_INDEX:
+                return Spacebars.SafeString('Since mongodb version <strong>3.0.0</strong>, this query can be used instead of <strong>ensureIndex</strong>');
+
+            case Enums.QUERY_TYPES.DELETE:
+                return Spacebars.SafeString('<strong><font color=\'red\'>CAUTION:</font></strong> This query removes whole document(s) which matched by <strong>selector</strong>');
+
+            case Enums.QUERY_TYPES.GEO_HAYSTACK_SEARCH:
+                return Spacebars.SafeString('This query executes a geo search using a <strong>geo haystack index</strong> on a collection');
+
+            case Enums.QUERY_TYPES.IS_CAPPED:
+                return Spacebars.SafeString('Returns the information of if the collection is a <strong>capped</strong> collection');
+
+            case Enums.QUERY_TYPES.OPTIONS:
+                return Spacebars.SafeString('Returns <strong>collection</strong> options');
+
+            case Enums.QUERY_TYPES.RE_INDEX:
+                return Spacebars.SafeString('Reindex all indexes on the collection <strong>Warning:</strong> reIndex is a blocking operation <i>(indexes are rebuilt in the foreground)</i> and will be slow for large collections');
+
+            case Enums.QUERY_TYPES.UPDATE_MANY:
+                return Spacebars.SafeString('Updates all documents which matched by <strong>Selector</strong>');
+
+            default:
+                return '';
+        }
+    }
+
+});

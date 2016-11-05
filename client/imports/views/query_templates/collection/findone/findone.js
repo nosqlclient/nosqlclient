@@ -62,3 +62,51 @@ Template.findOne.executeQuery = function (historyParams) {
         }
     );
 };
+
+Template.findOne.renderQuery = function (query) {
+    if (query.queryParams) {
+        // let all stuff initialize
+        if (query.queryParams.selector) {
+            Meteor.setTimeout(function () {
+                Helper.setCodeMirrorValue($('#divSelector'), JSON.stringify(query.queryParams.selector, null, 1));
+            }, 100);
+        }
+
+        if (query.queryParams.cursorOptions) {
+            let optionsArray = [];
+            for (let property in query.queryParams.cursorOptions) {
+                if (query.queryParams.cursorOptions.hasOwnProperty(property) && (_.invert(Enums.CURSOR_OPTIONS))[property]) {
+                    optionsArray.push((_.invert(Enums.CURSOR_OPTIONS))[property]);
+                }
+            }
+
+            Meteor.setTimeout(function () {
+                $('#cmbFindOneCursorOptions').val(optionsArray).trigger('chosen:updated');
+                Session.set(Helper.strSessionSelectedOptions, optionsArray);
+            }, 100);
+
+            // options load
+            Meteor.setTimeout(function () {
+                for (let i = 0; i < optionsArray.length; i++) {
+                    let option = optionsArray[i];
+                    let inverted = (_.invert(Enums.CURSOR_OPTIONS));
+                    if (option === inverted.project) {
+                        Helper.setCodeMirrorValue($('#divProject'), JSON.stringify(query.queryParams.cursorOptions.project, null, 1));
+                    }
+                    if (option === inverted.skip) {
+                        $('#inputSkip').val(query.queryParams.cursorOptions.skip);
+                    }
+                    if (option === inverted.sort) {
+                        Helper.setCodeMirrorValue($('#divSort'), JSON.stringify(query.queryParams.cursorOptions.sort, null, 1));
+                    }
+                    if (option === inverted.max) {
+                        Helper.setCodeMirrorValue($('#divMax'), JSON.stringify(query.queryParams.cursorOptions.max, null, 1));
+                    }
+                    if (option === inverted.min) {
+                        Helper.setCodeMirrorValue($('#divMin'), JSON.stringify(query.queryParams.cursorOptions.min, null, 1));
+                    }
+                }
+            }, 200);
+        }
+    }
+};

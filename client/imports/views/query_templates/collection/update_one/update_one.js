@@ -32,6 +32,19 @@ const initializeOptions = function () {
     Helper.setOptionsComboboxChangeEvent(cmb);
 };
 
+const getOptions = function () {
+    var result = {};
+
+    if ($.inArray("UPSERT", Session.get(Helper.strSessionSelectedOptions)) != -1) {
+        var upsertVal = $('#divUpsert').iCheck('update')[0].checked;
+        if (upsertVal) {
+            result[Enums.UPDATE_OPTIONS.UPSERT] = upsertVal;
+        }
+    }
+
+    return result;
+};
+
 Template.updateOne.executeQuery = function (historyParams) {
     initExecuteQuery();
     var selectedCollection = Session.get(Helper.strSessionSelectedCollection);
@@ -72,15 +85,46 @@ Template.updateOne.executeQuery = function (historyParams) {
     });
 };
 
-const getOptions = function () {
-    var result = {};
-
-    if ($.inArray("UPSERT", Session.get(Helper.strSessionSelectedOptions)) != -1) {
-        var upsertVal = $('#divUpsert').iCheck('update')[0].checked;
-        if (upsertVal) {
-            result[Enums.UPDATE_OPTIONS.UPSERT] = upsertVal;
+Template.updateOne.renderQuery = function (query) {
+    if (query.queryParams) {
+        // let all stuff initialize
+        if (query.queryParams.selector) {
+            Meteor.setTimeout(function () {
+                Helper.setCodeMirrorValue($('#divSelector'), JSON.stringify(query.queryParams.selector, null, 1));
+            }, 100);
         }
-    }
 
-    return result;
+        if (query.queryParams.setObject) {
+            Meteor.setTimeout(function () {
+                Helper.setCodeMirrorValue($('#divSet'), JSON.stringify(query.queryParams.setObject.$set, null, 1));
+            }, 100);
+        }
+
+        if (query.queryParams.options) {
+            let optionsArray = [];
+            for (let property in query.queryParams.options) {
+                if (query.queryParams.options.hasOwnProperty(property) && (_.invert(Enums.UPDATE_OPTIONS))[property]) {
+                    optionsArray.push((_.invert(Enums.UPDATE_OPTIONS))[property]);
+                }
+            }
+
+            Meteor.setTimeout(function () {
+                $('#cmbUpdateOneOptions').val(optionsArray).trigger('chosen:updated');
+                Session.set(Helper.strSessionSelectedOptions, optionsArray);
+
+            }, 100);
+
+            // options load
+            Meteor.setTimeout(function () {
+                for (let i = 0; i < optionsArray.length; i++) {
+                    let option = optionsArray[i];
+                    let inverted = (_.invert(Enums.UPDATE_OPTIONS));
+                    if (option === inverted.verbose) {
+                        $('#divUpsert').iCheck(query.queryParams.options.upsert ? 'check' : 'uncheck');
+                    }
+                }
+            }, 200);
+        }
+
+    }
 };

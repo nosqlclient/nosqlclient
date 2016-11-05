@@ -31,8 +31,8 @@ Template.background.onRendered(function () {
 
 export const getOptions = function () {
     var result = {};
-    Helper.checkAndAddOption("MAX", $('#divMax'), result, Enums.CURSOR_OPTIONS);
-    Helper.checkAndAddOption("MIN", $('#divMin'), result, Enums.CURSOR_OPTIONS);
+    Helper.checkAndAddOption("MAX", $('#divMax'), result, Enums.CREATE_INDEX_OPTIONS);
+    Helper.checkAndAddOption("MIN", $('#divMin'), result, Enums.CREATE_INDEX_OPTIONS);
 
     if ($.inArray("UNIQUE", Session.get(Helper.strSessionSelectedOptions)) != -1) {
         var uniqueVal = $('#divUnique').iCheck('update')[0].checked;
@@ -52,6 +52,13 @@ export const getOptions = function () {
         var backgroundVal = $('#divBackground').iCheck('update')[0].checked;
         if (backgroundVal) {
             result[Enums.CREATE_INDEX_OPTIONS.BACKGROUND] = backgroundVal;
+        }
+    }
+
+    if ($.inArray("NAME", Session.get(Helper.strSessionSelectedOptions)) != -1) {
+        var name = $('#inputIndexName').val();
+        if (name) {
+            result[Enums.CREATE_INDEX_OPTIONS.NAME] = name;
         }
     }
 

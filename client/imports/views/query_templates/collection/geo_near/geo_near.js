@@ -59,3 +59,63 @@ Template.geoNear.executeQuery = function (historyParams) {
         Helper.renderAfterQueryExecution(err, result, false, "geoNear", params, (historyParams ? false : true));
     });
 };
+
+Template.geoNear.renderQuery = function (query) {
+    if (query.queryParams) {
+        // let all stuff initialize
+        if (query.queryParams.xAxis && query.queryParams.yAxis) {
+            Meteor.setTimeout(function () {
+                $('#inputXAxis').val(query.queryParams.xAxis);
+                $('#inputYAxis').val(query.queryParams.yAxis);
+            }, 100);
+        }
+
+        if (query.queryParams.options) {
+            let optionsArray = [];
+            for (let property in query.queryParams.options) {
+                if (query.queryParams.options.hasOwnProperty(property) && (_.invert(Enums.GEO_NEAR_OPTIONS))[property]) {
+                    optionsArray.push((_.invert(Enums.GEO_NEAR_OPTIONS))[property]);
+                }
+            }
+
+            Meteor.setTimeout(function () {
+                $('#cmbGeoNearOptions').val(optionsArray).trigger('chosen:updated');
+                Session.set(Helper.strSessionSelectedOptions, optionsArray);
+
+            }, 100);
+
+            // options load
+            Meteor.setTimeout(function () {
+                for (let i = 0; i < optionsArray.length; i++) {
+                    let option = optionsArray[i];
+                    let inverted = (_.invert(Enums.GEO_NEAR_OPTIONS));
+                    if (option === inverted.query) {
+                        Helper.setCodeMirrorValue($('#divSelector'), JSON.stringify(query.queryParams.options.query, null, 1));
+                    }
+                    if (option === inverted.maxDistance) {
+                        $('#inputMaxDistance').val(query.queryParams.options.maxDistance);
+                    }
+                    if (option === inverted.minDistance) {
+                        $('#inputMinDistance').val(query.queryParams.options.minDistance);
+                    }
+                    if (option === inverted.num) {
+                        $('#inputMaxNumber').val(query.queryParams.options.num);
+                    }
+                    if (option === inverted.distanceMultiplier) {
+                        $('#inputDistanceMultiplier').val(query.queryParams.options.distanceMultiplier);
+                    }
+                    if (option === inverted.spherical) {
+                        $('#divSpherical').iCheck(query.queryParams.options.spherical ? 'check' : 'uncheck');
+                    }
+                    if (option === inverted.uniqueDocs) {
+                        $('#divUniqueDocs').iCheck(query.queryParams.options.uniqueDocs ? 'check' : 'uncheck');
+                    }
+                    if (option === inverted.includeLocs) {
+                        $('#inputIncludeLocs').iCheck(query.queryParams.options.includeLocs ? 'check' : 'uncheck');
+                    }
+                }
+            }, 200);
+        }
+
+    }
+};

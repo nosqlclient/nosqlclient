@@ -32,7 +32,7 @@ export const serialize = function (obj) {
             }
             else if (Object.prototype.toString.call(obj[property]) === '[object Array]') {
                 for (let i = 0; i < obj[property].length; i++) {
-                    if ((typeof obj[property][i] === 'object') && Object.prototype.toString.call(obj[property][i]) !== '[object Array]' && serializeResult(obj[property][i])) {
+                    if (obj[property][i] !== null && (typeof obj[property][i] === 'object') && Object.prototype.toString.call(obj[property][i]) !== '[object Array]' && serializeResult(obj[property][i])) {
                         obj[property][i] = serializeResult(obj[property][i]);
                     }
                     else {
@@ -62,7 +62,7 @@ export const deserialize = function (obj) {
             }
             else if (Object.prototype.toString.call(obj[property]) === '[object Array]') {
                 for (let i = 0; i < obj[property].length; i++) {
-                    if (Object.prototype.toString.call(obj[property][i]) === '[object Object]' && deserializeResult(obj[property][i])) {
+                    if (obj[property][i] !== null && Object.prototype.toString.call(obj[property][i]) === '[object Object]' && deserializeResult(obj[property][i])) {
                         obj[property][i] = deserializeResult(obj[property][i]);
                     }
                     else {

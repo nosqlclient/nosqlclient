@@ -36,3 +36,14 @@ Template.delete.executeQuery = function (historyParams) {
         }
     );
 };
+
+Template.delete.renderQuery = function (query) {
+    if (query.queryParams) {
+        // let all stuff initialize
+        if (query.queryParams.selector) {
+            Meteor.setTimeout(function () {
+                Helper.setCodeMirrorValue($('#divSelector'), JSON.stringify(query.queryParams.selector, null, 1));
+            }, 100);
+        }
+    }
+};

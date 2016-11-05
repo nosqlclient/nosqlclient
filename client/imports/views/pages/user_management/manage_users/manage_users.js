@@ -129,7 +129,7 @@ export const popEditUserModal = function (user) {
 
             if (user.customData) {
                 $('.nav-tabs a[href="#tab-2"]').tab('show');
-                Helper.setCodeMirrorValue($('#divCustomData'), JSON.stringify(user.customData, null, '\t'));
+                Helper.setCodeMirrorValue($('#divCustomData'), JSON.stringify(user.customData, null, 1));
             }
         }
 
@@ -321,10 +321,9 @@ Template.manageUsers.events({
 
         var customData = Helper.getCodeMirrorValue($('#divCustomData'));
         if (customData) {
-            try {
-                customData = JSON.parse(customData);
-            }
-            catch (err) {
+            customData = Helper.convertAndCheckJSON(customData);
+
+            if (customData["ERROR"]) {
                 toastr.error("Syntax Error on customData: " + err.message);
                 return;
             }

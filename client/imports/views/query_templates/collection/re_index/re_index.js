@@ -20,3 +20,6 @@ Template.reIndex.executeQuery = function (historyParams) {
         Helper.renderAfterQueryExecution(err, result, false, "reIndex", {}, (historyParams ? false : true));
     });
 };
+
+Template.reIndex.renderQuery = function (query) {
+};

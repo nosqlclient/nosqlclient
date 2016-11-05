@@ -33,3 +33,14 @@ Template.dropIndex.executeQuery = function (historyParams) {
         Helper.renderAfterQueryExecution(err, result, false, "dropIndex", params, (historyParams ? false : true));
     });
 };
+
+Template.dropIndex.renderQuery = function (query) {
+    if (query.queryParams) {
+        // let all stuff initialize
+        if (query.queryParams.indexName) {
+            Meteor.setTimeout(function () {
+                $('#inputIndexName').val(query.queryParams.indexName);
+            }, 100);
+        }
+    }
+};
