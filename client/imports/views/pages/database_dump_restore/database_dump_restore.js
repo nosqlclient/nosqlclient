@@ -2,87 +2,54 @@ import {Template} from 'meteor/templating';
 import {Meteor} from 'meteor/meteor';
 import {Session} from 'meteor/session';
 import Helper from '/client/imports/helper';
+import {Connections} from '/lib/imports/collections/connections';
 import {Settings} from '/lib/imports/collections/settings';
 import {Dumps} from '/lib/imports/collections/dumps';
 import Enums from '/lib/imports/enums';
 
 import './database_dump_restore.html';
 
+require('bootstrap-filestyle');
+
 var toastr = require('toastr');
 var Ladda = require('ladda');
 /**
  * Created by RSercan on 17.1.2016.
  */
-Template.databaseDumpRestore.onRendered(function () {
-    if (Session.get(Helper.strSessionCollectionNames) == undefined) {
-        Router.go('databaseStats');
-        return;
-    }
 
-    Helper.initiateDatatable($('#tblDumps'), Helper.strSessionSelectedDump);
-    populateDatatable();
-});
+const initCollectionsForImport = function () {
+    var cmb = $('#cmbImportCollection');
+    cmb.empty();
+    cmb.prepend("<option value=''></option>");
 
-Template.databaseDumpRestore.events({
-    'click #btnRefreshDumps'(e){
-        e.preventDefault();
-        populateDatatable();
+    cmb.append($("<optgroup id='optCollections' label='Collections'></optgroup>"));
+    var cmbGroup = cmb.find('#optCollections');
 
-        toastr.success('Successfully refreshed !');
-    },
+    var connection = Connections.findOne({_id: Session.get(Helper.strSessionConnection)});
 
-    'click #btnTakeDump'(e) {
-        e.preventDefault();
-        var settings = Settings.findOne();
 
-        var laddaButton = Ladda.create(document.querySelector('#btnTakeDump'));
-        laddaButton.start();
-
-        Meteor.call('takeDump', Session.get(Helper.strSessionConnection), settings.dumpPath, function (err) {
-            if (err) {
-                toastr.error("Couldn't take dump, " + err.message);
-            }
-            else {
-                toastr.success('A background process to take a dump has started, whenever it finishes you can see the dump on this page');
-            }
-
-            Ladda.stopAll();
-        });
-    },
-
-    'click .editor_import'(e) {
-        e.preventDefault();
-        if (Session.get(Helper.strSessionSelectedDump)) {
-            swal({
-                title: "Are you sure?",
-                text: "All collections will be dropped, and restored !",
-                type: "warning",
-                showCancelButton: true,
-                confirmButtonColor: "#DD6B55",
-                confirmButtonText: "Yes, do it!",
-                closeOnConfirm: true
-            }, function () {
-
-                var laddaButton = Ladda.create(document.querySelector('#btnTakeDump'));
-                laddaButton.start();
-
-                var dumpInfo = Session.get(Helper.strSessionSelectedDump);
-                dumpInfo.status = Enums.DUMP_STATUS.IN_PROGRESS;
-                Meteor.call('updateDump', dumpInfo); // this is a simple update to notify user on UI
-                Meteor.call('restoreDump', Session.get(Helper.strSessionConnection), dumpInfo, function (err) {
-                    if (err) {
-                        toastr.error("Couldn't restore dump, " + err.message);
-                    }
-                    else {
-                        toastr.success('A background process to restore the dump(' + dumpInfo.filePath + ') has started, whenever it finishes you can see the result on this page');
-                    }
-
-                    Ladda.stopAll();
-                });
-            });
+    Meteor.call('listCollectionNames', connection.databaseName, function (err, result) {
+        if (err || result.error) {
+            Helper.showMeteorFuncError(err, result, "Couldn't fetch collection names");
         }
-    }
-});
+        else {
+            for (var i = 0; i < result.result.length; i++) {
+                cmbGroup.append($("<option></option>")
+                    .attr("value", result.result[i].name)
+                    .text(result.result[i].name));
+            }
+        }
+
+        cmb.chosen({
+            create_option: true,
+            allow_single_deselect: true,
+            persistent_create_option: true,
+            skip_no_results: true
+        });
+
+        cmb.trigger("chosen:updated");
+    });
+};
 
 const populateDatatable = function () {
     var laddaButton = Ladda.create(document.querySelector('#btnTakeDump'));
@@ -171,3 +138,122 @@ const populateDatatable = function () {
 
     Ladda.stopAll();
 };
+
+Template.databaseDumpRestore.onRendered(function () {
+    if (Session.get(Helper.strSessionCollectionNames) == undefined) {
+        Router.go('databaseStats');
+        return;
+    }
+
+    Helper.initiateDatatable($('#tblDumps'), Helper.strSessionSelectedDump);
+    $(".filestyle").filestyle({});
+    initCollectionsForImport();
+    populateDatatable();
+});
+
+Template.databaseDumpRestore.events({
+    'click #btnProceedMongoimport'(){
+        var inputSelector = $('#inputImportJsonFile');
+        var selectedCollection = $('#cmbImportCollection').val();
+        var inputFile = inputSelector.siblings('.bootstrap-filestyle').children('input').val();
+        if (!inputFile || inputSelector.get(0).files.length === 0) {
+            toastr.info('Please select a file !');
+            return;
+        }
+
+        if (!selectedCollection) {
+            toastr.info('Please select a collection !');
+            return;
+        }
+
+        var laddaButton = Ladda.create(document.querySelector('#btnProceedMongoimport'));
+        laddaButton.start();
+
+        var fileReader = new FileReader();
+        fileReader.onload = function (file) {
+            let fileContent = new Uint8Array(file.target.result);
+            Meteor.call('mongoimport', fileContent, selectedCollection, function (err, result) {
+                if (err || result.error) {
+                    Helper.showMeteorFuncError(err, result, "Couldn't import data");
+                }
+                else {
+                    toastr.success('Successfully imported extended json file !');
+                }
+
+                Ladda.stopAll();
+            });
+        };
+        fileReader.readAsArrayBuffer(inputSelector[0].files[0]);
+    },
+
+    'change #inputImportJsonFile'() {
+        var inputSelector = $('#inputImportJsonFile');
+        var blob = inputSelector[0].files[0];
+        var fileInput = inputSelector.siblings('.bootstrap-filestyle').children('input');
+
+        if (blob) {
+            fileInput.val(blob.name);
+        } else {
+            fileInput.val('');
+        }
+    },
+
+    'click #btnRefreshDumps'(e){
+        e.preventDefault();
+        populateDatatable();
+
+        toastr.success('Successfully refreshed !');
+    },
+
+    'click #btnTakeDump'(e) {
+        e.preventDefault();
+        var settings = Settings.findOne();
+
+        var laddaButton = Ladda.create(document.querySelector('#btnTakeDump'));
+        laddaButton.start();
+
+        Meteor.call('takeDump', Session.get(Helper.strSessionConnection), settings.dumpPath, function (err) {
+            if (err) {
+                toastr.error("Couldn't take dump, " + err.message);
+            }
+            else {
+                toastr.success('A background process to take a dump has started, whenever it finishes you can see the dump on this page');
+            }
+
+            Ladda.stopAll();
+        });
+    },
+
+    'click .editor_import'(e) {
+        e.preventDefault();
+        if (Session.get(Helper.strSessionSelectedDump)) {
+            swal({
+                title: "Are you sure?",
+                text: "All collections will be dropped, and restored !",
+                type: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#DD6B55",
+                confirmButtonText: "Yes, do it!",
+                closeOnConfirm: true
+            }, function () {
+
+                var laddaButton = Ladda.create(document.querySelector('#btnTakeDump'));
+                laddaButton.start();
+
+                var dumpInfo = Session.get(Helper.strSessionSelectedDump);
+                dumpInfo.status = Enums.DUMP_STATUS.IN_PROGRESS;
+                Meteor.call('updateDump', dumpInfo); // this is a simple update to notify user on UI
+                Meteor.call('restoreDump', Session.get(Helper.strSessionConnection), dumpInfo, function (err) {
+                    if (err) {
+                        toastr.error("Couldn't restore dump, " + err.message);
+                    }
+                    else {
+                        toastr.success('A background process to restore the dump(' + dumpInfo.filePath + ') has started, whenever it finishes you can see the result on this page');
+                    }
+
+                    Ladda.stopAll();
+                });
+            });
+        }
+    }
+});

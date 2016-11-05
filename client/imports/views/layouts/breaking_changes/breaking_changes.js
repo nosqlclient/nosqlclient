@@ -7,33 +7,24 @@ import Helper from '/client/imports/helper';
 
 import './breaking_changes.html';
 
-Template.breakingChanges.onRendered(function () {
-    let modal = $('#breakingChangesModal');
-    modal.on('shown.bs.modal', function () {
-        let div = $('#divQueryExamples');
-        Helper.initializeCodeMirror(div, 'txtQueryExamples');
-        div.data('editor').setValue(getExamples());
-        div.data('editor').setOption("readOnly", true);
-    });
-});
+const getActivePage = function () {
+    let page1 = $('#page1');
+    let page2 = $('#page2');
+    let page3 = $('#page3');
 
-Template.breakingChanges.events({
-    'click #btnNext'(e) {
-        $('#page1').hide();
-        $('#page2').show();
+    if (page1.css('display') !== 'none') {
+        return 'page1';
+    }
 
-        $('#btnPrevious').prop('disabled', false);
-        $('#btnNext').prop('disabled', true);
-    },
+    if (page2.css('display') !== 'none') {
+        return 'page2';
+    }
 
-    'click #btnPrevious'(e) {
-        $('#page2').hide();
-        $('#page1').show();
+    if (page3.css('display') !== 'none') {
+        return 'page3';
+    }
+};
 
-        $('#btnPrevious').prop('disabled', true);
-        $('#btnNext').prop('disabled', false);
-    },
-});
 
 const getExamples = function () {
     let str = "// all extended json types will be converted to BSON types\n";
@@ -53,3 +44,58 @@ const getExamples = function () {
 
     return str;
 };
+
+Template.breakingChanges.onRendered(function () {
+    let modal = $('#breakingChangesModal');
+    modal.on('shown.bs.modal', function () {
+        let div = $('#divQueryExamples');
+        Helper.initializeCodeMirror(div, 'txtQueryExamples');
+        div.data('editor').setValue(getExamples());
+        div.data('editor').setOption("readOnly", true);
+    });
+});
+
+Template.breakingChanges.events({
+    'click #btnNext'() {
+        let page1 = $('#page1');
+        let page2 = $('#page2');
+        let page3 = $('#page3');
+        let activePage = getActivePage();
+        if (activePage === 'page1') {
+            page1.hide();
+            page3.hide();
+            page2.show();
+        }
+        else if (activePage === 'page2') {
+            page1.hide();
+            page2.hide();
+            page3.show();
+
+            $('#btnNext').prop('disabled', true);
+        }
+
+        $('#btnPrevious').prop('disabled', false);
+    },
+
+    'click #btnPrevious'() {
+        let page1 = $('#page1');
+        let page2 = $('#page2');
+        let page3 = $('#page3');
+        let activePage = getActivePage();
+
+        if (activePage === 'page2') {
+            page1.show();
+            page3.hide();
+            page2.hide();
+
+            $('#btnPrevious').prop('disabled', true);
+        }
+        else if (activePage === 'page3') {
+            page1.hide();
+            page2.show();
+            page3.hide();
+        }
+
+        $('#btnNext').prop('disabled', false);
+    },
+});
