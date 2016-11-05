@@ -39,7 +39,7 @@ const proceedMapReduceExecution = function (selectedCollection, map, reduce, opt
     return Helper.convertBSONtoJSON(result);
 };
 
-const proceedQueryExecution = function (selectedCollection, methodArray, removeCollectionTopology) {
+export const proceedQueryExecution = function (selectedCollection, methodArray, removeCollectionTopology) {
     LOGGER.info(JSON.stringify(methodArray), selectedCollection);
 
     let result = Async.runSync(function (done) {
