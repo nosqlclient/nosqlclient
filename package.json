@@ -1,5 +1,10 @@
 {
+  "name": "mongoclient",
+  "version": "1.3.0",
   "private": true,
+  "scripts": {
+    "start": "npm i && meteor"
+  },
   "devDependencies": {},
   "dependencies": {
     "jquery-contextmenu": "2.3.0",
