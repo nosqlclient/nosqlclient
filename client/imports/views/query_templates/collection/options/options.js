@@ -20,3 +20,6 @@ Template.options.executeQuery = function (historyParams) {
         Helper.renderAfterQueryExecution(err, result, false, "options", {}, (historyParams ? false : true));
     });
 };
+
+Template.options.renderQuery = function (query) {
+};

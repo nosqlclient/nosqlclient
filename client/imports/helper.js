@@ -154,7 +154,6 @@
 
                 Ladda.stopAll();
             }
-
         },
 
         showMeteorFuncError  (err, result, message) {

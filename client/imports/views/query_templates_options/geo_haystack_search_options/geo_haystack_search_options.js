@@ -29,7 +29,7 @@ export const getOptions = function () {
     if ($.inArray("LIMIT", Session.get(Helper.strSessionSelectedOptions)) != -1) {
         var limitVal = $('#inputLimit').val();
         if (limitVal) {
-            result[GEO_HAYSTACK_SEARCH_OPTIONS.LIMIT] = parseInt(limitVal);
+            result[Enums.GEO_HAYSTACK_SEARCH_OPTIONS.LIMIT] = parseInt(limitVal);
         }
     }
 

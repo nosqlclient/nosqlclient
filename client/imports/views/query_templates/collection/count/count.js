@@ -36,3 +36,12 @@ Template.count.executeQuery = function (historyParams) {
         }
     );
 };
+
+Template.count.renderQuery = function (query) {
+    if (query.queryParams && query.queryParams.selector) {
+        // let codemirror initialize
+        Meteor.setTimeout(function () {
+            Helper.setCodeMirrorValue($('#divSelector'), JSON.stringify(query.queryParams.selector, null, 1));
+        }, 100);
+    }
+};

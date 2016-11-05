@@ -60,3 +60,50 @@ Template.geoHaystackSearch.executeQuery = function (historyParams) {
         Helper.renderAfterQueryExecution(err, result, false, "geoHaystackSearch", params, (historyParams ? false : true));
     });
 };
+
+
+Template.geoHaystackSearch.renderQuery = function (query) {
+    if (query.queryParams) {
+        // let all stuff initialize
+        if (query.queryParams.xAxis && query.queryParams.yAxis) {
+            Meteor.setTimeout(function () {
+                $('#inputXAxis').val(query.queryParams.xAxis);
+                $('#inputYAxis').val(query.queryParams.yAxis);
+            }, 100);
+        }
+
+        if (query.queryParams.options) {
+            let optionsArray = [];
+            for (let property in query.queryParams.options) {
+                if (query.queryParams.options.hasOwnProperty(property) && (_.invert(Enums.GEO_HAYSTACK_SEARCH_OPTIONS))[property]) {
+                    optionsArray.push((_.invert(Enums.GEO_HAYSTACK_SEARCH_OPTIONS))[property]);
+                }
+            }
+
+            Meteor.setTimeout(function () {
+                $('#cmbGeoHaystackSearchOptions').val(optionsArray).trigger('chosen:updated');
+                Session.set(Helper.strSessionSelectedOptions, optionsArray);
+
+            }, 100);
+
+            // options load
+            Meteor.setTimeout(function () {
+                for (let i = 0; i < optionsArray.length; i++) {
+                    let option = optionsArray[i];
+                    let inverted = (_.invert(Enums.GEO_HAYSTACK_SEARCH_OPTIONS));
+                    if (option === inverted.search) {
+                        Helper.setCodeMirrorValue($('#divSearch'), JSON.stringify(query.queryParams.options.search, null, 1));
+                    }
+                    if (option === inverted.maxDistance) {
+                        $('#inputMaxDistance').val(query.queryParams.options.maxDistance);
+                    }
+                    if (option === inverted.limit) {
+                        $('#inputLimit').val(query.queryParams.options.limit);
+                    }
+
+                }
+            }, 200);
+        }
+
+    }
+};

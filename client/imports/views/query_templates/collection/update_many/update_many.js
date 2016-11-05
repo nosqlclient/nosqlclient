@@ -16,9 +16,18 @@ var Ladda = require('ladda');
 /**
  * Created by sercan on 06.01.2016.
  */
-Template.updateMany.onRendered(function () {
-    initializeOptions();
-});
+const getOptions = function () {
+    var result = {};
+
+    if ($.inArray("UPSERT", Session.get(Helper.strSessionSelectedOptions)) != -1) {
+        var upsertVal = $('#divUpsert').iCheck('update')[0].checked;
+        if (upsertVal) {
+            result[Enums.UPDATE_OPTIONS.UPSERT] = upsertVal;
+        }
+    }
+
+    return result;
+};
 
 const initializeOptions = function () {
     var cmb = $('#cmbUpdateManyOptions');
@@ -31,6 +40,10 @@ const initializeOptions = function () {
     cmb.chosen();
     Helper.setOptionsComboboxChangeEvent(cmb);
 };
+
+Template.updateMany.onRendered(function () {
+    initializeOptions();
+});
 
 Template.updateMany.executeQuery = function (historyParams) {
     initExecuteQuery();
@@ -73,15 +86,45 @@ Template.updateMany.executeQuery = function (historyParams) {
     );
 };
 
-const getOptions = function () {
-    var result = {};
+Template.updateMany.renderQuery = function (query) {
+    if (query.queryParams) {
+        // let all stuff initialize
+        if (query.queryParams.selector) {
+            Meteor.setTimeout(function () {
+                Helper.setCodeMirrorValue($('#divSelector'), JSON.stringify(query.queryParams.selector, null, 1));
+            }, 100);
+        }
 
-    if ($.inArray("UPSERT", Session.get(Helper.strSessionSelectedOptions)) != -1) {
-        var upsertVal = $('#divUpsert').iCheck('update')[0].checked;
-        if (upsertVal) {
-            result[Enums.UPDATE_OPTIONS.UPSERT] = upsertVal;
+        if (query.queryParams.setObject) {
+            Meteor.setTimeout(function () {
+                Helper.setCodeMirrorValue($('#divSet'), JSON.stringify(query.queryParams.setObject.$set, null, 1));
+            }, 100);
+        }
+
+        if (query.queryParams.options) {
+            let optionsArray = [];
+            for (let property in query.queryParams.options) {
+                if (query.queryParams.options.hasOwnProperty(property) && (_.invert(Enums.UPDATE_OPTIONS))[property]) {
+                    optionsArray.push((_.invert(Enums.UPDATE_OPTIONS))[property]);
+                }
+            }
+
+            Meteor.setTimeout(function () {
+                $('#cmbUpdateManyOptions').val(optionsArray).trigger('chosen:updated');
+                Session.set(Helper.strSessionSelectedOptions, optionsArray);
+
+            }, 100);
+
+            // options load
+            Meteor.setTimeout(function () {
+                for (let i = 0; i < optionsArray.length; i++) {
+                    let option = optionsArray[i];
+                    let inverted = (_.invert(Enums.UPDATE_OPTIONS));
+                    if (option === inverted.upsert) {
+                        $('#divVerbose').iCheck(query.queryParams.options.upsert ? 'check' : 'uncheck');
+                    }
+                }
+            }, 200);
         }
     }
-
-    return result;
 };

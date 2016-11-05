@@ -58,3 +58,56 @@ Template.createIndex.executeQuery = function (historyParams) {
         Helper.renderAfterQueryExecution(err, result, false, "createIndex", params, (historyParams ? false : true));
     });
 };
+
+Template.createIndex.renderQuery = function (query) {
+    if (query.queryParams) {
+        // let all stuff initialize
+        if (query.queryParams.fields) {
+            Meteor.setTimeout(function () {
+                Helper.setCodeMirrorValue($('#divFields'), JSON.stringify(query.queryParams.fields, null, 1));
+            }, 100);
+        }
+
+        if (query.queryParams.options) {
+            let optionsArray = [];
+            for (let property in query.queryParams.options) {
+                if (query.queryParams.options.hasOwnProperty(property) && (_.invert(Enums.CREATE_INDEX_OPTIONS))[property]) {
+                    optionsArray.push((_.invert(Enums.CREATE_INDEX_OPTIONS))[property]);
+                }
+            }
+
+            Meteor.setTimeout(function () {
+                $('#cmbCreateIndexOptions').val(optionsArray).trigger('chosen:updated');
+                Session.set(Helper.strSessionSelectedOptions, optionsArray);
+
+            }, 100);
+
+            // options load
+            Meteor.setTimeout(function () {
+                for (let i = 0; i < optionsArray.length; i++) {
+                    let option = optionsArray[i];
+                    let inverted = (_.invert(Enums.CREATE_INDEX_OPTIONS));
+                    if (option === inverted.max) {
+                        Helper.setCodeMirrorValue($('#divMax'), JSON.stringify(query.queryParams.options.max, null, 1));
+                    }
+                    if (option === inverted.min) {
+                        Helper.setCodeMirrorValue($('#divMin'), JSON.stringify(query.queryParams.options.min, null, 1));
+                    }
+                    if (option === inverted.unique) {
+                        $('#divUnique').iCheck(query.queryParams.options.unique ? 'check' : 'uncheck');
+                    }
+                    if (option === inverted.sparse) {
+                        $('#divUnique').iCheck(query.queryParams.options.sparse ? 'check' : 'uncheck');
+                    }
+                    if (option === inverted.background) {
+                        $('#divUnique').iCheck(query.queryParams.options.background ? 'check' : 'uncheck');
+                    }
+                    if (option === inverted.name) {
+                        $('#inputIndexName').val(query.queryParams.options.name);
+                    }
+                }
+            }, 200);
+        }
+
+    }
+};

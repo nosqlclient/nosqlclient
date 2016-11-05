@@ -70,3 +70,54 @@ Template.findOneAndUpdate.executeQuery = function (historyParams) {
         }
     );
 };
+
+Template.findOneAndUpdate.renderQuery = function (query) {
+    if (query.queryParams) {
+        // let all stuff initialize
+        if (query.queryParams.selector) {
+            Meteor.setTimeout(function () {
+                Helper.setCodeMirrorValue($('#divSelector'), JSON.stringify(query.queryParams.selector, null, 1));
+            }, 100);
+        }
+
+        if (query.queryParams.setObject) {
+            Meteor.setTimeout(function () {
+                Helper.setCodeMirrorValue($('#divSet'), JSON.stringify(query.queryParams.setObject.$set, null, 1));
+            }, 100);
+        }
+
+        if (query.queryParams.options) {
+            let optionsArray = [];
+            for (let property in query.queryParams.options) {
+                if (query.queryParams.options.hasOwnProperty(property) && (_.invert(Enums.FINDONE_MODIFY_OPTIONS))[property]) {
+                    optionsArray.push((_.invert(Enums.FINDONE_MODIFY_OPTIONS))[property]);
+                }
+            }
+
+            Meteor.setTimeout(function () {
+                $('#cmbFindOneModifyOptions').val(optionsArray).trigger('chosen:updated');
+                Session.set(Helper.strSessionSelectedOptions, optionsArray);
+            }, 100);
+
+            // options load
+            Meteor.setTimeout(function () {
+                for (let i = 0; i < optionsArray.length; i++) {
+                    let option = optionsArray[i];
+                    let inverted = (_.invert(Enums.FINDONE_MODIFY_OPTIONS));
+                    if (option === inverted.projection) {
+                        Helper.setCodeMirrorValue($('#divProject'), JSON.stringify(query.queryParams.options.projection, null, 1));
+                    }
+                    if (option === inverted.sort) {
+                        Helper.setCodeMirrorValue($('#divSort'), JSON.stringify(query.queryParams.options.sort, null, 1));
+                    }
+                    if (option === inverted.upsert) {
+                        $('#divUpsert').iCheck(query.queryParams.options.upsert ? 'check' : 'uncheck');
+                    }
+                    if (option === inverted.returnOriginal) {
+                        $('#divReturnOriginal').iCheck(query.queryParams.options.returnOriginal ? 'check' : 'uncheck');
+                    }
+                }
+            }, 200);
+        }
+    }
+};

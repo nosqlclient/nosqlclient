@@ -35,3 +35,13 @@ Template.bulkWrite.executeQuery = function (historyParams) {
         }
     );
 };
+
+
+Template.bulkWrite.renderQuery = function (query) {
+    if (query.queryParams && query.queryParams.selector) {
+        // let codemirror initialize
+        Meteor.setTimeout(function () {
+            Helper.setCodeMirrorValue($('#divBulkWrite'), JSON.stringify(query.queryParams.selector, null, 1));
+        }, 100);
+    }
+};

@@ -129,7 +129,7 @@ export const popEditUserModal = function (user) {
 
             if (user.customData) {
                 $('.nav-tabs a[href="#tab-2"]').tab('show');
-                Helper.setCodeMirrorValue($('#divCustomData'), JSON.stringify(user.customData, null, '\t'));
+                Helper.setCodeMirrorValue($('#divCustomData'), JSON.stringify(user.customData, null, 1));
             }
         }
 

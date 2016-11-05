@@ -35,3 +35,14 @@ Template.insertMany.executeQuery = function (historyParams) {
         Helper.renderAfterQueryExecution(err, result, false, "insertMany", params, (historyParams ? false : true));
     });
 };
+
+Template.insertMany.renderQuery = function (query) {
+    if (query.queryParams) {
+        // let all stuff initialize
+        if (query.queryParams.docs) {
+            Meteor.setTimeout(function () {
+                Helper.setCodeMirrorValue($('#divDocs'), JSON.stringify(query.queryParams.docs, null, 1));
+            }, 100);
+        }
+    }
+};

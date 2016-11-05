@@ -23,3 +23,7 @@ Template.isCapped.executeQuery = function (historyParams) {
         Helper.renderAfterQueryExecution(err, result, false, "isCapped", {}, (historyParams ? false : true));
     });
 };
+
+
+Template.isCapped.renderQuery = function (query) {
+};

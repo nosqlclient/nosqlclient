@@ -10,15 +10,18 @@ import './stats.html';
 /**
  * Created by sercan on 06.01.2016.
  */
-Template.stats.onRendered(function () {
-    initializeOptions();
-});
+const getOptions = function () {
+    var result = {};
 
-Template.scale.onRendered(function () {
-    $('#divScale').iCheck({
-        checkboxClass: 'icheckbox_square-green'
-    });
-});
+    if ($.inArray("SCALE", Session.get(Helper.strSessionSelectedOptions)) != -1) {
+        var scale = $('#inputScale').val();
+        if (scale) {
+            result[Enums.STATS_OPTIONS.SCALE] = parseInt(scale);
+        }
+    }
+
+    return result;
+};
 
 const initializeOptions = function () {
     var cmb = $('#cmbStatsOptions');
@@ -31,6 +34,16 @@ const initializeOptions = function () {
     cmb.chosen();
     Helper.setOptionsComboboxChangeEvent(cmb);
 };
+
+Template.stats.onRendered(function () {
+    initializeOptions();
+});
+
+Template.scale.onRendered(function () {
+    $('#divScale').iCheck({
+        checkboxClass: 'icheckbox_square-green'
+    });
+});
 
 Template.stats.executeQuery = function (historyParams) {
     initExecuteQuery();
@@ -46,15 +59,34 @@ Template.stats.executeQuery = function (historyParams) {
     });
 };
 
-const getOptions = function () {
-    var result = {};
+Template.stats.renderQuery = function (query) {
+    if (query.queryParams) {
+        // let all stuff initialize
+        if (query.queryParams.options) {
+            let optionsArray = [];
+            for (let property in query.queryParams.options) {
+                if (query.queryParams.options.hasOwnProperty(property) && (_.invert(Enums.STATS_OPTIONS))[property]) {
+                    optionsArray.push((_.invert(Enums.STATS_OPTIONS))[property]);
+                }
+            }
 
-    if ($.inArray("SCALE", Session.get(Helper.strSessionSelectedOptions)) != -1) {
-        var scale = $('#inputScale').val();
-        if (scale) {
-            result[Enums.STATS_OPTIONS.SCALE] = parseInt(scale);
+            Meteor.setTimeout(function () {
+                $('#cmbStatsOptions').val(optionsArray).trigger('chosen:updated');
+                Session.set(Helper.strSessionSelectedOptions, optionsArray);
+
+            }, 100);
+
+            // options load
+            Meteor.setTimeout(function () {
+                for (let i = 0; i < optionsArray.length; i++) {
+                    let option = optionsArray[i];
+                    let inverted = (_.invert(Enums.STATS_OPTIONS));
+                    if (option === inverted.scale) {
+                        $('#inputScale').val(query.queryParams.options.scale);
+                    }
+                }
+            }, 200);
         }
-    }
 
-    return result;
+    }
 };
