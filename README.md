@@ -37,7 +37,7 @@ Mongoclient now officialy has a docker hub. To install master branch:
 
 ```docker pull mongoclient/mongoclient```
 
-To install latest release:
+To install latest stable release:
 
 ```docker pull mongoclient/mongoclient:1.4.0```
 
