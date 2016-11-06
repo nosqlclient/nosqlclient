@@ -33,9 +33,13 @@ Version 1.4.0 has been released ! Chat is back, for more info checkout breaking 
 To learn more see the [wiki](https://github.com/rsercano/mongoclient/wiki) page.
 
 ## Docker
-Mongoclient now officialy has a docker hub. To install it:
+Mongoclient now officialy has a docker hub. To install master branch:
 
 ```docker pull mongoclient/mongoclient```
+
+To install latest release:
+
+```docker pull mongoclient/mongoclient:1.4.0```
 
 Then you can run it as a daemon:
 
