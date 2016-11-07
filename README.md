@@ -26,7 +26,7 @@ Version 1.4.0 has been released ! Chat is back, for more info checkout breaking 
 ### Distributions
 
 * [Linux x64](https://github.com/rsercano/mongoclient/releases/download/1.4.0/linux-portable-x64.zip)
-* [Windows x64](https://github.com/rsercano/mongoclient/releases/download/1.4.0/windows-portable-x64.zip) (Please use 7zip to extract, or something except winrar)
+* [Windows x64](https://github.com/rsercano/mongoclient/releases/download/1.4.0/windows-portable-x64.zip)
 * [OSx](https://github.com/rsercano/mongoclient/releases/download/1.4.0/osx-portable.zip)
 * [Web Application](https://github.com/rsercano/mongoclient/wiki#31-compile-from-source-browser-edition)
 
