@@ -1,5 +1,7 @@
 {
   "private": true,
+  "name": "mongoclient",
+  "version": "1.4.0",
   "devDependencies": {},
   "dependencies": {
     "jquery-contextmenu": "2.3.0",
