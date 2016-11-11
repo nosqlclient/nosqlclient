@@ -4,7 +4,7 @@ Cross-platform, MongoDB 3.2+ support and more features!
 [![Join the chat at https://gitter.im/rsercano/mongoclient](https://badges.gitter.im/rsercano/mongoclient.svg)](https://gitter.im/rsercano/mongoclient?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)&nbsp;[![Build Status](https://travis-ci.org/rsercano/mongoclient.svg?branch=master)](https://travis-ci.org/rsercano/mongoclient)
 
 
-[![Paypal](https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=Y5VD95E96NU6S)&nbsp;&nbsp;[![Flattr this git repo](http://api.flattr.com/button/flattr-badge-large.png)](https://flattr.com/submit/auto?user_id=mongoclient&url=https://github.com/rsercano/mongoclient&title=Mongoclient&language=en_GB&tags=github&category=software)
+[![Paypal](https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=Y5VD95E96NU6S)
 
 *Mongoclient is in need of you to buy [INSPINA](https://wrapbootstrap.com/theme/inspinia-responsive-admin-theme-WB0R5L90S) theme's extended licence ($1000) to live longer.* [Thank you so much](https://github.com/rsercano/mongoclient/wiki/Donators)
 
