@@ -3,6 +3,7 @@
  */
 import {Meteor} from 'meteor/meteor';
 import {Settings} from '/lib/imports/collections/settings';
+import ShellCommands from '/lib/imports/collections/shell';
 
 Meteor.startup(function () {
     // create a setting if not exist
@@ -27,4 +28,6 @@ Meteor.startup(function () {
         });
         basicAuth.protect();
     }
+
+    ShellCommands.remove({});
 });
