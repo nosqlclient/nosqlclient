@@ -318,7 +318,7 @@
             });
         },
 
-        initializeCodeMirror  (divSelector, txtAreaId, keepValue) {
+        initializeCodeMirror  (divSelector, txtAreaId, keepValue, height = 100, enterEvent) {
             var codeMirror;
             if (!divSelector.data('editor')) {
                 codeMirror = CodeMirror.fromTextArea(document.getElementById(txtAreaId), {
@@ -331,12 +331,12 @@
                         "Ctrl-Q": function (cm) {
                             cm.foldCode(cm.getCursor());
                         },
-                        "Ctrl-Space": "autocomplete"
+                        "Ctrl-Space": "autocomplete",
+                        "Enter": enterEvent
                     },
                     foldGutter: true,
                     gutters: ["CodeMirror-linenumbers", "CodeMirror-foldgutter"]
                 });
-
 
                 if (keepValue) {
                     codeMirror.on("change", () => {
@@ -344,7 +344,7 @@
                     });
                 }
 
-                codeMirror.setSize('%100', 100);
+                codeMirror.setSize('%100', height);
 
                 CodeMirror.hint.javascript = (editor)=> {
                     var list = Session.get(this.strSessionDistinctFields) || [];

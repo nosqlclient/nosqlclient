@@ -1,0 +1,44 @@
+<template name="mcShell">
+    {{> pageHeading title='Mongoclient Shell' }}
+
+    {{#if isConnected}}
+        <div class="wrapper wrapper-content animated fadeInRight">
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="ibox float-e-margins">
+                        <div class="ibox-title">
+                            <h5>Shell
+                                <small>It works just as you know !</small>
+                            </h5>
+
+                            <div class="ibox-tools">
+                                <button id="btnClearShell" type="button" class="btn btn-sm btn-primary">Clear Shell
+                                </button>
+
+                                <button id="btnCloseShell" type="button" class="btn btn-sm btn-primary">Close Shell
+                                </button>
+
+                            </div>
+                        </div>
+                        <div class="ibox-content">
+                            <form class="form-horizontal">
+                                <div class="form-group">
+                                    <div id="divShellCommand" class="col-lg-12">
+                                        <textarea id="txtShellCommand" class="form-control"></textarea>
+                                        <span class="help-block m-b-none">Shell command to execute, <b>ENTER</b> executes it.</span>
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <div id="divShellResult" class="col-lg-12">
+                                        <textarea id="txtShellResult" class="form-control"></textarea>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {{/if}}
+</template>

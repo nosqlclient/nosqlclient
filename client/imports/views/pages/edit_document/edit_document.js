@@ -7,93 +7,12 @@ import {getSelectorValue} from '/client/imports/views/query_templates_common/sel
 import './edit_document.html';
 
 var toastr = require('toastr');
-var CodeMirror = require("codemirror");
-
-require("/node_modules/codemirror/mode/javascript/javascript.js");
-require("/node_modules/codemirror/addon/fold/brace-fold.js");
-require("/node_modules/codemirror/addon/fold/comment-fold.js");
-require("/node_modules/codemirror/addon/fold/foldcode.js");
-require("/node_modules/codemirror/addon/fold/foldgutter.js");
-require("/node_modules/codemirror/addon/fold/indent-fold.js");
-require("/node_modules/codemirror/addon/fold/markdown-fold.js");
-require("/node_modules/codemirror/addon/fold/xml-fold.js");
-require("/node_modules/codemirror/addon/hint/javascript-hint.js");
-require("/node_modules/codemirror/addon/hint/show-hint.js");
 
 var Ladda = require('ladda');
 
 /**
  * Created by RSercan on 15.2.2016.
  */
-Template.editDocument.onRendered(function () {
-    if (Session.get(Helper.strSessionCollectionNames) == undefined) {
-        Router.go('databaseStats');
-        return;
-    }
-
-    initializeCollectionsCombobox();
-    Session.set(Helper.strSessionEasyEditID, undefined);
-
-    $('[data-toggle="tooltip"]').tooltip({trigger: 'hover'});
-});
-
-Template.editDocument.events({
-    'click #btnInsertDocument'  (e) {
-        e.preventDefault();
-
-        if (!$('#cmbCollections').find(":selected").text()) {
-            toastr.warning('Please select a collection first !');
-            Ladda.stopAll();
-            return;
-        }
-
-        Session.set(Helper.strSessionEasyEditID, undefined);
-        initializeResultArea('{}');
-        $('#btnDeleteDocument').prop('disabled', true);
-    },
-
-    'click #btnFetchDocument' (e) {
-        e.preventDefault();
-        fetchDocument();
-    },
-
-    'click #btnSaveDocument'  (e) {
-        e.preventDefault();
-
-        var text = Session.get(Helper.strSessionEasyEditID) ? 'This document will be overwritten, are you sure ?' : 'This document will be inserted, are you sure ?';
-        swal({
-            title: "Are you sure ?",
-            text: text,
-            type: "warning",
-            showCancelButton: true,
-            confirmButtonColor: "#DD6B55",
-            confirmButtonText: "Yes!",
-            cancelButtonText: "No"
-        }, function (isConfirm) {
-            if (isConfirm) {
-                saveDocument();
-            }
-        });
-    },
-
-    'click #btnDeleteDocument'  (e) {
-        e.preventDefault();
-        swal({
-            title: "Are you sure ?",
-            text: "This document will be deleted, are you sure ?",
-            type: "warning",
-            showCancelButton: true,
-            confirmButtonColor: "#DD6B55",
-            confirmButtonText: "Yes!",
-            cancelButtonText: "No"
-        }, function (isConfirm) {
-            if (isConfirm) {
-                deleteDocument();
-            }
-        });
-    }
-
-});
 
 const initializeCollectionsCombobox = function () {
     var cmb = $('#cmbCollections');
@@ -124,29 +43,9 @@ const initializeResultArea = function (result) {
         $('#divFooter').show();
     }
 
-    var codeMirror;
-    if (!divResult.data('editor')) {
-        codeMirror = CodeMirror.fromTextArea(document.getElementById('txtDocument'), {
-            mode: "javascript",
-            theme: "neat",
-            styleActiveLine: true,
-            lineNumbers: true,
-            lineWrapping: false,
-            extraKeys: {
-                "Ctrl-Q": function (cm) {
-                    cm.foldCode(cm.getCursor());
-                }
-            },
-            foldGutter: true,
-            gutters: ["CodeMirror-linenumbers", "CodeMirror-foldgutter"]
-        });
-        codeMirror.setSize('%100', 400);
-        divResult.data('editor', codeMirror);
-    } else {
-        codeMirror = divResult.data('editor');
-    }
 
-    codeMirror.getDoc().setValue(result);
+    Helper.initializeCodeMirror(divResult, 'txtDocument', false, 400);
+    Helper.setCodeMirrorValue(divResult, result);
 };
 
 const deleteDocument = function () {
@@ -281,3 +180,72 @@ const fetchDocument = function () {
 
 };
 
+Template.editDocument.onRendered(function () {
+    if (Session.get(Helper.strSessionCollectionNames) == undefined) {
+        Router.go('databaseStats');
+        return;
+    }
+
+    initializeCollectionsCombobox();
+    Session.set(Helper.strSessionEasyEditID, undefined);
+
+    $('[data-toggle="tooltip"]').tooltip({trigger: 'hover'});
+});
+
+Template.editDocument.events({
+    'click #btnInsertDocument'  (e) {
+        e.preventDefault();
+
+        if (!$('#cmbCollections').find(":selected").text()) {
+            toastr.warning('Please select a collection first !');
+            Ladda.stopAll();
+            return;
+        }
+
+        Session.set(Helper.strSessionEasyEditID, undefined);
+        initializeResultArea('{}');
+        $('#btnDeleteDocument').prop('disabled', true);
+    },
+
+    'click #btnFetchDocument' (e) {
+        e.preventDefault();
+        fetchDocument();
+    },
+
+    'click #btnSaveDocument'  (e) {
+        e.preventDefault();
+
+        var text = Session.get(Helper.strSessionEasyEditID) ? 'This document will be overwritten, are you sure ?' : 'This document will be inserted, are you sure ?';
+        swal({
+            title: "Are you sure ?",
+            text: text,
+            type: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#DD6B55",
+            confirmButtonText: "Yes!",
+            cancelButtonText: "No"
+        }, function (isConfirm) {
+            if (isConfirm) {
+                saveDocument();
+            }
+        });
+    },
+
+    'click #btnDeleteDocument'  (e) {
+        e.preventDefault();
+        swal({
+            title: "Are you sure ?",
+            text: "This document will be deleted, are you sure ?",
+            type: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#DD6B55",
+            confirmButtonText: "Yes!",
+            cancelButtonText: "No"
+        }, function (isConfirm) {
+            if (isConfirm) {
+                deleteDocument();
+            }
+        });
+    }
+
+});

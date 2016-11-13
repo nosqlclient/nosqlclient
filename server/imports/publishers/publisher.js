@@ -7,7 +7,12 @@ import {Actions} from '/lib/imports/collections/actions';
 import {Dumps} from '/lib/imports/collections/dumps';
 import {QueryHistory} from '/lib/imports/collections/query_history';
 import {Settings} from '/lib/imports/collections/settings';
+import ShellCommands from '/lib/imports/collections/shell';
 
+
+Meteor.publish('shell_commands', function () {
+    return ShellCommands.find();
+});
 
 Meteor.publish('connections', function () {
     return Connections.find();
