@@ -19,7 +19,7 @@ iron:router
 fortawesome:fontawesome
 zimme:active-route
 okgrow:router-autoscroll
-less@2.7.6
+less@2.7.7
 twbs:bootstrap@3.3.6
 momentjs:moment
 arch:ace-editor

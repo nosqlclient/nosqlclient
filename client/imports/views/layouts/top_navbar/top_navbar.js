@@ -61,7 +61,7 @@ const clearAllFieldsOfConnectionModal = function () {
     $('#inputUrl').val('');
     $('#inputHost').val('');
     $('#inputPort').val('27017');
-    $('#inputDatabaseName').val('');
+    $('#inputDatabaseName').val('test');
     $('#inputUser').val('');
     $('#inputPassword').val('');
     $('#inputAuthenticationDB').val('');

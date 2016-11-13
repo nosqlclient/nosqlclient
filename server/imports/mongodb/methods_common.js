@@ -5,14 +5,63 @@
 import {Meteor} from 'meteor/meteor';
 import {Settings} from '/lib/imports/collections/settings';
 import {Connections} from '/lib/imports/collections/connections';
+import ShellCommands from '/lib/imports/collections/shell';
 import LOGGER from "../internal/logger";
 import Helper from "./helper";
 
 const mongodbApi = require('mongodb');
 const tunnelSsh = new require('tunnel-ssh');
 const fs = require('fs');
+const spawn = require('cross-spawn');
+const os = require('os');
 
 export let database;
+let spawnedShell;
+
+const getProperMongo = function () {
+    switch (os.platform()) {
+        case 'darwin':
+            return '/lib/mongo/darwin/mongo';
+        case 'win32':
+            return '../../../../../lib/mongo/win32/mongo.exe';
+        case 'linux':
+            return '/lib/mongo/linux/mongo';
+        default :
+            throw 'Not supported os: ' + os.platform();
+    }
+};
+
+const proceedConnectingMongodb = function (connectionUrl, connectionOptions, done) {
+    if (!connectionOptions) {
+        connectionOptions = {};
+    }
+
+    connectionOptions.uri_decode_auth = true;
+
+    mongodbApi.MongoClient.connect(connectionUrl, connectionOptions, function (mainError, db) {
+        if (mainError || db == null || db == undefined) {
+            LOGGER.error(mainError, db);
+            done(mainError, db);
+            if (db) {
+                db.close();
+            }
+            return;
+        }
+        try {
+            database = db;
+            database.listCollections().toArray(function (err, collections) {
+                done(err, collections);
+            });
+        }
+        catch (ex) {
+            LOGGER.error('[connect]', ex);
+            done(new Meteor.Error(ex.message), null);
+            if (db) {
+                db.close();
+            }
+        }
+    });
+};
 
 Meteor.methods({
     importMongoclient(file)  {
@@ -106,6 +155,11 @@ Meteor.methods({
         if (database) {
             database.close();
         }
+        if (spawnedShell) {
+            spawnedShell.stdin.end();
+            spawnedShell = null;
+        }
+        ShellCommands.remove({});
     },
 
     connect(connectionId) {
@@ -218,38 +272,79 @@ Meteor.methods({
                 done(new Meteor.Error(ex.message), null);
             }
         });
-    }
-});
+    },
 
-const proceedConnectingMongodb = function (connectionUrl, connectionOptions, done) {
-    if (!connectionOptions) {
-        connectionOptions = {};
-    }
+    clearShell(){
+        LOGGER.info('[clearShell]');
+        ShellCommands.remove({});
+    },
 
-    connectionOptions.uri_decode_auth = true;
-
-    mongodbApi.MongoClient.connect(connectionUrl, connectionOptions, function (mainError, db) {
-        if (mainError || db == null || db == undefined) {
-            LOGGER.error(mainError, db);
-            done(mainError, db);
-            if (db) {
-                db.close();
-            }
-            return;
-        }
+    closeShell(){
+        LOGGER.info('[closeShell]');
         try {
-            database = db;
-            database.listCollections().toArray(function (err, collections) {
-                done(err, collections);
-            });
+            if (spawnedShell) {
+                spawnedShell.stdin.end();
+                spawnedShell = null;
+            }
         }
         catch (ex) {
-            LOGGER.error('[connect]', ex);
-            done(new Meteor.Error(ex.message), null);
-            if (db) {
-                db.close();
-            }
+            LOGGER.error('[closeShell]', ex);
+            return {err: new Meteor.Error(ex.message), result: null};
         }
-    });
-};
+    },
 
+    executeShellCommand(command){
+        LOGGER.info('[shellCommand]', command);
+        if (!spawnedShell) {
+            return {err: new Meteor.Error('Could not connect to shell !'), result: null};
+        }
+
+        spawnedShell.stdin.write(command + '\n');
+    },
+
+    connectToShell(connectionId){
+        const connectionUrl = Helper.getConnectionUrl(Connections.findOne({_id: connectionId}));
+        const mongoPath = getProperMongo();
+
+        LOGGER.info('[shell]', mongoPath, connectionUrl);
+
+        try {
+            spawnedShell = spawn(mongoPath, [connectionUrl]);
+            spawnedShell.stdout.on('data', Meteor.bindEnvironment(function (data) {
+                if (data.toString()) {
+                    ShellCommands.insert({
+                        'date': Date.now(),
+                        'connectionId': connectionId,
+                        'message': data.toString()
+                    });
+                }
+            }));
+
+            spawnedShell.stderr.on('data', Meteor.bindEnvironment(function (data) {
+                if (data.toString()) {
+                    ShellCommands.insert({
+                        'date': Date.now(),
+                        'connectionId': connectionId,
+                        'message': data.toString()
+                    });
+                }
+            }));
+
+            spawnedShell.on('close', Meteor.bindEnvironment(function (code) {
+                // show ended message in codemirror
+                ShellCommands.insert({
+                    'date': Date.now(),
+                    'connectionId': connectionId,
+                    'message': 'shell closed ' + code.toString()
+                });
+
+                // remove all for further
+                ShellCommands.remove({});
+            }));
+        }
+        catch (ex) {
+            LOGGER.error('[shell]', ex);
+            return {err: new Meteor.Error(ex.message), result: null};
+        }
+    }
+});
