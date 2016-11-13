@@ -63,18 +63,25 @@ const gatherCommandAutoCompletions = function (editorValue, curWord) {
     if (curWord) {
         return lastRegex;
     }
-
     editorValue = !editorValue ? editorValue : editorValue.match(/[^\s"']+|"([^"]*)"|'([^']*)'/gm).join('');
     switch (analyzeEditorValue(editorValue)) {
         case 'collection':
-            console.log('collection');
-            break;
+            return lastRegex = ['aggregate(', 'bulkWrite(', 'count(', 'copyTo(',
+                'craeteIndex(', 'dataSize(', 'deleteOne(', 'deleteMany(',
+                'distinct(', 'drop(', 'dropIndex(', 'dropIndexes(', 'ensureIndex(', 'explain(', 'find(',
+                'findAndModify(', 'findOne(', 'findOneAndDelete(', 'findOneAndReplace(',
+                'findOneAndUpdate(', 'getIndexes(', 'getShardDistribution(', 'getShardVersion(',
+                'group(', 'insert(', 'insertOne(', 'insertMany(', 'isCapped(', 'mapReduce(',
+                'reIndex(', 'replaceOne(', 'remove(', 'renameCollection(', 'save(', 'stats(',
+                'storageSize(', 'totalSize(', 'totalIndexSize(', 'update(', 'updateOne(', 'updateMany(', 'validate('];
         case 'cursor':
-            console.log('cursor');
-            break;
+            return lastRegex = ['addOption(', 'batchSize(', 'close(', 'comment(', 'count(', 'explain(',
+                'forEach(', 'hasNext(', 'hint(', 'itcount(', 'limit(', 'map(', 'maxScan(', 'maxTimeMS(', 'max(',
+                'min(', 'next(', 'noCursorTimeout(', 'objsLeftInBatch(', 'pretty(', 'readConcern(', 'readPref(',
+                'returnKey(', 'showRecordId(', 'size(', 'skip(', 'snapshot(', 'sort(', 'tailable(', 'toArray('];
         case 'db':
-            console.log('db');
-            break;
+            //TODO add all db. stuff from mongo shell
+            return lastRegex = gatherCollectionNames();
         case 'planCache':
             console.log('planCache');
             break;
@@ -95,7 +102,7 @@ const gatherCommandAutoCompletions = function (editorValue, curWord) {
             }
     }
 
-    return gatherCollectionNames();
+    return [];
 };
 
 const initializeCommandCodeMirror = function () {
@@ -134,7 +141,7 @@ const initializeCommandCodeMirror = function () {
             while (end < currentLine.length && /[\w$]+/.test(currentLine.charAt(end))) ++end;
             while (start && /[\w$]+/.test(currentLine.charAt(start - 1))) --start;
             var curWord = start != end && currentLine.slice(start, end);
-            var list = gatherCommandAutoCompletions(editor.getValue(), curWord);
+            var list = gatherCommandAutoCompletions(editor.getValue(), curWord) || [];
             var regex = new RegExp('^' + curWord, 'i');
             return {
                 list: (!curWord ? list : list.filter(function (item) {
