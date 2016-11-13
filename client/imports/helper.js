@@ -318,7 +318,7 @@
             });
         },
 
-        initializeCodeMirror  (divSelector, txtAreaId, keepValue) {
+        initializeCodeMirror  (divSelector, txtAreaId, keepValue, height = 100) {
             var codeMirror;
             if (!divSelector.data('editor')) {
                 codeMirror = CodeMirror.fromTextArea(document.getElementById(txtAreaId), {
@@ -337,14 +337,13 @@
                     gutters: ["CodeMirror-linenumbers", "CodeMirror-foldgutter"]
                 });
 
-
                 if (keepValue) {
                     codeMirror.on("change", () => {
                         Session.set(this.strSessionSelectorValue, codeMirror.getValue());
                     });
                 }
 
-                codeMirror.setSize('%100', 100);
+                codeMirror.setSize('%100', height);
 
                 CodeMirror.hint.javascript = (editor)=> {
                     var list = Session.get(this.strSessionDistinctFields) || [];
@@ -352,8 +351,8 @@
                     var currentLine = editor.getLine(cursor.line);
                     var start = cursor.ch;
                     var end = start;
-                    while (end < currentLine.length && /[\w$]+/.test(currentLine.charAt(end))) ++end;
-                    while (start && /[\w$]+/.test(currentLine.charAt(start - 1))) --start;
+                    while (end < currentLine.length && /[\w.$]+/.test(currentLine.charAt(end))) ++end;
+                    while (start && /[\w.$]+/.test(currentLine.charAt(start - 1))) --start;
                     var curWord = start != end && currentLine.slice(start, end);
                     var regex = new RegExp('^' + curWord, 'i');
                     return {
