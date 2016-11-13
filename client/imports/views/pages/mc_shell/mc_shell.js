@@ -13,7 +13,7 @@ import './mc_shell.html';
 
 const CodeMirror = require("codemirror");
 const toastr = require('toastr');
-let connected;
+let connected, lastRegex;
 
 require("/node_modules/codemirror/mode/javascript/javascript.js");
 require("/node_modules/codemirror/addon/fold/brace-fold.js");
@@ -26,26 +26,76 @@ require("/node_modules/codemirror/addon/fold/xml-fold.js");
 require("/node_modules/codemirror/addon/hint/javascript-hint.js");
 require("/node_modules/codemirror/addon/hint/show-hint.js");
 
-const gatherCommandAutoCompletions = function (editorValue) {
-    editorValue = !editorValue ? editorValue : editorValue.match(/[^\s"']+|"([^"]*)"|'([^']*)'/gm).join('');
-    console.log(editorValue);
-    if (!editorValue || (editorValue.indexOf('.') === -1 && editorValue.indexOf('(') === -1 && editorValue.indexOf(')') === -1)) {
-        return ['db', 'rs', 'sh', 'Date(', 'UUID(',
-            'ObjectId(', 'cat(', 'version(', 'cd(', 'sleep(',
-            'copyDbpath(', 'resetDbpath(', 'fuzzFile(', 'getHostName(',
-            'getMemInfo(', 'hostname(', '_isWindows(', 'listFiles(',
-            'load(', 'ls(', 'md5sumFile(', 'mkdir(', 'pwd(', 'quit(', '_rand(',
-            'removeFile(', 'setVerboseShell(', '_srand('];
-    }
 
+const gatherCollectionNames = function () {
     let mainResult = [];
     for (let i = 0; i < Session.get(Helper.strSessionCollectionNames).length; i++) {
         mainResult.push(Session.get(Helper.strSessionCollectionNames)[i].name);
     }
 
-    console.log('GELDİ');
-
     return mainResult;
+};
+
+const analyzeEditorValue = function (editorValue) {
+    if (/find\(.*\)$|find\(.*\).$/gi.test(editorValue)) {
+        return 'cursor';
+    }
+
+    let collectionRegex = "";
+    const collectionNames = gatherCollectionNames();
+    for (let i = 0; i < collectionNames.length; i++) {
+        collectionRegex += 'db.' + collectionNames[i] + '.|';
+    }
+    if (collectionRegex.endsWith('|')) {
+        collectionRegex = collectionRegex.substring(0, collectionRegex.length - 1);
+    }
+
+    if (new RegExp(collectionRegex, 'gi').test(editorValue)) {
+        return 'collection';
+    }
+
+    if (/db.$|db$/gi.test(editorValue)) {
+        return 'db';
+    }
+};
+
+const gatherCommandAutoCompletions = function (editorValue, curWord) {
+    if (curWord) {
+        return lastRegex;
+    }
+
+    editorValue = !editorValue ? editorValue : editorValue.match(/[^\s"']+|"([^"]*)"|'([^']*)'/gm).join('');
+    switch (analyzeEditorValue(editorValue)) {
+        case 'collection':
+            console.log('collection');
+            break;
+        case 'cursor':
+            console.log('cursor');
+            break;
+        case 'db':
+            console.log('db');
+            break;
+        case 'planCache':
+            console.log('planCache');
+            break;
+        case 'replication':
+            console.log('replication');
+            break;
+        case 'sharding':
+            console.log('sharding');
+            break;
+        default :
+            if (!editorValue || (editorValue.indexOf('.') === -1 && editorValue.indexOf('(') === -1 && editorValue.indexOf(')') === -1)) {
+                return lastRegex = ['db', 'rs', 'sh', 'Date(', 'UUID(',
+                    'ObjectId(', 'cat(', 'version(', 'cd(', 'sleep(',
+                    'copyDbpath(', 'resetDbpath(', 'fuzzFile(', 'getHostName(',
+                    'getMemInfo(', 'hostname(', '_isWindows(', 'listFiles(',
+                    'load(', 'ls(', 'md5sumFile(', 'mkdir(', 'pwd(', 'quit(', '_rand(',
+                    'removeFile(', 'setVerboseShell(', '_srand('];
+            }
+    }
+
+    return gatherCollectionNames();
 };
 
 const initializeCommandCodeMirror = function () {
@@ -84,7 +134,7 @@ const initializeCommandCodeMirror = function () {
             while (end < currentLine.length && /[\w$]+/.test(currentLine.charAt(end))) ++end;
             while (start && /[\w$]+/.test(currentLine.charAt(start - 1))) --start;
             var curWord = start != end && currentLine.slice(start, end);
-            var list = gatherCommandAutoCompletions(editor.getValue());
+            var list = gatherCommandAutoCompletions(editor.getValue(), curWord);
             var regex = new RegExp('^' + curWord, 'i');
             return {
                 list: (!curWord ? list : list.filter(function (item) {
