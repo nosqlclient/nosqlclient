@@ -318,7 +318,7 @@
             });
         },
 
-        initializeCodeMirror  (divSelector, txtAreaId, keepValue, height = 100, enterEvent) {
+        initializeCodeMirror  (divSelector, txtAreaId, keepValue, height = 100) {
             var codeMirror;
             if (!divSelector.data('editor')) {
                 codeMirror = CodeMirror.fromTextArea(document.getElementById(txtAreaId), {
@@ -331,8 +331,7 @@
                         "Ctrl-Q": function (cm) {
                             cm.foldCode(cm.getCursor());
                         },
-                        "Ctrl-Space": "autocomplete",
-                        "Enter": enterEvent
+                        "Ctrl-Space": "autocomplete"
                     },
                     foldGutter: true,
                     gutters: ["CodeMirror-linenumbers", "CodeMirror-foldgutter"]
@@ -352,8 +351,8 @@
                     var currentLine = editor.getLine(cursor.line);
                     var start = cursor.ch;
                     var end = start;
-                    while (end < currentLine.length && /[\w$]+/.test(currentLine.charAt(end))) ++end;
-                    while (start && /[\w$]+/.test(currentLine.charAt(start - 1))) --start;
+                    while (end < currentLine.length && /[\w.$]+/.test(currentLine.charAt(end))) ++end;
+                    while (start && /[\w.$]+/.test(currentLine.charAt(start - 1))) --start;
                     var curWord = start != end && currentLine.slice(start, end);
                     var regex = new RegExp('^' + curWord, 'i');
                     return {
@@ -392,7 +391,7 @@
             if (divSelector.data('editor')) {
                 return divSelector.data('editor').getValue();
             }
-            throw 'Unexpected state, codemirror could not be found';
+            return "";
         }
     };
 

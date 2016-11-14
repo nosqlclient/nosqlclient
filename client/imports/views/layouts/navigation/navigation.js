@@ -11,6 +11,24 @@ import './navigation.html';
 var toastr = require('toastr');
 
 Template.navigation.events({
+    'click #anchorShell'(e) {
+
+        e.preventDefault();
+        var connection = Connections.findOne({_id: Session.get(Helper.strSessionConnection)});
+
+        if (connection.sshAddress) {
+            toastr.info('Unfortunately, this feature is not usable in SSH connections');
+            return;
+        }
+
+        if (connection.sslCertificatePath) {
+            toastr.info('Unfortunately, this feature is not usable in SSL connections');
+            return;
+        }
+
+        Router.go('shell');
+    },
+
     'click #anchorDatabaseDumpRestore'(e) {
 
         e.preventDefault();

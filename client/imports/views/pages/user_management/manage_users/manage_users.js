@@ -421,9 +421,14 @@ Template.manageUsers.events({
                         .attr("value", result.result[i].name)
                         .text(result.result[i].name));
                 }
-
-                cmb.chosen();
             }
+
+            cmb.chosen({
+                create_option: true,
+                allow_single_deselect: true,
+                persistent_create_option: true,
+                skip_no_results: true
+            });
         });
 
         var runOnAdminDB = $('#aRunOnAdminDBToFetchUsers').iCheck('update')[0].checked;

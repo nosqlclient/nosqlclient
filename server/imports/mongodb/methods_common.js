@@ -21,11 +21,11 @@ let spawnedShell;
 const getProperMongo = function () {
     switch (os.platform()) {
         case 'darwin':
-            return '/lib/mongo/darwin/mongo';
+            return '../../../../../lib/mongo/darwin/mongo';
         case 'win32':
             return '../../../../../lib/mongo/win32/mongo.exe';
         case 'linux':
-            return '/lib/mongo/linux/mongo';
+            return '../../../../../lib/mongo/linux/mongo';
         default :
             throw 'Not supported os: ' + os.platform();
     }
@@ -141,7 +141,12 @@ Meteor.methods({
         return Async.runSync(function (done) {
             try {
                 database.admin().listDatabases(function (err, dbs) {
-                    done(err, dbs.databases);
+                    if (dbs) {
+                        done(err, dbs.databases);
+                    }
+                    else {
+                        done(err, {});
+                    }
                 });
             }
             catch (ex) {
