@@ -55,3 +55,7 @@ tr.selected {
 .context-menu-item {
     padding: .5em 2em !important;
 }
+
+.blue-font {
+    color: #0000cc !important;
+}

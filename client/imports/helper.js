@@ -391,7 +391,7 @@
             if (divSelector.data('editor')) {
                 return divSelector.data('editor').getValue();
             }
-            throw 'Unexpected state, codemirror could not be found';
+            return "";
         }
     };
 

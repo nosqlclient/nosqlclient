@@ -7,7 +7,6 @@ import {Meteor} from 'meteor/meteor';
 import {Session} from 'meteor/session';
 import Helper from '/client/imports/helper';
 import ShellCommands from '/lib/imports/collections/shell';
-import {Connections} from '/lib/imports/collections/connections';
 
 import './mc_shell.html';
 
@@ -44,18 +43,30 @@ const analyzeEditorValue = function (editorValue) {
     let collectionRegex = "";
     const collectionNames = gatherCollectionNames();
     for (let i = 0; i < collectionNames.length; i++) {
-        collectionRegex += 'db.' + collectionNames[i] + '.|';
+        collectionRegex += 'db.' + collectionNames[i] + '.$|db.' + collectionNames[i] + '$|';
     }
     if (collectionRegex.endsWith('|')) {
         collectionRegex = collectionRegex.substring(0, collectionRegex.length - 1);
     }
 
-    if (new RegExp(collectionRegex, 'gi').test(editorValue)) {
+    if (collectionNames.length !== 0 && new RegExp(collectionRegex, 'gi').test(editorValue)) {
         return 'collection';
     }
 
     if (/db.$|db$/gi.test(editorValue)) {
         return 'db';
+    }
+
+    if (/rs.$|rs$/gi.test(editorValue)) {
+        return 'replication';
+    }
+
+    if (/sh.$|sh$/gi.test(editorValue)) {
+        return 'sharding';
+    }
+
+    if (/getPlanCache\(\).$|getPlanCache\(\)$/gi.test(editorValue)) {
+        return 'planCache';
     }
 };
 
@@ -63,14 +74,16 @@ const gatherCommandAutoCompletions = function (editorValue, curWord) {
     if (curWord) {
         return lastRegex;
     }
-    editorValue = !editorValue ? editorValue : editorValue.match(/[^\s"']+|"([^"]*)"|'([^']*)'/gm).join('');
+    let matched = editorValue.match(/[^\s"']+|"([^"]*)"|'([^']*)'/gm);
+    editorValue = !editorValue ? editorValue : (matched ? matched.join('') : '');
+
     switch (analyzeEditorValue(editorValue)) {
         case 'collection':
             return lastRegex = ['aggregate(', 'bulkWrite(', 'count(', 'copyTo(',
                 'craeteIndex(', 'dataSize(', 'deleteOne(', 'deleteMany(',
                 'distinct(', 'drop(', 'dropIndex(', 'dropIndexes(', 'ensureIndex(', 'explain(', 'find(',
                 'findAndModify(', 'findOne(', 'findOneAndDelete(', 'findOneAndReplace(',
-                'findOneAndUpdate(', 'getIndexes(', 'getShardDistribution(', 'getShardVersion(',
+                'findOneAndUpdate(', 'getIndexes(', 'getPlanCache(', 'getShardDistribution(', 'getShardVersion(',
                 'group(', 'insert(', 'insertOne(', 'insertMany(', 'isCapped(', 'mapReduce(',
                 'reIndex(', 'replaceOne(', 'remove(', 'renameCollection(', 'save(', 'stats(',
                 'storageSize(', 'totalSize(', 'totalIndexSize(', 'update(', 'updateOne(', 'updateMany(', 'validate('];
@@ -80,17 +93,27 @@ const gatherCommandAutoCompletions = function (editorValue, curWord) {
                 'min(', 'next(', 'noCursorTimeout(', 'objsLeftInBatch(', 'pretty(', 'readConcern(', 'readPref(',
                 'returnKey(', 'showRecordId(', 'size(', 'skip(', 'snapshot(', 'sort(', 'tailable(', 'toArray('];
         case 'db':
-            //TODO add all db. stuff from mongo shell
-            return lastRegex = gatherCollectionNames();
+            return lastRegex = gatherCollectionNames().concat(['cloneCollection(', 'cloneDatabase(',
+                'commandHelp(', 'copyDatabase(', 'createCollection(', 'currentOp(',
+                'dropDatabase(', 'eval(', 'fsyncLock(', 'fsyncUnlock(', 'getCollection(',
+                'getCollectionInfos(', 'getCollectionNames(', 'getLastError(', 'getLastErrorObj(', 'getLogComponents(',
+                'getMongo(', 'getName(', 'getPrevError(', 'getProfilingLevel(', 'getProfilingStatus(', 'getReplicationInfo(',
+                'getSiblingDB(', 'help(', 'hostInfo(', 'isMaster(', 'killOp(', 'listCommands(', 'loadServerScripts(', 'logout(',
+                'printCollectionStats(', 'printReplicationInfo(', 'printShardingStatus(', 'printSlaveReplicationInfo(', 'repairDatabase(',
+                'resetError(', 'runCommand(', 'serverBuildInfo(', 'serverCmdLineOpts(', 'serverStatus(', 'setLogLevel(', 'setProfilingLevel(',
+                'shutdownServer(', 'stats(', 'version(', 'upgradeCheck(', 'upgradeCheckAllDBs(', 'auth(', 'createUser(', 'updateUser(', 'changeUserPassword(',
+                'removeUser(', 'dropAllUsers(', 'dropUser(', 'grantRolesToUsers(', 'revokeRolesFromUser(', 'getUser(', 'getUsers(', 'createRole(', 'updateRole(',
+                'dropRole(', 'dropAllRoles(', 'grantPrivilegesToRole(', 'revokePrivilegesFromRole(', 'grantRolesToRole(', 'revokeRolesFromRole(', 'getRole(', 'getRoles(']);
         case 'planCache':
-            console.log('planCache');
-            break;
+            return lastRegex = ['help(', 'listQueryShapes(', 'getPlansByQuery(', 'clearPlansByQuery(', 'clear('];
         case 'replication':
-            console.log('replication');
-            break;
+            return lastRegex = ['add(', 'addArb(', 'conf(', 'freeze(', 'help(', 'initiate(', 'printReplicationInfo(', 'printSlaveReplicationInfo(',
+                'reconfig(', 'remove(', 'slaveOk(', 'status(', 'stepDown(', 'syncFrom('];
         case 'sharding':
-            console.log('sharding');
-            break;
+            return lastRegex = ['_adminCommand(', 'getBalancerLockDetails(', '_checkFullName(', '_checkMongos(', '_lastMigration(', 'addShard(', 'addShardTag(',
+                'addTagRange(', 'removeTagRange(', 'disableBalancing(', 'enableBalancing(', 'enableSharding(', 'getBalancerHost(', 'getBalancerState(', 'help(', 'isBalancerRunning(',
+                'moveChunk(', 'removeShardTag(', 'setBalancerState(', 'shardCollection(', 'splitAt(', 'splitFind(', 'startBalancer(', 'status(', 'stopBalancer(', 'waitForBalancer(',
+                'waitForBalancerOff(', 'waitForDLock(', 'waitForPingChange('];
         default :
             if (!editorValue || (editorValue.indexOf('.') === -1 && editorValue.indexOf('(') === -1 && editorValue.indexOf(')') === -1)) {
                 return lastRegex = ['db', 'rs', 'sh', 'Date(', 'UUID(',
@@ -212,6 +235,7 @@ Template.mcShell.onRendered(function () {
     }
 
     let divResult = $('#divShellResult');
+    let divCommand = $('#divShellCommand');
     Helper.initializeCodeMirror(divResult, 'txtShellResult', false, 600);
     divResult.data('editor').setOption("readOnly", true);
 
@@ -221,11 +245,17 @@ Template.mcShell.onRendered(function () {
             if (previousValue && !previousValue.endsWith('\n')) {
                 previousValue += '\n';
             }
+
+            let editorResult = divResult.data('editor');
+
             Helper.setCodeMirrorValue(divResult, previousValue + fields.message);
-            divResult.data('editor').focus();
-            divResult.data('editor').setCursor(divResult.data('editor').lineCount(), 0);
-            if ($('#divShellCommand').data('editor')) {
-                $('#divShellCommand').data('editor').focus();
+            if (editorResult) {
+                editorResult.focus();
+                editorResult.setCursor(editorResult.lineCount(), 0);
+            }
+
+            if (divCommand.data('editor')) {
+                divCommand.data('editor').focus();
             }
         }
     });
