@@ -36,38 +36,27 @@ const gatherCollectionNames = function () {
 };
 
 const analyzeEditorValue = function (editorValue) {
-    if (/find\(.*\)$|find\(.*\).$/gi.test(editorValue)) {
+    if (/find\(.*\).$/gi.test(editorValue)) {
         return 'cursor';
     }
 
-    let collectionRegex = "";
-    const collectionNames = gatherCollectionNames();
-    for (let i = 0; i < collectionNames.length; i++) {
-        collectionRegex += 'db.' + collectionNames[i] + '.$|db.' + collectionNames[i] + '$|';
-    }
-    if (collectionRegex.endsWith('|')) {
-        collectionRegex = collectionRegex.substring(0, collectionRegex.length - 1);
-    }
-
-    if (collectionNames.length !== 0 && new RegExp(collectionRegex, 'gi').test(editorValue)) {
-        return 'collection';
-    }
-
-    if (/db.$|db$/gi.test(editorValue)) {
+    if (/db.$/gi.test(editorValue)) {
         return 'db';
     }
 
-    if (/rs.$|rs$/gi.test(editorValue)) {
+    if (/rs.$/gi.test(editorValue)) {
         return 'replication';
     }
 
-    if (/sh.$|sh$/gi.test(editorValue)) {
+    if (/sh.$/gi.test(editorValue)) {
         return 'sharding';
     }
 
-    if (/getPlanCache\(\).$|getPlanCache\(\)$/gi.test(editorValue)) {
+    if (/getPlanCache\(\).$/gi.test(editorValue)) {
         return 'planCache';
     }
+
+    return 'collection';
 };
 
 const gatherCommandAutoCompletions = function (editorValue, curWord) {
@@ -129,7 +118,7 @@ const gatherCommandAutoCompletions = function (editorValue, curWord) {
 };
 
 const initializeCommandCodeMirror = function () {
-    var codeMirror;
+    let codeMirror;
     let divCommand = $('#divShellCommand');
     if (!divCommand.data('editor')) {
         codeMirror = CodeMirror.fromTextArea(document.getElementById('txtShellCommand'), {
@@ -157,15 +146,15 @@ const initializeCommandCodeMirror = function () {
         codeMirror.setSize('%100', 50);
 
         CodeMirror.hint.javascript = function (editor) {
-            var cursor = editor.getCursor();
-            var currentLine = editor.getLine(cursor.line);
-            var start = cursor.ch;
-            var end = start;
+            let cursor = editor.getCursor();
+            let currentLine = editor.getLine(cursor.line);
+            let start = cursor.ch;
+            let end = start;
             while (end < currentLine.length && /[\w$]+/.test(currentLine.charAt(end))) ++end;
             while (start && /[\w$]+/.test(currentLine.charAt(start - 1))) --start;
-            var curWord = start != end && currentLine.slice(start, end);
-            var list = gatherCommandAutoCompletions(editor.getValue(), curWord) || [];
-            var regex = new RegExp('^' + curWord, 'i');
+            let curWord = start != end && currentLine.slice(start, end);
+            let list = gatherCommandAutoCompletions(editor.getValue(), curWord) || [];
+            let regex = new RegExp('^' + curWord, 'i');
             return {
                 list: (!curWord ? list : list.filter(function (item) {
                     return item.match(regex);
