@@ -36,6 +36,10 @@ const gatherCollectionNames = function () {
 };
 
 const analyzeEditorValue = function (editorValue) {
+    if (!editorValue) {
+        return;
+    }
+
     if (/find\(.*\).$/gi.test(editorValue)) {
         return 'cursor';
     }
