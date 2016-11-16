@@ -59,3 +59,82 @@ tr.selected {
 .blue-font {
     color: #0000cc !important;
 }
+
+.query-wizard {
+    display: none;
+    background: #fff;
+    width: 100%;
+    height: 320px;
+    border-radius: 4px;
+}
+
+.query-wizard.ng-small-chat {
+    display: block;
+}
+
+.body-small .query-wizard {
+    bottom: 70px;
+    right: 20px;
+}
+
+.query-wizard.active {
+    display: block;
+}
+
+.query-wizard .heading {
+    background: #2f4050;
+    padding: 8px 15px;
+    font-weight: bold;
+    color: #fff;
+}
+
+.query-wizard .content {
+    padding: 15px 15px;
+}
+
+.query-wizard .content .author-name {
+    font-weight: bold;
+    margin-bottom: 3px;
+    font-size: 11px;
+}
+
+.query-wizard .content > div {
+    padding-bottom: 20px;
+}
+
+.query-wizard .content .chat-message {
+    padding: 5px 10px;
+    border-radius: 6px;
+    font-size: 11px;
+    line-height: 14px;
+    max-width: 80%;
+    background: #f3f3f4;
+    margin-bottom: 10px;
+}
+
+.query-wizard .content .chat-message.active {
+    background: #1ab394;
+    color: #fff;
+}
+
+.query-wizard .content .left {
+    text-align: left;
+    clear: both;
+}
+
+.query-wizard .content .left .chat-message {
+    float: left;
+}
+
+.query-wizard .content .right {
+    text-align: right;
+    clear: both;
+}
+
+.query-wizard .content .right .chat-message {
+    float: right;
+}
+
+.query-wizard .form-chat {
+    padding: 10px 10px;
+}

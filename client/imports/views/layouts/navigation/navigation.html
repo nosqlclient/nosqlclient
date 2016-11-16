@@ -108,7 +108,6 @@
                             </li>
                         </ul>
                     </li>
-
                     <li>
                         <a href=""><i class="fa fa-dashboard"></i> <span
                                 class="nav-label">Collections</span>
@@ -148,6 +147,12 @@
                             </ul>
                         </li>
                     {{/if}}
+                    <li>
+                        <a id="btnQueryWizard"><i
+                                class="fa fa-magic"></i> <span
+                                class="nav-label">Query Wizard</span>
+                        </a>
+                    </li>
 
                     {{initializeMetisMenu}}
                 {{/if}}
@@ -156,4 +161,5 @@
     </nav>
 
     {{>addCollection}}
+    {{>queryWizard}}
 </template>

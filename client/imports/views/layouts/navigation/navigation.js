@@ -6,15 +6,20 @@ import Helper from '/client/imports/helper';
 import {connect} from '/client/imports/views/layouts/top_navbar/top_navbar';
 
 import './add_collection/add_collection';
+import '../../pages/query_wizard/query_wizard';
 import './navigation.html';
 
 var toastr = require('toastr');
 
 Template.navigation.events({
-    'click #anchorShell'(e) {
-
+    'click #btnQueryWizard'(e){
         e.preventDefault();
-        var connection = Connections.findOne({_id: Session.get(Helper.strSessionConnection)});
+        $('#queryWizardModal').modal('show');
+    },
+
+    'click #anchorShell'(e) {
+        e.preventDefault();
+        let connection = Connections.findOne({_id: Session.get(Helper.strSessionConnection)});
 
         if (connection.sshAddress) {
             toastr.info('Unfortunately, this feature is not usable in SSH connections');
