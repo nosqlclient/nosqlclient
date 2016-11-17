@@ -15,8 +15,6 @@ Template.queryWizard.onRendered(function () {
         return;
     }
 
-
-
     queryWizard = new QueryWizardChat($('#cmbQueryWizardResponses'));
 });
 
