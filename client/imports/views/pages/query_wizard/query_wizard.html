@@ -12,24 +12,18 @@
                         <div class="left">
                             <div class="author-name">
                                 Mongoclient
-                                <small class="chat-date">
-                                    10:02 am
-                                </small>
                             </div>
                             <div class="chat-message active">
-                                Hello
+                                Hello, what kind of a query would you like to do ?
                             </div>
 
                         </div>
                         <div class="right">
                             <div class="author-name">
-                                Dear Mongoclient User
-                                <small class="chat-date">
-                                    11:24 am
-                                </small>
+                                Me
                             </div>
                             <div class="chat-message">
-                                Hi !
+                                Hmm...
                             </div>
                         </div>
 
@@ -40,9 +34,14 @@
                          style="width: 7px; height: 100%; position: absolute; top: 0px; display: none; border-radius: 7px; background: rgb(51, 51, 51); opacity: 0.4; z-index: 90; right: 1px;"></div>
                 </div>
                 <div class="form-chat">
-                    <div class="input-group input-group-sm">
-                        <input type="text" class="form-control">
-                        <span class="input-group-btn"> <button class="btn btn-primary" type="button">Send
+                    <div class="input-group input-group">
+                        <select id="cmbQueryWizardResponses"
+                                data-placeholder="Choose one"
+                                class="chosen-select form-control"
+                                tabindex="-1">
+                            <option></option>
+                        </select>
+                        <span class="input-group-btn"> <button id="btnQueryWizardRespond" class="btn btn-primary" type="button">Send
                 </button> </span></div>
                 </div>
 
