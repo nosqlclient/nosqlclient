@@ -136,5 +136,6 @@ tr.selected {
 }
 
 .query-wizard .form-chat {
-    padding: 10px 10px;
+    padding-left: 5px;
+    padding-right: 5px;
 }

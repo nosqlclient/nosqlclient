@@ -6,43 +6,61 @@
                 <div class="heading" draggable="true">
                     Query Wizard
                 </div>
-                <div class="slimScrollDiv" style="position: relative; overflow: hidden; width: auto; height: 234px;">
-                    <div class="content" style="overflow: hidden; width: auto; height: 234px;">
+                <div class="content" style="overflow: hidden; width: auto; height: 234px;">
 
-                        <div class="left">
-                            <div class="author-name">
-                                Mongoclient
-                            </div>
-                            <div class="chat-message active">
-                                Hello, what do you have in your mind ?
-                            </div>
-
+                    <div class="left">
+                        <div class="author-name">
+                            Mongoclient
                         </div>
-                        <div class="right">
-                            <div class="author-name">
-                                Me
-                            </div>
-                            <div class="chat-message">
-                                Hmm...
-                            </div>
+                        <div class="chat-message active">
+                            Hello, let's start with giving a field name to me.
                         </div>
 
                     </div>
-                    <div class="slimScrollBar"
-                         style="background: rgb(0, 0, 0); width: 7px; position: absolute; top: 0px; opacity: 0.4; display: none; border-radius: 7px; z-index: 99; right: 1px; height: 164.928px;"></div>
-                    <div class="slimScrollRail"
-                         style="width: 7px; height: 100%; position: absolute; top: 0px; display: none; border-radius: 7px; background: rgb(51, 51, 51); opacity: 0.4; z-index: 90; right: 1px;"></div>
+                    <div class="right">
+                        <div class="author-name">
+                            Me
+                        </div>
+                        <div class="chat-message">
+                            Hmm...
+                        </div>
+                    </div>
+
                 </div>
                 <div class="form-chat">
                     <div class="input-group input-group">
                         <select id="cmbQueryWizardResponses"
-                                data-placeholder="Choose one"
+                                style="display: none"
+                                data-placeholder="I want to retrieve documents that..."
                                 class="chosen-select form-control"
                                 tabindex="-1">
                             <option></option>
+
+                            <optgroup id="optGroupPositives" label="Positives">
+                                <option>has the field</option>
+                                <option>the field matches regex</option>
+                                <option>the field equals something</option>
+                                <option>the field equals one of values of an array</option>
+                                <option>the field is greater or equal than something</option>
+                                <option>the field is greater than something</option>
+                            </optgroup>
+
+
+                            <optgroup id="optGroupNegatives" label="Negatives">
+                                <option>hasn't the field</option>
+                                <option>the field not matches regex</option>
+                                <option>the field not equals something</option>
+                                <option>the field not equals one of values of an array</option>
+                                <option>the field is less or equal than something</option>
+                                <option>the field is less than something</option>
+                            </optgroup>
+
                         </select>
-                        <span class="input-group-btn"> <button id="btnQueryWizardRespond" class="btn btn-primary" type="button">Send
-                </button> </span></div>
+                        <input id="inputQueryWizardResponse"
+                               class="form-control"/>
+                        <span class="input-group-btn"> <button id="btnQueryWizardRespond" class="btn btn-primary"
+                                                               type="button">Send</button> </span>
+                    </div>
                 </div>
 
             </div>

@@ -4,38 +4,48 @@
 import {Template} from 'meteor/templating';
 import {Session} from 'meteor/session';
 import Helper from '/client/imports/helper';
-import QueryWizardChat from '/client/imports/query_wizard_chat';
 
 import './query_wizard.html';
 
-let queryWizard;
+let step = 1;
+
 Template.queryWizard.onRendered(function () {
     if (Session.get(Helper.strSessionCollectionNames) == undefined) {
         Router.go('databaseStats');
         return;
     }
 
-    queryWizard = new QueryWizardChat($('#cmbQueryWizardResponses'));
+    step = 1;
+    $('.query-wizard .content').slimScroll();
 });
 
-let warnedAlready = false;
 
 Template.queryWizard.events({
     'click #btnQueryWizardRespond' (){
+        let txt = $('#inputQueryWizardResponse');
         let cmb = $('#cmbQueryWizardResponses');
-        if (!cmb.val()) {
-            if (!warnedAlready) {
-                $('.query-wizard .content').append($('<div class="left"><div class="author-name">Mongoclient </div> <div class="chat-message active">Please select an option, so that I can help you !</div></div>'));
-                warnedAlready = true;
-                return;
-            }
+
+        if (!txt.val()) {
             return;
         }
 
+        $('.query-wizard .content').append($('<div class="right"><div class="author-name">Me </div> <div class="chat-message">' + txt.val() + '</div></div>'));
 
-        $('.query-wizard .content').append($('<div class="right"><div class="author-name">Me </div> <div class="chat-message">' + cmb.val() + '</div></div>'));
-        cmb.prop('disabled', true).trigger("chosen:updated");
-        $('#btnQueryWizardRespond').prop('disabled', true);
-        warnedAlready = false;
+        switch (step) {
+            case 1:
+                $('.query-wizard .content').append($('<div class="left"><div class="author-name">Me </div> <div class="chat-message active">Great, now could you please select what to do with field ' + txt.val() + ' ?</div></div>'));
+                txt.css('display', 'none');
+                cmb.css('display', 'block');
+                cmb.chosen();
+                step++;
+                break;
+            case 2:
+
+                break;
+            case 3:
+
+        }
+
+
     }
 });

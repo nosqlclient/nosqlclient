@@ -4,16 +4,6 @@
 (function () {
     let warnedAlready = false;
 
-    let QueryWizardChat = function (cmb) {
-        this.cmb = cmb;
-
-        let option = $("<option></option>")
-            .attr("value", 'test')
-            .text('test');
-        this.cmb.append(option);
-        this.cmb.chosen();
-    };
-
     const warn = function () {
         if (!warnedAlready) {
             $('.query-wizard .content').append($('<div class="left"><div class="author-name">Mongoclient </div> <div class="chat-message active">Please select an option, so that I can help you !</div></div>'));
@@ -29,7 +19,6 @@
                 return;
             }
 
-            $('.query-wizard .content').append($('<div class="right"><div class="author-name">Me </div> <div class="chat-message">' + val + '</div></div>'));
 
 
             this.warnedAlready = false;
