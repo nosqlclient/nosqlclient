@@ -28,34 +28,38 @@
 
                 </div>
                 <div class="form-chat">
-                    <div class="input-group input-group">
+                    <div id="divQueryWizardCombo" style="display: none" class="input-group input-group">
                         <select id="cmbQueryWizardResponses"
-                                style="display: none"
                                 data-placeholder="I want to retrieve documents that..."
                                 class="chosen-select form-control"
                                 tabindex="-1">
                             <option></option>
 
                             <optgroup id="optGroupPositives" label="Positives">
-                                <option>has the field</option>
-                                <option>the field matches regex</option>
-                                <option>the field equals something</option>
-                                <option>the field equals one of values of an array</option>
-                                <option>the field is greater or equal than something</option>
-                                <option>the field is greater than something</option>
+                                <option value="1">have the field</option>
+                                <option value="2">the field matches regex</option>
+                                <option value="3">the field equals something</option>
+                                <option value="4">the field equals one of values of an array</option>
+                                <option value="5">the field is greater or equal than something</option>
+                                <option value="6">the field is greater than something</option>
                             </optgroup>
 
 
                             <optgroup id="optGroupNegatives" label="Negatives">
-                                <option>hasn't the field</option>
-                                <option>the field not matches regex</option>
-                                <option>the field not equals something</option>
-                                <option>the field not equals one of values of an array</option>
-                                <option>the field is less or equal than something</option>
-                                <option>the field is less than something</option>
+                                <option value="-1">have not the field</option>
+                                <option value="-2">the field not matches regex</option>
+                                <option value="-3">the field not equals something</option>
+                                <option value="-4">the field not equals one of values of an array</option>
+                                <option value="-5">the field is less or equal than something</option>
+                                <option value="-6">the field is less than something</option>
                             </optgroup>
 
                         </select>
+                        <span class="input-group-btn"> <button id="btnQueryWizardRespond" class="btn btn-primary"
+                                                               type="button">Send</button> </span>
+                    </div>
+
+                    <div id="divQueryWizardTxt" class="input-group input-group">
                         <input id="inputQueryWizardResponse"
                                class="form-control"/>
                         <span class="input-group-btn"> <button id="btnQueryWizardRespond" class="btn btn-primary"
