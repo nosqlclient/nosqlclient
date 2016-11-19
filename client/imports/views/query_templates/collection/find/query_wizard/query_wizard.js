@@ -7,8 +7,129 @@ import Helper from '/client/imports/helper';
 
 import './query_wizard.html';
 
+require('typed.js');
+
 let step = 1, selectedOption, fieldName, txtValue, regexOptions;
 const redirectText = "I'm redirecting you with your query";
+
+const redirect = function () {
+    //TODO type coercion for equals questions
+    //TODO array check
+    let query;
+    if (selectedOption === "1") {
+        query = '{' + fieldName + ':{ $exists: true }}';
+    }
+    else if (selectedOption === "2") {
+        regexOptions = regexOptions ? regexOptions.join('') : "";
+        query = '{' + fieldName + ':{$regex:"' + txtValue + '",$options:"' + regexOptions + '" }}';
+    } else if (selectedOption === "3") {
+        query = '{' + fieldName + ':"' + txtValue + '" }';
+    } else if (selectedOption === "4") {
+        query = '{' + fieldName + ':{ $in: ' + txtValue + ' }}';
+    } else if (selectedOption === "5") {
+        query = '{' + fieldName + ':{ $gte: ' + txtValue + ' }}';
+    } else if (selectedOption === "6") {
+        query = '{' + fieldName + ':{ $gt: ' + txtValue + ' }}';
+    } else if (selectedOption === "-1") {
+        query = '{' + fieldName + ':{ $exists: false }}';
+    } else if (selectedOption === "-2") {
+        query = '{' + fieldName + ':{$not: {$regex:"' + txtValue + '",$options:"' + regexOptions + '" }}}';
+    } else if (selectedOption === "-3") {
+        query = '{' + fieldName + ':{$not: "' + txtValue + '"}}';
+    } else if (selectedOption === "-4") {
+        query = '{' + fieldName + ':{$not: { $in: ' + txtValue + ' }}}';
+    } else if (selectedOption === "-5") {
+        query = '{' + fieldName + ':{ $lte: ' + txtValue + ' }}';
+    } else if (selectedOption === "-6") {
+        query = '{' + fieldName + ':{ $lt: ' + txtValue + ' }}';
+    }
+
+    console.log(query);
+    //TODO keep going
+};
+
+const respond = function () {
+    let txt = $('#inputQueryWizardResponse');
+    let txtDiv = $('#divQueryWizardTxt');
+    let cmbDiv = $('#divQueryWizardCombo');
+    let cmb = $('#cmbQueryWizardResponses');
+    let chatDiv = $('.query-wizard .content');
+    let sendButton = $('#btnQueryWizardRespond');
+    let sendButton2 = $('#btnQueryWizardRespond2');
+
+    switch (step) {
+        case 1:
+            if (!txt.val()) {
+                return;
+            }
+            chatDiv.append($('<div class="right"><div class="author-name">Me </div> <div class="chat-message">' + txt.val() + '</div></div>'));
+            chatDiv.append($('<div class="left"><div class="author-name">Mongoclient </div> <div class="chat-message active"></div></div>'));
+            $('.chat-message').last().typed({
+                strings: ["So, you want to retrieve documents that..."],
+                typeSpeed: 0
+            });
+            txtDiv.css('display', 'none');
+            cmbDiv.css('display', '');
+            cmb.chosen({
+                allow_single_deselect: true,
+                skip_no_results: true
+            });
+            step++;
+            fieldName = txt.val().trim();
+            break;
+        case 2:
+            if (!cmb.val()) {
+                return;
+            }
+            selectedOption = cmb.val();
+            let text = $('#cmbQueryWizardResponses_chosen .result-selected').html();
+            let stepText = step2();
+            chatDiv.append($('<div class="right"><div class="author-name">Me </div> <div class="chat-message">I want to retrieve documents that ' +
+                text + '</div></div>'));
+            chatDiv.append($('<div class="left"><div class="author-name">Mongoclient </div> <div class="chat-message active"></div></div>'));
+            $('.chat-message').last().typed({
+                strings: ['Okay, ' + stepText],
+                typeSpeed: 0
+            });
+
+            step++;
+            break;
+        case 3:
+            if (!txt.val()) {
+                return;
+            }
+
+            txtValue = txt.val();
+            stepText = step3();
+            chatDiv.append($('<div class="right"><div class="author-name">Me </div> <div class="chat-message">' + txt.val() + '</div></div>'));
+            chatDiv.append($('<div class="left"><div class="author-name">Mongoclient </div> <div class="chat-message active"></div></div>'));
+            $('.chat-message').last().typed({
+                strings: [stepText],
+                typeSpeed: 0
+            });
+
+            step++;
+            break;
+        case 4:
+            cmb.prop('disabled', true).trigger("chosen:updated");
+            txt.prop('disabled', true);
+            sendButton.prop('disabled', true);
+            sendButton2.prop('disabled', true);
+
+            regexOptions = cmb.val();
+            chatDiv.append($('<div class="right"><div class="author-name">Me </div> <div class="chat-message">' + (regexOptions ? regexOptions : "No options") + '</div></div>'));
+            chatDiv.append($('<div class="left"><div class="author-name">Mongoclient </div> <div class="chat-message active"></div></div>'));
+            $('.chat-message').last().typed({
+                strings: [redirectText],
+                typeSpeed: 0
+            });
+
+            redirect();
+            break;
+    }
+
+    $('.query-wizard .content').slimScroll({scrollBy: '400px'});
+};
 
 const step2 = function () {
     let txt = $('#inputQueryWizardResponse');
@@ -16,11 +137,15 @@ const step2 = function () {
     let txtDiv = $('#divQueryWizardTxt');
     let cmbDiv = $('#divQueryWizardCombo');
     let sendButton = $('#btnQueryWizardRespond');
+    let sendButton2 = $('#btnQueryWizardRespond2');
 
     if (selectedOption === "1" || selectedOption === "-1") {
+        txt.prop('disabled', true);
         cmb.prop('disabled', true).trigger("chosen:updated");
         sendButton.prop('disabled', true);
-        //TODO redirect
+        sendButton2.prop('disabled', true);
+
+        redirect();
         return redirectText
     }
 
@@ -48,22 +173,23 @@ const step2 = function () {
     }
     if (selectedOption === "5" || selectedOption === "-5") {
         setTxtField();
-        return "then you should be looking for a number or date to be " + (selectedOption === "5" ? "greater" : "less") + " or equal than, what is it (example date: date(\"2017-01-01T13:00:00Z\")) ?";
+        return "then you should be looking for a number or date to be " + (selectedOption === "5" ? "greater" : "less") + " or equal than, what is it? (e.g. date(\"2017-01-01T13:00:00Z\")  or 100)";
     }
     if (selectedOption === "6" || selectedOption === "-6") {
         setTxtField();
-        return "then you should be looking for a number or date to be " + (selectedOption === "6" ? "greater" : "less") + " or equal than, what is it (example date: date(\"2017-01-01T13:00:00Z\")) ?";
+        return "then you should be looking for a number or date to be " + (selectedOption === "6" ? "greater" : "less") + " or equal than, what is it? (e.g. date(\"2017-01-01T13:00:00Z\") or 100)";
     }
 };
 
 const step3 = function () {
+    let txt = $('#inputQueryWizardResponse');
     let cmb = $('#cmbQueryWizardResponses');
     let txtDiv = $('#divQueryWizardTxt');
     let cmbDiv = $('#divQueryWizardCombo');
     let sendButton = $('#btnQueryWizardRespond');
+    let sendButton2 = $('#btnQueryWizardRespond2');
 
     if (selectedOption === "2" || selectedOption === "-2") {
-        //TODO destroy chosen and create again
         cmb.empty();
         cmb.prop("multiple", "true");
         cmb.append($("<option></option>")
@@ -77,17 +203,22 @@ const step3 = function () {
             .text("Extended (x)"));
         cmb.append($("<option></option>")
             .attr("value", "s")
-            .text("Allow the dot character to match all characters including newline (s)"));
-        cmb.trigger("chosen:updated");
+            .text("Dot (s)"));
+        cmb.attr('data-placeholder', " ");
+        cmb.chosen('destroy');
+        cmb.chosen();
 
         txtDiv.css('display', 'none');
         cmbDiv.css('display', '');
         return "Cool, you can select one or more options to use with your regex, or just leave it empty and press Send";
     }
 
+    txt.prop('disabled', true);
     cmb.prop('disabled', true).trigger("chosen:updated");
     sendButton.prop('disabled', true);
-    //TODO redirect
+    sendButton2.prop('disabled', true);
+
+    redirect();
     return redirectText
 };
 
@@ -111,6 +242,13 @@ Template.queryWizard.events({
         let txtDiv = $('#divQueryWizardTxt');
         let cmbDiv = $('#divQueryWizardCombo');
         let chatDiv = $('.query-wizard .content');
+        let sendButton = $('#btnQueryWizardRespond');
+        let sendButton2 = $('#btnQueryWizardRespond2');
+
+        txt.prop('disabled', false);
+        cmb.prop('disabled', false);
+        sendButton.prop('disabled', false);
+        sendButton2.prop('disabled', false);
 
         chatDiv.empty();
         chatDiv.append($('<div class="left"> <div class="author-name"> Mongoclient </div> <div class="chat-message active"> Hello, let\'s start with giving a field name to me. </div></div> ' +
@@ -128,72 +266,21 @@ Template.queryWizard.events({
 
         cmbDiv.css('display', 'none');
         cmb.prop("multiple", false);
+        cmb.attr('data-placeholder', "I want to retrieve documents that...");
         cmb.empty();
         cmb.append($('<option></option> <optgroup id="optGroupPositives" label="Positives"> <option value="1">have the field</option> <option value="2">the field matches regex</option> ' +
             '<option value="3">the field equals something</option> <option value="4">the field equals one of values of an array</option> <option value="5">the field is greater or equal than something</option> ' +
             '<option value="6">the field is greater than something</option> </optgroup> <optgroup id="optGroupNegatives" label="Negatives"> <option value="-1">have not the field</option> ' +
             '<option value="-2">the field not matches regex</option> <option value="-3">the field not equals something</option> <option value="-4">the field not equals one of values of an array</option> ' +
             '<option value="-5">the field is less or equal than something</option> <option value="-6">the field is less than something</option> </optgroup>'));
-        cmb.trigger("chosen:updated");
+        cmb.chosen('destroy');
     },
 
     'click #btnQueryWizardRespond' (){
-        let txt = $('#inputQueryWizardResponse');
-        let txtDiv = $('#divQueryWizardTxt');
-        let cmbDiv = $('#divQueryWizardCombo');
-        let cmb = $('#cmbQueryWizardResponses');
-        let chatDiv = $('.query-wizard .content');
-        let sendButton = $('#btnQueryWizardRespond');
+        respond();
+    },
 
-        switch (step) {
-            case 1:
-                if (!txt.val()) {
-                    return;
-                }
-                chatDiv.append($('<div class="right"><div class="author-name">Me </div> <div class="chat-message">' + txt.val() + '</div></div>'));
-                chatDiv.append($('<div class="left"><div class="author-name">Mongoclient </div> <div class="chat-message active">So, you want to retrieve documents that...</div></div>'));
-                txtDiv.css('display', 'none');
-                cmbDiv.css('display', '');
-                cmb.chosen({
-                    allow_single_deselect: true,
-                    skip_no_results: true
-                });
-                step++;
-                fieldName = txt.val().trim();
-                break;
-            case 2:
-                if (!cmb.val()) {
-                    return;
-                }
-                selectedOption = cmb.val();
-                let stepText = step2();
-                chatDiv.append($('<div class="right"><div class="author-name">Me </div> <div class="chat-message">I want to retrieve documents that ' +
-                    $('#cmbQueryWizardResponses_chosen .result-selected').html() + '</div></div>'));
-                chatDiv.append($('<div class="left"><div class="author-name">Mongoclient </div> <div class="chat-message active">Okay, ' + stepText + '</div></div>'));
-                step++;
-                break;
-            case 3:
-                if (!txt.val()) {
-                    return;
-                }
-
-                txtValue = txt.val();
-                stepText = step3();
-                chatDiv.append($('<div class="right"><div class="author-name">Me </div> <div class="chat-message">' + txt.val() + '</div></div>'));
-                chatDiv.append($('<div class="left"><div class="author-name">Mongoclient </div> <div class="chat-message active">' + stepText + '</div></div>'));
-
-                break;
-            case 4:
-                console.log(cmb.val());
-                cmb.prop('disabled', true).trigger("chosen:updated");
-                sendButton.prop('disabled', true);
-
-                chatDiv.append($('<div class="left"><div class="author-name">Mongoclient </div> <div class="chat-message active">' + redirectText + '</div></div>'));
-
-                //TODO redirect
-                break;
-        }
-
-        $('.query-wizard .content').slimScroll({scrollBy: '400px'});
+    'click #btnQueryWizardRespond2'(){
+        respond();
     }
 });
