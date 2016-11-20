@@ -10,42 +10,84 @@ import './query_wizard.html';
 require('typed.js');
 
 let step = 1, selectedOption, fieldName, txtValue, regexOptions;
-const redirectText = "I'm redirecting you with your query";
+const redirectText = "I'm redirecting you with your query, just press Execute";
+
+const reset = function () {
+    let txt = $('#inputQueryWizardResponse');
+    let cmb = $('#cmbQueryWizardResponses');
+    let txtDiv = $('#divQueryWizardTxt');
+    let cmbDiv = $('#divQueryWizardCombo');
+    let chatDiv = $('.query-wizard .content');
+    let sendButton = $('#btnQueryWizardRespond');
+    let sendButton2 = $('#btnQueryWizardRespond2');
+
+    txt.prop('disabled', false);
+    cmb.prop('disabled', false);
+    sendButton.prop('disabled', false);
+    sendButton2.prop('disabled', false);
+
+    chatDiv.empty();
+    chatDiv.append($('<div class="left"> <div class="author-name"> Mongoclient </div> <div class="chat-message active"> Hello, let\'s start with giving a field name to me. </div></div> ' +
+        '<div class="right"> <div class="author-name"> Me</div> <div class="chat-message"> Hmm...</div> </div>'));
+
+    step = 1;
+    selectedOption = null;
+    fieldName = null;
+    txtValue = null;
+    regexOptions = null;
+
+    txtDiv.css('display', '');
+    txt.val('');
+
+
+    cmbDiv.css('display', 'none');
+    cmb.prop("multiple", false);
+    cmb.attr('data-placeholder', "I want to retrieve documents that...");
+    cmb.empty();
+    cmb.append($('<option></option> <optgroup id="optGroupPositives" label="Positives"> <option value="1">have the field</option> <option value="2">the field matches regex</option> ' +
+        '<option value="3">the field equals something</option> <option value="4">the field equals one of values of an array</option> <option value="5">the field is greater or equal than something</option> ' +
+        '<option value="6">the field is greater than something</option> </optgroup> <optgroup id="optGroupNegatives" label="Negatives"> <option value="-1">have not the field</option> ' +
+        '<option value="-2">the field not matches regex</option> <option value="-3">the field not equals something</option> <option value="-4">the field not equals one of values of an array</option> ' +
+        '<option value="-5">the field is less or equal than something</option> <option value="-6">the field is less than something</option> </optgroup>'));
+    cmb.chosen('destroy');
+};
 
 const redirect = function () {
-    //TODO type coercion for equals questions
-    //TODO array check
     let query;
     if (selectedOption === "1") {
-        query = '{' + fieldName + ':{ $exists: true }}';
+        query = '{ ' + fieldName + ':{ $exists: true }}';
     }
     else if (selectedOption === "2") {
         regexOptions = regexOptions ? regexOptions.join('') : "";
-        query = '{' + fieldName + ':{$regex:"' + txtValue + '",$options:"' + regexOptions + '" }}';
+        query = '{ ' + fieldName + ':{ $regex:"' + txtValue + '",$options:"' + regexOptions + '" }}';
     } else if (selectedOption === "3") {
-        query = '{' + fieldName + ':"' + txtValue + '" }';
+        query = '{ ' + fieldName + ':' + txtValue + ' }';
     } else if (selectedOption === "4") {
-        query = '{' + fieldName + ':{ $in: ' + txtValue + ' }}';
+        query = '{ ' + fieldName + ':{ $in: ' + txtValue + ' }}';
     } else if (selectedOption === "5") {
-        query = '{' + fieldName + ':{ $gte: ' + txtValue + ' }}';
+        query = '{ ' + fieldName + ':{ $gte: ' + txtValue + ' }}';
     } else if (selectedOption === "6") {
-        query = '{' + fieldName + ':{ $gt: ' + txtValue + ' }}';
+        query = '{ ' + fieldName + ':{ $gt: ' + txtValue + ' }}';
     } else if (selectedOption === "-1") {
-        query = '{' + fieldName + ':{ $exists: false }}';
+        query = '{ ' + fieldName + ':{ $exists: false }}';
     } else if (selectedOption === "-2") {
-        query = '{' + fieldName + ':{$not: {$regex:"' + txtValue + '",$options:"' + regexOptions + '" }}}';
+        regexOptions = regexOptions ? regexOptions.join('') : "";
+        query = '{ ' + fieldName + ':{ $not: {$regex:"' + txtValue + '",$options:"' + regexOptions + '" }}}';
     } else if (selectedOption === "-3") {
-        query = '{' + fieldName + ':{$not: "' + txtValue + '"}}';
+        query = '{ ' + fieldName + ':{ $not: ' + txtValue + ' }}';
     } else if (selectedOption === "-4") {
-        query = '{' + fieldName + ':{$not: { $in: ' + txtValue + ' }}}';
+        query = '{ ' + fieldName + ':{ $not: { $in: ' + txtValue + ' }}}';
     } else if (selectedOption === "-5") {
-        query = '{' + fieldName + ':{ $lte: ' + txtValue + ' }}';
+        query = '{ ' + fieldName + ':{ $lte: ' + txtValue + ' }}';
     } else if (selectedOption === "-6") {
-        query = '{' + fieldName + ':{ $lt: ' + txtValue + ' }}';
+        query = '{ ' + fieldName + ':{ $lt: ' + txtValue + ' }}';
     }
 
-    console.log(query);
-    //TODO keep going
+    Helper.setCodeMirrorValue($('#divSelector'), query);
+    Meteor.setTimeout(function () {
+        $('#queryWizardModal').modal('hide');
+        reset();
+    }, 3350);
 };
 
 const respond = function () {
@@ -100,6 +142,18 @@ const respond = function () {
             }
 
             txtValue = txt.val();
+            if (selectedOption === "4" || selectedOption === "-4") {
+                let convertedValue = Helper.convertAndCheckJSON(txtValue);
+                if (convertedValue["ERROR"] || Object.prototype.toString.call(convertedValue) !== '[object Array]') {
+                    chatDiv.append($('<div class="left"><div class="author-name">Mongoclient </div> <div class="chat-message active"></div></div>'));
+                    $('.chat-message').last().typed({
+                        strings: ["Please provide a valid array, e.g. [3,5,6,7] or [\"myValue\",\"mySecondValue\"]"],
+                        typeSpeed: 0
+                    });
+                    break;
+                }
+            }
+
             stepText = step3();
             chatDiv.append($('<div class="right"><div class="author-name">Me </div> <div class="chat-message">' + txt.val() + '</div></div>'));
             chatDiv.append($('<div class="left"><div class="author-name">Mongoclient </div> <div class="chat-message active"></div></div>'));
@@ -161,11 +215,11 @@ const step2 = function () {
     }
     if (selectedOption === "3") {
         setTxtField();
-        return "equals what ?";
+        return "equals what ? Don't forget to provide correct type, e.g. for number 3, for string \"3\", for boolean true/false etc..";
     }
     if (selectedOption === "-3") {
         setTxtField();
-        return "not equals what ?"
+        return "not equals what ? Don't forget to provide correct type, e.g. for number 3, for string \"3\", for boolean true/false etc..";
     }
     if (selectedOption === "4" || selectedOption === "-4") {
         setTxtField();
@@ -237,43 +291,7 @@ Template.queryWizard.onRendered(function () {
 
 Template.queryWizard.events({
     'click #btnResetChat' (){
-        let txt = $('#inputQueryWizardResponse');
-        let cmb = $('#cmbQueryWizardResponses');
-        let txtDiv = $('#divQueryWizardTxt');
-        let cmbDiv = $('#divQueryWizardCombo');
-        let chatDiv = $('.query-wizard .content');
-        let sendButton = $('#btnQueryWizardRespond');
-        let sendButton2 = $('#btnQueryWizardRespond2');
-
-        txt.prop('disabled', false);
-        cmb.prop('disabled', false);
-        sendButton.prop('disabled', false);
-        sendButton2.prop('disabled', false);
-
-        chatDiv.empty();
-        chatDiv.append($('<div class="left"> <div class="author-name"> Mongoclient </div> <div class="chat-message active"> Hello, let\'s start with giving a field name to me. </div></div> ' +
-            '<div class="right"> <div class="author-name"> Me</div> <div class="chat-message"> Hmm...</div> </div>'));
-
-        step = 1;
-        selectedOption = null;
-        fieldName = null;
-        txtValue = null;
-        regexOptions = null;
-
-        txtDiv.css('display', '');
-        txt.val('');
-
-
-        cmbDiv.css('display', 'none');
-        cmb.prop("multiple", false);
-        cmb.attr('data-placeholder', "I want to retrieve documents that...");
-        cmb.empty();
-        cmb.append($('<option></option> <optgroup id="optGroupPositives" label="Positives"> <option value="1">have the field</option> <option value="2">the field matches regex</option> ' +
-            '<option value="3">the field equals something</option> <option value="4">the field equals one of values of an array</option> <option value="5">the field is greater or equal than something</option> ' +
-            '<option value="6">the field is greater than something</option> </optgroup> <optgroup id="optGroupNegatives" label="Negatives"> <option value="-1">have not the field</option> ' +
-            '<option value="-2">the field not matches regex</option> <option value="-3">the field not equals something</option> <option value="-4">the field not equals one of values of an array</option> ' +
-            '<option value="-5">the field is less or equal than something</option> <option value="-6">the field is less than something</option> </optgroup>'));
-        cmb.chosen('destroy');
+        reset();
     },
 
     'click #btnQueryWizardRespond' (){
