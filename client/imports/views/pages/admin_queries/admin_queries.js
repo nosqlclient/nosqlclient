@@ -26,9 +26,15 @@ var JSONEditor = require('jsoneditor');
 /**
  * Created by RSercan on 10.1.2016.
  */
+
+Template.adminQueries.onCreated(function () {
+    Meteor.subscribe('settings');
+    Meteor.subscribe('connections');
+});
+
 Template.adminQueries.onRendered(function () {
     if (Session.get(Helper.strSessionCollectionNames) == undefined) {
-        Router.go('databaseStats');
+        FlowRouter.go('databaseStats');
         return;
     }
 

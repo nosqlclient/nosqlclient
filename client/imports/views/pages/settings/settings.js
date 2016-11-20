@@ -9,6 +9,12 @@ var Ladda = require('ladda');
 /**
  * Created by RSercan on 9.1.2016.
  */
+
+Template.settings.onCreated(function () {
+    Meteor.subscribe('settings');
+    Meteor.subscribe('connections');
+});
+
 Template.settings.onRendered(function () {
     $('#divAutoCompleteFields, #divShowDBStats').iCheck({
         checkboxClass: 'icheckbox_square-green'

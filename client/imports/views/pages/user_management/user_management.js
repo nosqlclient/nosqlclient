@@ -412,9 +412,15 @@ const populateTreeChildrenForUsers = function (users) {
     return result;
 };
 
+Template.userManagement.onCreated(function () {
+    Meteor.subscribe('settings');
+    Meteor.subscribe('connections');
+    Meteor.subscribe('actions');
+});
+
 Template.userManagement.onRendered(function () {
     if (Session.get(Helper.strSessionCollectionNames) == undefined) {
-        Router.go('databaseStats');
+        FlowRouter.go('databaseStats');
         return;
     }
 

@@ -221,9 +221,15 @@ Template.mcShell.onDestroyed(function () {
     });
 });
 
+Template.mcShell.onCreated(function () {
+    Meteor.subscribe('settings');
+    Meteor.subscribe('connections');
+    Meteor.subscribe('shell_commands');
+});
+
 Template.mcShell.onRendered(function () {
     if (Session.get(Helper.strSessionCollectionNames) == undefined) {
-        Router.go('databaseStats');
+        FlowRouter.go('databaseStats');
         return;
     }
 

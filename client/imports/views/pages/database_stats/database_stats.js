@@ -54,6 +54,11 @@ var lineOptions = {
     }
 };
 
+Template.databaseStats.onCreated(function () {
+    Meteor.subscribe('settings');
+    Meteor.subscribe('connections');
+});
+
 Template.databaseStats.onRendered(function () {
     if (Settings.findOne().showDBStats) {
         interval = Meteor.setInterval(function () {

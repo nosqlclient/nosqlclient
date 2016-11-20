@@ -69,9 +69,14 @@ const createPipeline = function (stageListElements) {
     return pipeline;
 };
 
+Template.aggregatePipeline.onCreated(function () {
+    Meteor.subscribe('settings');
+    Meteor.subscribe('connections');
+});
+
 Template.aggregatePipeline.onRendered(function () {
     if (Session.get(Helper.strSessionCollectionNames) == undefined) {
-        Router.go('databaseStats');
+        FlowRouter.go('databaseStats');
         return;
     }
 

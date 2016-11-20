@@ -180,9 +180,14 @@ const fetchDocument = function () {
 
 };
 
+Template.editDocument.onCreated(function () {
+    Meteor.subscribe('settings');
+    Meteor.subscribe('connections');
+});
+
 Template.editDocument.onRendered(function () {
     if (Session.get(Helper.strSessionCollectionNames) == undefined) {
-        Router.go('databaseStats');
+        FlowRouter.go('databaseStats');
         return;
     }
 

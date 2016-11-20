@@ -139,9 +139,15 @@ const populateDatatable = function () {
     Ladda.stopAll();
 };
 
+Template.databaseDumpRestore.onCreated(function () {
+    Meteor.subscribe('settings');
+    Meteor.subscribe('connections');
+    Meteor.subscribe('dumps');
+});
+
 Template.databaseDumpRestore.onRendered(function () {
     if (Session.get(Helper.strSessionCollectionNames) == undefined) {
-        Router.go('databaseStats');
+        FlowRouter.go('databaseStats');
         return;
     }
 

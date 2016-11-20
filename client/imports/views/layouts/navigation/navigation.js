@@ -61,7 +61,7 @@ export const renderCollectionNames = function () {
             Session.set(Helper.strSessionSelectedQuery, undefined);
             Session.set(Helper.strSessionSelectedOptions, undefined);
             Session.set(Helper.strSessionSelectedCollection, undefined);
-            Router.go('databaseStats');
+            FlowRouter.go('databaseStats');
         }
     });
 };
@@ -81,7 +81,7 @@ Template.navigation.events({
             return;
         }
 
-        Router.go('shell');
+        FlowRouter.go('shell');
     },
 
     'click #anchorDatabaseDumpRestore'(e) {
@@ -94,7 +94,7 @@ Template.navigation.events({
             return;
         }
 
-        Router.go('databaseDumpRestore');
+        FlowRouter.go('databaseDumpRestore');
     },
 
     'click #btnAddCollection' (e) {

@@ -1,5 +1,4 @@
 <template name="databaseStats">
-
     {{> pageHeading title='Mongoclient' }}
 
     {{#if isConnected}}
@@ -16,7 +15,8 @@
                                 </h2>
                                 <h4>The server is up for {{getServerStatus.uptime}} seconds</h4>
                                 <small>
-                                    The performances which are shown here are coming from <strong>serverStatus</strong>
+                                    The performances which are shown here are coming from
+                                    <strong>serverStatus</strong>
                                     and
                                     <strong>stats</strong> queries.
                                     Therefore, before having a look at below graphs consider

@@ -12,7 +12,7 @@ var Ladda = require('ladda');
  */
 Template.queryHistories.onRendered(function () {
     if (Session.get(Helper.strSessionCollectionNames) == undefined) {
-        Router.go('databaseStats');
+        FlowRouter.go('databaseStats');
         return;
     }
 

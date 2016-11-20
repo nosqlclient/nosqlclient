@@ -13,13 +13,12 @@ jquery@1.11.10                  # Helpful client-side library
 tracker@1.1.1                 # Meteor's client-side reactive programming library
 
 es5-shim@4.6.15                # ECMAScript 5 compatibility for older browsers.
-ecmascript@0.5.9              # Enable ECMAScript2015+ syntax in app code
+ecmascript@0.6.1              # Enable ECMAScript2015+ syntax in app code
 
-iron:router
 fortawesome:fontawesome
 zimme:active-route
 okgrow:router-autoscroll
-less@2.7.7
+less@2.7.8
 twbs:bootstrap@3.3.6
 momentjs:moment
 arch:ace-editor
@@ -31,3 +30,6 @@ standard-minifier-js@1.2.1
 meteorhacks:async
 shell-server@0.2.1
 harrison:papa-parse
+kadira:flow-router
+kadira:blaze-layout
+arillo:flow-router-helpers

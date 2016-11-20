@@ -27,7 +27,8 @@
                             <ul class="dropdown-menu animated fadeInRight m-t-xs">
                                 <li><a id="btnRefreshCollections" href="#"><i class="fa fa-refresh"></i> Refresh
                                     collections</a></li>
-                                <li><a id="btnDropDatabase" href="#"><i class="fa fa-remove"></i> Drop database</a></li>
+                                <li><a id="btnDropDatabase" href="#"><i class="fa fa-remove"></i> Drop database</a>
+                                </li>
                                 <li><a id="btnDropAllCollections" href="#"><i class="fa fa-remove"></i> Drop all
                                     collections</a></li>
 
@@ -111,7 +112,8 @@
                     <li>
                         <a href=""><i class="fa fa-dashboard"></i> <span
                                 class="nav-label">Collections</span>
-                            <span id="btnAddCollection" class="label label-info" style="margin-left: 90px;">Add</span>
+                            <span id="btnAddCollection" class="label label-info"
+                                  style="margin-left: 90px;">Add</span>
                             <span class="fa arrow pull-right"></span>
                         </a>
 
@@ -121,7 +123,8 @@
                                     <a class="navCollection" href="{{pathFor route='browseCollection'}}"><i
                                             class="fa fa-book"></i> <span
                                             class="nav-label">{{name}}</span>
-                                        <span id="btnDropCollection" class="pull-right label label-danger">Drop</span>
+                                        <span id="btnDropCollection"
+                                              class="pull-right label label-danger">Drop</span>
                                     </a>
                                 </li>
                             {{/each}}
@@ -154,4 +157,5 @@
     </nav>
 
     {{>addCollection}}
+
 </template>
