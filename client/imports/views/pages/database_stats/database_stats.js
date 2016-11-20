@@ -55,18 +55,21 @@ var lineOptions = {
 };
 
 Template.databaseStats.onCreated(function () {
-    Meteor.subscribe('settings');
-    Meteor.subscribe('connections');
+    this.subscribe('settings');
+    this.subscribe('connections');
 });
 
 Template.databaseStats.onRendered(function () {
-    if (Settings.findOne().showDBStats) {
-        interval = Meteor.setInterval(function () {
-            fetchStatus();
-        }, 3000);
+    //TODO KEEP GOING
+    if (Template.instance().subscriptionsReady()) {
+        if (Settings.findOne().showDBStats) {
+            interval = Meteor.setInterval(function () {
+                fetchStatus();
+            }, 3000);
 
-        // fetch stats only once.
-        fetchStats();
+            // fetch stats only once.
+            fetchStats();
+        }
     }
 });
 

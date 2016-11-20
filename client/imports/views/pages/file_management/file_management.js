@@ -106,13 +106,13 @@ export const initFilesInformation = function () {
 };
 
 Template.fileManagement.onCreated(function () {
-    Meteor.subscribe('settings');
-    Meteor.subscribe('connections');
+    this.subscribe('settings');
+    this.subscribe('connections');
 });
 
 Template.fileManagement.onRendered(function () {
     if (Session.get(Helper.strSessionCollectionNames) == undefined) {
-        FlowRouter.go('databaseStats');
+        FlowRouter.go('/databaseStats');
         return;
     }
 

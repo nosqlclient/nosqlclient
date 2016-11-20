@@ -14,7 +14,7 @@ require('bootstrap-filestyle');
  */
 Template.uploadFile.onRendered(function () {
     if (Session.get(Helper.strSessionCollectionNames) == undefined) {
-        FlowRouter.go('databaseStats');
+        FlowRouter.go('/databaseStats');
     }
 
     // $(":file").filestyle({icon: false, buttonBefore: true});

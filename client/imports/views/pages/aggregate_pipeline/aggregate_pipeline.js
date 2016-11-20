@@ -70,13 +70,13 @@ const createPipeline = function (stageListElements) {
 };
 
 Template.aggregatePipeline.onCreated(function () {
-    Meteor.subscribe('settings');
-    Meteor.subscribe('connections');
+    this.subscribe('settings');
+    this.subscribe('connections');
 });
 
 Template.aggregatePipeline.onRendered(function () {
     if (Session.get(Helper.strSessionCollectionNames) == undefined) {
-        FlowRouter.go('databaseStats');
+        FlowRouter.go('/databaseStats');
         return;
     }
 

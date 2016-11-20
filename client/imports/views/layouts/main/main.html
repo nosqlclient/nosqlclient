@@ -1,12 +1,10 @@
 <template name="mainLayout">
-    {{#if Template.subscriptionsReady}}
-        <div id="wrapper">
-            {{> navigation }}
-            <div id="page-wrapper" class="gray-bg">
-                {{> topNavbar }}
-                {{> Template.dynamic template=yield}}
-                {{> footer }}
-            </div>
+    <div id="wrapper">
+        {{> navigation }}
+        <div id="page-wrapper" class="gray-bg">
+            {{> topNavbar }}
+            {{> Template.dynamic template=yield}}
+            {{> footer }}
         </div>
-    {{/if}}
+    </div>
 </template>

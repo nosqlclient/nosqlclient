@@ -45,7 +45,7 @@ export const connect = function (isRefresh) {
                 $('#connectionModal').modal('hide');
                 $('#switchDatabaseModal').modal('hide');
 
-                FlowRouter.go('databaseStats');
+                FlowRouter.go('/databaseStats');
             }
             else {
                 toastr.success("Successfuly refreshed collections");
@@ -979,7 +979,7 @@ Template.topNavbar.events({
         //     type: "success"
         // });
 
-        FlowRouter.go('databaseStats');
+        FlowRouter.go('/databaseStats');
     },
 
     'click #anchorTab1'  () {

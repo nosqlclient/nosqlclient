@@ -398,16 +398,16 @@ const cmbQueriesChangeEvent = function () {
 };
 
 Template.browseCollection.onCreated(function () {
-    Meteor.subscribe('settings');
-    Meteor.subscribe('connections');
-    Meteor.subscribe('queryHistories');
+    this.subscribe('settings');
+    this.subscribe('connections');
+    this.subscribe('queryHistories');
     Session.set(Helper.strSessionSelectedOptions, []);
     Session.set(Helper.strSessionSelectedQuery, Enums.QUERY_TYPES.FIND);
 });
 
 Template.browseCollection.onRendered(function () {
     if (!Session.get(Helper.strSessionSelectedCollection)) {
-        FlowRouter.go('databaseStats');
+        FlowRouter.go('/databaseStats');
         return;
     }
 

@@ -181,13 +181,13 @@ const fetchDocument = function () {
 };
 
 Template.editDocument.onCreated(function () {
-    Meteor.subscribe('settings');
-    Meteor.subscribe('connections');
+    this.subscribe('settings');
+    this.subscribe('connections');
 });
 
 Template.editDocument.onRendered(function () {
     if (Session.get(Helper.strSessionCollectionNames) == undefined) {
-        FlowRouter.go('databaseStats');
+        FlowRouter.go('/databaseStats');
         return;
     }
 

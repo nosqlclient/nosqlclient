@@ -278,7 +278,7 @@ const step3 = function () {
 
 Template.queryWizard.onRendered(function () {
     if (Session.get(Helper.strSessionCollectionNames) == undefined) {
-        FlowRouter.go('databaseStats');
+        FlowRouter.go('/databaseStats');
         return;
     }
 

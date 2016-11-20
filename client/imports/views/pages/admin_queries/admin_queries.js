@@ -28,13 +28,13 @@ var JSONEditor = require('jsoneditor');
  */
 
 Template.adminQueries.onCreated(function () {
-    Meteor.subscribe('settings');
-    Meteor.subscribe('connections');
+    this.subscribe('settings');
+    this.subscribe('connections');
 });
 
 Template.adminQueries.onRendered(function () {
     if (Session.get(Helper.strSessionCollectionNames) == undefined) {
-        FlowRouter.go('databaseStats');
+        FlowRouter.go('/databaseStats');
         return;
     }
 

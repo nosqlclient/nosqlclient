@@ -140,14 +140,14 @@ const populateDatatable = function () {
 };
 
 Template.databaseDumpRestore.onCreated(function () {
-    Meteor.subscribe('settings');
-    Meteor.subscribe('connections');
-    Meteor.subscribe('dumps');
+    this.subscribe('settings');
+    this.subscribe('connections');
+    this.subscribe('dumps');
 });
 
 Template.databaseDumpRestore.onRendered(function () {
     if (Session.get(Helper.strSessionCollectionNames) == undefined) {
-        FlowRouter.go('databaseStats');
+        FlowRouter.go('/databaseStats');
         return;
     }
 

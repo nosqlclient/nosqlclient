@@ -222,14 +222,14 @@ Template.mcShell.onDestroyed(function () {
 });
 
 Template.mcShell.onCreated(function () {
-    Meteor.subscribe('settings');
-    Meteor.subscribe('connections');
-    Meteor.subscribe('shell_commands');
+    this.subscribe('settings');
+    this.subscribe('connections');
+    this.subscribe('shell_commands');
 });
 
 Template.mcShell.onRendered(function () {
     if (Session.get(Helper.strSessionCollectionNames) == undefined) {
-        FlowRouter.go('databaseStats');
+        FlowRouter.go('/databaseStats');
         return;
     }
 

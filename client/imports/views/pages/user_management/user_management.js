@@ -413,14 +413,14 @@ const populateTreeChildrenForUsers = function (users) {
 };
 
 Template.userManagement.onCreated(function () {
-    Meteor.subscribe('settings');
-    Meteor.subscribe('connections');
-    Meteor.subscribe('actions');
+    this.subscribe('settings');
+    this.subscribe('connections');
+    this.subscribe('actions');
 });
 
 Template.userManagement.onRendered(function () {
     if (Session.get(Helper.strSessionCollectionNames) == undefined) {
-        FlowRouter.go('databaseStats');
+        FlowRouter.go('/databaseStats');
         return;
     }
 

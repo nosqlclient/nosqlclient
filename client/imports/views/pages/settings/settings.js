@@ -11,8 +11,8 @@ var Ladda = require('ladda');
  */
 
 Template.settings.onCreated(function () {
-    Meteor.subscribe('settings');
-    Meteor.subscribe('connections');
+    this.subscribe('settings');
+    this.subscribe('connections');
 });
 
 Template.settings.onRendered(function () {
