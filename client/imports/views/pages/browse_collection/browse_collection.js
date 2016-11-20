@@ -33,6 +33,8 @@ import "/client/imports/views/query_templates/collection/rename/rename";
 import "/client/imports/views/query_templates/collection/stats/stats";
 import "/client/imports/views/query_templates/collection/update_many/update_many";
 import "/client/imports/views/query_templates/collection/update_one/update_one";
+
+import '../../query_templates/collection/find/query_wizard/query_wizard';
 import "./browse_collection.html";
 
 
@@ -388,8 +390,10 @@ const cmbQueriesChangeEvent = function () {
 
     if (value == Enums.QUERY_TYPES.FIND) {
         $('#btnExportQueryResult').show();
+        $('#btnQueryWizard').show();
     } else {
         $('#btnExportQueryResult').hide();
+        $('#btnQueryWizard').hide();
     }
 };
 
@@ -495,12 +499,17 @@ Template.browseCollection.onRendered(function () {
 });
 
 Template.browseCollection.events({
-    'click #btnSaveFindOne': function (e) {
+    'click #btnQueryWizard' (e) {
+        e.preventDefault();
+        $('#queryWizardModal').modal('show');
+    },
+
+    'click #btnSaveFindOne' (e) {
         e.preventDefault();
         saveEditor();
     },
 
-    'click #btnDelFindOne': function (e) {
+    'click #btnDelFindOne' (e) {
         e.preventDefault();
         deleteDocument();
     },

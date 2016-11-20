@@ -59,3 +59,133 @@ tr.selected {
 .blue-font {
     color: #0000cc !important;
 }
+
+.query-wizard {
+    display: none;
+    background: #fff;
+    width: 100%;
+    height: 320px;
+    border-radius: 4px;
+}
+
+.query-wizard.ng-small-chat {
+    display: block;
+}
+
+.body-small .query-wizard {
+    bottom: 70px;
+    right: 20px;
+}
+
+.query-wizard.active {
+    display: block;
+}
+
+.query-wizard .heading {
+    background: #2f4050;
+    padding: 8px 15px;
+    font-weight: bold;
+    color: #fff !important;
+}
+
+.query-wizard .content {
+    padding: 15px 15px;
+}
+
+.query-wizard .content .author-name {
+    font-weight: bold;
+    margin-bottom: 3px;
+    font-size: 11px;
+}
+
+.query-wizard .content > div {
+    padding-bottom: 20px;
+}
+
+.query-wizard .content .chat-message {
+    padding: 5px 10px;
+    border-radius: 6px;
+    font-size: 12px;
+    line-height: 14px;
+    max-width: 80%;
+    background: #f3f3f4;
+    margin-bottom: 10px;
+}
+
+.query-wizard .content .chat-message.active {
+    background: #1ab394;
+    color: #fff;
+}
+
+.query-wizard .content .left {
+    text-align: left;
+    clear: both;
+}
+
+.query-wizard .content .left .chat-message {
+    float: left;
+}
+
+.query-wizard .content .right {
+    text-align: right;
+    clear: both;
+}
+
+.query-wizard .content .right .chat-message {
+    float: right;
+}
+
+.query-wizard .form-chat {
+    padding-left: 5px;
+    padding-right: 5px;
+}
+
+.query-wizard .reset-chat {
+    cursor: pointer;
+    opacity: 0.6;
+    font-size: 11px;
+    font-weight: normal;
+}
+
+.typed-cursor {
+    opacity: 1;
+    -webkit-animation: blink 0.7s infinite;
+    -moz-animation: blink 0.7s infinite;
+    animation: blink 0.7s infinite;
+}
+
+@keyframes blink {
+    0% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
+}
+
+@-webkit-keyframes blink {
+    0% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
+}
+
+@-moz-keyframes blink {
+    0% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
+}

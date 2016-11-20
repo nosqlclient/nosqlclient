@@ -4,6 +4,7 @@
   "version": "1.4.0",
   "devDependencies": {},
   "dependencies": {
+    "typed.js": "1.1.1",
     "babel-runtime": "^6.18.0",
     "bootstrap-filestyle": "^1.2.1",
     "cheerio": "0.20.0",

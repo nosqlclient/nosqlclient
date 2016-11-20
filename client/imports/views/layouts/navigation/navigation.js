@@ -8,13 +8,68 @@ import {connect} from '/client/imports/views/layouts/top_navbar/top_navbar';
 import './add_collection/add_collection';
 import './navigation.html';
 
-var toastr = require('toastr');
+const toastr = require('toastr');
+
+
+const handleNavigationAndSessions = function () {
+    $('#listCollectionNames').find('li').each(function (index, li) {
+        $(li).removeClass('active');
+    });
+
+    $('#listSystemCollections').find('li').each(function (index, li) {
+        $(li).removeClass('active');
+    });
+
+    Session.set(Helper.strSessionSelectedCollection, undefined);
+    Session.set(Helper.strSessionSelectedQuery, undefined);
+    Session.set(Helper.strSessionSelectedOptions, undefined);
+
+    $('#cmbQueries').val('').trigger('chosen:updated');
+    $('#cmbAdminQueries').val('').trigger('chosen:updated');
+};
+
+const dropCollection = function (collectionName) {
+    Meteor.call('dropCollection', collectionName, function (err, result) {
+        if (err || result.error) {
+            Helper.showMeteorFuncError(err, result, "Couldn't drop collection");
+        }
+        else {
+            renderCollectionNames();
+            toastr.success('Successfuly dropped collection: ' + collectionName);
+        }
+    });
+};
+
+export const renderCollectionNames = function () {
+    Meteor.call('connect', Session.get(Helper.strSessionConnection), function (err, result) {
+        if (err || result.error) {
+            Helper.showMeteorFuncError(err, result, "Couldn't connect");
+        }
+        else {
+            result.result.sort(function (a, b) {
+                if (a.name < b.name)
+                    return -1;
+                else if (a.name > b.name)
+                    return 1;
+                else
+                    return 0;
+            });
+
+            // re-set collection names
+            Session.set(Helper.strSessionCollectionNames, result.result);
+            // set all session values undefined except connection
+            Session.set(Helper.strSessionSelectedQuery, undefined);
+            Session.set(Helper.strSessionSelectedOptions, undefined);
+            Session.set(Helper.strSessionSelectedCollection, undefined);
+            Router.go('databaseStats');
+        }
+    });
+};
 
 Template.navigation.events({
     'click #anchorShell'(e) {
-
         e.preventDefault();
-        var connection = Connections.findOne({_id: Session.get(Helper.strSessionConnection)});
+        let connection = Connections.findOne({_id: Session.get(Helper.strSessionConnection)});
 
         if (connection.sshAddress) {
             toastr.info('Unfortunately, this feature is not usable in SSH connections');
@@ -32,7 +87,7 @@ Template.navigation.events({
     'click #anchorDatabaseDumpRestore'(e) {
 
         e.preventDefault();
-        var connection = Connections.findOne({_id: Session.get(Helper.strSessionConnection)});
+        let connection = Connections.findOne({_id: Session.get(Helper.strSessionConnection)});
 
         if (connection.sshAddress) {
             toastr.info('Unfortunately, this feature is not usable in SSH connections');
@@ -55,7 +110,7 @@ Template.navigation.events({
     'click #btnDropCollection' (e) {
         e.preventDefault();
 
-        var collectionName = this.name;
+        let collectionName = this.name;
         swal({
             title: "Are you sure?",
             text: this.name + " collection will be dropped, are you sure ?",
@@ -202,58 +257,3 @@ Template.navigation.helpers({
         return collectionNames;
     }
 });
-
-const handleNavigationAndSessions = function () {
-    $('#listCollectionNames').find('li').each(function (index, li) {
-        $(li).removeClass('active');
-    });
-
-    $('#listSystemCollections').find('li').each(function (index, li) {
-        $(li).removeClass('active');
-    });
-
-    Session.set(Helper.strSessionSelectedCollection, undefined);
-    Session.set(Helper.strSessionSelectedQuery, undefined);
-    Session.set(Helper.strSessionSelectedOptions, undefined);
-
-    $('#cmbQueries').val('').trigger('chosen:updated');
-    $('#cmbAdminQueries').val('').trigger('chosen:updated');
-};
-
-const dropCollection = function (collectionName) {
-    Meteor.call('dropCollection', collectionName, function (err, result) {
-        if (err || result.error) {
-            Helper.showMeteorFuncError(err, result, "Couldn't drop collection");
-        }
-        else {
-            renderCollectionNames();
-            toastr.success('Successfuly dropped collection: ' + collectionName);
-        }
-    });
-};
-
-export const renderCollectionNames = function () {
-    Meteor.call('connect', Session.get(Helper.strSessionConnection), function (err, result) {
-        if (err || result.error) {
-            Helper.showMeteorFuncError(err, result, "Couldn't connect");
-        }
-        else {
-            result.result.sort(function (a, b) {
-                if (a.name < b.name)
-                    return -1;
-                else if (a.name > b.name)
-                    return 1;
-                else
-                    return 0;
-            });
-
-            // re-set collection names
-            Session.set(Helper.strSessionCollectionNames, result.result);
-            // set all session values undefined except connection
-            Session.set(Helper.strSessionSelectedQuery, undefined);
-            Session.set(Helper.strSessionSelectedOptions, undefined);
-            Session.set(Helper.strSessionSelectedCollection, undefined);
-            Router.go('databaseStats');
-        }
-    });
-};

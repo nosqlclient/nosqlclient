@@ -1,0 +1,76 @@
+<template name="queryWizard">
+    <div class="modal inmodal" id="queryWizardModal" tabindex="-1" role="dialog" aria-hidden="true"
+         style="display: none;">
+        <div class="modal-dialog">
+            <div class="query-wizard fadeInRight animated active">
+                <div class="heading" draggable="true">
+                    Query Wizard
+                    <small id="btnResetChat" class="reset-chat pull-right">
+                        Reset Chat
+                    </small>
+                </div>
+                <div class="content" style="overflow: hidden; width: auto; height: 234px;">
+
+                    <div class="left">
+                        <div class="author-name">
+                            Mongoclient
+                        </div>
+                        <div class="chat-message active">
+                            Hello, let's start with giving a field name to me.
+                        </div>
+
+                    </div>
+                    <div class="right">
+                        <div class="author-name">
+                            Me
+                        </div>
+                        <div class="chat-message">
+                            Hmm...
+                        </div>
+                    </div>
+
+                </div>
+                <div class="form-chat">
+                    <div id="divQueryWizardCombo" style="display: none" class="input-group input-group">
+                        <select id="cmbQueryWizardResponses"
+                                data-placeholder="I want to retrieve documents that..."
+                                class="chosen-select form-control"
+                                tabindex="-1">
+                            <option></option>
+
+                            <optgroup id="optGroupPositives" label="Positives">
+                                <option value="1">have the field</option>
+                                <option value="2">the field matches regex</option>
+                                <option value="3">the field equals something</option>
+                                <option value="4">the field equals one of the values of an array</option>
+                                <option value="5">the field is greater or equal than something</option>
+                                <option value="6">the field is greater than something</option>
+                            </optgroup>
+
+
+                            <optgroup id="optGroupNegatives" label="Negatives">
+                                <option value="-1">have not the field</option>
+                                <option value="-2">the field not matches regex</option>
+                                <option value="-3">the field not equals something</option>
+                                <option value="-4">the field not equals one of the values of an array</option>
+                                <option value="-5">the field is less or equal than something</option>
+                                <option value="-6">the field is less than something</option>
+                            </optgroup>
+
+                        </select>
+                        <span class="input-group-btn"> <button id="btnQueryWizardRespond" class="btn btn-primary"
+                                                               type="button">Send</button> </span>
+                    </div>
+
+                    <div id="divQueryWizardTxt" class="input-group input-group">
+                        <input id="inputQueryWizardResponse"
+                               class="form-control"/>
+                        <span class="input-group-btn"> <button id="btnQueryWizardRespond2" class="btn btn-primary"
+                                                               type="button">Send</button> </span>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</template>
