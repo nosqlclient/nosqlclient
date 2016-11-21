@@ -56,10 +56,10 @@ var lineOptions = {
 
 Template.databaseStats.onRendered(function () {
     let instance = Template.instance();
-    instance.autorun(() => {
-        let settings = instance.subscribe('settings');
-        let connections = instance.subscribe('connections');
+    let settings = instance.subscribe('settings');
+    let connections = instance.subscribe('connections');
 
+    instance.autorun(() => {
         if (settings.ready() && connections.ready()) {
             if (Settings.findOne().showDBStats) {
                 interval = Meteor.setInterval(function () {
