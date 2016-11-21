@@ -1,99 +1,101 @@
 <template name="browseCollection">
-    {{#if getSelectedCollection}}
-        {{> pageHeading title=getSelectedCollection }}
-        <div class="wrapper wrapper-content animated fadeInRight">
-            <div class="row">
-                <div class="col-lg-12">
-                    <div class="ibox float-e-margins">
-                        <div class="ibox-title">
-                            <h5>Query
-                                <small></small>
-                            </h5>
-                            <div class="ibox-tools">
-                                <a id="btnQueryWizard" href="#" title="Query Wizard">
-                                    <i class="fa fa-magic"></i>
-                                </a>
-                                <a id="btnExportQueryResult" href="#"
-                                   aria-expanded="false"
-                                   class="dropdown-toggle" data-toggle="dropdown"
-                                   title="Export Query Result">
-                                    <i class="fa fa-upload"></i>
-                                </a>
-                                <ul class="dropdown-menu dropdown-tasks">
-                                    <li>
-                                        <a id="btnExportAsCSV" href="">
-                                            <i class="fa fa-file"></i> Export CSV
-                                        </a>
-                                    </li>
-                                    <li><a id="btnExportAsJSON" href="#"><i class="fa fa-file"></i>
-                                        Export JSON</a></li>
-                                </ul>
+    {{#if Template.subscriptionsReady}}
+        {{#if getSelectedCollection}}
+            {{> pageHeading title=getSelectedCollection }}
+            <div class="wrapper wrapper-content animated fadeInRight">
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="ibox float-e-margins">
+                            <div class="ibox-title">
+                                <h5>Query
+                                    <small></small>
+                                </h5>
+                                <div class="ibox-tools">
+                                    <a id="btnQueryWizard" href="#" title="Query Wizard">
+                                        <i class="fa fa-magic"></i>
+                                    </a>
+                                    <a id="btnExportQueryResult" href="#"
+                                       aria-expanded="false"
+                                       class="dropdown-toggle" data-toggle="dropdown"
+                                       title="Export Query Result">
+                                        <i class="fa fa-upload"></i>
+                                    </a>
+                                    <ul class="dropdown-menu dropdown-tasks">
+                                        <li>
+                                            <a id="btnExportAsCSV" href="">
+                                                <i class="fa fa-file"></i> Export CSV
+                                            </a>
+                                        </li>
+                                        <li><a id="btnExportAsJSON" href="#"><i class="fa fa-file"></i>
+                                            Export JSON</a></li>
+                                    </ul>
 
-                                <a id="btnSwitchView" href="#"
-                                   title="Switch Result View">
-                                    <i class="fa fa-exchange"></i>
-                                </a>
-                                <a id="btnShowQueryHistories" href="#"
-                                   title="Show Query Histories">
-                                    <i class="fa fa-history"></i>
-                                </a>
-                            </div>
-                        </div>
-                        <div class="ibox-content">
-                            <form class="form-horizontal">
-                                <div class="form-group">
-                                    <label class="col-lg-1 control-label">Query</label>
-                                    <div class="col-lg-11">
-                                        <select id="cmbQueries"
-                                                data-placeholder="Choose a query..."
-                                                class="chosen-select form-control"
-                                                tabindex="-1">
-                                            <option></option>
-                                        </select>
-                                        <span class="help-block m-b-none">{{getHelpBlockForSelectedQuery}}</span>
-                                    </div>
+                                    <a id="btnSwitchView" href="#"
+                                       title="Switch Result View">
+                                        <i class="fa fa-exchange"></i>
+                                    </a>
+                                    <a id="btnShowQueryHistories" href="#"
+                                       title="Show Query Histories">
+                                        <i class="fa fa-history"></i>
+                                    </a>
                                 </div>
+                            </div>
+                            <div class="ibox-content">
+                                <form class="form-horizontal">
+                                    <div class="form-group">
+                                        <label class="col-lg-1 control-label">Query</label>
+                                        <div class="col-lg-11">
+                                            <select id="cmbQueries"
+                                                    data-placeholder="Choose a query..."
+                                                    class="chosen-select form-control"
+                                                    tabindex="-1">
+                                                <option></option>
+                                            </select>
+                                            <span class="help-block m-b-none">{{getHelpBlockForSelectedQuery}}</span>
+                                        </div>
+                                    </div>
 
-                                {{> Template.dynamic template=getQueryTemplate}}
+                                    {{> Template.dynamic template=getQueryTemplate}}
 
-                                <div class="form-group">
-                                    <div class="col-lg-12">
-                                        <button id="btnExecuteQuery"
+                                    <div class="form-group">
+                                        <div class="col-lg-12">
+                                            <button id="btnExecuteQuery"
+                                                    class="btn btn-block btn-outline btn-primary ladda-button"
+                                                    type="button"
+                                                    data-style="contract"><strong>Execute</strong></button>
+                                        </div>
+                                    </div>
+                                    <ul id="resultTabs" class="nav nav-tabs">
+                                    </ul>
+                                    <div id="resultTabContents" class="tab-content">
+                                    </div>
+                                </form>
+                            </div>
+                            <div class="ibox-footer" id="divBrowseCollectionFooter" style="display: none;">
+                                <div class="row">
+                                    <div class="col-lg-6">
+                                        <button id="btnDelFindOne"
                                                 class="btn btn-block btn-outline btn-primary ladda-button"
                                                 type="button"
-                                                data-style="contract"><strong>Execute</strong></button>
+                                                data-style="contract">
+                                            <strong>Delete</strong></button>
                                     </div>
-                                </div>
-                                <ul id="resultTabs" class="nav nav-tabs">
-                                </ul>
-                                <div id="resultTabContents" class="tab-content">
-                                </div>
-                            </form>
-                        </div>
-                        <div class="ibox-footer" id="divBrowseCollectionFooter" style="display: none;">
-                            <div class="row">
-                                <div class="col-lg-6">
-                                    <button id="btnDelFindOne"
-                                            class="btn btn-block btn-outline btn-primary ladda-button"
-                                            type="button"
-                                            data-style="contract">
-                                        <strong>Delete</strong></button>
-                                </div>
-                                <div class="col-lg-6">
-                                    <button id="btnSaveFindOne"
-                                            class="btn btn-block btn-outline btn-primary ladda-button"
-                                            type="button"
-                                            data-style="contract">
-                                        <strong>Save</strong></button>
+                                    <div class="col-lg-6">
+                                        <button id="btnSaveFindOne"
+                                                class="btn btn-block btn-outline btn-primary ladda-button"
+                                                type="button"
+                                                data-style="contract">
+                                            <strong>Save</strong></button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
 
-        {{> queryHistories}}
+            {{> queryHistories}}
 
+        {{/if}}
     {{/if}}
 </template>

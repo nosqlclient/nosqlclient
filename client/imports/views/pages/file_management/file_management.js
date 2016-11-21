@@ -106,19 +106,21 @@ export const initFilesInformation = function () {
     );
 };
 
-Template.fileManagement.onCreated(function () {
-    this.subscribe('settings');
-    this.subscribe('connections');
-});
-
 Template.fileManagement.onRendered(function () {
     if (Session.get(Helper.strSessionCollectionNames) == undefined) {
         FlowRouter.go('/databaseStats');
         return;
     }
 
-    initFilesInformation();
-    Helper.initiateDatatable($('#tblFiles'), Helper.strSessionSelectedFile, true);
+    let settings = this.subscribe('settings');
+    let connections = this.subscribe('connections');
+
+    this.autorun(() => {
+        if (settings.ready() && connections.ready()) {
+            initFilesInformation();
+            Helper.initiateDatatable($('#tblFiles'), Helper.strSessionSelectedFile, true);
+        }
+    });
 });
 
 Template.fileManagement.events({

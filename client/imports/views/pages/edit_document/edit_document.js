@@ -181,21 +181,23 @@ const fetchDocument = function () {
 
 };
 
-Template.editDocument.onCreated(function () {
-    this.subscribe('settings');
-    this.subscribe('connections');
-});
-
 Template.editDocument.onRendered(function () {
     if (Session.get(Helper.strSessionCollectionNames) == undefined) {
         FlowRouter.go('/databaseStats');
         return;
     }
 
-    initializeCollectionsCombobox();
-    Session.set(Helper.strSessionEasyEditID, undefined);
+    let settings = this.subscribe('settings');
+    let connections = this.subscribe('connections');
 
-    $('[data-toggle="tooltip"]').tooltip({trigger: 'hover'});
+    this.autorun(() => {
+        if (settings.ready() && connections.ready()) {
+            initializeCollectionsCombobox();
+            Session.set(Helper.strSessionEasyEditID, undefined);
+            $('[data-toggle="tooltip"]').tooltip({trigger: 'hover'});
+        }
+    });
+
 });
 
 Template.editDocument.events({

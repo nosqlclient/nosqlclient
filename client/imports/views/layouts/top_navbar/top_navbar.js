@@ -19,6 +19,52 @@ require('datatables.net-buttons-bs')(window, $);
 require('datatables.net-responsive-bs')(window, $);
 require('bootstrap-filestyle');
 
+const init = function () {
+    var selector = $('#tblConnection');
+    selector.find('tbody').on('click', 'tr', function () {
+        var table = selector.DataTable();
+        if ($(this).hasClass('selected')) {
+            $(this).removeClass('selected');
+        }
+        else {
+            table.$('tr.selected').removeClass('selected');
+            $(this).addClass('selected');
+        }
+
+        if (table.row(this).data()) {
+            Session.set(Helper.strSessionConnection, table.row(this).data()._id);
+            $('#btnConnect').prop('disabled', false);
+        }
+    });
+
+    var selectorForSwitchDatabases = $('#tblSwitchDatabases');
+    selectorForSwitchDatabases.find('tbody').on('click', 'tr', function () {
+
+        var table = selectorForSwitchDatabases.DataTable();
+
+        if ($(this).hasClass('selected')) {
+            $(this).removeClass('selected');
+        }
+        else {
+            table.$('tr.selected').removeClass('selected');
+            $(this).addClass('selected');
+        }
+
+        if (table.row(this).data()) {
+            $('#inputDatabaseNameToSwitch').val(table.row(this).data().name);
+        }
+    });
+
+    // FIXED TOP NAVBAR OPTION
+    // Uncomment this if you want to have fixed top navbar
+    // $('body').addClass('fixed-nav');
+    // $(".navbar-static-top").removeClass('navbar-static-top').addClass('navbar-fixed-top');
+
+    $(".filestyle").filestyle({});
+    initIChecks();
+    initChosen();
+};
+
 export const connect = function (isRefresh) {
     var connection = Connections.findOne({_id: Session.get(Helper.strSessionConnection)});
     if (!connection) {
@@ -490,53 +536,13 @@ const convertToBuffer = function (buffer) {
 };
 
 Template.topNavbar.onRendered(function () {
-    this.subscribe('connections');
-
-    var selector = $('#tblConnection');
-    selector.find('tbody').on('click', 'tr', function () {
-        var table = selector.DataTable();
-        if ($(this).hasClass('selected')) {
-            $(this).removeClass('selected');
-        }
-        else {
-            table.$('tr.selected').removeClass('selected');
-            $(this).addClass('selected');
-        }
-
-        if (table.row(this).data()) {
-            Session.set(Helper.strSessionConnection, table.row(this).data()._id);
-            $('#btnConnect').prop('disabled', false);
+    let connections = this.subscribe('connections');
+    this.autorun(() => {
+        if (connections.ready()) {
+            init();
         }
     });
-
-    var selectorForSwitchDatabases = $('#tblSwitchDatabases');
-    selectorForSwitchDatabases.find('tbody').on('click', 'tr', function () {
-
-        var table = selectorForSwitchDatabases.DataTable();
-
-        if ($(this).hasClass('selected')) {
-            $(this).removeClass('selected');
-        }
-        else {
-            table.$('tr.selected').removeClass('selected');
-            $(this).addClass('selected');
-        }
-
-        if (table.row(this).data()) {
-            $('#inputDatabaseNameToSwitch').val(table.row(this).data().name);
-        }
-    });
-
-    // FIXED TOP NAVBAR OPTION
-    // Uncomment this if you want to have fixed top navbar
-    // $('body').addClass('fixed-nav');
-    // $(".navbar-static-top").removeClass('navbar-static-top').addClass('navbar-fixed-top');
-
-    $(".filestyle").filestyle({});
-    initIChecks();
-    initChosen();
 });
-
 
 Template.topNavbar.events({
     'click #btnProceedImportExport'(e) {

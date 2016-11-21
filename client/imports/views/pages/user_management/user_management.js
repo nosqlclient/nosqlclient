@@ -413,31 +413,32 @@ const populateTreeChildrenForUsers = function (users) {
     return result;
 };
 
-Template.userManagement.onCreated(function () {
-    this.subscribe('settings');
-    this.subscribe('connections');
-    this.subscribe('actions');
-});
-
 Template.userManagement.onRendered(function () {
     if (Session.get(Helper.strSessionCollectionNames) == undefined) {
         FlowRouter.go('/databaseStats');
         return;
     }
 
+    let settings = this.subscribe('settings');
+    let connections = this.subscribe('connections');
+    let actions = this.subscribe('actions');
 
-    var l = Ladda.create(document.querySelector('#btnRefreshUsers'));
-    l.start();
+    this.autorun(() => {
+        if (settings.ready() && connections.ready() && actions.ready()) {
+            var l = Ladda.create(document.querySelector('#btnRefreshUsers'));
+            l.start();
 
-    var chckRunOnAdminDB = $('#aRunOnAdminDBToFetchUsers');
-    chckRunOnAdminDB.iCheck({
-        checkboxClass: 'icheckbox_square-green'
+            var chckRunOnAdminDB = $('#aRunOnAdminDBToFetchUsers');
+            chckRunOnAdminDB.iCheck({
+                checkboxClass: 'icheckbox_square-green'
+            });
+
+            chckRunOnAdminDB.iCheck('uncheck');
+
+            initUserTree();
+            //new Clipboard('.reference');
+        }
     });
-
-    chckRunOnAdminDB.iCheck('uncheck');
-
-    initUserTree();
-    //new Clipboard('.reference');
 });
 
 Template.userManagement.helpers({

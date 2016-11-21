@@ -6,7 +6,7 @@ import {Settings} from '/lib/imports/collections/settings';
 
 import './database_stats.html';
 
-var toastr = require('toastr');
+const toastr = require('toastr');
 /**
  * Created by RSercan on 26.12.2015.
  */
@@ -54,30 +54,185 @@ var lineOptions = {
     }
 };
 
-Template.databaseStats.onRendered(function () {
-    let instance = Template.instance();
-    let settings = instance.subscribe('settings');
-    let connections = instance.subscribe('connections');
-
-    instance.autorun(() => {
-        if (settings.ready() && connections.ready()) {
-            if (Settings.findOne().showDBStats) {
-                interval = Meteor.setInterval(function () {
-                    fetchStatus();
-                }, 3000);
-
-                // fetch stats only once.
-                fetchStats();
+const fetchStats = function () {
+    if (Session.get(Helper.strSessionCollectionNames) != undefined) {
+        Meteor.call("dbStats", function (err, result) {
+            if (err || result.error) {
+                Helper.showMeteorFuncError(err, result, "Couldn't execute dbStats");
+                Session.set(Helper.strSessionDBStats, undefined);
             }
-        }
-    });
-});
-
-Template.databaseStats.onDestroyed(function () {
-    if (interval) {
-        clearInterval(interval);
+            else {
+                convertInformationsToKB(result.result);
+                Session.set(Helper.strSessionDBStats, result.result);
+            }
+        });
     }
-});
+};
+
+const fetchStatus = function () {
+    console.log(2, Settings.findOne());
+
+    if (Session.get(Helper.strSessionCollectionNames) != undefined) {
+        Meteor.call("serverStatus", function (err, result) {
+            if (err || result.error) {
+                var errorMessage = result.error ? result.error.message : err.message;
+                $('#errorMessage').text("Successfully connected but, couldn't fetch server status: " + errorMessage);
+                Session.set(Helper.strSessionServerStatus, undefined);
+            }
+            else {
+                Session.set(Helper.strSessionServerStatus, result.result);
+                var memoryData = [], connectionsData = [], networkData = [], opCountersData = [];
+                var memoryText = populateMemoryData(result.result, memoryData);
+                var availableConnections = populateConnectionData(result.result, connectionsData);
+                populateNetworkData(result.result, networkData);
+                populateOPCountersData(result.result, opCountersData);
+
+                // make sure gui is rendered
+                Meteor.setTimeout(function () {
+                    initMemoryChart(memoryData, memoryText);
+                    initConnectionsChart(connectionsData, availableConnections);
+                    initNetworkChart(networkData);
+                    initOperationCountersChart(opCountersData)
+                }, 1000);
+            }
+        });
+    }
+};
+
+const populateOPCountersData = function (result, data) {
+    if (result.opcounters) {
+        var counts = [
+            [0, result.opcounters.insert],
+            [1, result.opcounters.query],
+            [2, result.opcounters.update],
+            [3, result.opcounters.delete],
+            [4, result.opcounters.getmore]
+        ];
+
+        data.push({label: "Counts", data: counts, color: "#1ab394"});
+    }
+};
+
+const populateConnectionData = function (result, data) {
+    if (result.connections) {
+        var currentData = [];
+        var totalCreatedData = [];
+
+
+        var time = new Date().getTime();
+
+        currentData.push([time, Math.round(result.connections.current * 100) / 100]);
+        totalCreatedData.push([time, Math.round(result.connections.totalCreated * 100) / 100]);
+
+
+        data.push({data: currentData, label: "Active"});
+        data.push({data: totalCreatedData, label: "Total Created"});
+
+        return result.connections.available;
+    }
+};
+
+const populateNetworkData = function (result, data) {
+    if (result.network) {
+        var bytesInData = [];
+        var bytesOutData = [];
+        var totalRequestsData = [];
+
+        var scale = 1;
+        var text = "MB";
+        var settings = Settings.findOne();
+        switch (settings.scale) {
+            case "KiloBytes":
+                scale = 1024;
+                text = "KB";
+                break;
+            case "MegaBytes":
+                scale = 1024 * 1024;
+                text = "MB";
+                break;
+            default:
+                scale = 1;
+                text = "Bytes";
+                break;
+        }
+
+
+        var time = new Date().getTime();
+
+        bytesInData.push([time, Math.round((result.network.bytesIn / scale) * 100) / 100]);
+        bytesOutData.push([time, Math.round((result.network.bytesOut / scale) * 100) / 100]);
+        totalRequestsData.push([time, result.network.numRequests]);
+
+        data.push({data: bytesInData, label: "Incoming " + text});
+        data.push({data: bytesOutData, label: "Outgoing " + text});
+        data.push({data: totalRequestsData, label: "Total Requests"});
+    }
+};
+
+const populateMemoryData = function (result, data) {
+    if (result.mem) {
+        var scale = 1;
+        var text = "MB";
+        var settings = Settings.findOne();
+        switch (settings.scale) {
+            case "KiloBytes":
+                scale = 1024;
+                text = "KB";
+                break;
+            case "Bytes":
+                scale = 1024 * 1024;
+                text = "Bytes";
+                break;
+            default:
+                scale = 1;
+                text = "MB";
+                break;
+        }
+
+        var virtualMemData = [];
+        var mappedMemData = [];
+        var residentMemData = [];
+
+
+        var time = new Date().getTime();
+
+        virtualMemData.push([time, Math.round((result.mem.virtual * scale) * 100) / 100]);
+        mappedMemData.push([time, Math.round((result.mem.mapped * scale) * 100) / 100]);
+        residentMemData.push([time, Math.round((result.mem.resident * scale) * 100) / 100]);
+
+
+        data.push({data: virtualMemData, label: "Virtual"});
+        data.push({data: mappedMemData, label: "Mapped"});
+        data.push({data: residentMemData, label: "Current"});
+
+        return text;
+    }
+};
+
+const convertInformationsToKB = function (stats) {
+    var scale = 1024;
+    var text = "Bytes";
+    var settings = Settings.findOne();
+    switch (settings.scale) {
+        case "MegaBytes":
+            scale = 1024 * 1024;
+            text = "MBs";
+            break;
+        case "KiloBytes":
+            scale = 1024;
+            text = "KBs";
+            break;
+        default:
+            scale = 1;
+            text = "Bytes";
+            break;
+    }
+    stats.dataSize = isNaN(Number(stats.dataSize / scale).toFixed(2)) ? "0.00 " + text : Number(stats.dataSize / scale).toFixed(2) + " " + text;
+    stats.storageSize = isNaN(Number(stats.storageSize / scale).toFixed(2)) ? "0.00 " + text : Number(stats.storageSize / scale).toFixed(2) + " " + text;
+    stats.indexSize = isNaN(Number(stats.indexSize / scale).toFixed(2)) ? "0.00 " + text : Number(stats.indexSize / scale).toFixed(2) + " " + text;
+    stats.fileSize = isNaN(Number(stats.fileSize / scale).toFixed(2)) ? "0.00 " + text : Number(stats.fileSize / scale).toFixed(2) + " " + text;
+};
+
 
 const initOperationCountersChart = function (data) {
     if (Session.get(Helper.strSessionCollectionNames) != undefined) {
@@ -264,10 +419,37 @@ const initMemoryChart = function (data, text) {
     }
 };
 
+let settings;
+let connections;
+Template.databaseStats.onRendered(function () {
+    settings = this.subscribe('settings');
+    connections = this.subscribe('connections');
+
+    this.autorun(() => {
+        if (settings.ready() && connections.ready()) {
+            if (Settings.findOne().showDBStats) {
+                interval = Meteor.setInterval(function () {
+                    fetchStatus();
+                }, 3000);
+
+                // fetch stats only once.
+                fetchStats();
+            }
+        }
+    });
+});
+
+Template.databaseStats.onDestroyed(function () {
+    if (interval) {
+        clearInterval(interval);
+    }
+});
+
 Template.databaseStats.helpers({
     getServerStatus  () {
         if (Settings.findOne().showDBStats) {
             if (Session.get(Helper.strSessionServerStatus) == undefined) {
+                console.log(1, Settings.findOne());
                 fetchStatus();
             }
 
@@ -285,181 +467,3 @@ Template.databaseStats.helpers({
         }
     }
 });
-
-const fetchStats = function () {
-    if (Session.get(Helper.strSessionCollectionNames) != undefined) {
-        Meteor.call("dbStats", function (err, result) {
-            if (err || result.error) {
-                Helper.showMeteorFuncError(err, result, "Couldn't execute dbStats");
-                Session.set(Helper.strSessionDBStats, undefined);
-            }
-            else {
-                convertInformationsToKB(result.result);
-                Session.set(Helper.strSessionDBStats, result.result);
-            }
-        });
-    }
-};
-
-const fetchStatus = function () {
-    if (Session.get(Helper.strSessionCollectionNames) != undefined) {
-        Meteor.call("serverStatus", function (err, result) {
-            if (err || result.error) {
-                var errorMessage = result.error ? result.error.message : err.message;
-                $('#errorMessage').text("Successfully connected but, couldn't fetch server status: " + errorMessage);
-                Session.set(Helper.strSessionServerStatus, undefined);
-            }
-            else {
-                Session.set(Helper.strSessionServerStatus, result.result);
-                var memoryData = [], connectionsData = [], networkData = [], opCountersData = [];
-
-                var memoryText = populateMemoryData(result.result, memoryData);
-                var availableConnections = populateConnectionData(result.result, connectionsData);
-                populateNetworkData(result.result, networkData);
-                populateOPCountersData(result.result, opCountersData);
-
-                // make sure gui is rendered
-                Meteor.setTimeout(function () {
-                    initMemoryChart(memoryData, memoryText);
-                    initConnectionsChart(connectionsData, availableConnections);
-                    initNetworkChart(networkData);
-                    initOperationCountersChart(opCountersData)
-                }, 1000);
-            }
-        });
-    }
-};
-
-const populateOPCountersData = function (result, data) {
-    if (result.opcounters) {
-        var counts = [
-            [0, result.opcounters.insert],
-            [1, result.opcounters.query],
-            [2, result.opcounters.update],
-            [3, result.opcounters.delete],
-            [4, result.opcounters.getmore]
-        ];
-
-        data.push({label: "Counts", data: counts, color: "#1ab394"});
-    }
-};
-
-const populateConnectionData = function (result, data) {
-    if (result.connections) {
-        var currentData = [];
-        var totalCreatedData = [];
-
-
-        var time = new Date().getTime();
-
-        currentData.push([time, Math.round(result.connections.current * 100) / 100]);
-        totalCreatedData.push([time, Math.round(result.connections.totalCreated * 100) / 100]);
-
-
-        data.push({data: currentData, label: "Active"});
-        data.push({data: totalCreatedData, label: "Total Created"});
-
-        return result.connections.available;
-    }
-};
-
-const populateNetworkData = function (result, data) {
-    if (result.network) {
-        var bytesInData = [];
-        var bytesOutData = [];
-        var totalRequestsData = [];
-
-        var scale = 1;
-        var text = "MB";
-        var settings = Settings.findOne();
-        switch (settings.scale) {
-            case "KiloBytes":
-                scale = 1024;
-                text = "KB";
-                break;
-            case "MegaBytes":
-                scale = 1024 * 1024;
-                text = "MB";
-                break;
-            default:
-                scale = 1;
-                text = "Bytes";
-                break;
-        }
-
-
-        var time = new Date().getTime();
-
-        bytesInData.push([time, Math.round((result.network.bytesIn / scale) * 100) / 100]);
-        bytesOutData.push([time, Math.round((result.network.bytesOut / scale) * 100) / 100]);
-        totalRequestsData.push([time, result.network.numRequests]);
-
-        data.push({data: bytesInData, label: "Incoming " + text});
-        data.push({data: bytesOutData, label: "Outgoing " + text});
-        data.push({data: totalRequestsData, label: "Total Requests"});
-    }
-};
-
-const populateMemoryData = function (result, data) {
-    if (result.mem) {
-        var scale = 1;
-        var text = "MB";
-        var settings = Settings.findOne();
-        switch (settings.scale) {
-            case "KiloBytes":
-                scale = 1024;
-                text = "KB";
-                break;
-            case "Bytes":
-                scale = 1024 * 1024;
-                text = "Bytes";
-                break;
-            default:
-                scale = 1;
-                text = "MB";
-                break;
-        }
-
-        var virtualMemData = [];
-        var mappedMemData = [];
-        var residentMemData = [];
-
-
-        var time = new Date().getTime();
-
-        virtualMemData.push([time, Math.round((result.mem.virtual * scale) * 100) / 100]);
-        mappedMemData.push([time, Math.round((result.mem.mapped * scale) * 100) / 100]);
-        residentMemData.push([time, Math.round((result.mem.resident * scale) * 100) / 100]);
-
-
-        data.push({data: virtualMemData, label: "Virtual"});
-        data.push({data: mappedMemData, label: "Mapped"});
-        data.push({data: residentMemData, label: "Current"});
-
-        return text;
-    }
-};
-
-const convertInformationsToKB = function (stats) {
-    var scale = 1024;
-    var text = "Bytes";
-    var settings = Settings.findOne();
-    switch (settings.scale) {
-        case "MegaBytes":
-            scale = 1024 * 1024;
-            text = "MBs";
-            break;
-        case "KiloBytes":
-            scale = 1024;
-            text = "KBs";
-            break;
-        default:
-            scale = 1;
-            text = "Bytes";
-            break;
-    }
-    stats.dataSize = isNaN(Number(stats.dataSize / scale).toFixed(2)) ? "0.00 " + text : Number(stats.dataSize / scale).toFixed(2) + " " + text;
-    stats.storageSize = isNaN(Number(stats.storageSize / scale).toFixed(2)) ? "0.00 " + text : Number(stats.storageSize / scale).toFixed(2) + " " + text;
-    stats.indexSize = isNaN(Number(stats.indexSize / scale).toFixed(2)) ? "0.00 " + text : Number(stats.indexSize / scale).toFixed(2) + " " + text;
-    stats.fileSize = isNaN(Number(stats.fileSize / scale).toFixed(2)) ? "0.00 " + text : Number(stats.fileSize / scale).toFixed(2) + " " + text;
-};

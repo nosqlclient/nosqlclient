@@ -70,26 +70,28 @@ const createPipeline = function (stageListElements) {
     return pipeline;
 };
 
-Template.aggregatePipeline.onCreated(function () {
-    this.subscribe('settings');
-    this.subscribe('connections');
-});
-
 Template.aggregatePipeline.onRendered(function () {
     if (Session.get(Helper.strSessionCollectionNames) == undefined) {
         FlowRouter.go('/databaseStats');
         return;
     }
 
-    $("#stages").sortable({
-        connectWith: ".connectList"
+    let settings = this.subscribe('settings');
+    let connections = this.subscribe('connections');
+
+    this.autorun(() => {
+        if (connections.ready() && settings.ready()) {
+            $("#stages").sortable({
+                connectWith: ".connectList"
+            });
+
+            $('#cmbStageQueries').chosen();
+
+            stageNumbers = 0;
+
+            initializeCollectionsCombobox();
+        }
     });
-
-    $('#cmbStageQueries').chosen();
-
-    stageNumbers = 0;
-
-    initializeCollectionsCombobox();
 });
 
 Template.aggregatePipeline.events({

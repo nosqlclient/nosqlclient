@@ -18,11 +18,10 @@ Template.settings.onRendered(function () {
 
     $('#cmbScale, #cmbResultView').chosen();
 
-    let instance = Template.instance();
-    let settings = instance.subscribe('settings');
-    let connections = instance.subscribe('connections');
+    let settings = this.subscribe('settings');
+    let connections = this.subscribe('connections');
 
-    instance.autorun(() => {
+    this.autorun(() => {
         if (settings.ready() && connections.ready()) {
             load();
         }

@@ -140,12 +140,6 @@ const populateDatatable = function () {
     Ladda.stopAll();
 };
 
-Template.databaseDumpRestore.onCreated(function () {
-    this.subscribe('settings');
-    this.subscribe('connections');
-    this.subscribe('dumps');
-});
-
 Template.databaseDumpRestore.onRendered(function () {
     if (Session.get(Helper.strSessionCollectionNames) == undefined) {
         FlowRouter.go('/databaseStats');
@@ -154,8 +148,17 @@ Template.databaseDumpRestore.onRendered(function () {
 
     Helper.initiateDatatable($('#tblDumps'), Helper.strSessionSelectedDump);
     $(".filestyle").filestyle({});
-    initCollectionsForImport();
-    populateDatatable();
+
+    let settings = this.subscribe('settings');
+    let connections = this.subscribe('connections');
+    let dumps = this.subscribe('dumps');
+
+    this.autorun(() => {
+        if (settings.ready() && connections.ready() && dumps.ready()) {
+            initCollectionsForImport();
+            populateDatatable();
+        }
+    });
 });
 
 Template.databaseDumpRestore.events({
