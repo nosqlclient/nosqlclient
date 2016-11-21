@@ -1,6 +1,7 @@
 import {Meteor} from 'meteor/meteor';
 import {Template} from 'meteor/templating';
 import {Session} from 'meteor/session';
+import {FlowRouter} from 'meteor/kadira:flow-router';
 import {Connections} from '/lib/imports/collections/connections';
 import Helper from '/client/imports/helper';
 import {connect} from '/client/imports/views/layouts/top_navbar/top_navbar';

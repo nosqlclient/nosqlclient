@@ -54,23 +54,23 @@ var lineOptions = {
     }
 };
 
-Template.databaseStats.onCreated(function () {
-    this.subscribe('settings');
-    this.subscribe('connections');
-});
-
 Template.databaseStats.onRendered(function () {
-    //TODO KEEP GOING
-    if (Template.instance().subscriptionsReady()) {
-        if (Settings.findOne().showDBStats) {
-            interval = Meteor.setInterval(function () {
-                fetchStatus();
-            }, 3000);
+    let instance = Template.instance();
+    instance.autorun(() => {
+        let settings = instance.subscribe('settings');
+        let connections = instance.subscribe('connections');
 
-            // fetch stats only once.
-            fetchStats();
+        if (settings.ready() && connections.ready()) {
+            if (Settings.findOne().showDBStats) {
+                interval = Meteor.setInterval(function () {
+                    fetchStatus();
+                }, 3000);
+
+                // fetch stats only once.
+                fetchStats();
+            }
         }
-    }
+    });
 });
 
 Template.databaseStats.onDestroyed(function () {

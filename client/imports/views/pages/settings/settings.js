@@ -10,10 +10,6 @@ var Ladda = require('ladda');
  * Created by RSercan on 9.1.2016.
  */
 
-Template.settings.onCreated(function () {
-    this.subscribe('settings');
-    this.subscribe('connections');
-});
 
 Template.settings.onRendered(function () {
     $('#divAutoCompleteFields, #divShowDBStats').iCheck({
@@ -22,7 +18,14 @@ Template.settings.onRendered(function () {
 
     $('#cmbScale, #cmbResultView').chosen();
 
-    load();
+    let instance = Template.instance();
+    instance.autorun(() => {
+        let settings = instance.subscribe('settings');
+        let connections = instance.subscribe('connections');
+        if (settings.ready() && connections.ready()) {
+            load();
+        }
+    });
 });
 
 Template.settings.events({

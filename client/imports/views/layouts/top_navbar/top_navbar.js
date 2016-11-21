@@ -1,6 +1,7 @@
 import {Template} from 'meteor/templating';
 import {Meteor} from 'meteor/meteor';
 import {Session} from 'meteor/session';
+import {FlowRouter} from 'meteor/kadira:flow-router';
 import Helper from '/client/imports/helper';
 import {Connections} from '/lib/imports/collections/connections';
 
@@ -489,6 +490,8 @@ const convertToBuffer = function (buffer) {
 };
 
 Template.topNavbar.onRendered(function () {
+    this.subscribe('connections');
+
     var selector = $('#tblConnection');
     selector.find('tbody').on('click', 'tr', function () {
         var table = selector.DataTable();
