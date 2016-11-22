@@ -6,7 +6,7 @@ Cross-platform, MongoDB 3.2+ support and more features!
 
 [![Paypal](https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=Y5VD95E96NU6S)
 
-*Mongoclient is in need of you to buy [INSPINA](https://wrapbootstrap.com/theme/inspinia-responsive-admin-theme-WB0R5L90S) theme's extended licence ($1000) to live longer.* Thank you so much ! [Here's the list of donators, helpful people](https://github.com/rsercano/mongoclient/wiki/Donators) Can't you donate, no worries giving a star to this repository is free  and appreciated as much as donation !
+*Mongoclient is in need of you to buy [INSPINA](https://wrapbootstrap.com/theme/inspinia-responsive-admin-theme-WB0R5L90S) theme's extended licence ($1000) to live longer. Thank you so much ! [Here's the list of donators, helpful people](https://github.com/rsercano/mongoclient/wiki/Donators) Can't you donate, no worries giving a star to this repository is free  and appreciated as much as donation !*
 
 [Try Demo Application](http://www.mongoclient.com:3000)
 
