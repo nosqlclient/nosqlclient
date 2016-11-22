@@ -1,6 +1,7 @@
 import {Template} from 'meteor/templating';
 import {Meteor} from 'meteor/meteor';
 import {Session} from 'meteor/session';
+import {FlowRouter} from 'meteor/kadira:flow-router';
 import Helper from '/client/imports/helper';
 import {setResult} from './aggregate_result_modal/aggregate_result_modal';
 
@@ -71,19 +72,26 @@ const createPipeline = function (stageListElements) {
 
 Template.aggregatePipeline.onRendered(function () {
     if (Session.get(Helper.strSessionCollectionNames) == undefined) {
-        Router.go('databaseStats');
+        FlowRouter.go('/databaseStats');
         return;
     }
 
-    $("#stages").sortable({
-        connectWith: ".connectList"
+    let settings = this.subscribe('settings');
+    let connections = this.subscribe('connections');
+
+    this.autorun(() => {
+        if (connections.ready() && settings.ready()) {
+            $("#stages").sortable({
+                connectWith: ".connectList"
+            });
+
+            $('#cmbStageQueries').chosen();
+
+            stageNumbers = 0;
+
+            initializeCollectionsCombobox();
+        }
     });
-
-    $('#cmbStageQueries').chosen();
-
-    stageNumbers = 0;
-
-    initializeCollectionsCombobox();
 });
 
 Template.aggregatePipeline.events({

@@ -7,6 +7,7 @@ import {Meteor} from "meteor/meteor";
 import {Session} from "meteor/session";
 import Helper from "/client/imports/helper";
 import {Settings} from "/lib/imports/collections/settings";
+import {FlowRouter} from 'meteor/kadira:flow-router';
 import Enums from "/lib/imports/enums";
 import {initQueryHistories} from "./query_histories/query_histories";
 import "/client/imports/views/query_templates/collection/aggregate/aggregate";
@@ -44,6 +45,98 @@ var JSONEditor = require('jsoneditor');
 var toastr = require('toastr');
 var Ladda = require('ladda');
 require('jquery-contextmenu');
+
+const init = function () {
+    var cmb = $('#cmbQueries');
+    cmb.append($("<optgroup id='optGroupCollectionQueries' label='Collection Queries'></optgroup>"));
+    var cmbOptGroupCollection = cmb.find('#optGroupCollectionQueries');
+
+    $.each(Helper.sortObjectByKey(Enums.QUERY_TYPES), function (key, value) {
+        console.log(key, value);
+        var option = $("<option></option>")
+            .attr("value", key)
+            .text(value);
+        if (value === Enums.QUERY_TYPES.FIND) {
+            option.attr('selected', true);
+        }
+        cmbOptGroupCollection.append(option);
+    });
+    cmb.chosen();
+
+    $('#queryHistoriesModal').on('show.bs.modal', function () {
+        initQueryHistories();
+    });
+
+    $('[data-toggle="tooltip"]').tooltip({trigger: 'hover'});
+
+    $.contextMenu({
+        selector: "#resultTabs li",
+        items: {
+            close_others: {
+                name: "Close Others", icon: "fa-times-circle", callback: function () {
+                    var tabId = $(this).children('a').attr('href');
+                    var resultTabs = $('#resultTabs li');
+                    resultTabs.each(function (idx, li) {
+                        let select = $(li);
+                        if (select.children('a').attr('href') !== tabId) {
+                            $(select.children('a').attr('href')).remove();
+                            select.remove();
+                        }
+                    });
+
+                    if (getActiveTabHeader() !== 'findOne') {
+                        $('#divBrowseCollectionFooter').hide();
+                    }
+                }
+            },
+            close_all: {
+                name: "Close All Tabs", icon: "fa-times", callback: function () {
+                    var resultTabs = $('#resultTabs li');
+                    resultTabs.each(function (idx, li) {
+                        let select = $(li);
+                        $(select.children('a').attr('href')).remove();
+                        select.remove();
+                    });
+
+                    if (resultTabs.find('li').length == 0 || resultTabs.find('li.active').length == 0) {
+                        $('#divBrowseCollectionFooter').hide();
+                    }
+                }
+            }
+        }
+    });
+
+    var resultTabs = $('#resultTabs');
+    resultTabs.on('show.bs.tab', function (e) {
+        var activeTabText = $(e.target).text();
+        var activeTabQueryInfo = activeTabText.substring(0, activeTabText.indexOf(' '));
+
+        var query = $($(e.target).attr('href')).data('query');
+        if (query) {
+            renderQuery(query);
+        }
+
+        // if active tab is not findOne hide footer
+        if (activeTabQueryInfo == 'findOne') {
+            $('#divBrowseCollectionFooter').show();
+        } else {
+            $('#divBrowseCollectionFooter').hide();
+        }
+    });
+
+    // set onclose
+    resultTabs.on('click', '.close', function () {
+        $(this).parents('li').remove();
+        $($(this).parents('a').attr('href')).remove();
+
+        if (resultTabs.find('li').length == 0 || resultTabs.find('li.active').length == 0) {
+            $('#divBrowseCollectionFooter').hide();
+        }
+    });
+
+
+    clearQueryIfAdmin();
+};
 
 const clearQueryIfAdmin = function () {
     $.each(Enums.ADMIN_QUERY_TYPES, function (key, value) {
@@ -404,98 +497,19 @@ Template.browseCollection.onCreated(function () {
 
 Template.browseCollection.onRendered(function () {
     if (!Session.get(Helper.strSessionSelectedCollection)) {
-        Router.go('databaseStats');
+        FlowRouter.go('/databaseStats');
         return;
     }
 
-    var cmb = $('#cmbQueries');
-    cmb.append($("<optgroup id='optGroupCollectionQueries' label='Collection Queries'></optgroup>"));
-    var cmbOptGroupCollection = cmb.find('#optGroupCollectionQueries');
+    let settings = this.subscribe('settings');
+    let connections = this.subscribe('connections');
+    let queryHistories = this.subscribe('queryHistories');
 
-    $.each(Helper.sortObjectByKey(Enums.QUERY_TYPES), function (key, value) {
-        var option = $("<option></option>")
-            .attr("value", key)
-            .text(value);
-        if (value === Enums.QUERY_TYPES.FIND) {
-            option.attr('selected', true);
-        }
-        cmbOptGroupCollection.append(option);
-    });
-    cmb.chosen();
-
-    $('#queryHistoriesModal').on('show.bs.modal', function () {
-        initQueryHistories();
-    });
-
-    $('[data-toggle="tooltip"]').tooltip({trigger: 'hover'});
-
-    $.contextMenu({
-        selector: "#resultTabs li",
-        items: {
-            close_others: {
-                name: "Close Others", icon: "fa-times-circle", callback: function () {
-                    var tabId = $(this).children('a').attr('href');
-                    var resultTabs = $('#resultTabs li');
-                    resultTabs.each(function (idx, li) {
-                        let select = $(li);
-                        if (select.children('a').attr('href') !== tabId) {
-                            $(select.children('a').attr('href')).remove();
-                            select.remove();
-                        }
-                    });
-
-                    if (getActiveTabHeader() !== 'findOne') {
-                        $('#divBrowseCollectionFooter').hide();
-                    }
-                }
-            },
-            close_all: {
-                name: "Close All Tabs", icon: "fa-times", callback: function () {
-                    var resultTabs = $('#resultTabs li');
-                    resultTabs.each(function (idx, li) {
-                        let select = $(li);
-                        $(select.children('a').attr('href')).remove();
-                        select.remove();
-                    });
-
-                    if (resultTabs.find('li').length == 0 || resultTabs.find('li.active').length == 0) {
-                        $('#divBrowseCollectionFooter').hide();
-                    }
-                }
-            }
+    this.autorun(() => {
+        if (settings.ready() && connections.ready() && queryHistories.ready()) {
+            init();
         }
     });
-
-    var resultTabs = $('#resultTabs');
-    resultTabs.on('show.bs.tab', function (e) {
-        var activeTabText = $(e.target).text();
-        var activeTabQueryInfo = activeTabText.substring(0, activeTabText.indexOf(' '));
-
-        var query = $($(e.target).attr('href')).data('query');
-        if (query) {
-            renderQuery(query);
-        }
-
-        // if active tab is not findOne hide footer
-        if (activeTabQueryInfo == 'findOne') {
-            $('#divBrowseCollectionFooter').show();
-        } else {
-            $('#divBrowseCollectionFooter').hide();
-        }
-    });
-
-    // set onclose
-    resultTabs.on('click', '.close', function () {
-        $(this).parents('li').remove();
-        $($(this).parents('a').attr('href')).remove();
-
-        if (resultTabs.find('li').length == 0 || resultTabs.find('li.active').length == 0) {
-            $('#divBrowseCollectionFooter').hide();
-        }
-    });
-
-
-    clearQueryIfAdmin();
 });
 
 Template.browseCollection.events({

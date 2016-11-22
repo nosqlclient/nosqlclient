@@ -3,6 +3,7 @@
  */
 import {Template} from 'meteor/templating';
 import {Session} from 'meteor/session';
+import {FlowRouter} from 'meteor/kadira:flow-router';
 import Helper from '/client/imports/helper';
 
 import './query_wizard.html';
@@ -278,7 +279,7 @@ const step3 = function () {
 
 Template.queryWizard.onRendered(function () {
     if (Session.get(Helper.strSessionCollectionNames) == undefined) {
-        Router.go('databaseStats');
+        FlowRouter.go('/databaseStats');
         return;
     }
 

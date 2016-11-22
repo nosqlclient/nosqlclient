@@ -9,6 +9,8 @@ var Ladda = require('ladda');
 /**
  * Created by RSercan on 9.1.2016.
  */
+
+
 Template.settings.onRendered(function () {
     $('#divAutoCompleteFields, #divShowDBStats').iCheck({
         checkboxClass: 'icheckbox_square-green'
@@ -16,7 +18,14 @@ Template.settings.onRendered(function () {
 
     $('#cmbScale, #cmbResultView').chosen();
 
-    load();
+    let settings = this.subscribe('settings');
+    let connections = this.subscribe('connections');
+
+    this.autorun(() => {
+        if (settings.ready() && connections.ready()) {
+            load();
+        }
+    });
 });
 
 Template.settings.events({

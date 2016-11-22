@@ -1,6 +1,7 @@
 import {Template} from 'meteor/templating';
 import {Meteor} from 'meteor/meteor';
 import {Session} from 'meteor/session';
+import {FlowRouter} from 'meteor/kadira:flow-router';
 import Helper from '/client/imports/helper';
 import {initFilesInformation} from '../file_management';
 
@@ -14,7 +15,7 @@ require('bootstrap-filestyle');
  */
 Template.uploadFile.onRendered(function () {
     if (Session.get(Helper.strSessionCollectionNames) == undefined) {
-        Router.go('databaseStats');
+        FlowRouter.go('/databaseStats');
     }
 
     // $(":file").filestyle({icon: false, buttonBefore: true});

@@ -23,12 +23,13 @@ Template.pageHeading.helpers({
         // get distinct field keys for auto complete on every collection change.
         Helper.getDistinctKeysForAutoComplete(selectedCollection);
 
+        let settings = Settings.findOne();
         Meteor.call("stats", selectedCollection, {}, function (err, result) {
             if (err || result.error) {
                 Helper.showMeteorFuncError(err, result, "Couldn't fetch connection informations");
             }
             else {
-                populateCollectionInfo(result.result);
+                populateCollectionInfo(result.result, settings);
 
                 Ladda.stopAll();
             }
@@ -36,11 +37,10 @@ Template.pageHeading.helpers({
     }
 });
 
-const populateCollectionInfo = function (result) {
+const populateCollectionInfo = function (result, settings) {
     var scale = 1;
     var text = "Bytes";
 
-    var settings = Settings.findOne();
     switch (settings.scale) {
         case "MegaBytes":
             scale = 1024 * 1024;

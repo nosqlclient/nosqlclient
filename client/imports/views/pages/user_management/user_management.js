@@ -1,6 +1,7 @@
 import {Template} from 'meteor/templating';
 import {Meteor} from 'meteor/meteor';
 import {Session} from 'meteor/session';
+import {FlowRouter} from 'meteor/kadira:flow-router';
 import Helper from '/client/imports/helper';
 import {Connections} from '/lib/imports/collections/connections';
 import {initUsers, popEditUserModal} from './manage_users/manage_users';
@@ -414,23 +415,30 @@ const populateTreeChildrenForUsers = function (users) {
 
 Template.userManagement.onRendered(function () {
     if (Session.get(Helper.strSessionCollectionNames) == undefined) {
-        Router.go('databaseStats');
+        FlowRouter.go('/databaseStats');
         return;
     }
 
+    let settings = this.subscribe('settings');
+    let connections = this.subscribe('connections');
+    let actions = this.subscribe('actions');
 
-    var l = Ladda.create(document.querySelector('#btnRefreshUsers'));
-    l.start();
+    this.autorun(() => {
+        if (settings.ready() && connections.ready() && actions.ready()) {
+            var l = Ladda.create(document.querySelector('#btnRefreshUsers'));
+            l.start();
 
-    var chckRunOnAdminDB = $('#aRunOnAdminDBToFetchUsers');
-    chckRunOnAdminDB.iCheck({
-        checkboxClass: 'icheckbox_square-green'
+            var chckRunOnAdminDB = $('#aRunOnAdminDBToFetchUsers');
+            chckRunOnAdminDB.iCheck({
+                checkboxClass: 'icheckbox_square-green'
+            });
+
+            chckRunOnAdminDB.iCheck('uncheck');
+
+            initUserTree();
+            //new Clipboard('.reference');
+        }
     });
-
-    chckRunOnAdminDB.iCheck('uncheck');
-
-    initUserTree();
-    //new Clipboard('.reference');
 });
 
 Template.userManagement.helpers({

@@ -1,6 +1,7 @@
 import {Template} from 'meteor/templating';
 import {Meteor} from 'meteor/meteor';
 import {Session} from 'meteor/session';
+import {FlowRouter} from 'meteor/kadira:flow-router';
 import Helper from '/client/imports/helper';
 import {Connections} from '/lib/imports/collections/connections';
 import {Settings} from '/lib/imports/collections/settings';
@@ -141,14 +142,23 @@ const populateDatatable = function () {
 
 Template.databaseDumpRestore.onRendered(function () {
     if (Session.get(Helper.strSessionCollectionNames) == undefined) {
-        Router.go('databaseStats');
+        FlowRouter.go('/databaseStats');
         return;
     }
 
     Helper.initiateDatatable($('#tblDumps'), Helper.strSessionSelectedDump);
     $(".filestyle").filestyle({});
-    initCollectionsForImport();
-    populateDatatable();
+
+    let settings = this.subscribe('settings');
+    let connections = this.subscribe('connections');
+    let dumps = this.subscribe('dumps');
+
+    this.autorun(() => {
+        if (settings.ready() && connections.ready() && dumps.ready()) {
+            initCollectionsForImport();
+            populateDatatable();
+        }
+    });
 });
 
 Template.databaseDumpRestore.events({

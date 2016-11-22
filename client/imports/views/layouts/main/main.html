@@ -1,10 +1,9 @@
 <template name="mainLayout">
-
     <div id="wrapper">
         {{> navigation }}
         <div id="page-wrapper" class="gray-bg">
             {{> topNavbar }}
-            {{> yield}}
+            {{> Template.dynamic template=yield}}
             {{> footer }}
         </div>
     </div>

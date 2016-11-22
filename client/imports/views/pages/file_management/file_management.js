@@ -5,6 +5,7 @@
 import {Template} from 'meteor/templating';
 import {Meteor} from 'meteor/meteor';
 import {Session} from 'meteor/session';
+import {FlowRouter} from 'meteor/kadira:flow-router';
 import Helper from '/client/imports/helper';
 import {getSelectorValue} from '/client/imports/views/query_templates_common/selector/selector';
 
@@ -107,12 +108,19 @@ export const initFilesInformation = function () {
 
 Template.fileManagement.onRendered(function () {
     if (Session.get(Helper.strSessionCollectionNames) == undefined) {
-        Router.go('databaseStats');
+        FlowRouter.go('/databaseStats');
         return;
     }
 
-    initFilesInformation();
-    Helper.initiateDatatable($('#tblFiles'), Helper.strSessionSelectedFile, true);
+    let settings = this.subscribe('settings');
+    let connections = this.subscribe('connections');
+
+    this.autorun(() => {
+        if (settings.ready() && connections.ready()) {
+            initFilesInformation();
+            Helper.initiateDatatable($('#tblFiles'), Helper.strSessionSelectedFile, true);
+        }
+    });
 });
 
 Template.fileManagement.events({

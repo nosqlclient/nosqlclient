@@ -1,6 +1,7 @@
 import {Template} from 'meteor/templating';
 import {Meteor} from 'meteor/meteor';
 import {Session} from 'meteor/session';
+import {FlowRouter} from 'meteor/kadira:flow-router';
 import Helper from '/client/imports/helper';
 import {Connections} from '/lib/imports/collections/connections';
 
@@ -17,6 +18,52 @@ require('datatables.net-bs')(window, $);
 require('datatables.net-buttons-bs')(window, $);
 require('datatables.net-responsive-bs')(window, $);
 require('bootstrap-filestyle');
+
+const init = function () {
+    var selector = $('#tblConnection');
+    selector.find('tbody').on('click', 'tr', function () {
+        var table = selector.DataTable();
+        if ($(this).hasClass('selected')) {
+            $(this).removeClass('selected');
+        }
+        else {
+            table.$('tr.selected').removeClass('selected');
+            $(this).addClass('selected');
+        }
+
+        if (table.row(this).data()) {
+            Session.set(Helper.strSessionConnection, table.row(this).data()._id);
+            $('#btnConnect').prop('disabled', false);
+        }
+    });
+
+    var selectorForSwitchDatabases = $('#tblSwitchDatabases');
+    selectorForSwitchDatabases.find('tbody').on('click', 'tr', function () {
+
+        var table = selectorForSwitchDatabases.DataTable();
+
+        if ($(this).hasClass('selected')) {
+            $(this).removeClass('selected');
+        }
+        else {
+            table.$('tr.selected').removeClass('selected');
+            $(this).addClass('selected');
+        }
+
+        if (table.row(this).data()) {
+            $('#inputDatabaseNameToSwitch').val(table.row(this).data().name);
+        }
+    });
+
+    // FIXED TOP NAVBAR OPTION
+    // Uncomment this if you want to have fixed top navbar
+    // $('body').addClass('fixed-nav');
+    // $(".navbar-static-top").removeClass('navbar-static-top').addClass('navbar-fixed-top');
+
+    $(".filestyle").filestyle({});
+    initIChecks();
+    initChosen();
+};
 
 export const connect = function (isRefresh) {
     var connection = Connections.findOne({_id: Session.get(Helper.strSessionConnection)});
@@ -45,7 +92,7 @@ export const connect = function (isRefresh) {
                 $('#connectionModal').modal('hide');
                 $('#switchDatabaseModal').modal('hide');
 
-                Router.go('databaseStats');
+                FlowRouter.go('/databaseStats');
             }
             else {
                 toastr.success("Successfuly refreshed collections");
@@ -489,51 +536,13 @@ const convertToBuffer = function (buffer) {
 };
 
 Template.topNavbar.onRendered(function () {
-    var selector = $('#tblConnection');
-    selector.find('tbody').on('click', 'tr', function () {
-        var table = selector.DataTable();
-        if ($(this).hasClass('selected')) {
-            $(this).removeClass('selected');
-        }
-        else {
-            table.$('tr.selected').removeClass('selected');
-            $(this).addClass('selected');
-        }
-
-        if (table.row(this).data()) {
-            Session.set(Helper.strSessionConnection, table.row(this).data()._id);
-            $('#btnConnect').prop('disabled', false);
+    let connections = this.subscribe('connections');
+    this.autorun(() => {
+        if (connections.ready()) {
+            init();
         }
     });
-
-    var selectorForSwitchDatabases = $('#tblSwitchDatabases');
-    selectorForSwitchDatabases.find('tbody').on('click', 'tr', function () {
-
-        var table = selectorForSwitchDatabases.DataTable();
-
-        if ($(this).hasClass('selected')) {
-            $(this).removeClass('selected');
-        }
-        else {
-            table.$('tr.selected').removeClass('selected');
-            $(this).addClass('selected');
-        }
-
-        if (table.row(this).data()) {
-            $('#inputDatabaseNameToSwitch').val(table.row(this).data().name);
-        }
-    });
-
-    // FIXED TOP NAVBAR OPTION
-    // Uncomment this if you want to have fixed top navbar
-    // $('body').addClass('fixed-nav');
-    // $(".navbar-static-top").removeClass('navbar-static-top').addClass('navbar-fixed-top');
-
-    $(".filestyle").filestyle({});
-    initIChecks();
-    initChosen();
 });
-
 
 Template.topNavbar.events({
     'click #btnProceedImportExport'(e) {
@@ -979,7 +988,7 @@ Template.topNavbar.events({
         //     type: "success"
         // });
 
-        Router.go('databaseStats');
+        FlowRouter.go('/databaseStats');
     },
 
     'click #anchorTab1'  () {

@@ -1,6 +1,7 @@
 import {Template} from 'meteor/templating';
 import {Meteor} from 'meteor/meteor';
 import {Session} from 'meteor/session';
+import {FlowRouter} from 'meteor/kadira:flow-router';
 import Helper from '/client/imports/helper';
 import {getSelectorValue} from '/client/imports/views/query_templates_common/selector/selector';
 
@@ -182,14 +183,21 @@ const fetchDocument = function () {
 
 Template.editDocument.onRendered(function () {
     if (Session.get(Helper.strSessionCollectionNames) == undefined) {
-        Router.go('databaseStats');
+        FlowRouter.go('/databaseStats');
         return;
     }
 
-    initializeCollectionsCombobox();
-    Session.set(Helper.strSessionEasyEditID, undefined);
+    let settings = this.subscribe('settings');
+    let connections = this.subscribe('connections');
 
-    $('[data-toggle="tooltip"]').tooltip({trigger: 'hover'});
+    this.autorun(() => {
+        if (settings.ready() && connections.ready()) {
+            initializeCollectionsCombobox();
+            Session.set(Helper.strSessionEasyEditID, undefined);
+            $('[data-toggle="tooltip"]').tooltip({trigger: 'hover'});
+        }
+    });
+
 });
 
 Template.editDocument.events({

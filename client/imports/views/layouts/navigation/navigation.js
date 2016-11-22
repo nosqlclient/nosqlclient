@@ -1,6 +1,7 @@
 import {Meteor} from 'meteor/meteor';
 import {Template} from 'meteor/templating';
 import {Session} from 'meteor/session';
+import {FlowRouter} from 'meteor/kadira:flow-router';
 import {Connections} from '/lib/imports/collections/connections';
 import Helper from '/client/imports/helper';
 import {connect} from '/client/imports/views/layouts/top_navbar/top_navbar';
@@ -61,7 +62,7 @@ export const renderCollectionNames = function () {
             Session.set(Helper.strSessionSelectedQuery, undefined);
             Session.set(Helper.strSessionSelectedOptions, undefined);
             Session.set(Helper.strSessionSelectedCollection, undefined);
-            Router.go('databaseStats');
+            FlowRouter.go('/databaseStats');
         }
     });
 };
@@ -81,7 +82,7 @@ Template.navigation.events({
             return;
         }
 
-        Router.go('shell');
+        FlowRouter.go('/shell');
     },
 
     'click #anchorDatabaseDumpRestore'(e) {
@@ -94,7 +95,7 @@ Template.navigation.events({
             return;
         }
 
-        Router.go('databaseDumpRestore');
+        FlowRouter.go('/databaseDumpRestore');
     },
 
     'click #btnAddCollection' (e) {

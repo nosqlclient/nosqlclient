@@ -1,5 +1,6 @@
 import {Template} from 'meteor/templating';
 import {Session} from 'meteor/session';
+import {FlowRouter} from 'meteor/kadira:flow-router';
 import Helper from '/client/imports/helper';
 import {QueryHistory} from '/lib/imports/collections/query_history';
 
@@ -12,7 +13,7 @@ var Ladda = require('ladda');
  */
 Template.queryHistories.onRendered(function () {
     if (Session.get(Helper.strSessionCollectionNames) == undefined) {
-        Router.go('databaseStats');
+        FlowRouter.go('/databaseStats');
         return;
     }
 

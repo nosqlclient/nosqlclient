@@ -1,5 +1,6 @@
 import {Template} from 'meteor/templating';
 import {Session} from 'meteor/session';
+import {FlowRouter} from 'meteor/kadira:flow-router';
 import Helper from '/client/imports/helper';
 import {Settings} from '/lib/imports/collections/settings';
 import Enums from '/lib/imports/enums';
@@ -26,28 +27,37 @@ var JSONEditor = require('jsoneditor');
 /**
  * Created by RSercan on 10.1.2016.
  */
+
+
 Template.adminQueries.onRendered(function () {
     if (Session.get(Helper.strSessionCollectionNames) == undefined) {
-        Router.go('databaseStats');
+        FlowRouter.go('/databaseStats');
         return;
     }
 
-    var cmb = $('#cmbAdminQueries');
-    cmb.append($("<optgroup id='optGroupAdminQueries' label='Admin Queries'></optgroup>"));
-    var cmbOptGroupCollection = cmb.find('#optGroupAdminQueries');
+    let settings = this.subscribe('settings');
+    let connections = this.subscribe('connections');
 
-    $.each(Helper.sortObjectByKey(Enums.ADMIN_QUERY_TYPES), function (key, value) {
-        cmbOptGroupCollection.append($("<option></option>")
-            .attr("value", key)
-            .text(value));
+    this.autorun(() => {
+        if (connections.ready() && settings.ready()) {
+            var cmb = $('#cmbAdminQueries');
+            cmb.append($("<optgroup id='optGroupAdminQueries' label='Admin Queries'></optgroup>"));
+            var cmbOptGroupCollection = cmb.find('#optGroupAdminQueries');
+
+            $.each(Helper.sortObjectByKey(Enums.ADMIN_QUERY_TYPES), function (key, value) {
+                cmbOptGroupCollection.append($("<option></option>")
+                    .attr("value", key)
+                    .text(value));
+            });
+            cmb.chosen();
+
+            $('#aRunOnAdminDB').iCheck({
+                checkboxClass: 'icheckbox_square-green'
+            });
+
+            $('[data-toggle="tooltip"]').tooltip({trigger: 'hover'});
+        }
     });
-    cmb.chosen();
-
-    $('#aRunOnAdminDB').iCheck({
-        checkboxClass: 'icheckbox_square-green'
-    });
-
-    $('[data-toggle="tooltip"]').tooltip({trigger: 'hover'});
 });
 
 
