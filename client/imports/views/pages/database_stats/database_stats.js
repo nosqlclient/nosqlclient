@@ -56,13 +56,14 @@ var lineOptions = {
 
 const fetchStats = function () {
     if (Session.get(Helper.strSessionCollectionNames) != undefined) {
+        let settings = Settings.findOne();
         Meteor.call("dbStats", function (err, result) {
             if (err || result.error) {
                 Helper.showMeteorFuncError(err, result, "Couldn't execute dbStats");
                 Session.set(Helper.strSessionDBStats, undefined);
             }
             else {
-                convertInformationsToKB(result.result);
+                convertInformationsToKB(result.result, settings);
                 Session.set(Helper.strSessionDBStats, result.result);
             }
         });
@@ -70,32 +71,33 @@ const fetchStats = function () {
 };
 
 const fetchStatus = function () {
-    console.log(2, Settings.findOne());
-
     if (Session.get(Helper.strSessionCollectionNames) != undefined) {
-        Meteor.call("serverStatus", function (err, result) {
-            if (err || result.error) {
-                var errorMessage = result.error ? result.error.message : err.message;
-                $('#errorMessage').text("Successfully connected but, couldn't fetch server status: " + errorMessage);
-                Session.set(Helper.strSessionServerStatus, undefined);
-            }
-            else {
-                Session.set(Helper.strSessionServerStatus, result.result);
-                var memoryData = [], connectionsData = [], networkData = [], opCountersData = [];
-                var memoryText = populateMemoryData(result.result, memoryData);
-                var availableConnections = populateConnectionData(result.result, connectionsData);
-                populateNetworkData(result.result, networkData);
-                populateOPCountersData(result.result, opCountersData);
+        let settings = Settings.findOne();
+        if (settings) {
+            Meteor.call("serverStatus", function (err, result) {
+                if (err || result.error) {
+                    var errorMessage = result.error ? result.error.message : err.message;
+                    $('#errorMessage').text("Successfully connected but, couldn't fetch server status: " + errorMessage);
+                    Session.set(Helper.strSessionServerStatus, undefined);
+                }
+                else {
+                    Session.set(Helper.strSessionServerStatus, result.result);
+                    var memoryData = [], connectionsData = [], networkData = [], opCountersData = [];
+                    var memoryText = populateMemoryData(result.result, memoryData, settings);
+                    var availableConnections = populateConnectionData(result.result, connectionsData);
+                    populateNetworkData(result.result, networkData, settings);
+                    populateOPCountersData(result.result, opCountersData);
 
-                // make sure gui is rendered
-                Meteor.setTimeout(function () {
-                    initMemoryChart(memoryData, memoryText);
-                    initConnectionsChart(connectionsData, availableConnections);
-                    initNetworkChart(networkData);
-                    initOperationCountersChart(opCountersData)
-                }, 1000);
-            }
-        });
+                    // make sure gui is rendered
+                    Meteor.setTimeout(function () {
+                        initMemoryChart(memoryData, memoryText);
+                        initConnectionsChart(connectionsData, availableConnections);
+                        initNetworkChart(networkData);
+                        initOperationCountersChart(opCountersData)
+                    }, 1000);
+                }
+            });
+        }
     }
 };
 
@@ -132,7 +134,7 @@ const populateConnectionData = function (result, data) {
     }
 };
 
-const populateNetworkData = function (result, data) {
+const populateNetworkData = function (result, data, settings) {
     if (result.network) {
         var bytesInData = [];
         var bytesOutData = [];
@@ -140,7 +142,6 @@ const populateNetworkData = function (result, data) {
 
         var scale = 1;
         var text = "MB";
-        var settings = Settings.findOne();
         switch (settings.scale) {
             case "KiloBytes":
                 scale = 1024;
@@ -169,11 +170,10 @@ const populateNetworkData = function (result, data) {
     }
 };
 
-const populateMemoryData = function (result, data) {
+const populateMemoryData = function (result, data, settings) {
     if (result.mem) {
         var scale = 1;
         var text = "MB";
-        var settings = Settings.findOne();
         switch (settings.scale) {
             case "KiloBytes":
                 scale = 1024;
@@ -209,10 +209,9 @@ const populateMemoryData = function (result, data) {
     }
 };
 
-const convertInformationsToKB = function (stats) {
+const convertInformationsToKB = function (stats, settings) {
     var scale = 1024;
     var text = "Bytes";
-    var settings = Settings.findOne();
     switch (settings.scale) {
         case "MegaBytes":
             scale = 1024 * 1024;
@@ -449,7 +448,6 @@ Template.databaseStats.helpers({
     getServerStatus  () {
         if (Settings.findOne().showDBStats) {
             if (Session.get(Helper.strSessionServerStatus) == undefined) {
-                console.log(1, Settings.findOne());
                 fetchStatus();
             }
 
