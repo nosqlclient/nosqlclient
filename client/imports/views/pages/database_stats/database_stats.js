@@ -418,11 +418,9 @@ const initMemoryChart = function (data, text) {
     }
 };
 
-let settings;
-let connections;
 Template.databaseStats.onRendered(function () {
-    settings = this.subscribe('settings');
-    connections = this.subscribe('connections');
+    let settings = this.subscribe('settings');
+    let connections = this.subscribe('connections');
 
     this.autorun(() => {
         if (settings.ready() && connections.ready()) {

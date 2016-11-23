@@ -4,7 +4,7 @@ import {Session} from 'meteor/session';
 import {FlowRouter} from 'meteor/kadira:flow-router';
 import {Connections} from '/lib/imports/collections/connections';
 import Helper from '/client/imports/helper';
-import {connect} from '/client/imports/views/layouts/top_navbar/top_navbar';
+import {connect} from '/client/imports/views/layouts/top_navbar/connections/connections';
 
 import './add_collection/add_collection';
 import './navigation.html';
