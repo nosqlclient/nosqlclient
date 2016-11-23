@@ -75,7 +75,7 @@ const redirect = function () {
         regexOptions = regexOptions ? regexOptions.join('') : "";
         query = '{ ' + fieldName + ':{ $not: {$regex:"' + txtValue + '",$options:"' + regexOptions + '" }}}';
     } else if (selectedOption === "-3") {
-        query = '{ ' + fieldName + ':{ $not: ' + txtValue + ' }}';
+        query = '{ ' + fieldName + ':{ $ne: ' + txtValue + ' }}';
     } else if (selectedOption === "-4") {
         query = '{ ' + fieldName + ':{ $not: { $in: ' + txtValue + ' }}}';
     } else if (selectedOption === "-5") {
