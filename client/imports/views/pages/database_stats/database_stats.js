@@ -424,7 +424,7 @@ Template.databaseStats.onRendered(function () {
 
     this.autorun(() => {
         if (settings.ready() && connections.ready()) {
-            if (Settings.findOne().showDBStats) {
+            if (Settings.findOne().showDBStats && !interval) {
                 interval = Meteor.setInterval(function () {
                     fetchStatus();
                 }, 3000);
@@ -439,6 +439,7 @@ Template.databaseStats.onRendered(function () {
 Template.databaseStats.onDestroyed(function () {
     if (interval) {
         clearInterval(interval);
+        interval = null;
     }
 });
 
