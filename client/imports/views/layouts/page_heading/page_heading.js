@@ -17,22 +17,28 @@ Template.pageHeading.helpers({
             $('#divCollectionInfo').html("");
             return;
         }
+        let settings = Settings.findOne();
+        let btnExecuteQuery = document.querySelector('#btnExecuteQuery');
+        if (!settings || !btnExecuteQuery) {
+            return;
+        }
+
+        let laddaButton = Ladda.create(btnExecuteQuery);
+        laddaButton.start();
 
         var selectedCollection = Session.get(Helper.strSessionSelectedCollection);
 
         // get distinct field keys for auto complete on every collection change.
         Helper.getDistinctKeysForAutoComplete(selectedCollection);
 
-        let settings = Settings.findOne();
         Meteor.call("stats", selectedCollection, {}, function (err, result) {
             if (err || result.error) {
                 Helper.showMeteorFuncError(err, result, "Couldn't fetch connection informations");
             }
             else {
                 populateCollectionInfo(result.result, settings);
-
-                Ladda.stopAll();
             }
+            Ladda.stopAll();
         });
     }
 });

@@ -52,7 +52,6 @@ const init = function () {
     var cmbOptGroupCollection = cmb.find('#optGroupCollectionQueries');
 
     $.each(Helper.sortObjectByKey(Enums.QUERY_TYPES), function (key, value) {
-        console.log(key, value);
         var option = $("<option></option>")
             .attr("value", key)
             .text(value);

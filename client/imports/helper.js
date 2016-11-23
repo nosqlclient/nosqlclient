@@ -287,7 +287,7 @@
 
         getDistinctKeysForAutoComplete  (selectedCollection) {
             var settings = Settings.findOne();
-            if (!settings.autoCompleteFields) {
+            if (!settings || !settings.autoCompleteFields) {
                 return;
             }
             if (selectedCollection.endsWith('.chunks')) {
