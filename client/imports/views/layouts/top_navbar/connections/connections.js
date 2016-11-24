@@ -234,7 +234,6 @@ const checkConnection = function (connection) {
     return true;
 };
 
-
 export const populateConnectionsTable = function () {
     let tblConnections = $('#tblConnection');
 
@@ -297,6 +296,12 @@ export const populateConnectionsTable = function () {
             },
             {
                 targets: [7],
+                data: null,
+                bSortable: false,
+                defaultContent: '<a href="" title="Duplicate" class="editor_duplicate"><i class="fa fa-edit text-navy"></i></a>'
+            },
+            {
+                targets: [8],
                 data: null,
                 bSortable: false,
                 defaultContent: '<a href="" title="Delete" class="editor_remove"><i class="fa fa-remove text-navy"></i></a>'
@@ -479,6 +484,95 @@ export const connect = function (isRefresh) {
     });
 };
 
+const populateConnectionModal = function(){
+    let connection = Connections.findOne({_id: Session.get(Helper.strSessionConnection)});
+    clearAllFieldsOfConnectionModal();
+
+    if (connection.x509Username) {
+        $('#divX509Username').show();
+        $('#inputUseX509').iCheck('check');
+        $('#inputX509Username').val(connection.x509Username);
+    } else {
+        $('#inputUseX509').iCheck('uncheck');
+        $('#divX509Username').hide();
+    }
+
+    if (connection.readFromSecondary) {
+        $('#inputReadFromSecondary').iCheck('check');
+    } else {
+        $('#inputReadFromSecondary').iCheck('uncheck');
+    }
+
+    if (connection.sshAddress) {
+        $('#inputUseSsh').iCheck('check');
+        $('#inputSshHostname').val(connection.sshAddress);
+        $('#inputSshPort').val(connection.sshPort);
+        $('#inputSshUsername').val(connection.sshUser);
+
+        if (connection.sshPassword) {
+            $("#cmbSshAuthType").val('Password').trigger('chosen:updated');
+            $('#inputSshPassword').val(connection.sshPassword);
+            $('#formSshPasswordAuth').show();
+            $('#formSshCertificateAuth').hide();
+        }
+        if (connection.sshCertificatePath) {
+            $("#cmbSshAuthType").val('Key File').trigger('chosen:updated');
+            $('#inputSshCertificate').siblings('.bootstrap-filestyle').children('input').val(connection.sshCertificatePath);
+            $('#formSshPasswordAuth').hide();
+            $('#formSshCertificateAuth').show();
+        }
+        if (connection.sshPassPhrase) {
+            $('#inputSshPassPhrase').val(connection.sshPassPhrase);
+        }
+    } else {
+        $('#inputUseSsh').iCheck('uncheck');
+    }
+
+    if (connection.url) {
+        $('#inputUseUrl').iCheck('check');
+        $('#inputUrl').val(connection.url);
+        $('#inputConnectionNameForUrl').val(connection.name);
+        $('.nav-tabs a[href="#tab-3-url"]').tab('show');
+    } else {
+        $('#inputUseUrl').iCheck('uncheck');
+        $('#inputConnectionName').val(connection.name);
+        $('#inputHost').val(connection.host);
+        $('#inputPort').val(connection.port);
+        $('#inputDatabaseName').val(connection.databaseName);
+
+        if (connection.sslCertificatePath || connection.rootCACertificatePath || connection.certificateKeyPath) {
+            $('#inputAuthStandard').iCheck('uncheck');
+            $('#inputAuthCertificate').iCheck('check');
+            $('#inputPassPhrase').val(connection.passPhrase);
+
+            if (connection.sslCertificatePath) {
+                $('#inputCertificate').siblings('.bootstrap-filestyle').children('input').val(connection.sslCertificatePath);
+            }
+
+            if (connection.rootCACertificatePath) {
+                $('#inputRootCa').siblings('.bootstrap-filestyle').children('input').val(connection.rootCACertificatePath);
+            }
+
+            if (connection.certificateKeyPath) {
+                $('#inputCertificateKey').siblings('.bootstrap-filestyle').children('input').val(connection.certificateKeyPath);
+            }
+
+        } else {
+            $('#inputAuthStandard').iCheck('check');
+            $('#inputAuthCertificate').iCheck('uncheck');
+            $('#inputUser').val(connection.user);
+            $('#inputPassword').val(connection.password);
+            $('#inputAuthenticationDB').val(connection.authDatabaseName);
+
+            if (connection.useSsl) {
+                $('#inputUseSSL').iCheck('check');
+            } else {
+                $('#inputUseSSL').iCheck('uncheck');
+            }
+        }
+    }
+};
+
 Template.connections.onRendered(function () {
     let selector = $('#tblConnection');
     selector.find('tbody').on('click', 'tr', function () {
@@ -495,6 +589,7 @@ Template.connections.onRendered(function () {
             Session.set(Helper.strSessionConnection, table.row(this).data()._id);
             $('#btnConnect').prop('disabled', false);
         }
+
     });
 
     $(".filestyle").filestyle({});
@@ -593,95 +688,15 @@ Template.connections.events({
 
     'click .editor_edit' (e) {
         $('#addEditConnectionModalTitle').text('Edit Connection');
-
         e.preventDefault();
-        let connection = Connections.findOne({_id: Session.get(Helper.strSessionConnection)});
-        clearAllFieldsOfConnectionModal();
+        populateConnectionModal();
+        $('#addEditConnectionModal').modal('show');
+    },
 
-        if (connection.x509Username) {
-            $('#divX509Username').show();
-            $('#inputUseX509').iCheck('check');
-            $('#inputX509Username').val(connection.x509Username);
-        } else {
-            $('#inputUseX509').iCheck('uncheck');
-            $('#divX509Username').hide();
-        }
-
-        if (connection.readFromSecondary) {
-            $('#inputReadFromSecondary').iCheck('check');
-        } else {
-            $('#inputReadFromSecondary').iCheck('uncheck');
-        }
-
-        if (connection.sshAddress) {
-            $('#inputUseSsh').iCheck('check');
-            $('#inputSshHostname').val(connection.sshAddress);
-            $('#inputSshPort').val(connection.sshPort);
-            $('#inputSshUsername').val(connection.sshUser);
-
-            if (connection.sshPassword) {
-                $("#cmbSshAuthType").val('Password').trigger('chosen:updated');
-                $('#inputSshPassword').val(connection.sshPassword);
-                $('#formSshPasswordAuth').show();
-                $('#formSshCertificateAuth').hide();
-            }
-            if (connection.sshCertificatePath) {
-                $("#cmbSshAuthType").val('Key File').trigger('chosen:updated');
-                $('#inputSshCertificate').siblings('.bootstrap-filestyle').children('input').val(connection.sshCertificatePath);
-                $('#formSshPasswordAuth').hide();
-                $('#formSshCertificateAuth').show();
-            }
-            if (connection.sshPassPhrase) {
-                $('#inputSshPassPhrase').val(connection.sshPassPhrase);
-            }
-        } else {
-            $('#inputUseSsh').iCheck('uncheck');
-        }
-
-        if (connection.url) {
-            $('#inputUseUrl').iCheck('check');
-            $('#inputUrl').val(connection.url);
-            $('#inputConnectionNameForUrl').val(connection.name);
-            $('.nav-tabs a[href="#tab-3-url"]').tab('show');
-        } else {
-            $('#inputUseUrl').iCheck('uncheck');
-            $('#inputConnectionName').val(connection.name);
-            $('#inputHost').val(connection.host);
-            $('#inputPort').val(connection.port);
-            $('#inputDatabaseName').val(connection.databaseName);
-
-            if (connection.sslCertificatePath || connection.rootCACertificatePath || connection.certificateKeyPath) {
-                $('#inputAuthStandard').iCheck('uncheck');
-                $('#inputAuthCertificate').iCheck('check');
-                $('#inputPassPhrase').val(connection.passPhrase);
-
-                if (connection.sslCertificatePath) {
-                    $('#inputCertificate').siblings('.bootstrap-filestyle').children('input').val(connection.sslCertificatePath);
-                }
-
-                if (connection.rootCACertificatePath) {
-                    $('#inputRootCa').siblings('.bootstrap-filestyle').children('input').val(connection.rootCACertificatePath);
-                }
-
-                if (connection.certificateKeyPath) {
-                    $('#inputCertificateKey').siblings('.bootstrap-filestyle').children('input').val(connection.certificateKeyPath);
-                }
-
-            } else {
-                $('#inputAuthStandard').iCheck('check');
-                $('#inputAuthCertificate').iCheck('uncheck');
-                $('#inputUser').val(connection.user);
-                $('#inputPassword').val(connection.password);
-                $('#inputAuthenticationDB').val(connection.authDatabaseName);
-
-                if (connection.useSsl) {
-                    $('#inputUseSSL').iCheck('check');
-                } else {
-                    $('#inputUseSSL').iCheck('uncheck');
-                }
-            }
-        }
-
+    'click .editor_duplicate' (e) {
+        $('#addEditConnectionModalTitle').text('Duplicate Connection');
+        e.preventDefault();
+        populateConnectionModal();
         $('#addEditConnectionModal').modal('show');
     },
 
@@ -765,7 +780,6 @@ Template.connections.events({
         if (isEdit) {
             currentConnection = Connections.findOne({_id: Session.get(Helper.strSessionConnection)});
         }
-
         if (isEdit) {
             connection._id = Session.get(Helper.strSessionConnection);
             loadCertificatesAndSave('updateConnection', connection, currentConnection);
