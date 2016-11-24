@@ -298,7 +298,7 @@ export const populateConnectionsTable = function () {
                 targets: [7],
                 data: null,
                 bSortable: false,
-                defaultContent: '<a href="" title="Duplicate" class="editor_duplicate"><i class="fa fa-edit text-navy"></i></a>'
+                defaultContent: '<a href="" title="Duplicate" class="editor_duplicate"><i class="fa fa-clone text-navy"></i></a>'
             },
             {
                 targets: [8],
@@ -484,7 +484,7 @@ export const connect = function (isRefresh) {
     });
 };
 
-const populateConnectionModal = function(){
+const populateConnectionModal = function () {
     let connection = Connections.findOne({_id: Session.get(Helper.strSessionConnection)});
     clearAllFieldsOfConnectionModal();
 
@@ -694,7 +694,7 @@ Template.connections.events({
     },
 
     'click .editor_duplicate' (e) {
-        $('#addEditConnectionModalTitle').text('Duplicate Connection');
+        $('#addEditConnectionModalTitle').text('Clone Connection');
         e.preventDefault();
         populateConnectionModal();
         $('#addEditConnectionModal').modal('show');
