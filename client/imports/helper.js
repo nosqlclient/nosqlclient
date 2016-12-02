@@ -112,6 +112,27 @@
     };
 
     Helper.prototype = {
+        initializeCollectionsCombobox () {
+            var cmb = $('#cmbCollections');
+            cmb.append($("<optgroup id='optGroupCollections' label='Collections'></optgroup>"));
+            var cmbOptGroupCollection = cmb.find('#optGroupCollections');
+
+            var collectionNames = Session.get(this.strSessionCollectionNames);
+            $.each(collectionNames, function (index, value) {
+                cmbOptGroupCollection.append($("<option></option>")
+                    .attr("value", value.name)
+                    .text(value.name));
+            });
+            cmb.chosen();
+
+            cmb.on('change', (evt, params) => {
+                var selectedCollection = params.selected;
+                if (selectedCollection) {
+                    this.getDistinctKeysForAutoComplete(selectedCollection);
+                }
+            });
+        },
+
         clearSessions () {
             Object.keys(Session.keys).forEach(function (key) {
                 Session.set(key, undefined);
@@ -345,7 +366,7 @@
 
                 codeMirror.setSize('%100', height);
 
-                CodeMirror.hint.javascript = (editor)=> {
+                CodeMirror.hint.javascript = (editor) => {
                     var list = Session.get(this.strSessionDistinctFields) || [];
                     var cursor = editor.getCursor();
                     var currentLine = editor.getLine(cursor.line);

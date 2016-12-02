@@ -1,0 +1,41 @@
+<template name="schemaAnalyzer">
+    {{#if isConnected}}
+        {{> pageHeading title='Schema Analyzer' }}
+        <div class="wrapper wrapper-content animated fadeInRight">
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="ibox float-e-margins">
+                        <div class="ibox-title">
+                            <h5>
+                                Database Schema Analyzer
+                                <small>Provided by variety.js</small>
+                            </h5>
+                            <div class="ibox-tools">
+                                <button id="btnAnalyzeNow" type="button"
+                                        class="btn btn-sm btn-primary ladda-button" data-style="contract">
+                                    Analyze
+                                </button>
+                            </div>
+                        </div>
+                        <div class="ibox-content">
+                            <form class="form-horizontal">
+                                <div class="form-group">
+                                    <label class="col-lg-1 control-label">Collection</label>
+                                    <div class="col-lg-11">
+                                        <select id="cmbCollections"
+                                                data-placeholder="Choose a collection..."
+                                                class="chosen-select form-control"
+                                                tabindex="-1">
+                                            <option></option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {{/if}}
+</template>

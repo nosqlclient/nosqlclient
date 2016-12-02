@@ -15,6 +15,7 @@ import '/client/imports/views/pages/browse_collection/browse_collection';
 import '/client/imports/views/pages/admin_queries/admin_queries';
 import '/client/imports/views/pages/aggregate_pipeline/aggregate_pipeline';
 import '/client/imports/views/pages/mc_shell/mc_shell';
+import '/client/imports/views/pages/schema_analyzer/schema_analyzer';
 import '/client/imports/views/pages/edit_document/edit_document';
 import '/client/imports/views/pages/database_dump_restore/database_dump_restore';
 import '/client/imports/views/pages/file_management/file_management';
