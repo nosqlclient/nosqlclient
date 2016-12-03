@@ -8,7 +8,11 @@ import {Dumps} from '/lib/imports/collections/dumps';
 import {QueryHistory} from '/lib/imports/collections/query_history';
 import {Settings} from '/lib/imports/collections/settings';
 import ShellCommands from '/lib/imports/collections/shell';
+import SchemaAnalyzeResult from '/lib/imports/collections/schema_analyze_result';
 
+Meteor.publish('schema_analyze_result', function () {
+    return SchemaAnalyzeResult.find();
+});
 
 Meteor.publish('shell_commands', function () {
     return ShellCommands.find();

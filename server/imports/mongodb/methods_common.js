@@ -6,6 +6,7 @@ import {Meteor} from 'meteor/meteor';
 import {Settings} from '/lib/imports/collections/settings';
 import {Connections} from '/lib/imports/collections/connections';
 import ShellCommands from '/lib/imports/collections/shell';
+import SchemaAnaylzeResult from '/lib/imports/collections/schema_analyze_result';
 import LOGGER from "../internal/logger";
 import Helper from "./helper";
 
@@ -351,5 +352,42 @@ Meteor.methods({
             LOGGER.error('[shell]', ex);
             return {err: new Meteor.Error(ex.message), result: null};
         }
+    },
+
+    analyzeSchema(connectionId, collection){
+        const connectionUrl = Helper.getConnectionUrl(Connections.findOne({_id: connectionId}));
+        const mongoPath = getProperMongo();
+        let args = [connectionUrl, '--quiet', '--eval', 'var collection =\"' + collection + '\", outputFormat=\"json\"', '../../../../../lib/mongo/variety/variety.js_'];
+
+        LOGGER.info('[analyzeSchema]', args, connectionUrl, collection);
+        try {
+            let spawned = spawn(mongoPath, args);
+            spawned.stdout.on('data', Meteor.bindEnvironment(function (data) {
+                if (data.toString()) {
+                    SchemaAnaylzeResult.insert({
+                        'date': Date.now(),
+                        'connectionId': connectionId,
+                        'message': data.toString()
+                    });
+                }
+            }));
+
+            spawned.stderr.on('data', Meteor.bindEnvironment(function (data) {
+                if (data.toString()) {
+                    SchemaAnaylzeResult.insert({
+                        'date': Date.now(),
+                        'connectionId': connectionId,
+                        'message': data.toString()
+                    });
+                }
+            }));
+
+            spawned.stdin.end();
+        }
+        catch (ex) {
+            LOGGER.error('[analyzeSchema]', ex);
+            return {err: new Meteor.Error(ex.message), result: null};
+        }
+
     }
 });
