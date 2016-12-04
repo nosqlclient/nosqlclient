@@ -8,34 +8,12 @@ import {setResult} from './aggregate_result_modal/aggregate_result_modal';
 import './aggregate_pipeline.html';
 
 var toastr = require('toastr');
-
-
 var Ladda = require('ladda');
 
 /**
  * Created by RSercan on 14.5.2016.
  */
 var stageNumbers;
-const initializeCollectionsCombobox = function () {
-    var cmb = $('#cmbCollections');
-    cmb.append($("<optgroup id='optGroupCollections' label='Collections'></optgroup>"));
-    var cmbOptGroupCollection = cmb.find('#optGroupCollections');
-
-    var collectionNames = Session.get(Helper.strSessionCollectionNames);
-    $.each(collectionNames, function (index, value) {
-        cmbOptGroupCollection.append($("<option></option>")
-            .attr("value", value.name)
-            .text(value.name));
-    });
-    cmb.chosen();
-
-    cmb.on('change', function (evt, params) {
-        var selectedCollection = params.selected;
-        if (selectedCollection) {
-            Helper.getDistinctKeysForAutoComplete(selectedCollection);
-        }
-    });
-};
 
 const initCodeMirrorStage = function () {
     Helper.initializeCodeMirror($('#wrapper' + stageNumbers), 'txtObjectStage' + stageNumbers);
@@ -89,7 +67,7 @@ Template.aggregatePipeline.onRendered(function () {
 
             stageNumbers = 0;
 
-            initializeCollectionsCombobox();
+            Helper.initializeCollectionsCombobox();
         }
     });
 });

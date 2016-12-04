@@ -6,8 +6,6 @@
     import {Settings} from '/lib/imports/collections/settings';
     import {serialize, deserialize} from './extended_json';
 
-    const objectID = require('mongodb').ObjectID;
-
     const addConnectionParamsToOptions = function (connection, result) {
         if (connection.useSsl || connection.sslCertificate) {
             result.server.ssl = true;

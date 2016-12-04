@@ -7,9 +7,14 @@ import {QueryHistory} from '/lib/imports/collections/query_history';
 import {Dumps} from '/lib/imports/collections/dumps';
 import {Settings} from '/lib/imports/collections/settings';
 import {Connections} from '/lib/imports/collections/connections';
+import SchemaAnalyzeResult from '/lib/imports/collections/schema_analyze_result';
 
 
 Meteor.methods({
+    removeSchemaAnalyzeResult(){
+        SchemaAnalyzeResult.remove({});
+    },
+
     saveActions(action) {
         Actions.insert(action);
     },
