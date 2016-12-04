@@ -12,105 +12,112 @@ import './schema_analyzer.html';
 
 const toastr = require('toastr');
 const Ladda = require('ladda');
-const lineOptions = {
-    series: {
-        lines: {
-            show: true,
-            lineWidth: 3,
-            fill: true,
-            fillColor: {
-                colors: [{
-                    opacity: 0.0
-                }, {
-                    opacity: 0.0
-                }]
-            }
-        },
-        points: {
-            show: true
+
+const ensureFieldsDataForDatatable = function (data) {
+    for (let i = 0; i < data.length; i++) {
+        if (!data[i].value.types.String) {
+            data[i].value.types.String = "";
         }
-    },
-    xaxis: {
-        show: true,
-        tickFormatter: function (val) {
-            return moment(val).format('HH:mm:ss');
+        if (!data[i].value.types.Number) {
+            data[i].value.types.Number = "";
         }
-    },
-    colors: ["#1ab394", "#ff0f0f"],
-    grid: {
-        color: "#999999",
-        hoverable: true,
-        clickable: true,
-        tickColor: "#D4D4D4",
-        borderWidth: 0
-    },
-    legend: {
-        position: "ne"
-    },
-    tooltip: true,
-    tooltipOpts: {
-        content: "%y"
+        if (!data[i].value.types.Array) {
+            data[i].value.types.Array = "";
+        }
+        if (!data[i].value.types.null) {
+            data[i].value.types.null = "";
+        }
+        if (!data[i].value.types.Date) {
+            data[i].value.types.Date = "";
+        }
+        if (!data[i].value.types.NumberLong) {
+            data[i].value.types.NumberLong = "";
+        }
+        if (!data[i].value.types.ObjectId) {
+            data[i].value.types.ObjectId = "";
+        }
+        if (!data[i].value.types.Object) {
+            data[i].value.types.Object = "";
+        }
+        if (!data[i].value.types.Boolean) {
+            data[i].value.types.Boolean = "";
+        }
     }
 };
 
-let fieldsBarChart = null;
+const populateFieldsTable = function (data) {
+    var tblFields = $('#tblFieldsDetails');
+    if ($.fn.dataTable.isDataTable('#tblFieldsDetails')) {
+        tblFields.DataTable().destroy();
+    }
 
-const drawFieldsChart = function (data) {
-    var divChart = $('#divFieldsChart');
-
-    if (divChart.find('.flot-base').length <= 0) {
-        var customOptions = jQuery.extend(true, {}, lineOptions);
-        customOptions.colors = [];
-        customOptions.bars = {
-            align: "center",
-            barWidth: 0.0001
-        };
-        customOptions.series = {
-            bars: {
-                show: true
+    ensureFieldsDataForDatatable(data);
+    tblFields.DataTable({
+        destroy: true,
+        data: data,
+        columns: [
+            {
+                title: 'Field Name',
+                data: '_id.key',
+                className: 'center'
             },
-            points: {
-                show: true
+            {
+                title: 'Total Occurrences',
+                data: 'totalOccurrences',
+                className: 'center'
+            },
+            {
+                title: 'Percentage Containing',
+                data: 'percentContaining',
+                className: 'center'
+            },
+            {
+                title: 'String',
+                data: 'value.types.String',
+                className: 'center'
+            },
+            {
+                title: 'Number',
+                data: 'value.types.Number',
+                className: 'center'
+            },
+            {
+                title: 'Boolean',
+                data: 'value.types.Boolean',
+                className: 'center'
+            },
+            {
+                title: 'Array',
+                data: 'value.types.Array',
+                className: 'center'
+            },
+            {
+                title: 'Null',
+                data: 'value.types.null',
+                className: 'center'
+            },
+            {
+                title: 'Date',
+                data: 'value.types.Date',
+                className: 'center'
+            },
+            {
+                title: 'NumberLong',
+                data: 'value.types.NumberLong',
+                className: 'center'
+            },
+            {
+                title: 'ObjectId',
+                data: 'value.types.ObjectId',
+                className: 'center'
+            },
+            {
+                title: 'Object',
+                data: 'value.types.Object',
+                className: 'center'
             }
-        };
-        customOptions.xaxis = {
-            show: true,
-            ticks: popoulateFieldsTicks(data)
-        };
-        try {
-            fieldsBarChart = $.plot(divChart, populateFieldsData(data), customOptions);
-        }
-        catch (e) {
-            fieldsBarChart = null;
-        }
-    }
-    else {
-        fieldsBarChart.setData(populateFieldsData(data));
-        fieldsBarChart.setupGrid();
-        fieldsBarChart.draw();
-    }
-};
-
-const popoulateFieldsTicks = function (data) {
-    let ticks = [];
-    for (let i = 0; i < data.length; i++) {
-        ticks.push([
-            i, data[i]._id.key
-        ]);
-    }
-
-    return ticks;
-};
-
-const populateFieldsData = function (data) {
-    let counts = [];
-    for (let i = 0; i < data.length; i++) {
-        counts.push([
-            i, data[i].totalOccurrences
-        ]);
-    }
-
-    return [{label: "Counts", data: counts, color: "#1ab394"}];
+        ]
+    }).draw();
 };
 
 Template.schemaAnalyzer.onRendered(function () {
@@ -131,14 +138,27 @@ Template.schemaAnalyzer.onRendered(function () {
                 added: function (id, fields) {
                     let jsonData = Helper.convertAndCheckJSON(fields.message);
                     if (jsonData['ERROR']) {
-                        toastr.error(jsonData['ERROR']);
+                        toastr.error(fields.message);
+                        Meteor.call("removeSchemaAnalyzeResult");
+                        Ladda.stopAll();
                         return;
                     }
-                    drawFieldsChart(jsonData);
+
+                    var l = Ladda.create(document.querySelector('#btnAnalyzeNow'));
+                    l.start();
+
+                    populateFieldsTable(jsonData);
+                    $('#divFieldsDetails').show();
+
+                    Ladda.stopAll();
                 }
             });
         }
     });
+});
+
+Template.schemaAnalyzer.onDestroyed(function () {
+    Meteor.call("removeSchemaAnalyzeResult");
 });
 
 Template.schemaAnalyzer.events({
@@ -161,11 +181,7 @@ Template.schemaAnalyzer.events({
             if (err) {
                 Helper.showMeteorFuncError(err, null, "Couldn't analyze collection");
             }
-
-            Ladda.stopAll();
         });
-
-
     }
 
 });

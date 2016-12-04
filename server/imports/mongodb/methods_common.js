@@ -166,6 +166,7 @@ Meteor.methods({
             spawnedShell = null;
         }
         ShellCommands.remove({});
+        SchemaAnaylzeResult.remove({});
     },
 
     connect(connectionId) {
@@ -318,6 +319,7 @@ Meteor.methods({
             spawnedShell = spawn(mongoPath, [connectionUrl]);
             spawnedShell.stdout.on('data', Meteor.bindEnvironment(function (data) {
                 if (data.toString()) {
+                    LOGGER.info(data.toString());
                     ShellCommands.insert({
                         'date': Date.now(),
                         'connectionId': connectionId,
@@ -362,8 +364,16 @@ Meteor.methods({
         LOGGER.info('[analyzeSchema]', args, connectionUrl, collection);
         try {
             let spawned = spawn(mongoPath, args);
+            let message = "";
             spawned.stdout.on('data', Meteor.bindEnvironment(function (data) {
                 if (data.toString()) {
+                    message += data.toString();
+                }
+            }));
+
+            spawned.stderr.on('data', Meteor.bindEnvironment(function (data) {
+                if (data.toString()) {
+                    console.log(data.toString());
                     SchemaAnaylzeResult.insert({
                         'date': Date.now(),
                         'connectionId': connectionId,
@@ -372,14 +382,12 @@ Meteor.methods({
                 }
             }));
 
-            spawned.stderr.on('data', Meteor.bindEnvironment(function (data) {
-                if (data.toString()) {
-                    SchemaAnaylzeResult.insert({
-                        'date': Date.now(),
-                        'connectionId': connectionId,
-                        'message': data.toString()
-                    });
-                }
+            spawned.on('close', Meteor.bindEnvironment(function () {
+                SchemaAnaylzeResult.insert({
+                    'date': Date.now(),
+                    'connectionId': connectionId,
+                    'message': message
+                });
             }));
 
             spawned.stdin.end();
