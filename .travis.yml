@@ -15,7 +15,6 @@ cache:
 
 before_script:
   - meteor npm install
-  - meteor npm rebuild
 
 script:
   - meteor add dispatch:mocha-phantomjs

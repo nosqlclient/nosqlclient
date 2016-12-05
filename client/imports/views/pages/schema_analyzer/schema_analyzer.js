@@ -168,7 +168,6 @@ Template.schemaAnalyzer.events({
             toastr.info('Please select a collection first !');
             return;
         }
-
         if (collection.endsWith('.chunks')) {
             toastr.warning('I rather not analyzing a GridFS collection !');
             return;
