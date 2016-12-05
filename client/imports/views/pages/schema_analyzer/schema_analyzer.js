@@ -170,7 +170,7 @@ Template.schemaAnalyzer.events({
         }
 
         if (collection.endsWith('.chunks')) {
-            toastr.warn('I rather not analyzing a GridFS collection !');
+            toastr.warning('I rather not analyzing a GridFS collection !');
             return;
         }
 
