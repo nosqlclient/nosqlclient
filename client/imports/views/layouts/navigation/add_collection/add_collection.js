@@ -11,7 +11,6 @@ var Ladda = require('ladda');
  * Created by RSercan on 20.2.2016.
  */
 Template.addCollection.onRendered(function () {
-    initICheck('divAutoIndexId', true);
     initICheck('divIsCapped', false);
 });
 
@@ -20,7 +19,6 @@ Template.addCollection.events({
         e.preventDefault();
 
         var isCapped = $('#divIsCapped').iCheck('update')[0].checked;
-        var autoIndexId = $('#divAutoIndexId').iCheck('update')[0].checked;
         var collectionName = $('#inputCollectionName').val();
         var size = $('#inputCollectionSize').val();
         var maxDocs = $('#inputMaxDocSize').val();
@@ -33,7 +31,6 @@ Template.addCollection.events({
         var options = {
             size: size,
             capped: isCapped,
-            autoIndexId: autoIndexId,
             max: maxDocs
         };
 

@@ -13,7 +13,7 @@ var Ladda = require('ladda');
 /**
  * Created by RSercan on 14.5.2016.
  */
-var stageNumbers;
+var stageNumbers = 0;
 
 const initCodeMirrorStage = function () {
     Helper.initializeCodeMirror($('#wrapper' + stageNumbers), 'txtObjectStage' + stageNumbers);
@@ -126,16 +126,24 @@ Template.aggregatePipeline.events({
             var liElement = '<li class="success-element" id="stage' + stageNumbers + '">' + query + '<div id="wrapper' + stageNumbers + '" class="agile-detail">' +
                 '<a id="remove-stage-element" href="#" data-number="' + stageNumbers + '" class="pull-right btn btn-xs btn-white"><i class="fa fa-remove"></i> Remove</a>';
 
+            let stringInput = '<input type="text" class="form-control" id="txtStringStage' + stageNumbers + '"/>';
+            let numberInput = '<input id="inputNumberStage' + stageNumbers + '" min="0" type="number" class="form-control">';
             var initCodeMirror;
             switch (query) {
                 case '$limit':
-                    liElement += '<input id="inputNumberStage' + stageNumbers + '" min="0" type="number" class="form-control">';
+                    liElement += numberInput;
                     break;
                 case '$skip':
-                    liElement += '<input id="inputNumberStage' + stageNumbers + '" min="0" type="number" class="form-control">';
+                    liElement += numberInput;
                     break;
                 case '$out':
-                    liElement += '<input type="text" class="form-control" id="txtStringStage' + stageNumbers + '"/>';
+                    liElement += stringInput;
+                    break;
+                case '$sortByCount':
+                    liElement += stringInput;
+                    break;
+                case '$count':
+                    liElement += stringInput;
                     break;
                 default:
                     initCodeMirror = true;
