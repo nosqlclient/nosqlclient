@@ -319,7 +319,6 @@ Meteor.methods({
             spawnedShell = spawn(mongoPath, [connectionUrl]);
             spawnedShell.stdout.on('data', Meteor.bindEnvironment(function (data) {
                 if (data.toString()) {
-                    LOGGER.info(data.toString());
                     ShellCommands.insert({
                         'date': Date.now(),
                         'connectionId': connectionId,
