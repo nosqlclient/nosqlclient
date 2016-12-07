@@ -18,4 +18,5 @@ before_script:
 
 script:
   - meteor add dispatch:mocha-phantomjs
+  - meteor npm rebuild
   - meteor test --once --driver-package dispatch:mocha-phantomjs
