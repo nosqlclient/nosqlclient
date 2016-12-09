@@ -104,7 +104,8 @@ const gatherCommandAutoCompletions = function (editorValue, curWord) {
             return lastRegex = ['add(', 'addArb(', 'conf(', 'freeze(', 'help(', 'initiate(', 'printReplicationInfo(', 'printSlaveReplicationInfo(',
                 'reconfig(', 'remove(', 'slaveOk(', 'status(', 'stepDown(', 'syncFrom('];
         case 'sharding':
-            return lastRegex = ['_adminCommand(', 'getBalancerLockDetails(', '_checkFullName(', '_checkMongos(', '_lastMigration(', 'addShard(', 'addShardTag(',
+            return lastRegex = ['_adminCommand(', 'addShardToZone(', 'removeShardFromZone(', 'getBalancerLockDetails(', '_checkFullName(', '_checkMongos(', '_lastMigration(',
+                'addShard(', 'addShardTag(', 'updateZoneKeyRange(', 'removeRangeFromZone(',
                 'addTagRange(', 'removeTagRange(', 'disableBalancing(', 'enableBalancing(', 'enableSharding(', 'getBalancerHost(', 'getBalancerState(', 'help(', 'isBalancerRunning(',
                 'moveChunk(', 'removeShardTag(', 'setBalancerState(', 'shardCollection(', 'splitAt(', 'splitFind(', 'startBalancer(', 'status(', 'stopBalancer(', 'waitForBalancer(',
                 'waitForBalancerOff(', 'waitForDLock(', 'waitForPingChange('];
