@@ -73,7 +73,7 @@ const gatherCommandAutoCompletions = function (editorValue, curWord) {
 
     switch (analyzeEditorValue(editorValue)) {
         case 'collection':
-            return lastRegex = ['aggregate(', 'bulkWrite(', 'count(', 'copyTo(',
+            return lastRegex = ['aggregate(', 'bulkWrite(', 'count(', 'copyTo(', 'createView(',
                 'craeteIndex(', 'dataSize(', 'deleteOne(', 'deleteMany(',
                 'distinct(', 'drop(', 'dropIndex(', 'dropIndexes(', 'ensureIndex(', 'explain(', 'find(',
                 'findAndModify(', 'findOne(', 'findOneAndDelete(', 'findOneAndReplace(',
