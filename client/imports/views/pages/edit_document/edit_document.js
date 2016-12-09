@@ -3,7 +3,7 @@ import {Meteor} from 'meteor/meteor';
 import {Session} from 'meteor/session';
 import {FlowRouter} from 'meteor/kadira:flow-router';
 import Helper from '/client/imports/helper';
-import {getSelectorValue} from '/client/imports/views/query_templates_common/selector/selector';
+import {getSelectorValue} from '/client/imports/views/query_templates_options/selector/selector';
 
 import './edit_document.html';
 

@@ -5,7 +5,8 @@ import {Session} from 'meteor/session';
 
 import '/client/imports/views/query_templates_options/sort/sort';
 import '/client/imports/views/query_templates_options/limit/limit.html';
-import '/client/imports/views/query_templates_common/selector/selector';
+import '/client/imports/views/query_templates_options/selector/selector';
+import '/client/imports/views/query_templates_options/bypass_document_validation/bypass_document_validation';
 
 import './map_reduce_options.html';
 /**
@@ -28,13 +29,6 @@ Template.verbose.onRendered(function () {
         checkboxClass: 'icheckbox_square-green'
     });
 });
-
-Template.bypassDocumentValidation.onRendered(function () {
-    $('#divBypassDocumentValidation').iCheck({
-        checkboxClass: 'icheckbox_square-green'
-    });
-});
-
 
 export const getOptions = function () {
     var result = {};

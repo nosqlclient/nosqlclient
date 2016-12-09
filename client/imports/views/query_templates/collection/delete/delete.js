@@ -3,7 +3,7 @@ import {Meteor} from 'meteor/meteor';
 import Helper from '/client/imports/helper';
 import {Session} from 'meteor/session';
 import {initExecuteQuery} from '/client/imports/views/pages/browse_collection/browse_collection';
-import {getSelectorValue} from '/client/imports/views/query_templates_common/selector/selector';
+import {getSelectorValue} from '/client/imports/views/query_templates_options/selector/selector';
 
 import './delete.html';
 

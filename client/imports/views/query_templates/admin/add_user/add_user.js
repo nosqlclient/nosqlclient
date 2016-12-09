@@ -5,7 +5,7 @@ import Enums from '/lib/imports/enums';
 import {initExecuteQuery} from '/client/imports/views/pages/admin_queries/admin_queries';
 import {getOptions} from '/client/imports/views/query_templates_options/add_user_options/add_user_options';
 
-import '/client/imports/views/query_templates_common/username/username.html'
+import '/client/imports/views/query_templates_options/username/username.html'
 import './add_user.html';
 
 

@@ -4,7 +4,7 @@ import Enums from '/lib/imports/enums';
 import {Session} from 'meteor/session';
 
 import '/client/imports/views/query_templates_options/max_distance/max_distance.html';
-import '/client/imports/views/query_templates_common/selector/selector';
+import '/client/imports/views/query_templates_options/selector/selector';
 
 import './geo_near_options.html';
 

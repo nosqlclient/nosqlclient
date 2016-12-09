@@ -3,7 +3,7 @@ import {Meteor} from 'meteor/meteor';
 import Helper from '/client/imports/helper';
 import {initExecuteQuery} from '/client/imports/views/pages/admin_queries/admin_queries';
 
-import '/client/imports/views/query_templates_common/username/username.html';
+import '/client/imports/views/query_templates_options/username/username.html';
 import './remove_user.html';
 
 var toastr = require('toastr');

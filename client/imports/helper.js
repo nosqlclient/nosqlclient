@@ -9,7 +9,7 @@
     import {Settings} from '/lib/imports/collections/settings';
     import {setAdminResult} from '/client/imports/views/pages/admin_queries/admin_queries';
     import {setQueryResult} from '/client/imports/views/pages/browse_collection/browse_collection';
-    import {getSelectorValue} from '/client/imports/views/query_templates_common/selector/selector';
+    import {getSelectorValue} from '/client/imports/views/query_templates_options/selector/selector';
 
     const toastr = require('toastr');
     const Ladda = require('ladda');

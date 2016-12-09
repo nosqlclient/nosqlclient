@@ -1,7 +1,7 @@
 {
   "private": true,
   "name": "mongoclient",
-  "version": "1.4.0",
+  "version": "1.5.0",
   "devDependencies": {},
   "dependencies": {
     "typed.js": "1.1.1",
@@ -22,7 +22,7 @@
     "jsoneditor": "^5.5.6",
     "ladda": "^1.0.0",
     "meteor-node-stubs": "^0.2.3",
-    "mongodb": "2.2.10",
+    "mongodb": "2.2.12",
     "mongodb-backup": "~1.6.5",
     "mongodb-restore": "~1.5.5",
     "spin.js": "^2.3.2",

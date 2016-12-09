@@ -82,7 +82,7 @@ const gatherCommandAutoCompletions = function (editorValue, curWord) {
                 'reIndex(', 'replaceOne(', 'remove(', 'renameCollection(', 'save(', 'stats(',
                 'storageSize(', 'totalSize(', 'totalIndexSize(', 'update(', 'updateOne(', 'updateMany(', 'validate('];
         case 'cursor':
-            return lastRegex = ['addOption(', 'batchSize(', 'close(', 'comment(', 'count(', 'explain(',
+            return lastRegex = ['addOption(', 'collation(', 'batchSize(', 'close(', 'comment(', 'count(', 'explain(',
                 'forEach(', 'hasNext(', 'hint(', 'itcount(', 'limit(', 'map(', 'maxScan(', 'maxTimeMS(', 'max(',
                 'min(', 'next(', 'noCursorTimeout(', 'objsLeftInBatch(', 'pretty(', 'readConcern(', 'readPref(',
                 'returnKey(', 'showRecordId(', 'size(', 'skip(', 'snapshot(', 'sort(', 'tailable(', 'toArray('];
