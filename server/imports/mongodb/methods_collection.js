@@ -156,10 +156,10 @@ Meteor.methods({
         return proceedQueryExecution(selectedCollection, methodArray);
     },
 
-    insertMany(selectedCollection, docs) {
+    insertMany(selectedCollection, docs, options) {
         const methodArray = [
             {
-                "insertMany": [docs]
+                "insertMany": [docs, options]
             }
         ];
         return proceedQueryExecution(selectedCollection, methodArray);
