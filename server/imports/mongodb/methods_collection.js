@@ -202,10 +202,10 @@ Meteor.methods({
         return proceedQueryExecution(selectedCollection, methodArray);
     },
 
-    distinct(selectedCollection, selector, fieldName) {
+    distinct(selectedCollection, selector, fieldName, options) {
         const methodArray = [
             {
-                "distinct": [fieldName, selector]
+                "distinct": [fieldName, selector, options]
             }
         ];
 

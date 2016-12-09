@@ -8,4 +8,21 @@
             <span class="help-block m-b-none">Field of the document to find <strong>distinct</strong> values for.</span>
         </div>
     </div>
+
+    <div class="form-group">
+        <label class="col-lg-1 control-label">Options</label>
+        <div class="col-lg-11">
+            <select id="cmbDistinctOptions"
+                    data-placeholder="Choose one or more options.."
+                    multiple="true"
+                    class="chosen-select form-control"
+                    tabindex="-1">
+            </select>
+        </div>
+    </div>
+
+    {{#if isOptionSelected "MAX_TIME_MS"}}
+        {{> maxTimeMs}}
+    {{/if}}
+
 </template>
