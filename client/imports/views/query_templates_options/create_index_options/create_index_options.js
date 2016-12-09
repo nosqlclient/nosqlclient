@@ -5,12 +5,20 @@ import {Session} from 'meteor/session';
 
 import '/client/imports/views/query_templates_options/min/min';
 import '/client/imports/views/query_templates_options/max/max';
+import '/client/imports/views/query_templates_options/collation/collation';
 import './create_index_options.html';
 
 
 /**
  * Created by RSercan on 2.1.2016.
  */
+
+Template.dropDups.onRendered(function () {
+    $('#divDropDups').iCheck({
+        checkboxClass: 'icheckbox_square-green'
+    });
+});
+
 Template.unique.onRendered(function () {
     $('#divUnique').iCheck({
         checkboxClass: 'icheckbox_square-green'
@@ -33,11 +41,26 @@ export const getOptions = function () {
     var result = {};
     Helper.checkAndAddOption("MAX", $('#divMax'), result, Enums.CREATE_INDEX_OPTIONS);
     Helper.checkAndAddOption("MIN", $('#divMin'), result, Enums.CREATE_INDEX_OPTIONS);
+    Helper.checkAndAddOption("COLLATION", $('#divCollation'), result, Enums.CREATE_INDEX_OPTIONS);
 
     if ($.inArray("UNIQUE", Session.get(Helper.strSessionSelectedOptions)) != -1) {
         var uniqueVal = $('#divUnique').iCheck('update')[0].checked;
         if (uniqueVal) {
             result[Enums.CREATE_INDEX_OPTIONS.UNIQUE] = uniqueVal;
+        }
+    }
+
+    if ($.inArray("DROP_DUPS", Session.get(Helper.strSessionSelectedOptions)) != -1) {
+        var dropDups = $('#divDropDups').iCheck('update')[0].checked;
+        if (dropDups) {
+            result[Enums.CREATE_INDEX_OPTIONS.DROP_DUPS] = dropDups;
+        }
+    }
+
+    if ($.inArray("EXPIRE_AFTER_SECONDS", Session.get(Helper.strSessionSelectedOptions)) != -1) {
+        var expire = $('#inputExpireAfterSeconds').val();
+        if (expire) {
+            result[Enums.CREATE_INDEX_OPTIONS.EXPIRE_AFTER_SECONDS] = parseInt(expire);
         }
     }
 

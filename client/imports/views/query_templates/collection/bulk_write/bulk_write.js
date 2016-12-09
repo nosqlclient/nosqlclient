@@ -2,7 +2,9 @@ import {Template} from 'meteor/templating';
 import {Meteor} from 'meteor/meteor';
 import {Session} from 'meteor/session';
 import Helper from '/client/imports/helper';
+import Enums from '/lib/imports/enums';
 import {initExecuteQuery} from '/client/imports/views/pages/browse_collection/browse_collection';
+import {getBulkWriteOptions} from '/client/imports/views/query_templates_options/bulk_write_options/bulk_write_options';
 
 import './bulk_write.html';
 
@@ -12,12 +14,27 @@ import './bulk_write.html';
 
 Template.bulkWrite.onRendered(function () {
     Helper.initializeCodeMirror($('#divBulkWrite'), 'txtBulkWrite');
+    initializeOptions();
 });
+
+const initializeOptions = function () {
+    var cmb = $('#cmbBulkWriteOptions');
+    $.each(Helper.sortObjectByKey(Enums.BULK_WRITE_OPTIONS), function (key, value) {
+        cmb.append($("<option></option>")
+            .attr("value", key)
+            .text(value));
+    });
+
+    cmb.chosen();
+    Helper.setOptionsComboboxChangeEvent(cmb);
+};
+
 
 Template.bulkWrite.executeQuery = function (historyParams) {
     initExecuteQuery();
     var selectedCollection = Session.get(Helper.strSessionSelectedCollection);
     var operations = historyParams ? JSON.stringify(historyParams.selector) : Helper.getCodeMirrorValue($('#divBulkWrite'));
+    var options = historyParams ? historyParams.options : getBulkWriteOptions();
 
     operations = Helper.convertAndCheckJSON(operations);
     if (operations["ERROR"]) {
@@ -27,10 +44,11 @@ Template.bulkWrite.executeQuery = function (historyParams) {
     }
 
     var params = {
-        selector: operations
+        selector: operations,
+        options: options
     };
 
-    Meteor.call("bulkWrite", selectedCollection, operations, function (err, result) {
+    Meteor.call("bulkWrite", selectedCollection, operations, options, function (err, result) {
             Helper.renderAfterQueryExecution(err, result, false, "bulkWrite", params, (historyParams ? false : true));
         }
     );

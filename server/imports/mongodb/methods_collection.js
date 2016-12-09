@@ -79,10 +79,10 @@ export const proceedQueryExecution = function (selectedCollection, methodArray, 
 };
 
 Meteor.methods({
-    bulkWrite(selectedCollection, operations) {
+    bulkWrite(selectedCollection, operations, options) {
         const methodArray = [
             {
-                "bulkWrite": [operations]
+                "bulkWrite": [operations, options]
             }
         ];
         return proceedQueryExecution(selectedCollection, methodArray);
@@ -309,10 +309,10 @@ Meteor.methods({
         return proceedQueryExecution(selectedCollection, methodArray);
     },
 
-    count(selectedCollection, selector) {
+    count(selectedCollection, selector, options) {
         const methodArray = [
             {
-                "count": [selector]
+                "count": [selector, options]
             }
         ];
         return proceedQueryExecution(selectedCollection, methodArray);

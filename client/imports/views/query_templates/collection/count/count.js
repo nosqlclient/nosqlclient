@@ -2,23 +2,40 @@ import {Template} from 'meteor/templating';
 import {Meteor} from 'meteor/meteor';
 import Helper from '/client/imports/helper';
 import {Session} from 'meteor/session';
+import Enums from '/lib/imports/enums';
 import {initExecuteQuery} from '/client/imports/views/pages/browse_collection/browse_collection';
 import {getSelectorValue} from '/client/imports/views/query_templates_options/selector/selector';
+import {getCountOptions} from '/client/imports/views/query_templates_options/count_options/count_options';
 
 import './count.html';
 
-var toastr = require('toastr');
-var Ladda = require('ladda');
+const toastr = require('toastr');
+const Ladda = require('ladda');
 /**
  * Created by RSercan on 2.1.2016.
  */
 Template.count.onRendered(function () {
+    initializeOptions();
 });
+
+
+const initializeOptions = function () {
+    var cmb = $('#cmbCountOptions');
+    $.each(Helper.sortObjectByKey(Enums.COUNT_OPTIONS), function (key, value) {
+        cmb.append($("<option></option>")
+            .attr("value", key)
+            .text(value));
+    });
+
+    cmb.chosen();
+    Helper.setOptionsComboboxChangeEvent(cmb);
+};
 
 Template.count.executeQuery = function (historyParams) {
     initExecuteQuery();
     var selectedCollection = Session.get(Helper.strSessionSelectedCollection);
     var selector = historyParams ? JSON.stringify(historyParams.selector) : getSelectorValue();
+    var options = historyParams ? historyParams.options : getCountOptions();
 
     selector = Helper.convertAndCheckJSON(selector);
     if (selector["ERROR"]) {
@@ -28,10 +45,11 @@ Template.count.executeQuery = function (historyParams) {
     }
 
     var params = {
-        selector: selector
+        selector: selector,
+        options: options
     };
 
-    Meteor.call("count", selectedCollection, selector, function (err, result) {
+    Meteor.call("count", selectedCollection, selector, options, function (err, result) {
             Helper.renderAfterQueryExecution(err, result, false, "count", params, (historyParams ? false : true));
         }
     );
