@@ -24,6 +24,18 @@ Template.finalize.onRendered(function () {
     Helper.initializeCodeMirror($('#divFinalize'), 'txtFinalize');
 });
 
+Template.jsMode.onRendered(function () {
+    $('#divJsMode').iCheck({
+        checkboxClass: 'icheckbox_square-green'
+    });
+});
+
+Template.keepTemp.onRendered(function () {
+    $('#divKeepTemp').iCheck({
+        checkboxClass: 'icheckbox_square-green'
+    });
+});
+
 Template.verbose.onRendered(function () {
     $('#divVerbose').iCheck({
         checkboxClass: 'icheckbox_square-green'
@@ -57,6 +69,20 @@ export const getOptions = function () {
         var verBose = $('#divVerbose').iCheck('update')[0].checked;
         if (verBose) {
             result[Enums.MAP_REDUCE_OPTIONS.VERBOSE] = verBose;
+        }
+    }
+
+    if ($.inArray("KEEP_TEMP", Session.get(Helper.strSessionSelectedOptions)) != -1) {
+        var keepTemp = $('#divKeepTemp').iCheck('update')[0].checked;
+        if (keepTemp) {
+            result[Enums.MAP_REDUCE_OPTIONS.KEEP_TEMP] = keepTemp;
+        }
+    }
+
+    if ($.inArray("JS_MODE", Session.get(Helper.strSessionSelectedOptions)) != -1) {
+        var jsMode = $('#divJsMode').iCheck('update')[0].checked;
+        if (jsMode) {
+            result[Enums.MAP_REDUCE_OPTIONS.JS_MODE] = jsMode;
         }
     }
 

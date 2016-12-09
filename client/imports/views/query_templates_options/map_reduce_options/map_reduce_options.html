@@ -20,9 +20,43 @@
     {{#if isOptionSelected "VERBOSE"}}
         {{> verbose}}
     {{/if}}
+    {{#if isOptionSelected "KEEP_TEMP"}}
+        {{> keepTemp}}
+    {{/if}}
+    {{#if isOptionSelected "JS_MODE"}}
+        {{> jsMode}}
+    {{/if}}
     {{#if isOptionSelected "BYPASS_DOCUMENT_VALIDATION"}}
         {{> bypassDocumentValidation}}
     {{/if}}
+</template>
+
+<template name="keepTemp">
+    <div class="form-group">
+        <label class="col-lg-1 control-label">Keep Temp
+        </label>
+        <div id="divKeepTemp" class="col-lg-11">
+            <input id="inputKeepTemp" type="checkbox"
+                   class="form-control"
+                   checked=""
+                   style="position: absolute; opacity: 0;"/>
+            <span class="help-block m-b-none">Keep temporary data</span>
+        </div>
+    </div>
+</template>
+
+<template name="jsMode">
+    <div class="form-group">
+        <label class="col-lg-1 control-label">JS Mode
+        </label>
+        <div id="divJsMode" class="col-lg-11">
+            <input id="inputJsMode" type="checkbox"
+                   class="form-control"
+                   checked=""
+                   style="position: absolute; opacity: 0;"/>
+            <span class="help-block m-b-none">It is possible to make the execution stay in JS.<b> Provided in MongoDB > 2.0.X</b></span>
+        </div>
+    </div>
 </template>
 
 <template name="out">
