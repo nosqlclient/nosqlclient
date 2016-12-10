@@ -73,7 +73,7 @@ const gatherCommandAutoCompletions = function (editorValue, curWord) {
 
     switch (analyzeEditorValue(editorValue)) {
         case 'collection':
-            return lastRegex = ['aggregate(', 'bulkWrite(', 'count(', 'copyTo(',
+            return lastRegex = ['aggregate(', 'bulkWrite(', 'count(', 'copyTo(', 'createView(',
                 'craeteIndex(', 'dataSize(', 'deleteOne(', 'deleteMany(',
                 'distinct(', 'drop(', 'dropIndex(', 'dropIndexes(', 'ensureIndex(', 'explain(', 'find(',
                 'findAndModify(', 'findOne(', 'findOneAndDelete(', 'findOneAndReplace(',
@@ -104,7 +104,8 @@ const gatherCommandAutoCompletions = function (editorValue, curWord) {
             return lastRegex = ['add(', 'addArb(', 'conf(', 'freeze(', 'help(', 'initiate(', 'printReplicationInfo(', 'printSlaveReplicationInfo(',
                 'reconfig(', 'remove(', 'slaveOk(', 'status(', 'stepDown(', 'syncFrom('];
         case 'sharding':
-            return lastRegex = ['_adminCommand(', 'getBalancerLockDetails(', '_checkFullName(', '_checkMongos(', '_lastMigration(', 'addShard(', 'addShardTag(',
+            return lastRegex = ['_adminCommand(', 'addShardToZone(', 'removeShardFromZone(', 'getBalancerLockDetails(', '_checkFullName(', '_checkMongos(', '_lastMigration(',
+                'addShard(', 'addShardTag(', 'updateZoneKeyRange(', 'removeRangeFromZone(',
                 'addTagRange(', 'removeTagRange(', 'disableBalancing(', 'enableBalancing(', 'enableSharding(', 'getBalancerHost(', 'getBalancerState(', 'help(', 'isBalancerRunning(',
                 'moveChunk(', 'removeShardTag(', 'setBalancerState(', 'shardCollection(', 'splitAt(', 'splitFind(', 'startBalancer(', 'status(', 'stopBalancer(', 'waitForBalancer(',
                 'waitForBalancerOff(', 'waitForDLock(', 'waitForPingChange('];

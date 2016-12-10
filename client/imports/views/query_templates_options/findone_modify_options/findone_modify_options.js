@@ -2,6 +2,7 @@ import Helper from '/client/imports/helper';
 import Enums from '/lib/imports/enums';
 import {Session} from 'meteor/session';
 
+import '/client/imports/views/query_templates_options/max_time_ms/max_time_ms.html';
 import '/client/imports/views/query_templates_options/project/project';
 import '/client/imports/views/query_templates_options/sort/sort';
 import '/client/imports/views/query_templates_options/return_original/return_original';
@@ -22,6 +23,13 @@ export const getOptions = function () {
         var returnOrgVal = $('#divReturnOriginal').iCheck('update')[0].checked;
         if (returnOrgVal) {
             result[Enums.FINDONE_MODIFY_OPTIONS.RETURN_ORIGINAL] = returnOrgVal;
+        }
+    }
+
+    if ($.inArray("MAX_TIME_MS", Session.get(Helper.strSessionSelectedOptions)) != -1) {
+        let maxTimeMsVal = $('#inputMaxTimeMs').val();
+        if (maxTimeMsVal) {
+            result[Enums.FINDONE_MODIFY_OPTIONS.MAX_TIME_MS] = parseInt(maxTimeMsVal);
         }
     }
 

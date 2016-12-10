@@ -142,10 +142,10 @@ Meteor.methods({
         return proceedQueryExecution(methodArray, true);
     },
 
-    command (command, runOnAdminDB) {
+    command (command, runOnAdminDB, options) {
         const methodArray = [
             {
-                "command": [command]
+                "command": [command, options]
             }
         ];
         return proceedQueryExecution(methodArray, runOnAdminDB);

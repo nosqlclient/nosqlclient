@@ -8,8 +8,8 @@ import {getOptions} from '/client/imports/views/query_templates_options/map_redu
 
 import './map_reduce.html';
 
-var toastr = require('toastr');
-var Ladda = require('ladda');
+const toastr = require('toastr');
+const Ladda = require('ladda');
 /**
  * Created by RSercan on 3.1.2016.
  */

@@ -5,7 +5,8 @@ import {Session} from 'meteor/session';
 
 import '/client/imports/views/query_templates_options/sort/sort';
 import '/client/imports/views/query_templates_options/limit/limit.html';
-import '/client/imports/views/query_templates_common/selector/selector';
+import '/client/imports/views/query_templates_options/selector/selector';
+import '/client/imports/views/query_templates_options/bypass_document_validation/bypass_document_validation';
 
 import './map_reduce_options.html';
 /**
@@ -23,18 +24,23 @@ Template.finalize.onRendered(function () {
     Helper.initializeCodeMirror($('#divFinalize'), 'txtFinalize');
 });
 
+Template.jsMode.onRendered(function () {
+    $('#divJsMode').iCheck({
+        checkboxClass: 'icheckbox_square-green'
+    });
+});
+
+Template.keepTemp.onRendered(function () {
+    $('#divKeepTemp').iCheck({
+        checkboxClass: 'icheckbox_square-green'
+    });
+});
+
 Template.verbose.onRendered(function () {
     $('#divVerbose').iCheck({
         checkboxClass: 'icheckbox_square-green'
     });
 });
-
-Template.bypassDocumentValidation.onRendered(function () {
-    $('#divBypassDocumentValidation').iCheck({
-        checkboxClass: 'icheckbox_square-green'
-    });
-});
-
 
 export const getOptions = function () {
     var result = {};
@@ -63,6 +69,20 @@ export const getOptions = function () {
         var verBose = $('#divVerbose').iCheck('update')[0].checked;
         if (verBose) {
             result[Enums.MAP_REDUCE_OPTIONS.VERBOSE] = verBose;
+        }
+    }
+
+    if ($.inArray("KEEP_TEMP", Session.get(Helper.strSessionSelectedOptions)) != -1) {
+        var keepTemp = $('#divKeepTemp').iCheck('update')[0].checked;
+        if (keepTemp) {
+            result[Enums.MAP_REDUCE_OPTIONS.KEEP_TEMP] = keepTemp;
+        }
+    }
+
+    if ($.inArray("JS_MODE", Session.get(Helper.strSessionSelectedOptions)) != -1) {
+        var jsMode = $('#divJsMode').iCheck('update')[0].checked;
+        if (jsMode) {
+            result[Enums.MAP_REDUCE_OPTIONS.JS_MODE] = jsMode;
         }
     }
 

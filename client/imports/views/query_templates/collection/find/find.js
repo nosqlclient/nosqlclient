@@ -5,9 +5,10 @@ import Helper from '/client/imports/helper';
 import Enums from '/lib/imports/enums';
 import {Settings} from '/lib/imports/collections/settings';
 import {initExecuteQuery} from '/client/imports/views/pages/browse_collection/browse_collection';
-import {getSelectorValue} from '/client/imports/views/query_templates_common/selector/selector';
+import {getSelectorValue} from '/client/imports/views/query_templates_options/selector/selector';
 import {getCursorOptions} from '/client/imports/views/query_templates_options/cursor_options/cursor_options';
 
+import '/client/imports/views/query_templates_options/explain/explain';
 import './find.html';
 
 var toastr = require('toastr');
@@ -15,7 +16,6 @@ var Ladda = require('ladda');
 /**
  * Created by sercan on 30.12.2015.
  */
-
 
 const proceedFindQuery = function (selectedCollection, selector, cursorOptions, saveHistory, exportFormat) {
     var executeExplain = $('#inputExecuteExplain').iCheck('update')[0].checked;
@@ -60,10 +60,6 @@ const initializeOptions = function () {
     cmb.chosen();
     Helper.setOptionsComboboxChangeEvent(cmb);
 
-    $('#divExecuteExplain').iCheck({
-        checkboxClass: 'icheckbox_square-green'
-    });
-    $('#inputExecuteExplain').iCheck('uncheck');
 };
 
 Template.find.onRendered(function () {

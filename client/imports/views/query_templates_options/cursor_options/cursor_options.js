@@ -17,6 +17,7 @@ import './cursor_options.html';
 
 export const getCursorOptions = function () {
     var result = {};
+
     Helper.checkAndAddOption("PROJECT", $('#divProject'), result, Enums.CURSOR_OPTIONS);
     Helper.checkAndAddOption("MAX", $('#divMax'), result, Enums.CURSOR_OPTIONS);
     Helper.checkAndAddOption("MIN", $('#divMin'), result, Enums.CURSOR_OPTIONS);

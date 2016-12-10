@@ -1,0 +1,54 @@
+<template name="group">
+    <div class="form-group">
+        <label class="col-lg-1 control-label">Keys</label>
+        <div id="divKeys" class="col-lg-11">
+            <textarea id="txtKeys" class="form-control"></textarea>
+            <span class="help-block m-b-none">An <b>object, array or function</b> expressing the keys to group by</span>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="col-lg-1 control-label">Condition</label>
+        <div id="divCondition" class="col-lg-11">
+            <textarea id="txtCondition" class="form-control"></textarea>
+            <span class="help-block m-b-none">An optional condition that must be true for a row to be considered</span>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="col-lg-1 control-label">Initial</label>
+        <div id="divInitial" class="col-lg-11">
+            <textarea id="txtInitial" class="form-control"></textarea>
+            <span class="help-block m-b-none">An optional condition that must be true for a row to be considered</span>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="col-lg-1 control-label">Reduce</label>
+        <div id="divReduce" class="col-lg-11">
+            <textarea id="txtReduce" class="form-control"></textarea>
+            <span class="help-block m-b-none">The reduce function aggregates (reduces) the objects iterated</span>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="col-lg-1 control-label">Finalize</label>
+        <div id="divFinalize" class="col-lg-11">
+            <textarea id="txtFinalize" class="form-control"></textarea>
+            <span class="help-block m-b-none">An optional function to be run on each item in the result set just before the item is returned</span>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="col-lg-1 control-label">Command
+        </label>
+        <div id="divCommand" class="col-lg-11">
+            <input id="inputCommand" type="checkbox"
+                   class="form-control"
+                   checked=""
+                   style="position: absolute; opacity: 0;"/>
+            <span class="help-block m-b-none">Specify if you wish to run using the <b>internal group command or using eval</b></span>
+
+        </div>
+    </div>
+</template>

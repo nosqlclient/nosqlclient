@@ -79,10 +79,10 @@ export const proceedQueryExecution = function (selectedCollection, methodArray, 
 };
 
 Meteor.methods({
-    bulkWrite(selectedCollection, operations) {
+    bulkWrite(selectedCollection, operations, options) {
         const methodArray = [
             {
-                "bulkWrite": [operations]
+                "bulkWrite": [operations, options]
             }
         ];
         return proceedQueryExecution(selectedCollection, methodArray);
@@ -156,10 +156,10 @@ Meteor.methods({
         return proceedQueryExecution(selectedCollection, methodArray);
     },
 
-    insertMany(selectedCollection, docs) {
+    insertMany(selectedCollection, docs, options) {
         const methodArray = [
             {
-                "insertMany": [docs]
+                "insertMany": [docs, options]
             }
         ];
         return proceedQueryExecution(selectedCollection, methodArray);
@@ -202,10 +202,10 @@ Meteor.methods({
         return proceedQueryExecution(selectedCollection, methodArray);
     },
 
-    distinct(selectedCollection, selector, fieldName) {
+    distinct(selectedCollection, selector, fieldName, options) {
         const methodArray = [
             {
-                "distinct": [fieldName, selector]
+                "distinct": [fieldName, selector, options]
             }
         ];
 
@@ -300,21 +300,31 @@ Meteor.methods({
         return proceedQueryExecution(selectedCollection, methodArray);
     },
 
-    aggregate(selectedCollection, pipeline) {
+    aggregate(selectedCollection, pipeline, options) {
         const methodArray = [
             {
-                "aggregate": [pipeline]
+                "aggregate": [pipeline, options],
             }
         ];
         return proceedQueryExecution(selectedCollection, methodArray);
     },
 
-    count(selectedCollection, selector) {
+    count(selectedCollection, selector, options) {
         const methodArray = [
             {
-                "count": [selector]
+                "count": [selector, options]
             }
         ];
+        return proceedQueryExecution(selectedCollection, methodArray);
+    },
+
+    group (selectedCollection, keys, condition, initial, reduce, finalize, command){
+        const methodArray = [
+            {
+                "group": [keys, condition, initial, reduce, finalize, command]
+            }
+        ];
+
         return proceedQueryExecution(selectedCollection, methodArray);
     }
 });

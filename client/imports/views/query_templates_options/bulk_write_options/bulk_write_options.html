@@ -1,0 +1,22 @@
+<template name="bulkWriteOptions">
+    {{#if isOptionSelected "BYPASS_DOCUMENT_VALIDATION"}}
+        {{> bypassDocumentValidation}}
+    {{/if}}
+
+    {{#if isOptionSelected "ORDERED"}}
+        {{> ordered}}
+    {{/if}}
+</template>
+
+<template name="ordered">
+    <div class="form-group">
+        <label class="col-lg-1 control-label">Ordered
+        </label>
+        <div id="divOrdered" class="col-lg-11">
+            <input id="inputOrdered" type="checkbox"
+                   class="form-control"
+                   checked=""
+                   style="position: absolute; opacity: 0;"/>
+        </div>
+    </div>
+</template>

@@ -17,6 +17,41 @@
     {{#if isOptionSelected "MIN"}}
         {{> min}}
     {{/if}}
+    {{#if isOptionSelected "EXPIRE_AFTER_SECONDS"}}
+        {{> expireAfterSeconds}}
+    {{/if}}
+    {{#if isOptionSelected "DROP_DUPS"}}
+        {{> dropDups}}
+    {{/if}}
+    {{#if isOptionSelected "COLLATION"}}
+        {{> collation}}
+    {{/if}}
+</template>
+
+<template name="dropDups">
+    <div class="form-group">
+        <label class="col-lg-1 control-label">Drop Dups</label>
+        <div class="col-lg-11">
+            <div id="divDropDups" class="i-checks">
+                <input type="checkbox" value=""
+                       class="form-control"
+                       checked=""
+                       style="position: absolute; opacity: 0;"/>
+                <span class="help-block m-b-none">A unique index cannot be created on a key that has pre-existing duplicate values. If you would like to create the index anyway,
+                    keeping the first document the database indexes and deleting all subsequent documents that have duplicate value</span>
+            </div>
+        </div>
+    </div>
+</template>
+
+<template name="expireAfterSeconds">
+    <div class="form-group">
+        <label class="col-lg-1 control-label">Expire (Seconds)</label>
+        <div class="col-lg-11">
+            <input id="inputExpireAfterSeconds" min="0" required="true" type="number" class="form-control">
+            <span class="help-block m-b-none">Allows you to expire data on indexes applied to a data <b>MongoDB 2.2 or higher</b></span>
+        </div>
+    </div>
 </template>
 
 <template name="unique">

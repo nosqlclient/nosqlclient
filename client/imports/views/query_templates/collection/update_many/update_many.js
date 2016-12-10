@@ -4,7 +4,7 @@ import {Session} from 'meteor/session';
 import Helper from '/client/imports/helper';
 import Enums from '/lib/imports/enums';
 import {initExecuteQuery} from '/client/imports/views/pages/browse_collection/browse_collection';
-import {getSelectorValue} from '/client/imports/views/query_templates_common/selector/selector';
+import {getSelectorValue} from '/client/imports/views/query_templates_options/selector/selector';
 
 import '/client/imports/views/query_templates_options/set/set';
 import '/client/imports/views/query_templates_options/upsert/upsert';

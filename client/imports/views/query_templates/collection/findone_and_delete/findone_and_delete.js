@@ -4,7 +4,7 @@ import {Session} from 'meteor/session';
 import Helper from '/client/imports/helper';
 import Enums from '/lib/imports/enums';
 import {initExecuteQuery} from '/client/imports/views/pages/browse_collection/browse_collection';
-import {getSelectorValue} from '/client/imports/views/query_templates_common/selector/selector';
+import {getSelectorValue} from '/client/imports/views/query_templates_options/selector/selector';
 import {getOptions} from '/client/imports/views/query_templates_options/findone_modify_options/findone_modify_options';
 
 import './findone_and_delete.html';
@@ -20,7 +20,7 @@ Template.findOneAndDelete.onRendered(function () {
 const initializeOptions = function () {
     var cmb = $('#cmbFindOneModifyOptions');
     $.each(Helper.sortObjectByKey(Enums.FINDONE_MODIFY_OPTIONS), function (key, value) {
-        // upsert and returnOriginal is not for delete
+        // upsert and returnOriginal and upsert are not for delete
         if (value != Enums.FINDONE_MODIFY_OPTIONS.UPSERT && value != Enums.FINDONE_MODIFY_OPTIONS.RETURN_ORIGINAL) {
             cmb.append($("<option></option>")
                 .attr("value", key)

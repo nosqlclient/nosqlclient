@@ -34,6 +34,7 @@ import "/client/imports/views/query_templates/collection/rename/rename";
 import "/client/imports/views/query_templates/collection/stats/stats";
 import "/client/imports/views/query_templates/collection/update_many/update_many";
 import "/client/imports/views/query_templates/collection/update_one/update_one";
+import "/client/imports/views/query_templates/collection/group/group";
 
 import '../../query_templates/collection/find/query_wizard/query_wizard';
 import "./browse_collection.html";
@@ -41,18 +42,18 @@ import "./browse_collection.html";
 
 // queries
 
-var JSONEditor = require('jsoneditor');
-var toastr = require('toastr');
-var Ladda = require('ladda');
+const JSONEditor = require('jsoneditor');
+const toastr = require('toastr');
+const Ladda = require('ladda');
 require('jquery-contextmenu');
 
 const init = function () {
-    var cmb = $('#cmbQueries');
+    let cmb = $('#cmbQueries');
     cmb.append($("<optgroup id='optGroupCollectionQueries' label='Collection Queries'></optgroup>"));
-    var cmbOptGroupCollection = cmb.find('#optGroupCollectionQueries');
+    let cmbOptGroupCollection = cmb.find('#optGroupCollectionQueries');
 
     $.each(Helper.sortObjectByKey(Enums.QUERY_TYPES), function (key, value) {
-        var option = $("<option></option>")
+        let option = $("<option></option>")
             .attr("value", key)
             .text(value);
         if (value === Enums.QUERY_TYPES.FIND) {
@@ -73,8 +74,8 @@ const init = function () {
         items: {
             close_others: {
                 name: "Close Others", icon: "fa-times-circle", callback: function () {
-                    var tabId = $(this).children('a').attr('href');
-                    var resultTabs = $('#resultTabs li');
+                    let tabId = $(this).children('a').attr('href');
+                    let resultTabs = $('#resultTabs').find('li');
                     resultTabs.each(function (idx, li) {
                         let select = $(li);
                         if (select.children('a').attr('href') !== tabId) {
@@ -90,7 +91,7 @@ const init = function () {
             },
             close_all: {
                 name: "Close All Tabs", icon: "fa-times", callback: function () {
-                    var resultTabs = $('#resultTabs li');
+                    let resultTabs = $('#resultTabs li');
                     resultTabs.each(function (idx, li) {
                         let select = $(li);
                         $(select.children('a').attr('href')).remove();
@@ -588,6 +589,9 @@ Template.browseCollection.helpers({
         switch (Session.get(Helper.strSessionSelectedQuery)) {
             case Enums.QUERY_TYPES.FINDONE_AND_REPLACE:
                 return Spacebars.SafeString('This query replaces whole document which matched by <strong>selector</strong> with the <strong>set</strong> object');
+
+            case Enums.QUERY_TYPES.GROUP:
+                return Spacebars.SafeString('<strong>Deprecated since version 3.4</strong> Use db.collection.aggregate() with the $group stage or db.collection.mapReduce() instead');
 
             case Enums.QUERY_TYPES.FINDONE_AND_DELETE:
                 return Spacebars.SafeString('<strong><font color=\'red\'>CAUTION:</font></strong> This query removes whole document which matched by <strong>selector</strong>');
