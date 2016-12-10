@@ -17,7 +17,7 @@
     "datatables.net-responsive": "^2.1.0",
     "datatables.net-responsive-bs": "^2.1.0",
     "fbbk-json": "1.0.1",
-    "jquery": "^3.1.1",
+    "jquery": "^2.2.0",
     "jquery-contextmenu": "2.4.1",
     "jsoneditor": "^5.5.6",
     "ladda": "^1.0.0",
