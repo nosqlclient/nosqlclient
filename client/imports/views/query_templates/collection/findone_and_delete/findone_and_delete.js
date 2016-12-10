@@ -20,7 +20,7 @@ Template.findOneAndDelete.onRendered(function () {
 const initializeOptions = function () {
     var cmb = $('#cmbFindOneModifyOptions');
     $.each(Helper.sortObjectByKey(Enums.FINDONE_MODIFY_OPTIONS), function (key, value) {
-        // upsert and returnOriginal is not for delete
+        // upsert and returnOriginal and upsert are not for delete
         if (value != Enums.FINDONE_MODIFY_OPTIONS.UPSERT && value != Enums.FINDONE_MODIFY_OPTIONS.RETURN_ORIGINAL) {
             cmb.append($("<option></option>")
                 .attr("value", key)

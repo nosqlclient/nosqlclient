@@ -316,5 +316,15 @@ Meteor.methods({
             }
         ];
         return proceedQueryExecution(selectedCollection, methodArray);
+    },
+
+    group (selectedCollection, keys, condition, initial, reduce, finalize, command){
+        const methodArray = [
+            {
+                "group": [keys, condition, initial, reduce, finalize, command]
+            }
+        ];
+
+        return proceedQueryExecution(selectedCollection, methodArray);
     }
 });
