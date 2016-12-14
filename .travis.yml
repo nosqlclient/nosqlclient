@@ -17,5 +17,4 @@ before_script:
   - meteor npm install
 
 script:
-  - meteor add practicalmeteor:mocha
-  - meteor test --once --driver-package practicalmeteor:mocha
+  - meteor bundle
