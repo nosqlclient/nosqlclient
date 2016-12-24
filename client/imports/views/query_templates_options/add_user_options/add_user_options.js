@@ -5,7 +5,7 @@ import Enums from '/lib/imports/enums';
 
 import './add_user_options.html';
 
-var toastr = require('toastr');
+const toastr = require('toastr');
 /**
  * Created by RSercan on 10.1.2016.
  */
@@ -18,7 +18,7 @@ Template.roles.onRendered(function () {
 });
 
 export const getOptions = function () {
-    var result = {};
+    const result = {};
     Helper.checkAndAddOption("CUSTOM_DATA", $('#divCustomData'), result, Enums.ADD_USER_OPTIONS);
     Helper.checkAndAddOption("ROLES", $('#divRoles'), result, Enums.ADD_USER_OPTIONS);
 

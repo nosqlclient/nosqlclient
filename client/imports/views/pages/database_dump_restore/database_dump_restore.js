@@ -12,21 +12,21 @@ import './database_dump_restore.html';
 
 require('bootstrap-filestyle');
 
-var toastr = require('toastr');
-var Ladda = require('ladda');
+const toastr = require('toastr');
+const Ladda = require('ladda');
 /**
  * Created by RSercan on 17.1.2016.
  */
 
 const initCollectionsForImport = function () {
-    var cmb = $('#cmbImportCollection');
+    const cmb = $('#cmbImportCollection');
     cmb.empty();
     cmb.prepend("<option value=''></option>");
 
     cmb.append($("<optgroup id='optCollections' label='Collections'></optgroup>"));
-    var cmbGroup = cmb.find('#optCollections');
+    const cmbGroup = cmb.find('#optCollections');
 
-    var connection = Connections.findOne({_id: Session.get(Helper.strSessionConnection)});
+    const connection = Connections.findOne({_id: Session.get(Helper.strSessionConnection)});
 
 
     Meteor.call('listCollectionNames', connection.databaseName, function (err, result) {
@@ -34,7 +34,7 @@ const initCollectionsForImport = function () {
             Helper.showMeteorFuncError(err, result, "Couldn't fetch collection names");
         }
         else {
-            for (var i = 0; i < result.result.length; i++) {
+            for (let i = 0; i < result.result.length; i++) {
                 cmbGroup.append($("<option></option>")
                     .attr("value", result.result[i].name)
                     .text(result.result[i].name));
@@ -53,10 +53,10 @@ const initCollectionsForImport = function () {
 };
 
 const populateDatatable = function () {
-    var laddaButton = Ladda.create(document.querySelector('#btnTakeDump'));
+    const laddaButton = Ladda.create(document.querySelector('#btnTakeDump'));
     laddaButton.start();
 
-    var tblDumps = $('#tblDumps');
+    const tblDumps = $('#tblDumps');
     if ($.fn.dataTable.isDataTable('#tblDumps')) {
         tblDumps.DataTable().destroy();
     }
@@ -96,10 +96,10 @@ const populateDatatable = function () {
                 data: 'sizeInBytes',
                 width: '10%',
                 render: function (cellData) {
-                    var scale = 1;
-                    var text = "Bytes";
+                    let scale = 1;
+                    let text = "Bytes";
 
-                    var settings = Settings.findOne();
+                    const settings = Settings.findOne();
                     switch (settings.scale) {
                         case "MegaBytes":
                             scale = 1024 * 1024;
@@ -115,8 +115,7 @@ const populateDatatable = function () {
                             break;
                     }
 
-                    var result = isNaN(Number(cellData / scale).toFixed(2)) ? "0.00" : Number(cellData / scale).toFixed(2);
-                    return result + " " + text;
+                    return isNaN(Number(cellData / scale).toFixed(2)) ? "0.00" : Number(cellData / scale).toFixed(2)+" "+text;
                 },
                 className: 'center'
             },
@@ -163,9 +162,9 @@ Template.databaseDumpRestore.onRendered(function () {
 
 Template.databaseDumpRestore.events({
     'click #btnProceedMongoimport'(){
-        var inputSelector = $('#inputImportJsonFile');
-        var selectedCollection = $('#cmbImportCollection').val();
-        var inputFile = inputSelector.siblings('.bootstrap-filestyle').children('input').val();
+        const inputSelector = $('#inputImportJsonFile');
+        let selectedCollection = $('#cmbImportCollection').val();
+        let inputFile = inputSelector.siblings('.bootstrap-filestyle').children('input').val();
         if (!inputFile || inputSelector.get(0).files.length === 0) {
             toastr.info('Please select a file !');
             return;
@@ -176,10 +175,10 @@ Template.databaseDumpRestore.events({
             return;
         }
 
-        var laddaButton = Ladda.create(document.querySelector('#btnProceedMongoimport'));
+        const laddaButton = Ladda.create(document.querySelector('#btnProceedMongoimport'));
         laddaButton.start();
 
-        var fileReader = new FileReader();
+        const fileReader = new FileReader();
         fileReader.onload = function (file) {
             let fileContent = new Uint8Array(file.target.result);
             Meteor.call('mongoimport', fileContent, selectedCollection, function (err, result) {
@@ -197,9 +196,9 @@ Template.databaseDumpRestore.events({
     },
 
     'change #inputImportJsonFile'() {
-        var inputSelector = $('#inputImportJsonFile');
-        var blob = inputSelector[0].files[0];
-        var fileInput = inputSelector.siblings('.bootstrap-filestyle').children('input');
+        const inputSelector = $('#inputImportJsonFile');
+        const blob = inputSelector[0].files[0];
+        const fileInput = inputSelector.siblings('.bootstrap-filestyle').children('input');
 
         if (blob) {
             fileInput.val(blob.name);
@@ -217,9 +216,9 @@ Template.databaseDumpRestore.events({
 
     'click #btnTakeDump'(e) {
         e.preventDefault();
-        var settings = Settings.findOne();
+        const settings = Settings.findOne();
 
-        var laddaButton = Ladda.create(document.querySelector('#btnTakeDump'));
+        const laddaButton = Ladda.create(document.querySelector('#btnTakeDump'));
         laddaButton.start();
 
         Meteor.call('takeDump', Session.get(Helper.strSessionConnection), settings.dumpPath, function (err) {
@@ -247,10 +246,10 @@ Template.databaseDumpRestore.events({
                 closeOnConfirm: true
             }, function () {
 
-                var laddaButton = Ladda.create(document.querySelector('#btnTakeDump'));
+                const laddaButton = Ladda.create(document.querySelector('#btnTakeDump'));
                 laddaButton.start();
 
-                var dumpInfo = Session.get(Helper.strSessionSelectedDump);
+                const dumpInfo = Session.get(Helper.strSessionSelectedDump);
                 dumpInfo.status = Enums.DUMP_STATUS.IN_PROGRESS;
                 Meteor.call('updateDump', dumpInfo); // this is a simple update to notify user on UI
                 Meteor.call('restoreDump', Session.get(Helper.strSessionConnection), dumpInfo, function (err) {

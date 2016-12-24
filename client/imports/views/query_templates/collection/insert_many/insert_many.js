@@ -19,7 +19,7 @@ Template.insertMany.onRendered(function () {
 });
 
 const initializeOptions = function () {
-    var cmb = $('#cmbInsertManyOptions');
+    const cmb = $('#cmbInsertManyOptions');
     $.each(Helper.sortObjectByKey(Enums.INSERT_MANY_OPTIONS), function (key, value) {
         cmb.append($("<option></option>")
             .attr("value", key)
@@ -33,9 +33,9 @@ const initializeOptions = function () {
 
 Template.insertMany.executeQuery = function (historyParams) {
     initExecuteQuery();
-    var selectedCollection = Session.get(Helper.strSessionSelectedCollection);
-    var docs = historyParams ? JSON.stringify(historyParams.docs) : Helper.getCodeMirrorValue($('#divDocs'));
-    var options = historyParams ? historyParams.options : getOptions();
+    const selectedCollection = Session.get(Helper.strSessionSelectedCollection);
+    let docs = historyParams ? JSON.stringify(historyParams.docs) : Helper.getCodeMirrorValue($('#divDocs'));
+    const options = historyParams ? historyParams.options : getOptions();
 
     docs = Helper.convertAndCheckJSON(docs);
     if (docs["ERROR"]) {
@@ -44,13 +44,13 @@ Template.insertMany.executeQuery = function (historyParams) {
         return;
     }
 
-    var params = {
+    const params = {
         docs: docs,
         options: options
     };
 
     Meteor.call("insertMany", selectedCollection, docs, options, function (err, result) {
-        Helper.renderAfterQueryExecution(err, result, false, "insertMany", params, (historyParams ? false : true));
+        Helper.renderAfterQueryExecution(err, result, false, "insertMany", params, (!historyParams));
     });
 };
 

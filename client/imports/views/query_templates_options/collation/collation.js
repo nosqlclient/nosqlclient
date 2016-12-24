@@ -9,7 +9,3 @@ import './collation.html';
 Template.collation.onRendered(function () {
     Helper.initializeCodeMirror($('#divCollation'), 'txtCollation');
 });
-
-export const getCollationValue = function () {
-    return Helper.getCodeMirrorValue($('#divCollation'));
-};

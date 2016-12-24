@@ -9,8 +9,8 @@ import {getCursorOptions} from '/client/imports/views/query_templates_options/cu
 
 import './findone.html';
 
-var toastr = require('toastr');
-var Ladda = require('ladda');
+const toastr = require('toastr');
+const Ladda = require('ladda');
 /**
  * Created by RSercan on 1.1.2016.
  */
@@ -19,7 +19,7 @@ Template.findOne.onRendered(function () {
 });
 
 const initializeOptions = function () {
-    var cmb = $('#cmbFindOneCursorOptions');
+    const cmb = $('#cmbFindOneCursorOptions');
     $.each(Helper.sortObjectByKey(Enums.CURSOR_OPTIONS), function (key, value) {
         // dont add limit, it will be 1 already
         if (value != Enums.CURSOR_OPTIONS.LIMIT) {
@@ -35,9 +35,9 @@ const initializeOptions = function () {
 
 Template.findOne.executeQuery = function (historyParams) {
     initExecuteQuery();
-    var selectedCollection = Session.get(Helper.strSessionSelectedCollection);
-    var cursorOptions = historyParams ? historyParams.cursorOptions : getCursorOptions();
-    var selector = historyParams ? JSON.stringify(historyParams.selector) : getSelectorValue();
+    const selectedCollection = Session.get(Helper.strSessionSelectedCollection);
+    const cursorOptions = historyParams ? historyParams.cursorOptions : getCursorOptions();
+    let selector = historyParams ? JSON.stringify(historyParams.selector) : getSelectorValue();
 
     selector = Helper.convertAndCheckJSON(selector);
     if (selector["ERROR"]) {
@@ -52,13 +52,13 @@ Template.findOne.executeQuery = function (historyParams) {
         return;
     }
 
-    var params = {
+    const params = {
         selector: selector,
         cursorOptions: cursorOptions
     };
 
     Meteor.call("findOne", selectedCollection, selector, cursorOptions, function (err, result) {
-            Helper.renderAfterQueryExecution(err, result, false, "findOne", params, (historyParams ? false : true));
+            Helper.renderAfterQueryExecution(err, result, false, "findOne", params, (!historyParams));
         }
     );
 };

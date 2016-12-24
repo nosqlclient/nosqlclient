@@ -8,8 +8,8 @@ import {getOptions} from '/client/imports/views/query_templates_options/geo_hays
 
 import './geo_haystack_search.html';
 
-var toastr = require('toastr');
-var Ladda = require('ladda');
+const toastr = require('toastr');
+const Ladda = require('ladda');
 /**
  * Created by RSercan on 2.1.2016.
  */
@@ -18,7 +18,7 @@ Template.geoHaystackSearch.onRendered(function () {
 });
 
 const initializeOptions = function () {
-    var cmb = $('#cmbGeoHaystackSearchOptions');
+    const cmb = $('#cmbGeoHaystackSearchOptions');
     $.each(Helper.sortObjectByKey(Enums.GEO_HAYSTACK_SEARCH_OPTIONS), function (key, value) {
         cmb.append($("<option></option>")
             .attr("value", key)
@@ -31,18 +31,18 @@ const initializeOptions = function () {
 
 Template.geoHaystackSearch.executeQuery = function (historyParams) {
     initExecuteQuery();
-    var selectedCollection = Session.get(Helper.strSessionSelectedCollection);
-    var xAxis = historyParams ? historyParams.xAxis : $('#inputXAxis').val();
+    const selectedCollection = Session.get(Helper.strSessionSelectedCollection);
+    let xAxis = historyParams ? historyParams.xAxis : $('#inputXAxis').val();
     if (xAxis) {
         xAxis = parseInt(xAxis);
     }
 
-    var yAxis = historyParams ? historyParams.yAxis : $('#inputYAxis').val();
+    let yAxis = historyParams ? historyParams.yAxis : $('#inputYAxis').val();
     if (yAxis) {
         yAxis = parseInt(yAxis);
     }
 
-    var options = historyParams ? historyParams.options : getOptions();
+    const options = historyParams ? historyParams.options : getOptions();
 
     if (options["ERROR"]) {
         toastr.error("Syntax error: " + options["ERROR"]);
@@ -50,14 +50,14 @@ Template.geoHaystackSearch.executeQuery = function (historyParams) {
         return;
     }
 
-    var params = {
+    const params = {
         xAxis: xAxis,
         yAxis: yAxis,
         options: options
     };
 
     Meteor.call("geoHaystackSearch", selectedCollection, xAxis, yAxis, options, function (err, result) {
-        Helper.renderAfterQueryExecution(err, result, false, "geoHaystackSearch", params, (historyParams ? false : true));
+        Helper.renderAfterQueryExecution(err, result, false, "geoHaystackSearch", params, (!historyParams));
     });
 };
 

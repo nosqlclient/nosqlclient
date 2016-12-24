@@ -17,17 +17,17 @@ Template.serializeFunctions.onRendered(function () {
 });
 
 export const getOptions = function () {
-    var result = {};
+    const result = {};
 
     if ($.inArray("BYPASS_DOCUMENT_VALIDATION", Session.get(Helper.strSessionSelectedOptions)) != -1) {
-        var byPassDocValidation = $('#divBypassDocumentValidation').iCheck('update')[0].checked;
+        const byPassDocValidation = $('#divBypassDocumentValidation').iCheck('update')[0].checked;
         if (byPassDocValidation) {
             result[Enums.INSERT_MANY_OPTIONS.BYPASS_DOCUMENT_VALIDATION] = byPassDocValidation;
         }
     }
 
     if ($.inArray("SERIALIZE_FUNCTIONS", Session.get(Helper.strSessionSelectedOptions)) != -1) {
-        var serializeFunctions = $('#divSerializeFunctions').iCheck('update')[0].checked;
+        const serializeFunctions = $('#divSerializeFunctions').iCheck('update')[0].checked;
         if (serializeFunctions) {
             result[Enums.INSERT_MANY_OPTIONS.SERIALIZE_FUNCTIONS] = serializeFunctions;
         }

@@ -99,6 +99,7 @@ const respond = function () {
     let chatDiv = $('.query-wizard .content');
     let sendButton = $('#btnQueryWizardRespond');
     let sendButton2 = $('#btnQueryWizardRespond2');
+    let chatMessage = $('.chat-message');
 
     switch (step) {
         case 1:
@@ -107,7 +108,7 @@ const respond = function () {
             }
             chatDiv.append($('<div class="right"><div class="author-name">Me </div> <div class="chat-message">' + txt.val() + '</div></div>'));
             chatDiv.append($('<div class="left"><div class="author-name">Mongoclient </div> <div class="chat-message active"></div></div>'));
-            $('.chat-message').last().typed({
+            chatMessage.last().typed({
                 strings: ["So, you want to retrieve documents that..."],
                 typeSpeed: 0
             });
@@ -125,12 +126,12 @@ const respond = function () {
                 return;
             }
             selectedOption = cmb.val();
-            let text = $('#cmbQueryWizardResponses_chosen .result-selected').html();
+            let text = $('#cmbQueryWizardResponses_chosen').find('.result-selected').html();
             let stepText = step2();
             chatDiv.append($('<div class="right"><div class="author-name">Me </div> <div class="chat-message">I want to retrieve documents that ' +
                 text + '</div></div>'));
             chatDiv.append($('<div class="left"><div class="author-name">Mongoclient </div> <div class="chat-message active"></div></div>'));
-            $('.chat-message').last().typed({
+            chatMessage.last().typed({
                 strings: ['Okay, ' + stepText],
                 typeSpeed: 0
             });
@@ -147,7 +148,7 @@ const respond = function () {
                 let convertedValue = Helper.convertAndCheckJSON(txtValue);
                 if (convertedValue["ERROR"] || Object.prototype.toString.call(convertedValue) !== '[object Array]') {
                     chatDiv.append($('<div class="left"><div class="author-name">Mongoclient </div> <div class="chat-message active"></div></div>'));
-                    $('.chat-message').last().typed({
+                    chatMessage.last().typed({
                         strings: ["Please provide a valid array, e.g. [3,5,6,7] or [\"myValue\",\"mySecondValue\"]"],
                         typeSpeed: 0
                     });
@@ -158,7 +159,7 @@ const respond = function () {
             stepText = step3();
             chatDiv.append($('<div class="right"><div class="author-name">Me </div> <div class="chat-message">' + txt.val() + '</div></div>'));
             chatDiv.append($('<div class="left"><div class="author-name">Mongoclient </div> <div class="chat-message active"></div></div>'));
-            $('.chat-message').last().typed({
+            chatMessage.last().typed({
                 strings: [stepText],
                 typeSpeed: 0
             });
@@ -174,7 +175,7 @@ const respond = function () {
             regexOptions = cmb.val();
             chatDiv.append($('<div class="right"><div class="author-name">Me </div> <div class="chat-message">' + (regexOptions ? regexOptions : "No options") + '</div></div>'));
             chatDiv.append($('<div class="left"><div class="author-name">Mongoclient </div> <div class="chat-message active"></div></div>'));
-            $('.chat-message').last().typed({
+            chatMessage.last().typed({
                 strings: [redirectText],
                 typeSpeed: 0
             });
@@ -183,7 +184,7 @@ const respond = function () {
             break;
     }
 
-    $('.query-wizard .content').slimScroll({scrollBy: '400px'});
+    chatDiv.slimScroll({scrollBy: '400px'});
 };
 
 const step2 = function () {

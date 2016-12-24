@@ -16,18 +16,18 @@ Template.search.onRendered(function () {
 });
 
 export const getOptions = function () {
-    var result = {};
+    const result = {};
     Helper.checkAndAddOption("SEARCH", $('#divSearch'), result, Enums.GEO_HAYSTACK_SEARCH_OPTIONS);
 
     if ($.inArray("MAX_DISTANCE", Session.get(Helper.strSessionSelectedOptions)) != -1) {
-        var maxDistanceValue = $('#inputMaxDistance').val();
+        const maxDistanceValue = $('#inputMaxDistance').val();
         if (maxDistanceValue) {
             result[Enums.GEO_HAYSTACK_SEARCH_OPTIONS.MAX_DISTANCE] = parseInt(maxDistanceValue);
         }
     }
 
     if ($.inArray("LIMIT", Session.get(Helper.strSessionSelectedOptions)) != -1) {
-        var limitVal = $('#inputLimit').val();
+        const limitVal = $('#inputLimit').val();
         if (limitVal) {
             result[Enums.GEO_HAYSTACK_SEARCH_OPTIONS.LIMIT] = parseInt(limitVal);
         }

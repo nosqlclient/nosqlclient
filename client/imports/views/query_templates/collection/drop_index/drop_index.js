@@ -22,15 +22,15 @@ Template.dropIndex.events({
 
 Template.dropIndex.executeQuery = function (historyParams) {
     initExecuteQuery();
-    var selectedCollection = Session.get(Helper.strSessionSelectedCollection);
-    var indexName = historyParams ? historyParams.indexName : $('#inputIndexName').val();
+    const selectedCollection = Session.get(Helper.strSessionSelectedCollection);
+    const indexName = historyParams ? historyParams.indexName : $('#inputIndexName').val();
 
-    var params = {
+    const params = {
         indexName: indexName
     };
 
     Meteor.call("dropIndex", selectedCollection, indexName, function (err, result) {
-        Helper.renderAfterQueryExecution(err, result, false, "dropIndex", params, (historyParams ? false : true));
+        Helper.renderAfterQueryExecution(err, result, false, "dropIndex", params, (!historyParams));
     });
 };
 

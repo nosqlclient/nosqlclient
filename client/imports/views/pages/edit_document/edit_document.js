@@ -7,20 +7,20 @@ import {getSelectorValue} from '/client/imports/views/query_templates_options/se
 
 import './edit_document.html';
 
-var toastr = require('toastr');
+const toastr = require('toastr');
 
-var Ladda = require('ladda');
+const Ladda = require('ladda');
 
 /**
  * Created by RSercan on 15.2.2016.
  */
 
 const initializeCollectionsCombobox = function () {
-    var cmb = $('#cmbCollections');
+    const cmb = $('#cmbCollections');
     cmb.append($("<optgroup id='optGroupCollections' label='Collections'></optgroup>"));
-    var cmbOptGroupCollection = cmb.find('#optGroupCollections');
+    const cmbOptGroupCollection = cmb.find('#optGroupCollections');
 
-    var collectionNames = Session.get(Helper.strSessionCollectionNames);
+    const collectionNames = Session.get(Helper.strSessionCollectionNames);
     $.each(collectionNames, function (index, value) {
         cmbOptGroupCollection.append($("<option></option>")
             .attr("value", value.name)
@@ -29,7 +29,7 @@ const initializeCollectionsCombobox = function () {
     cmb.chosen();
 
     cmb.on('change', function (evt, params) {
-        var selectedCollection = params.selected;
+        const selectedCollection = params.selected;
         if (selectedCollection) {
             Helper.getDistinctKeysForAutoComplete(selectedCollection);
         }
@@ -37,7 +37,7 @@ const initializeCollectionsCombobox = function () {
 };
 
 const initializeResultArea = function (result) {
-    var divResult = $('#divResult');
+    const divResult = $('#divResult');
 
     if (divResult.css('display') == 'none') {
         divResult.show();
@@ -51,11 +51,11 @@ const initializeResultArea = function (result) {
 
 const deleteDocument = function () {
 
-    var l = Ladda.create(document.querySelector('#btnDeleteDocument'));
+    const l = Ladda.create(document.querySelector('#btnDeleteDocument'));
     l.start();
 
-    var collectionName = $('#cmbCollections').find(":selected").text();
-    var idQuery = {_id: Session.get(Helper.strSessionEasyEditID)};
+    const collectionName = $('#cmbCollections').find(":selected").text();
+    const idQuery = {_id: Session.get(Helper.strSessionEasyEditID)};
 
     Meteor.call('delete', collectionName, idQuery, function (err, result) {
         if (err) {
@@ -63,7 +63,7 @@ const deleteDocument = function () {
         }
         else if (result.result.result.ok == 1) {
             toastr.success('Successfuly deleted!');
-            var divResult = $('#divResult');
+            const divResult = $('#divResult');
             if (divResult.css('display') != 'none') {
                 divResult.hide();
                 $('#divFooter').hide();
@@ -81,11 +81,11 @@ const deleteDocument = function () {
 
 const saveDocument = function () {
 
-    var l = Ladda.create(document.querySelector('#btnSaveDocument'));
+    const l = Ladda.create(document.querySelector('#btnSaveDocument'));
     l.start();
 
-    var collectionName = $('#cmbCollections').find(":selected").text();
-    var setValue = $('#divResult').data('editor').getValue();
+    const collectionName = $('#cmbCollections').find(":selected").text();
+    let setValue = $('#divResult').data('editor').getValue();
 
     setValue = Helper.convertAndCheckJSON(setValue);
     if (setValue["ERROR"]) {
@@ -99,7 +99,7 @@ const saveDocument = function () {
         // remove id just in case
         delete setValue._id;
         setValue = {"$set": setValue};
-        var idQuery = {_id: Session.get(Helper.strSessionEasyEditID)};
+        const idQuery = {_id: Session.get(Helper.strSessionEasyEditID)};
 
         Meteor.call('updateOne', collectionName, idQuery, setValue, {}, function (err) {
                 if (err) {
@@ -113,7 +113,7 @@ const saveDocument = function () {
         );
     } else {
         if (!(setValue instanceof Array)) {
-            var newArray = [];
+            const newArray = [];
             newArray.push(setValue);
             setValue = newArray;
         }
@@ -133,11 +133,11 @@ const saveDocument = function () {
 
 const fetchDocument = function () {
 
-    var l = Ladda.create(document.querySelector('#btnFetchDocument'));
+    const l = Ladda.create(document.querySelector('#btnFetchDocument'));
     l.start();
 
-    var collectionName = $('#cmbCollections').find(":selected").text();
-    var selector = getSelectorValue();
+    const collectionName = $('#cmbCollections').find(":selected").text();
+    let selector = getSelectorValue();
 
     if (!collectionName) {
         toastr.warning('Please select a collection first !');
@@ -154,7 +154,7 @@ const fetchDocument = function () {
     }
 
     Meteor.call("findOne", collectionName, selector, {}, function (err, result) {
-            var divResult = $('#divResult');
+            const divResult = $('#divResult');
 
             if (err || result.error) {
                 Helper.showMeteorFuncError(err, result, "Couldn't fetch document");
@@ -223,7 +223,7 @@ Template.editDocument.events({
     'click #btnSaveDocument'  (e) {
         e.preventDefault();
 
-        var text = Session.get(Helper.strSessionEasyEditID) ? 'This document will be overwritten, are you sure ?' : 'This document will be inserted, are you sure ?';
+        const text = Session.get(Helper.strSessionEasyEditID) ? 'This document will be overwritten, are you sure ?' : 'This document will be inserted, are you sure ?';
         swal({
             title: "Are you sure ?",
             text: text,

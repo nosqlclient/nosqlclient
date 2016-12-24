@@ -10,8 +10,8 @@ import '/client/imports/views/query_templates_options/set/set';
 import '/client/imports/views/query_templates_options/upsert/upsert';
 
 import './update_one.html';
-var toastr = require('toastr');
-var Ladda = require('ladda');
+const toastr = require('toastr');
+const Ladda = require('ladda');
 
 /**
  * Created by sercan on 06.01.2016.
@@ -21,7 +21,7 @@ Template.updateOne.onRendered(function () {
 });
 
 const initializeOptions = function () {
-    var cmb = $('#cmbUpdateOneOptions');
+    const cmb = $('#cmbUpdateOneOptions');
     $.each(Helper.sortObjectByKey(Enums.UPDATE_OPTIONS), function (key, value) {
         cmb.append($("<option></option>")
             .attr("value", key)
@@ -33,10 +33,10 @@ const initializeOptions = function () {
 };
 
 const getOptions = function () {
-    var result = {};
+    const result = {};
 
     if ($.inArray("UPSERT", Session.get(Helper.strSessionSelectedOptions)) != -1) {
-        var upsertVal = $('#divUpsert').iCheck('update')[0].checked;
+        const upsertVal = $('#divUpsert').iCheck('update')[0].checked;
         if (upsertVal) {
             result[Enums.UPDATE_OPTIONS.UPSERT] = upsertVal;
         }
@@ -47,10 +47,10 @@ const getOptions = function () {
 
 Template.updateOne.executeQuery = function (historyParams) {
     initExecuteQuery();
-    var selectedCollection = Session.get(Helper.strSessionSelectedCollection);
-    var options = historyParams ? historyParams.options : getOptions();
-    var selector = historyParams ? JSON.stringify(historyParams.selector) : getSelectorValue();
-    var setObject = historyParams ? JSON.stringify(historyParams.setObject) : Helper.getCodeMirrorValue($('#divSet'));
+    const selectedCollection = Session.get(Helper.strSessionSelectedCollection);
+    const options = historyParams ? historyParams.options : getOptions();
+    let selector = historyParams ? JSON.stringify(historyParams.selector) : getSelectorValue();
+    let setObject = historyParams ? JSON.stringify(historyParams.setObject) : Helper.getCodeMirrorValue($('#divSet'));
 
     selector = Helper.convertAndCheckJSON(selector);
     if (selector["ERROR"]) {
@@ -74,14 +74,14 @@ Template.updateOne.executeQuery = function (historyParams) {
         return;
     }
 
-    var params = {
+    const params = {
         selector: selector,
         setObject: setObject,
         options: options
     };
 
     Meteor.call("updateOne", selectedCollection, selector, setObject, options, function (err, result) {
-        Helper.renderAfterQueryExecution(err, result, false, "updateOne", params, (historyParams ? false : true));
+        Helper.renderAfterQueryExecution(err, result, false, "updateOne", params, (!historyParams));
     });
 };
 

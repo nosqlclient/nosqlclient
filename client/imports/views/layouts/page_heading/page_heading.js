@@ -26,7 +26,7 @@ Template.pageHeading.helpers({
         let laddaButton = Ladda.create(btnExecuteQuery);
         laddaButton.start();
 
-        var selectedCollection = Session.get(Helper.strSessionSelectedCollection);
+        const selectedCollection = Session.get(Helper.strSessionSelectedCollection);
 
         // get distinct field keys for auto complete on every collection change.
         Helper.getDistinctKeysForAutoComplete(selectedCollection);
@@ -44,8 +44,8 @@ Template.pageHeading.helpers({
 });
 
 const populateCollectionInfo = function (result, settings) {
-    var scale = 1;
-    var text = "Bytes";
+    let scale = 1;
+    let text = "Bytes";
 
     switch (settings.scale) {
         case "MegaBytes":
@@ -62,16 +62,16 @@ const populateCollectionInfo = function (result, settings) {
             break;
     }
     // we are manually doing the scale to prevent showing 0 MB for sizes 0.7, 0.8, 0.9 etc. MBs as mongodb does.
-    var resultString = "<div class=\"row\"><div class=\"col-lg-7\"><b>Count:</b></div><div class=\"col-lg-5\">" + result.count + "</div></div>";
+    let resultString = "<div class=\"row\"><div class=\"col-lg-7\"><b>Count:</b></div><div class=\"col-lg-5\">" + result.count + "</div></div>";
     resultString += "<div class=\"row\"><div class=\"col-lg-7\"><b>Index Count:</b></div><div class=\"col-lg-5\">" + result.nindexes + "</div></div>";
 
-    var size = isNaN(Number(result.size / scale).toFixed(2)) ? "0.00" : Number(result.size / scale).toFixed(2);
+    const size = isNaN(Number(result.size / scale).toFixed(2)) ? "0.00" : Number(result.size / scale).toFixed(2);
     resultString += "<div class=\"row\"><div class=\"col-lg-7\"><b>Size:</b></div><div class=\"col-lg-5\">" + size + " " + text + "</div></div>";
 
-    var totalIndexSize = isNaN(Number(result.totalIndexSize / scale).toFixed(2)) ? "0.00" : Number(result.totalIndexSize / scale).toFixed(2);
+    const totalIndexSize = isNaN(Number(result.totalIndexSize / scale).toFixed(2)) ? "0.00" : Number(result.totalIndexSize / scale).toFixed(2);
     resultString += "<div class=\"row\"><div class=\"col-lg-7\"><b>Total Index Size:</b></div><div class=\"col-lg-5\">" + totalIndexSize + " " + text + "</div></div>";
 
-    var avgObjSize = isNaN(Number(result.avgObjSize / scale).toFixed(2)) ? "0.00" : Number(result.avgObjSize / scale).toFixed(2);
+    const avgObjSize = isNaN(Number(result.avgObjSize / scale).toFixed(2)) ? "0.00" : Number(result.avgObjSize / scale).toFixed(2);
     resultString += "<div class=\"row\"><div class=\"col-lg-7\"><b>Average Object Size:</b></div><div class=\"col-lg-5\">" + avgObjSize + " " + text + "</div></div>";
     resultString += "<div class=\"row\"><div class=\"col-lg-7\"><b>Is Capped:</b></div><div class=\"col-lg-5\">" + result.capped + "</div></div>";
 

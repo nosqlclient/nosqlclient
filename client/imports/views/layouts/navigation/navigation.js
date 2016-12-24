@@ -191,10 +191,10 @@ Template.navigation.events({
             return;
         }
 
-        var name = this.name;
+        const name = this.name;
 
         $('#listCollectionNames').find('li').each(function (index, li) {
-            var liObject = $(li);
+            const liObject = $(li);
             if (liObject[0].textContent.substr(1).replace('Drop', '').trim() == name) {
                 liObject.addClass('active');
             }
@@ -204,7 +204,7 @@ Template.navigation.events({
         });
 
         $('#listSystemCollections').find('li').each(function (index, li) {
-            var liObject = $(li);
+            const liObject = $(li);
             if (liObject[0].textContent.substr(1).replace('Drop', '').trim() == name) {
                 liObject.addClass('active');
             } else {
@@ -220,16 +220,16 @@ Template.navigation.events({
 Template.navigation.helpers({
     initializeMetisMenu() {
         Meteor.setTimeout(function () {
-            var sideMenu = $('#side-menu');
+            const sideMenu = $('#side-menu');
             sideMenu.removeData("mm");
             sideMenu.metisMenu();
         });
     },
 
     getCollectionNames () {
-        var collectionNames = Session.get(Helper.strSessionCollectionNames);
+        const collectionNames = Session.get(Helper.strSessionCollectionNames);
         if (collectionNames != undefined) {
-            var result = [];
+            const result = [];
             collectionNames.forEach(function (collectionName) {
                 if (!collectionName.name.startsWith('system')) {
                     result.push(collectionName);
@@ -243,9 +243,9 @@ Template.navigation.helpers({
     },
 
     getSystemCollectionNames () {
-        var collectionNames = Session.get(Helper.strSessionCollectionNames);
+        const collectionNames = Session.get(Helper.strSessionCollectionNames);
         if (collectionNames != undefined) {
-            var result = [];
+            const result = [];
             collectionNames.forEach(function (collectionName) {
                 if (collectionName.name.startsWith('system')) {
                     result.push(collectionName);

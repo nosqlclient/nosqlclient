@@ -20,32 +20,32 @@ Template.allowDiskUse.onRendered(function () {
 });
 
 export const getAggregateOptions = function () {
-    var result = {};
+    const result = {};
     Helper.checkAndAddOption("COLLATION", $('#divCollation'), result, Enums.AGGREGATE_OPTIONS);
 
     if ($.inArray("BYPASS_DOCUMENT_VALIDATION", Session.get(Helper.strSessionSelectedOptions)) != -1) {
-        var byPassDocValidation = $('#divBypassDocumentValidation').iCheck('update')[0].checked;
+        const byPassDocValidation = $('#divBypassDocumentValidation').iCheck('update')[0].checked;
         if (byPassDocValidation) {
             result[Enums.AGGREGATE_OPTIONS.BYPASS_DOCUMENT_VALIDATION] = byPassDocValidation;
         }
     }
 
     if ($.inArray("MAX_TIME_MS", Session.get(Helper.strSessionSelectedOptions)) != -1) {
-        var maxTimeMsVal = $('#inputMaxTimeMs').val();
+        const maxTimeMsVal = $('#inputMaxTimeMs').val();
         if (maxTimeMsVal) {
             result[Enums.AGGREGATE_OPTIONS.MAX_TIME_MS] = parseInt(maxTimeMsVal);
         }
     }
 
     if ($.inArray("ALLOW_DISK_USE", Session.get(Helper.strSessionSelectedOptions)) != -1) {
-        var allowDiskUse = $('#divAllowDiskUse').iCheck('update')[0].checked;
+        const allowDiskUse = $('#divAllowDiskUse').iCheck('update')[0].checked;
         if (allowDiskUse) {
             result[Enums.AGGREGATE_OPTIONS.ALLOW_DISK_USE] = allowDiskUse;
         }
     }
 
     if ($.inArray("EXPLAIN", Session.get(Helper.strSessionSelectedOptions)) != -1) {
-        var explain = $('#divExecuteExplain').iCheck('update')[0].checked;
+        const explain = $('#divExecuteExplain').iCheck('update')[0].checked;
         if (explain) {
             result[Enums.AGGREGATE_OPTIONS.EXPLAIN] = explain;
         }

@@ -8,8 +8,8 @@ import {getOptions} from '/client/imports/views/query_templates_options/create_i
 
 import './create_index.html';
 
-var toastr = require('toastr');
-var Ladda = require('ladda');
+const toastr = require('toastr');
+const Ladda = require('ladda');
 /**
  * Created by RSercan on 2.1.2016.
  */
@@ -19,7 +19,7 @@ Template.createIndex.onRendered(function () {
 });
 
 const initializeOptions = function () {
-    var cmb = $('#cmbCreateIndexOptions');
+    const cmb = $('#cmbCreateIndexOptions');
     $.each(Helper.sortObjectByKey(Enums.CREATE_INDEX_OPTIONS), function (key, value) {
         cmb.append($("<option></option>")
             .attr("value", key)
@@ -32,9 +32,9 @@ const initializeOptions = function () {
 
 Template.createIndex.executeQuery = function (historyParams) {
     initExecuteQuery();
-    var selectedCollection = Session.get(Helper.strSessionSelectedCollection);
-    var options = historyParams ? historyParams.options : getOptions();
-    var fields = historyParams ? JSON.stringify(historyParams.fields) : Helper.getCodeMirrorValue($('#divFields'));
+    const selectedCollection = Session.get(Helper.strSessionSelectedCollection);
+    const options = historyParams ? historyParams.options : getOptions();
+    let fields = historyParams ? JSON.stringify(historyParams.fields) : Helper.getCodeMirrorValue($('#divFields'));
 
     fields = Helper.convertAndCheckJSON(fields);
     if (fields["ERROR"]) {
@@ -49,13 +49,13 @@ Template.createIndex.executeQuery = function (historyParams) {
         return;
     }
 
-    var params = {
+    const params = {
         fields: fields,
         options: options
     };
 
     Meteor.call("createIndex", selectedCollection, fields, options, function (err, result) {
-        Helper.renderAfterQueryExecution(err, result, false, "createIndex", params, (historyParams ? false : true));
+        Helper.renderAfterQueryExecution(err, result, false, "createIndex", params, (!historyParams));
     });
 };
 

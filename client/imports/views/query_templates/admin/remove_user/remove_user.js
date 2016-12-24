@@ -6,8 +6,8 @@ import {initExecuteQuery} from '/client/imports/views/pages/admin_queries/admin_
 import '/client/imports/views/query_templates_options/username/username.html';
 import './remove_user.html';
 
-var toastr = require('toastr');
-var Ladda = require('ladda');
+const toastr = require('toastr');
+const Ladda = require('ladda');
 /**
  * Created by RSercan on 10.1.2016.
  */
@@ -17,7 +17,7 @@ Template.removeUser.onRendered(function () {
 
 Template.removeUser.executeQuery = function () {
     initExecuteQuery();
-    var username = $('#inputAddUserUsername').val();
+    const username = $('#inputAddUserUsername').val();
 
     if (username == null || username.length === 0) {
         toastr.error('Username can not be empty');
@@ -25,7 +25,7 @@ Template.removeUser.executeQuery = function () {
         return;
     }
 
-    var runOnAdminDB = $('#aRunOnAdminDB').iCheck('update')[0].checked;
+    const runOnAdminDB = $('#aRunOnAdminDB').iCheck('update')[0].checked;
 
     Meteor.call("removeUser", username, runOnAdminDB, function (err, result) {
         Helper.renderAfterQueryExecution(err, result, true);

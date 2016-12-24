@@ -3,10 +3,10 @@
     <title>MongoClient | Featured MongoDB Client</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <link href="logo/head_7.png" rel="shortcut icon" type="image/x-icon">
+    <link href="/logo/head_7.png" rel="shortcut icon" type="image/x-icon">
     
     <script type="text/javascript">(function (d, n) {
-        var s, a, p;
+        let s, a, p;
         s = document.createElement("script");
         s.type = "text/javascript";
         s.async = true;
@@ -17,7 +17,7 @@
         window.nudgespot = n;
         n.init = function (t) {
             function f(n, m) {
-                var a = m.split('.');
+                const a = m.split('.');
                 2 == a.length && (n = n[a[0]], m = a[1]);
                 n[m] = function () {
                     n.push([m].concat(Array.prototype.slice.call(arguments, 0)))
@@ -29,7 +29,7 @@
             n.people = n.people || [];
             n.params = n.params || [];
             m = "track register unregister identify set_config people.delete people.create people.update people.create_property people.tag people.remove_Tag".split(" ");
-            for (var i = 0; i < m.length; i++)f(n, m[i])
+            for (let i = 0; i < m.length; i++)f(n, m[i])
         }
     })(document, window.nudgespot || []);
     nudgespot.init("748ae792d632f6c5e14ad610e53ef745");</script>

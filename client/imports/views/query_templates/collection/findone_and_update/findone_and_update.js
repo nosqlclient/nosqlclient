@@ -10,8 +10,8 @@ import {getOptions} from '/client/imports/views/query_templates_options/findone_
 import '/client/imports/views/query_templates_options/set/set';
 import './findone_and_update.html';
 
-var toastr = require('toastr');
-var Ladda = require('ladda');
+const toastr = require('toastr');
+const Ladda = require('ladda');
 /**
  * Created by RSercan on 1.1.2016.
  */
@@ -20,7 +20,7 @@ Template.findOneAndUpdate.onRendered(function () {
 });
 
 const initializeOptions = function () {
-    var cmb = $('#cmbFindOneModifyOptions');
+    const cmb = $('#cmbFindOneModifyOptions');
     $.each(Helper.sortObjectByKey(Enums.FINDONE_MODIFY_OPTIONS), function (key, value) {
         cmb.append($("<option></option>")
             .attr("value", key)
@@ -33,10 +33,10 @@ const initializeOptions = function () {
 
 Template.findOneAndUpdate.executeQuery = function (historyParams) {
     initExecuteQuery();
-    var selectedCollection = Session.get(Helper.strSessionSelectedCollection);
-    var options = historyParams ? historyParams.options : getOptions();
-    var selector = historyParams ? JSON.stringify(historyParams.selector) : getSelectorValue();
-    var setObject = historyParams ? JSON.stringify(historyParams.setObject) : Helper.getCodeMirrorValue($('#divSet'));
+    const selectedCollection = Session.get(Helper.strSessionSelectedCollection);
+    const options = historyParams ? historyParams.options : getOptions();
+    let selector = historyParams ? JSON.stringify(historyParams.selector) : getSelectorValue();
+    let setObject = historyParams ? JSON.stringify(historyParams.setObject) : Helper.getCodeMirrorValue($('#divSet'));
 
     selector = Helper.convertAndCheckJSON(selector);
     if (selector["ERROR"]) {
@@ -59,14 +59,14 @@ Template.findOneAndUpdate.executeQuery = function (historyParams) {
         return;
     }
 
-    var params = {
+    const params = {
         selector: selector,
         setObject: setObject,
         options: options
     };
 
     Meteor.call("findOneAndUpdate", selectedCollection, selector, setObject, options, function (err, result) {
-            Helper.renderAfterQueryExecution(err, result, false, "findOneAndUpdate", params, (historyParams ? false : true));
+            Helper.renderAfterQueryExecution(err, result, false, "findOneAndUpdate", params, (!historyParams));
         }
     );
 };

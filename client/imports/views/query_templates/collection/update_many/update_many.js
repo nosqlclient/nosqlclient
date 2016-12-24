@@ -11,16 +11,16 @@ import '/client/imports/views/query_templates_options/upsert/upsert';
 
 import './update_many.html';
 
-var toastr = require('toastr');
-var Ladda = require('ladda');
+const toastr = require('toastr');
+const Ladda = require('ladda');
 /**
  * Created by sercan on 06.01.2016.
  */
 const getOptions = function () {
-    var result = {};
+    const result = {};
 
     if ($.inArray("UPSERT", Session.get(Helper.strSessionSelectedOptions)) != -1) {
-        var upsertVal = $('#divUpsert').iCheck('update')[0].checked;
+        const upsertVal = $('#divUpsert').iCheck('update')[0].checked;
         if (upsertVal) {
             result[Enums.UPDATE_OPTIONS.UPSERT] = upsertVal;
         }
@@ -30,7 +30,7 @@ const getOptions = function () {
 };
 
 const initializeOptions = function () {
-    var cmb = $('#cmbUpdateManyOptions');
+    const cmb = $('#cmbUpdateManyOptions');
     $.each(Helper.sortObjectByKey(Enums.UPDATE_OPTIONS), function (key, value) {
         cmb.append($("<option></option>")
             .attr("value", key)
@@ -47,10 +47,10 @@ Template.updateMany.onRendered(function () {
 
 Template.updateMany.executeQuery = function (historyParams) {
     initExecuteQuery();
-    var selectedCollection = Session.get(Helper.strSessionSelectedCollection);
-    var options = historyParams ? historyParams.options : getOptions();
-    var selector = historyParams ? JSON.stringify(historyParams.selector) : getSelectorValue();
-    var setObject = historyParams ? JSON.stringify(historyParams.setObject) : Helper.getCodeMirrorValue($('#divSet'));
+    const selectedCollection = Session.get(Helper.strSessionSelectedCollection);
+    const options = historyParams ? historyParams.options : getOptions();
+    let selector = historyParams ? JSON.stringify(historyParams.selector) : getSelectorValue();
+    let setObject = historyParams ? JSON.stringify(historyParams.setObject) : Helper.getCodeMirrorValue($('#divSet'));
 
     selector = Helper.convertAndCheckJSON(selector);
     if (selector["ERROR"]) {
@@ -74,14 +74,14 @@ Template.updateMany.executeQuery = function (historyParams) {
         return;
     }
 
-    var params = {
+    const params = {
         selector: selector,
         setObject: setObject,
         options: options
     };
 
     Meteor.call("updateMany", selectedCollection, selector, setObject, options, function (err, result) {
-            Helper.renderAfterQueryExecution(err, result, false, "updateMany", params, (historyParams ? false : true));
+            Helper.renderAfterQueryExecution(err, result, false, "updateMany", params, (!historyParams));
         }
     );
 };

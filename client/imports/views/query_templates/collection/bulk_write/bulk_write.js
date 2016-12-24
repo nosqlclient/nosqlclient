@@ -18,7 +18,7 @@ Template.bulkWrite.onRendered(function () {
 });
 
 const initializeOptions = function () {
-    var cmb = $('#cmbBulkWriteOptions');
+    const cmb = $('#cmbBulkWriteOptions');
     $.each(Helper.sortObjectByKey(Enums.BULK_WRITE_OPTIONS), function (key, value) {
         cmb.append($("<option></option>")
             .attr("value", key)
@@ -32,9 +32,9 @@ const initializeOptions = function () {
 
 Template.bulkWrite.executeQuery = function (historyParams) {
     initExecuteQuery();
-    var selectedCollection = Session.get(Helper.strSessionSelectedCollection);
-    var operations = historyParams ? JSON.stringify(historyParams.selector) : Helper.getCodeMirrorValue($('#divBulkWrite'));
-    var options = historyParams ? historyParams.options : getBulkWriteOptions();
+    const selectedCollection = Session.get(Helper.strSessionSelectedCollection);
+    let operations = historyParams ? JSON.stringify(historyParams.selector) : Helper.getCodeMirrorValue($('#divBulkWrite'));
+    const options = historyParams ? historyParams.options : getBulkWriteOptions();
 
     operations = Helper.convertAndCheckJSON(operations);
     if (operations["ERROR"]) {
@@ -43,13 +43,13 @@ Template.bulkWrite.executeQuery = function (historyParams) {
         return;
     }
 
-    var params = {
+    const params = {
         selector: operations,
         options: options
     };
 
     Meteor.call("bulkWrite", selectedCollection, operations, options, function (err, result) {
-            Helper.renderAfterQueryExecution(err, result, false, "bulkWrite", params, (historyParams ? false : true));
+            Helper.renderAfterQueryExecution(err, result, false, "bulkWrite", params, (!historyParams));
         }
     );
 };

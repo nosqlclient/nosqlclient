@@ -62,7 +62,7 @@ Meteor.methods({
         const date = new Date();
         const connectionUrl = Helper.getConnectionUrl(connection);
         const fileName = connection.databaseName + "_" + date.getTime() + ".tar";
-        const fullFilePath = path + "/" + fileName;
+        const fullFilePath = path.trim() + "/" + fileName;
 
         LOGGER.info('[takeDump]', connectionUrl, path, fileName);
         try {

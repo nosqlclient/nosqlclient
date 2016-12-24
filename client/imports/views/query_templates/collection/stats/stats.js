@@ -11,10 +11,10 @@ import './stats.html';
  * Created by sercan on 06.01.2016.
  */
 const getOptions = function () {
-    var result = {};
+    const result = {};
 
     if ($.inArray("SCALE", Session.get(Helper.strSessionSelectedOptions)) != -1) {
-        var scale = $('#inputScale').val();
+        const scale = $('#inputScale').val();
         if (scale) {
             result[Enums.STATS_OPTIONS.SCALE] = parseInt(scale);
         }
@@ -24,7 +24,7 @@ const getOptions = function () {
 };
 
 const initializeOptions = function () {
-    var cmb = $('#cmbStatsOptions');
+    const cmb = $('#cmbStatsOptions');
     $.each(Helper.sortObjectByKey(Enums.STATS_OPTIONS), function (key, value) {
         cmb.append($("<option></option>")
             .attr("value", key)
@@ -47,15 +47,15 @@ Template.scale.onRendered(function () {
 
 Template.stats.executeQuery = function (historyParams) {
     initExecuteQuery();
-    var selectedCollection = Session.get(Helper.strSessionSelectedCollection);
-    var options = historyParams ? historyParams.options : getOptions();
+    const selectedCollection = Session.get(Helper.strSessionSelectedCollection);
+    const options = historyParams ? historyParams.options : getOptions();
 
-    var params = {
+    const params = {
         options: options
     };
 
     Meteor.call("stats", selectedCollection, options, function (err, result) {
-        Helper.renderAfterQueryExecution(err, result, false, "stats", params, (historyParams ? false : true));
+        Helper.renderAfterQueryExecution(err, result, false, "stats", params, (!historyParams));
     });
 };
 

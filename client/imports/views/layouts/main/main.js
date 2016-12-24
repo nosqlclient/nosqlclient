@@ -29,11 +29,11 @@ Template.mainLayout.rendered = function () {
 
     // Fix height of layout when resize, scroll and load
     $(window).bind("load resize scroll", function () {
-        var body = $("body");
+        const body = $("body");
         if (!body.hasClass('body-small')) {
-            var pageWrapper = $('#page-wrapper');
-            var navbarHeigh = $('nav.navbar-default').height();
-            var wrapperHeigh = pageWrapper.height();
+            const pageWrapper = $('#page-wrapper');
+            const navbarHeigh = $('nav.navbar-default').height();
+            const wrapperHeigh = pageWrapper.height();
 
             if (navbarHeigh > wrapperHeigh) {
                 pageWrapper.css("min-height", navbarHeigh + "px");

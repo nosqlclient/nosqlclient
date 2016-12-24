@@ -21,9 +21,9 @@ import '/client/imports/views/query_templates/admin/validate_collection/validate
 
 import './admin_queries.html';
 
-var toastr = require('toastr');
-var Ladda = require('ladda');
-var JSONEditor = require('jsoneditor');
+const toastr = require('toastr');
+const Ladda = require('ladda');
+const JSONEditor = require('jsoneditor');
 /**
  * Created by RSercan on 10.1.2016.
  */
@@ -40,9 +40,9 @@ Template.adminQueries.onRendered(function () {
 
     this.autorun(() => {
         if (connections.ready() && settings.ready()) {
-            var cmb = $('#cmbAdminQueries');
+            const cmb = $('#cmbAdminQueries');
             cmb.append($("<optgroup id='optGroupAdminQueries' label='Admin Queries'></optgroup>"));
-            var cmbOptGroupCollection = cmb.find('#optGroupAdminQueries');
+            const cmbOptGroupCollection = cmb.find('#optGroupAdminQueries');
 
             $.each(Helper.sortObjectByKey(Enums.ADMIN_QUERY_TYPES), function (key, value) {
                 cmbOptGroupCollection.append($("<option></option>")
@@ -65,15 +65,15 @@ Template.adminQueries.events({
     'change #cmbAdminQueries'  () {
         Session.set(Helper.strSessionSelectedOptions, []);
 
-        var value = $('#cmbAdminQueries').find(":selected").text();
+        const value = $('#cmbAdminQueries').find(":selected").text();
         if (value) {
             Session.set(Helper.strSessionSelectedQuery, value);
         }
     },
 
     'click #btnSwitchView'  () {
-        var jsonView = $('#divJsonEditor');
-        var aceView = $('#divAceEditor');
+        const jsonView = $('#divJsonEditor');
+        const aceView = $('#divAceEditor');
 
         if (jsonView.css('display') == 'none' && aceView.css('display') == 'none') {
             return;
@@ -88,7 +88,7 @@ Template.adminQueries.events({
         }
     },
     'click #btnExecuteAdminQuery'() {
-        var queryTemplate = Session.get(Helper.strSessionSelectedQuery);
+        const queryTemplate = Session.get(Helper.strSessionSelectedQuery);
         if (queryTemplate) {
             Template[queryTemplate].executeQuery();
         } else {
@@ -141,7 +141,7 @@ Template.adminQueries.helpers({
 });
 
 export const initExecuteQuery = function () {
-    var l = Ladda.create(document.querySelector('#btnExecuteAdminQuery'));
+    const l = Ladda.create(document.querySelector('#btnExecuteAdminQuery'));
     l.start();
 };
 
@@ -162,10 +162,10 @@ export const setAdminResult = function (result) {
         editor.setValue(JSON.stringify(result, null, '\t'), -1);
     });
 
-    var jsonEditor = $('#divJsonEditor');
-    var aceEditor = $('#divAceEditor');
+    const jsonEditor = $('#divJsonEditor');
+    const aceEditor = $('#divAceEditor');
     if (jsonEditor.css('display') == 'none' && aceEditor.css('display') == 'none') {
-        var settings = Settings.findOne();
+        const settings = Settings.findOne();
         if (settings.defaultResultView == 'Jsoneditor') {
             jsonEditor.show('slow');
         }
@@ -175,7 +175,7 @@ export const setAdminResult = function (result) {
     }
 };
 
-var jsonEditor;
+let jsonEditor;
 const getEditor = function () {
     if ($('.jsoneditor').length == 0) {
         jsonEditor = new JSONEditor(document.getElementById('jsoneditor'), {

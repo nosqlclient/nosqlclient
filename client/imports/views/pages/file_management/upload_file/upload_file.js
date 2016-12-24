@@ -7,8 +7,8 @@ import {initFilesInformation} from '../file_management';
 
 import './upload_file.html';
 
-var toastr = require('toastr');
-var Ladda = require('ladda');
+const toastr = require('toastr');
+const Ladda = require('ladda');
 require('bootstrap-filestyle');
 /**
  * Created by RSercan on 13.2.2016.
@@ -24,7 +24,7 @@ Template.uploadFile.onRendered(function () {
 Template.uploadFile.events({
     'click #btnUpload' (e) {
         e.preventDefault();
-        var blob = $('#inputFile')[0].files[0];
+        const blob = $('#inputFile')[0].files[0];
         if (blob) {
             swal({
                 title: "Are you sure ?",
@@ -49,9 +49,9 @@ Template.uploadFile.events({
 
 export const proceedUploading = function (blob, contentType, metaData, aliases) {
 
-    var l = Ladda.create(document.querySelector('#btnUpload'));
+    const l = Ladda.create(document.querySelector('#btnUpload'));
     l.start();
-    var fileReader = new FileReader();
+    const fileReader = new FileReader();
     fileReader.onload = function (file) {
         Meteor.call('uploadFile', $('#txtBucketName').val(), new Uint8Array(file.target.result), blob.name, contentType, metaData, aliases, function (err, result) {
             if (err || result.error) {

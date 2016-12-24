@@ -9,8 +9,8 @@ import {getOptions} from '/client/imports/views/query_templates_options/findone_
 
 import './findone_and_replace.html';
 
-var toastr = require('toastr');
-var Ladda = require('ladda');
+const toastr = require('toastr');
+const Ladda = require('ladda');
 /**
  * Created by RSercan on 1.1.2016.
  */
@@ -20,7 +20,7 @@ Template.findOneAndReplace.onRendered(function () {
 });
 
 const initializeOptions = function () {
-    var cmb = $('#cmbFindOneModifyOptions');
+    const cmb = $('#cmbFindOneModifyOptions');
     $.each(Helper.sortObjectByKey(Enums.FINDONE_MODIFY_OPTIONS), function (key, value) {
         cmb.append($("<option></option>")
             .attr("value", key)
@@ -33,10 +33,10 @@ const initializeOptions = function () {
 
 Template.findOneAndReplace.executeQuery = function (historyParams) {
     initExecuteQuery();
-    var selectedCollection = Session.get(Helper.strSessionSelectedCollection);
-    var options = historyParams ? historyParams.options : getOptions();
-    var selector = historyParams ? JSON.stringify(historyParams.selector) : getSelectorValue();
-    var replaceObject = historyParams ? JSON.stringify(historyParams.replaceObject) : Helper.getCodeMirrorValue($('#divReplacement'));
+    const selectedCollection = Session.get(Helper.strSessionSelectedCollection);
+    const options = historyParams ? historyParams.options : getOptions();
+    let selector = historyParams ? JSON.stringify(historyParams.selector) : getSelectorValue();
+    let replaceObject = historyParams ? JSON.stringify(historyParams.replaceObject) : Helper.getCodeMirrorValue($('#divReplacement'));
 
     selector = Helper.convertAndCheckJSON(selector);
     if (selector["ERROR"]) {
@@ -58,14 +58,14 @@ Template.findOneAndReplace.executeQuery = function (historyParams) {
         return;
     }
 
-    var params = {
+    const params = {
         selector: selector,
         replaceObject: replaceObject,
         options: options
     };
 
     Meteor.call("findOneAndReplace", selectedCollection, selector, replaceObject, options, function (err, result) {
-            Helper.renderAfterQueryExecution(err, result, false, "findOneAndReplace", params, (historyParams ? false : true));
+            Helper.renderAfterQueryExecution(err, result, false, "findOneAndReplace", params, (!historyParams));
         }
     );
 };

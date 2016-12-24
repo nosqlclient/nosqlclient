@@ -16,7 +16,7 @@ Template.setProfilingLevel.onRendered(function () {
 
 Template.setProfilingLevel.executeQuery = function () {
     initExecuteQuery();
-    var level = $('#cmbLevel').val();
+    const level = $('#cmbLevel').val();
 
     Meteor.call("setProfilingLevel", level, function (err, result) {
         Helper.renderAfterQueryExecution(err, result, true);
@@ -24,7 +24,7 @@ Template.setProfilingLevel.executeQuery = function () {
 };
 
 const initializeOptions = function () {
-    var cmb = $('#cmbLevel');
+    const cmb = $('#cmbLevel');
     $.each(Helper.sortObjectByKey(Enums.PROFILING_LEVELS), function (key, value) {
         cmb.append($("<option></option>")
             .attr("value", value)

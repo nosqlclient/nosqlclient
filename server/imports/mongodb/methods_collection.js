@@ -300,7 +300,7 @@ Meteor.methods({
         return proceedQueryExecution(selectedCollection, methodArray);
     },
 
-    aggregate(selectedCollection, pipeline, options) {
+    aggregate(selectedCollection, pipeline, options = {}) {
         const methodArray = [
             {
                 "aggregate": [pipeline, options],

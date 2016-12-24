@@ -9,8 +9,8 @@ import {getSelectorValue} from '/client/imports/views/query_templates_options/se
 import '/client/imports/views/query_templates_options/max_time_ms/max_time_ms.html';
 import './distinct.html';
 
-var toastr = require('toastr');
-var Ladda = require('ladda');
+const toastr = require('toastr');
+const Ladda = require('ladda');
 /**
  * Created by RSercan on 2.1.2016.
  */
@@ -19,7 +19,7 @@ Template.distinct.onRendered(function () {
 });
 
 const initializeOptions = function () {
-    var cmb = $('#cmbDistinctOptions');
+    const cmb = $('#cmbDistinctOptions');
     $.each(Helper.sortObjectByKey(Enums.DISTINCT_OPTIONS), function (key, value) {
         cmb.append($("<option></option>")
             .attr("value", key)
@@ -41,10 +41,10 @@ Template.distinct.events({
 
 Template.distinct.executeQuery = function (historyParams) {
     initExecuteQuery();
-    var selectedCollection = Session.get(Helper.strSessionSelectedCollection);
-    var selector = historyParams ? JSON.stringify(historyParams.selector) : getSelectorValue();
-    var fieldName = historyParams ? historyParams.fieldName : $('#inputField').val();
-    var options = historyParams ? historyParams.options : {};
+    const selectedCollection = Session.get(Helper.strSessionSelectedCollection);
+    let selector = historyParams ? JSON.stringify(historyParams.selector) : getSelectorValue();
+    const fieldName = historyParams ? historyParams.fieldName : $('#inputField').val();
+    const options = historyParams ? historyParams.options : {};
 
     if ($.inArray("MAX_TIME_MS", Session.get(Helper.strSessionSelectedOptions)) != -1) {
         let maxTimeMsVal = $('#inputMaxTimeMs').val();
@@ -60,14 +60,14 @@ Template.distinct.executeQuery = function (historyParams) {
         return;
     }
 
-    var params = {
+    const params = {
         selector: selector,
         fieldName: fieldName,
         options: options
     };
 
     Meteor.call("distinct", selectedCollection, selector, fieldName, options, function (err, result) {
-            Helper.renderAfterQueryExecution(err, result, false, "distinct", params, (historyParams ? false : true));
+            Helper.renderAfterQueryExecution(err, result, false, "distinct", params, (!historyParams));
         }
     );
 };

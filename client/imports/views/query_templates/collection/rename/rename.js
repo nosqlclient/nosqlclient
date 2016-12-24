@@ -7,8 +7,8 @@ import {initExecuteQuery} from '/client/imports/views/pages/browse_collection/br
 
 import './rename.html';
 
-var toastr = require('toastr');
-var Ladda = require('ladda');
+const toastr = require('toastr');
+const Ladda = require('ladda');
 /**
  * Created by RSercan on 5.1.2016.
  */
@@ -23,7 +23,7 @@ Template.dropTarget.onRendered(function () {
 });
 
 const initializeOptions = function () {
-    var cmb = $('#cmbRenameOptions');
+    const cmb = $('#cmbRenameOptions');
     $.each(Helper.sortObjectByKey(Enums.RENAME_OPTIONS), function (key, value) {
         cmb.append($("<option></option>")
             .attr("value", key)
@@ -36,9 +36,9 @@ const initializeOptions = function () {
 
 Template.rename.executeQuery = function () {
     initExecuteQuery();
-    var selectedCollection = Session.get(Helper.strSessionSelectedCollection);
-    var options = getOptions();
-    var newName = $('#inputNewName').val();
+    const selectedCollection = Session.get(Helper.strSessionSelectedCollection);
+    const options = getOptions();
+    const newName = $('#inputNewName').val();
 
     if (newName == selectedCollection) {
         toastr.warning('Can not use same name as target name');
@@ -87,9 +87,9 @@ const renderCollectionnames = function (newName) {
 };
 
 const getOptions = function () {
-    var result = {};
+    const result = {};
     if ($.inArray("DROP_TARGET", Session.get(Helper.strSessionSelectedOptions)) != -1) {
-        var dropTarget = $('#divDropTarget').iCheck('update')[0].checked;
+        const dropTarget = $('#divDropTarget').iCheck('update')[0].checked;
         if (dropTarget) {
             result[Enums.RENAME_OPTIONS.DROP_TARGET] = dropTarget;
         }

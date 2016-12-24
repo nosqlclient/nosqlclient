@@ -28,7 +28,9 @@
     require("/node_modules/codemirror/addon/hint/show-hint.js");
 
     Array.prototype.remove = function () {
-        var what, a = arguments, L = a.length, ax;
+        let what;
+        const a = arguments;
+        let L = a.length, ax;
         while (L && this.length) {
             what = a[--L];
             while ((ax = this.indexOf(what)) !== -1) {
@@ -39,8 +41,8 @@
     };
 
     String.prototype.parseFunction = function () {
-        var funcReg = /function *\(([^()]*)\)[ \n\t]*{(.*)}/gmi;
-        var match = funcReg.exec(this.replace(/\n/g, ' '));
+        const funcReg = /function *\(([^()]*)\)[ \n\t]*{(.*)}/gmi;
+        const match = funcReg.exec(this.replace(/\n/g, ' '));
         if (match) {
             return new Function(match[1].split(','), match[2]);
         }
@@ -113,11 +115,11 @@
 
     Helper.prototype = {
         initializeCollectionsCombobox () {
-            var cmb = $('#cmbCollections');
+            const cmb = $('#cmbCollections');
             cmb.append($("<optgroup id='optGroupCollections' label='Collections'></optgroup>"));
-            var cmbOptGroupCollection = cmb.find('#optGroupCollections');
+            const cmbOptGroupCollection = cmb.find('#optGroupCollections');
 
-            var collectionNames = Session.get(this.strSessionCollectionNames);
+            const collectionNames = Session.get(this.strSessionCollectionNames);
             $.each(collectionNames, function (index, value) {
                 cmbOptGroupCollection.append($("<option></option>")
                     .attr("value", value.name)
@@ -126,7 +128,7 @@
             cmb.chosen();
 
             cmb.on('change', (evt, params) => {
-                var selectedCollection = params.selected;
+                const selectedCollection = params.selected;
                 if (selectedCollection) {
                     this.getDistinctKeysForAutoComplete(selectedCollection);
                 }
@@ -141,7 +143,7 @@
 
         initiateDatatable (selector, sessionKey, noDeleteEvent) {
             selector.find('tbody').on('click', 'tr', function () {
-                var table = selector.DataTable();
+                const table = selector.DataTable();
                 if ($(this).hasClass('selected')) {
                     $(this).removeClass('selected');
                 }
@@ -178,7 +180,7 @@
         },
 
         showMeteorFuncError  (err, result, message) {
-            var errorMessage;
+            let errorMessage;
             if (err) {
                 errorMessage = err.message;
             } else if (result.error.message) {
@@ -198,10 +200,10 @@
         },
 
         sortObjectByKey  (obj) {
-            var keys = [];
-            var sorted_obj = {};
+            const keys = [];
+            const sorted_obj = {};
 
-            for (var key in obj) {
+            for (let key in obj) {
                 if (obj.hasOwnProperty(key)) {
                     keys.push(key);
                 }
@@ -218,7 +220,7 @@
         convertAndCheckJSON  (json) {
             if (!json) return {};
             json = json.match(/[^\s"']+|"([^"]*)"|'([^']*)'/gm).join('');
-            var result = {};
+            let result = {};
             try {
                 if (!json.startsWith('{') && !json.startsWith('[')) {
                     json = '{' + json;
@@ -241,7 +243,7 @@
 
         checkCodeMirrorSelectorForOption  (option, result, optionEnum) {
             if ($.inArray(option, Session.get(this.strSessionSelectedOptions)) != -1) {
-                var val = getSelectorValue();
+                let val = getSelectorValue();
 
                 if (val == "") result[optionEnum[option]] = {};
                 else {
@@ -257,7 +259,7 @@
 
         checkAndAddOption  (option, divSelector, result, optionEnum) {
             if ($.inArray(option, Session.get(this.strSessionSelectedOptions)) != -1) {
-                var val = this.getCodeMirrorValue(divSelector);
+                let val = this.getCodeMirrorValue(divSelector);
 
                 if (val == "") result[optionEnum[option]] = {};
                 else {
@@ -273,7 +275,7 @@
 
         setOptionsComboboxChangeEvent (cmb) {
             cmb.on('change', (evt, params) => {
-                var array = Session.get(this.strSessionSelectedOptions);
+                const array = Session.get(this.strSessionSelectedOptions);
                 if (params.deselected) {
                     array.remove(params.deselected);
                 }
@@ -285,7 +287,7 @@
         },
 
         getParentTemplateName  (levels) {
-            var view = Blaze.currentView;
+            let view = Blaze.currentView;
             if (typeof levels === "undefined") {
                 levels = 1;
             }
@@ -307,7 +309,7 @@
         },
 
         getDistinctKeysForAutoComplete  (selectedCollection) {
-            var settings = Settings.findOne();
+            let settings = Settings.findOne();
             if (!settings || !settings.autoCompleteFields) {
                 return;
             }
@@ -316,9 +318,9 @@
                 return;
             }
 
-            var mapFunc = "function () {for (var key in this) {emit(key, null);}};";
-            var reduceFunc = "function (key, stuff) {return null;};";
-            var options = {
+            const mapFunc = "function () {for (var key in this) {emit(key, null);}};";
+            const reduceFunc = "function (key, stuff) {return null;};";
+            const options = {
                 out: {inline: 1}
             };
 
@@ -327,7 +329,7 @@
                     this.showMeteorFuncError(err, result, "Couldn't fetch distinct fields for autocomplete");
                 }
                 else {
-                    var nameArray = [];
+                    const nameArray = [];
                     result.result.forEach(function (entry) {
                         nameArray.push(entry._id);
                     });
@@ -340,7 +342,7 @@
         },
 
         initializeCodeMirror  (divSelector, txtAreaId, keepValue, height = 100) {
-            var codeMirror;
+            let codeMirror;
             if (!divSelector.data('editor')) {
                 codeMirror = CodeMirror.fromTextArea(document.getElementById(txtAreaId), {
                     mode: "javascript",
@@ -367,15 +369,15 @@
                 codeMirror.setSize('%100', height);
 
                 CodeMirror.hint.javascript = (editor) => {
-                    var list = Session.get(this.strSessionDistinctFields) || [];
-                    var cursor = editor.getCursor();
-                    var currentLine = editor.getLine(cursor.line);
-                    var start = cursor.ch;
-                    var end = start;
+                    const list = Session.get(this.strSessionDistinctFields) || [];
+                    const cursor = editor.getCursor();
+                    const currentLine = editor.getLine(cursor.line);
+                    let start = cursor.ch;
+                    let end = start;
                     while (end < currentLine.length && /[\w.$]+/.test(currentLine.charAt(end))) ++end;
                     while (start && /[\w.$]+/.test(currentLine.charAt(start - 1))) --start;
-                    var curWord = start != end && currentLine.slice(start, end);
-                    var regex = new RegExp('^' + curWord, 'i');
+                    let curWord = start != end && currentLine.slice(start, end);
+                    const regex = new RegExp('^' + curWord, 'i');
                     return {
                         list: (!curWord ? list : list.filter(function (item) {
                             return item.match(regex);

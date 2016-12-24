@@ -1,9 +1,9 @@
-var app = require('app');
-var browser = require('browser-window');
-var electrify = require('electrify')(__dirname);
-var Menu = require("menu");
+const app = require('app');
+const browser = require('browser-window');
+const electrify = require('electrify')(__dirname);
+let Menu = require("menu");
 
-var window = null;
+let window = null;
 
 app.on('ready', function () {
 
