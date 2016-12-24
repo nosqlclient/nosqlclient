@@ -2,7 +2,9 @@
   "private": true,
   "name": "mongoclient",
   "version": "1.5.0",
-  "devDependencies": {},
+  "devDependencies": {
+    "eslint":"^3.12.2"
+  },
   "dependencies": {
     "typed.js": "1.1.1",
     "babel-runtime": "^6.18.0",
