@@ -45,25 +45,8 @@ Then you can run it as a daemon:
 
 ```docker run -d -p 3000:3000 mongoclient/mongoclient```
 
-## Version History
-### [1.3.0](https://github.com/rsercano/mongoclient/releases/1.3.0)
-Includes many features. [See details](https://github.com/rsercano/mongoclient/issues?q=milestone%3Av1.3.0)
-
-### [1.2.2](https://github.com/rsercano/mongoclient/releases/1.2.2)  
-Includes bugfixes. [See details](https://github.com/rsercano/mongoclient/issues?q=milestone%3Av1.2.2)
-
-### [1.2.1](https://github.com/rsercano/mongoclient/releases/1.2.1)  
-Includes bugfixes. [See details](https://github.com/rsercano/mongoclient/issues?q=milestone%3Av1.2.1)
-
-### [1.2.0](https://github.com/rsercano/mongoclient/releases/1.2.0)  
-Includes aggregation section. [See details](https://github.com/rsercano/mongoclient/issues?q=milestone%3Av1.2.0)
-
-### [1.1.0](https://github.com/rsercano/mongoclient/releases/1.1.0)  
-Includes usermanagement, and bugfixes generally. [See details](https://github.com/rsercano/mongoclient/issues?q=milestone%3Av1.1.0)
-
-### [1.0.0](https://github.com/rsercano/mongoclient/releases/1.0.0)  
-Includes basic mongodb management features. [See details](https://github.com/rsercano/mongoclient/issues?q=milestone%3Av1.0.0)
-
+## History
+Please check [history]() file for version information
 
 ## License
 Project is licensed under [MIT](https://en.wikipedia.org/wiki/MIT_License), which means you are free to do anything with full of my work as long as you provide attribution back to me. Thanks !
