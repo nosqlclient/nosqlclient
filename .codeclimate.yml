@@ -5,12 +5,10 @@ engines:
     enabled: true
   duplication:
     enabled: true
-    config:
-      languages:
-        - javascript
+
 ratings:
-   paths:
-     - "*.js"
+  paths:
+  - "**.js"
 
 exclude_paths:
 - "client/plugins/**/*"
