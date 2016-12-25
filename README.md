@@ -1,7 +1,6 @@
 ## Mongoclient, Featured MongoDB Management Tool
 Cross-platform, MongoDB 3.2+ support and more features!
 
-[![Join the chat at https://gitter.im/rsercano/mongoclient](https://badges.gitter.im/rsercano/mongoclient.svg)](https://gitter.im/rsercano/mongoclient?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 [![Build Status](https://travis-ci.org/rsercano/mongoclient.svg?branch=master)](https://travis-ci.org/rsercano/mongoclient)
 [![Code Climate](https://codeclimate.com/github/rsercano/mongoclient/badges/gpa.svg)](https://codeclimate.com/github/rsercano/mongoclient)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/6a75fc4e1d3f480f811b5339202400b5)](https://www.codacy.com/app/ozdemirsercan27/mongoclient?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=rsercano/mongoclient&amp;utm_campaign=Badge_Grade)
