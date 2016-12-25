@@ -50,7 +50,10 @@ Then you can run it as a daemon:
 ```docker run -d -p 3000:3000 mongoclient/mongoclient```
 
 ## History
-Please check [history](https://github.com/rsercano/mongoclient/blob/master/HISTORY.MD) file for version information
+Please check [history](https://github.com/rsercano/mongoclient/blob/master/HISTORY.MD) file for version information.
+
+## Roadmap
+Please check [roadmap](https://github.com/rsercano/mongoclient/blob/master/ROADMAP.MD) file for further features.
 
 ## License
 Project is licensed under [MIT](https://en.wikipedia.org/wiki/MIT_License), which means you are free to do anything with full of my work as long as you provide attribution back to me. Thanks !
