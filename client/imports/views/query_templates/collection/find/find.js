@@ -16,6 +16,7 @@ const Ladda = require('ladda');
 /**
  * Created by sercan on 30.12.2015.
  */
+/*global _*/
 
 const proceedFindQuery = function (selectedCollection, selector, cursorOptions, saveHistory, exportFormat) {
     const executeExplain = $('#inputExecuteExplain').iCheck('update')[0].checked;

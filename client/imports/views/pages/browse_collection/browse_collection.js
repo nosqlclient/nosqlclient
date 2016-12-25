@@ -1,6 +1,8 @@
 /**
  * Created by RSercan on 29.12.2015.
  */
+/*global swal*/
+/*global _*/
 
 import {Template} from "meteor/templating";
 import {Meteor} from "meteor/meteor";
@@ -10,6 +12,9 @@ import {Settings} from "/lib/imports/collections/settings";
 import {FlowRouter} from 'meteor/kadira:flow-router';
 import Enums from "/lib/imports/enums";
 import {initQueryHistories} from "./query_histories/query_histories";
+import {AceEditor} from 'meteor/arch:ace-editor';
+
+/**queries*/
 import "/client/imports/views/query_templates/collection/aggregate/aggregate";
 import "/client/imports/views/query_templates/collection/bulk_write/bulk_write";
 import "/client/imports/views/query_templates/collection/count/count";
@@ -38,9 +43,6 @@ import "/client/imports/views/query_templates/collection/group/group";
 
 import '../../query_templates/collection/find/query_wizard/query_wizard';
 import "./browse_collection.html";
-
-
-// queries
 
 const JSONEditor = require('jsoneditor');
 const toastr = require('toastr');
@@ -358,7 +360,7 @@ const getActiveEditorValue = function () {
     if (whichIsDisplayed == 'aceEditor') {
         const foundAceEditor = resultContents.find('div.active').find('pre').attr('id');
         if (foundAceEditor) {
-            return ace.edit(foundAceEditor).getValue();
+            return AceEditor.instance(foundAceEditor).getValue();
         }
     }
     else if (whichIsDisplayed == 'jsonEditor') {
@@ -379,6 +381,7 @@ const saveEditor = function () {
         toastr.error('Syntax error, can not save document: ' + e);
         return;
     }
+
 
     swal({
         title: "Are you sure ?",
@@ -581,34 +584,34 @@ Template.browseCollection.helpers({
     'getHelpBlockForSelectedQuery' () {
         switch (Session.get(Helper.strSessionSelectedQuery)) {
             case Enums.QUERY_TYPES.FINDONE_AND_REPLACE:
-                return Spacebars.SafeString('This query replaces whole document which matched by <strong>selector</strong> with the <strong>set</strong> object');
+                return 'This query replaces whole document which matched by <strong>selector</strong> with the <strong>set</strong> object';
 
             case Enums.QUERY_TYPES.GROUP:
-                return Spacebars.SafeString('<strong>Deprecated since version 3.4</strong> Use db.collection.aggregate() with the $group stage or db.collection.mapReduce() instead');
+                return '<strong>Deprecated since version 3.4</strong> Use db.collection.aggregate() with the $group stage or db.collection.mapReduce() instead';
 
             case Enums.QUERY_TYPES.FINDONE_AND_DELETE:
-                return Spacebars.SafeString('<strong><span style="color: red; ">CAUTION:</span></strong> This query removes whole document which matched by <strong>selector</strong>');
+                return '<strong><span style="color: red; ">CAUTION:</span></strong> This query removes whole document which matched by <strong>selector</strong>';
 
             case Enums.QUERY_TYPES.CREATE_INDEX:
-                return Spacebars.SafeString('Since mongodb version <strong>3.0.0</strong>, this query can be used instead of <strong>ensureIndex</strong>');
+                return 'Since mongodb version <strong>3.0.0</strong>, this query can be used instead of <strong>ensureIndex</strong>';
 
             case Enums.QUERY_TYPES.DELETE:
-                return Spacebars.SafeString('<strong><span style="color: red; ">CAUTION:</span></strong> This query removes whole document(s) which matched by <strong>selector</strong>');
+                return '<strong><span style="color: red; ">CAUTION:</span></strong> This query removes whole document(s) which matched by <strong>selector</strong>';
 
             case Enums.QUERY_TYPES.GEO_HAYSTACK_SEARCH:
-                return Spacebars.SafeString('This query executes a geo search using a <strong>geo haystack index</strong> on a collection');
+                return 'This query executes a geo search using a <strong>geo haystack index</strong> on a collection';
 
             case Enums.QUERY_TYPES.IS_CAPPED:
-                return Spacebars.SafeString('Returns the information of if the collection is a <strong>capped</strong> collection');
+                return 'Returns the information of if the collection is a <strong>capped</strong> collection';
 
             case Enums.QUERY_TYPES.OPTIONS:
-                return Spacebars.SafeString('Returns <strong>collection</strong> options');
+                return 'Returns <strong>collection</strong> options';
 
             case Enums.QUERY_TYPES.RE_INDEX:
-                return Spacebars.SafeString('Reindex all indexes on the collection <strong>Warning:</strong> reIndex is a blocking operation <i>(indexes are rebuilt in the foreground)</i> and will be slow for large collections');
+                return 'Reindex all indexes on the collection <strong>Warning:</strong> reIndex is a blocking operation <i>(indexes are rebuilt in the foreground)</i> and will be slow for large collections';
 
             case Enums.QUERY_TYPES.UPDATE_MANY:
-                return Spacebars.SafeString('Updates all documents which matched by <strong>Selector</strong>');
+                return 'Updates all documents which matched by <strong>Selector</strong>';
 
             default:
                 return '';

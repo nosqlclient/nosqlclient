@@ -13,6 +13,7 @@ const Ladda = require('ladda');
 /**
  * Created by RSercan on 3.1.2016.
  */
+/*global _*/
 Template.geoNear.onRendered(function () {
     initializeOptions();
 });

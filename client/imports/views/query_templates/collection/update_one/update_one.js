@@ -5,6 +5,7 @@ import Helper from '/client/imports/helper';
 import Enums from '/lib/imports/enums';
 import {initExecuteQuery} from '/client/imports/views/pages/browse_collection/browse_collection';
 import {getSelectorValue} from '/client/imports/views/query_templates_options/selector/selector';
+import {$} from 'meteor/jquery';
 
 import '/client/imports/views/query_templates_options/set/set';
 import '/client/imports/views/query_templates_options/upsert/upsert';
@@ -16,6 +17,7 @@ const Ladda = require('ladda');
 /**
  * Created by sercan on 06.01.2016.
  */
+/*global _*/
 Template.updateOne.onRendered(function () {
     initializeOptions();
 });

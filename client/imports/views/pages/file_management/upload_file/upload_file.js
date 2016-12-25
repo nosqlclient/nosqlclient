@@ -13,6 +13,8 @@ require('bootstrap-filestyle');
 /**
  * Created by RSercan on 13.2.2016.
  */
+/*global swal*/
+
 Template.uploadFile.onRendered(function () {
     if (Session.get(Helper.strSessionCollectionNames) == undefined) {
         FlowRouter.go('/databaseStats');

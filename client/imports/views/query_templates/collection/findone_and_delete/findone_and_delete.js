@@ -10,9 +10,12 @@ import {getOptions} from '/client/imports/views/query_templates_options/findone_
 import './findone_and_delete.html';
 
 const toastr = require('toastr');
+const Ladda = require('ladda');
+
 /**
  * Created by RSercan on 1.1.2016.
  */
+/*global _*/
 Template.findOneAndDelete.onRendered(function () {
     initializeOptions();
 });

@@ -5,6 +5,7 @@ import {Meteor} from 'meteor/meteor';
 import {Settings} from '/lib/imports/collections/settings';
 import ShellCommands from '/lib/imports/collections/shell';
 import SchemaAnalyzeResult from '/lib/imports/collections/schema_analyze_result';
+import {HttpBasicAuth} from 'meteor/jabbslad:basic-auth';
 
 Meteor.startup(function () {
     // create a setting if not exist

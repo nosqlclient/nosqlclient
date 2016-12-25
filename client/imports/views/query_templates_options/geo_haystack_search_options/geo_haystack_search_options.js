@@ -2,6 +2,7 @@ import {Template} from 'meteor/templating';
 import Helper from '/client/imports/helper';
 import Enums from '/lib/imports/enums';
 import {Session} from 'meteor/session';
+import {$} from 'meteor/jquery';
 
 import '/client/imports/views/query_templates_options/max_distance/max_distance.html';
 import '/client/imports/views/query_templates_options/limit/limit.html';

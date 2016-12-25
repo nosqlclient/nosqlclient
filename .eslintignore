@@ -1,1 +1,6 @@
 **/*{.,-}min.js
+node_modules
+packages/
+public/
+client/plugins/
+client/stylesheets/

@@ -21,5 +21,5 @@ Template.reIndex.executeQuery = function (historyParams) {
     });
 };
 
-Template.reIndex.renderQuery = function (query) {
+Template.reIndex.renderQuery = function () {
 };

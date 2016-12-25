@@ -1,6 +1,9 @@
 /**
  * Created by sercan on 14.04.2016.
  */
+/*global _*/
+/*global swal*/
+
 import {Template} from 'meteor/templating';
 import {Meteor} from 'meteor/meteor';
 import {Session} from 'meteor/session';

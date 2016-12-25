@@ -9,7 +9,6 @@ import {initRoles} from './manage_roles/manage_roles';
 
 import './user_management.html';
 
-let toastr = require('toastr');
 const Ladda = require('ladda');
 //var Clipboard = require('clipboard');
 /**

@@ -14,7 +14,7 @@ const Ladda = require('ladda');
 /**
  * Created by RSercan on 15.2.2016.
  */
-
+/*global swal*/
 const initializeCollectionsCombobox = function () {
     const cmb = $('#cmbCollections');
     cmb.append($("<optgroup id='optGroupCollections' label='Collections'></optgroup>"));

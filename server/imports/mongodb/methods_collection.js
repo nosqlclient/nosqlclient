@@ -1,6 +1,8 @@
 /**
  * Created by RSercan on 27.12.2015.
  */
+/*global Async*/
+
 import LOGGER from "../internal/logger";
 import Helper from "./helper";
 import {Meteor} from "meteor/meteor";

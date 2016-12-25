@@ -21,5 +21,5 @@ Template.options.executeQuery = function (historyParams) {
     });
 };
 
-Template.options.renderQuery = function (query) {
+Template.options.renderQuery = function () {
 };

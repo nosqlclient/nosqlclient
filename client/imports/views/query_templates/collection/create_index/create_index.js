@@ -8,11 +8,13 @@ import {getOptions} from '/client/imports/views/query_templates_options/create_i
 
 import './create_index.html';
 
+
 const toastr = require('toastr');
 const Ladda = require('ladda');
 /**
  * Created by RSercan on 2.1.2016.
  */
+/*global _*/
 Template.createIndex.onRendered(function () {
     Helper.initializeCodeMirror($('#divFields'), 'txtFields');
     initializeOptions();

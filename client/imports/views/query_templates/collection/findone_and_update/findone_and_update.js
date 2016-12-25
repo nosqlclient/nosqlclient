@@ -15,6 +15,7 @@ const Ladda = require('ladda');
 /**
  * Created by RSercan on 1.1.2016.
  */
+/*global _*/
 Template.findOneAndUpdate.onRendered(function () {
     initializeOptions();
 });

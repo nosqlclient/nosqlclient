@@ -13,6 +13,8 @@ const Ladda = require('ladda');
 /**
  * Created by RSercan on 3.1.2016.
  */
+/*global _*/
+
 Template.mapReduce.onRendered(function () {
     Helper.initializeCodeMirror($('#divMap'), 'txtMap');
     Helper.initializeCodeMirror($('#divReduce'), 'txtReduce');

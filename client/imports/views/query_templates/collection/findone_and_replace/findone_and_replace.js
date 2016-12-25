@@ -14,6 +14,7 @@ const Ladda = require('ladda');
 /**
  * Created by RSercan on 1.1.2016.
  */
+/*global _*/
 Template.findOneAndReplace.onRendered(function () {
     Helper.initializeCodeMirror($('#divReplacement'), 'txtReplacement');
     initializeOptions();

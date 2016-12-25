@@ -4,6 +4,7 @@
 import Helper from '/client/imports/helper';
 import Enums from '/lib/imports/enums';
 import {Session} from 'meteor/session';
+import {$} from 'meteor/jquery';
 
 import '/client/imports/views/query_templates_options/limit/limit.html';
 import '/client/imports/views/query_templates_options/skip/skip.html';

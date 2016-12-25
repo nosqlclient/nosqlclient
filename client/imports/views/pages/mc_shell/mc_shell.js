@@ -12,7 +12,6 @@ import ShellCommands from '/lib/imports/collections/shell';
 import './mc_shell.html';
 
 const CodeMirror = require("codemirror");
-const toastr = require('toastr');
 let connected, lastRegex;
 
 require("/node_modules/codemirror/mode/javascript/javascript.js");

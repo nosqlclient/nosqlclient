@@ -12,6 +12,9 @@ import './bulk_write.html';
  * Created by RSercan on 15.10.2016.
  */
 
+const toastr = require('toastr');
+const Ladda = require('ladda');
+
 Template.bulkWrite.onRendered(function () {
     Helper.initializeCodeMirror($('#divBulkWrite'), 'txtBulkWrite');
     initializeOptions();

@@ -2,6 +2,7 @@
  * Created by Sercan on 16.11.2016.
  */
 import {Template} from 'meteor/templating';
+import {Meteor} from 'meteor/meteor';
 import {Session} from 'meteor/session';
 import {FlowRouter} from 'meteor/kadira:flow-router';
 import Helper from '/client/imports/helper';
@@ -99,18 +100,17 @@ const respond = function () {
     let chatDiv = $('.query-wizard .content');
     let sendButton = $('#btnQueryWizardRespond');
     let sendButton2 = $('#btnQueryWizardRespond2');
-    let chatMessage = $('.chat-message');
 
     switch (step) {
-        case 1:
+        case 1: {
             if (!txt.val()) {
                 return;
             }
             chatDiv.append($('<div class="right"><div class="author-name">Me </div> <div class="chat-message">' + txt.val() + '</div></div>'));
             chatDiv.append($('<div class="left"><div class="author-name">Mongoclient </div> <div class="chat-message active"></div></div>'));
-            chatMessage.last().typed({
+            chatDiv.find('.left').last().find('.chat-message').typed({
                 strings: ["So, you want to retrieve documents that..."],
-                typeSpeed: 0
+                typeSpeed: -15
             });
             txtDiv.css('display', 'none');
             cmbDiv.css('display', '');
@@ -121,7 +121,8 @@ const respond = function () {
             step++;
             fieldName = txt.val().trim();
             break;
-        case 2:
+        }
+        case 2: {
             if (!cmb.val()) {
                 return;
             }
@@ -131,14 +132,15 @@ const respond = function () {
             chatDiv.append($('<div class="right"><div class="author-name">Me </div> <div class="chat-message">I want to retrieve documents that ' +
                 text + '</div></div>'));
             chatDiv.append($('<div class="left"><div class="author-name">Mongoclient </div> <div class="chat-message active"></div></div>'));
-            chatMessage.last().typed({
+            chatDiv.find('.left').last().find('.chat-message').typed({
                 strings: ['Okay, ' + stepText],
-                typeSpeed: 0
+                typeSpeed: -15
             });
 
             step++;
             break;
-        case 3:
+        }
+        case 3: {
             if (!txt.val()) {
                 return;
             }
@@ -148,25 +150,26 @@ const respond = function () {
                 let convertedValue = Helper.convertAndCheckJSON(txtValue);
                 if (convertedValue["ERROR"] || Object.prototype.toString.call(convertedValue) !== '[object Array]') {
                     chatDiv.append($('<div class="left"><div class="author-name">Mongoclient </div> <div class="chat-message active"></div></div>'));
-                    chatMessage.last().typed({
+                    chatDiv.find('.left').last().find('.chat-message').typed({
                         strings: ["Please provide a valid array, e.g. [3,5,6,7] or [\"myValue\",\"mySecondValue\"]"],
-                        typeSpeed: 0
+                        typeSpeed: -15
                     });
                     break;
                 }
             }
 
-            stepText = step3();
+            let stepText = step3();
             chatDiv.append($('<div class="right"><div class="author-name">Me </div> <div class="chat-message">' + txt.val() + '</div></div>'));
             chatDiv.append($('<div class="left"><div class="author-name">Mongoclient </div> <div class="chat-message active"></div></div>'));
-            chatMessage.last().typed({
+            chatDiv.find('.left').last().find('.chat-message').typed({
                 strings: [stepText],
-                typeSpeed: 0
+                typeSpeed: -15
             });
 
             step++;
             break;
-        case 4:
+        }
+        case 4: {
             cmb.prop('disabled', true).trigger("chosen:updated");
             txt.prop('disabled', true);
             sendButton.prop('disabled', true);
@@ -175,13 +178,14 @@ const respond = function () {
             regexOptions = cmb.val();
             chatDiv.append($('<div class="right"><div class="author-name">Me </div> <div class="chat-message">' + (regexOptions ? regexOptions : "No options") + '</div></div>'));
             chatDiv.append($('<div class="left"><div class="author-name">Mongoclient </div> <div class="chat-message active"></div></div>'));
-            chatMessage.last().typed({
+            chatDiv.find('.left').last().find('.chat-message').typed({
                 strings: [redirectText],
-                typeSpeed: 0
+                typeSpeed: -15
             });
 
             redirect();
             break;
+        }
     }
 
     chatDiv.slimScroll({scrollBy: '400px'});

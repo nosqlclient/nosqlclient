@@ -11,6 +11,7 @@ const Ladda = require('ladda');
 /**
  * Created by RSercan on 24.2.2016.
  */
+/*global moment*/
 Template.queryHistories.onRendered(function () {
     if (Session.get(Helper.strSessionCollectionNames) == undefined) {
         FlowRouter.go('/databaseStats');

@@ -25,5 +25,5 @@ Template.isCapped.executeQuery = function (historyParams) {
 };
 
 
-Template.isCapped.renderQuery = function (query) {
+Template.isCapped.renderQuery = function () {
 };

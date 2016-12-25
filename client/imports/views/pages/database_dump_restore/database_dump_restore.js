@@ -17,7 +17,8 @@ const Ladda = require('ladda');
 /**
  * Created by RSercan on 17.1.2016.
  */
-
+/*global moment*/
+/*global swal*/
 const initCollectionsForImport = function () {
     const cmb = $('#cmbImportCollection');
     cmb.empty();

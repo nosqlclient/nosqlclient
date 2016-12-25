@@ -1,6 +1,8 @@
 /**
  * Created by RSercan on 5.3.2016.
  */
+/*global Async*/
+/*global moment*/
 
 import {Meteor} from 'meteor/meteor';
 import {Settings} from '/lib/imports/collections/settings';
@@ -9,6 +11,7 @@ import ShellCommands from '/lib/imports/collections/shell';
 import SchemaAnaylzeResult from '/lib/imports/collections/schema_analyze_result';
 import LOGGER from "../internal/logger";
 import Helper from "./helper";
+
 
 const mongodbApi = require('mongodb');
 const tunnelSsh = new require('tunnel-ssh');
@@ -250,7 +253,7 @@ Meteor.methods({
                 database.collections(function (err, collections) {
                     collections.forEach(function (collection) {
                         if (!collection.collectionName.startsWith('system')) {
-                            collection.drop(function (dropError) {
+                            collection.drop(function () {
                             });
                         }
                     });
@@ -372,7 +375,6 @@ Meteor.methods({
 
             spawned.stderr.on('data', Meteor.bindEnvironment(function (data) {
                 if (data.toString()) {
-                    console.log(data.toString());
                     SchemaAnaylzeResult.insert({
                         'date': Date.now(),
                         'connectionId': connectionId,

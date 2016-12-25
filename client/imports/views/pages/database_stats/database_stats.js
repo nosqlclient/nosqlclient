@@ -6,10 +6,10 @@ import {Settings} from '/lib/imports/collections/settings';
 
 import './database_stats.html';
 
-const toastr = require('toastr');
 /**
  * Created by RSercan on 26.12.2015.
  */
+/*global moment*/
 let interval = null;
 let memoryChart = null, connectionsChart = null, networkChart = null, opCountersChart = null;
 

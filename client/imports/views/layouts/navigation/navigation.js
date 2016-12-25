@@ -1,3 +1,4 @@
+/*global swal*/
 import {Meteor} from 'meteor/meteor';
 import {Template} from 'meteor/templating';
 import {Session} from 'meteor/session';
@@ -10,7 +11,6 @@ import './add_collection/add_collection';
 import './navigation.html';
 
 const toastr = require('toastr');
-
 
 const handleNavigationAndSessions = function () {
     $('#listCollectionNames').find('li').each(function (index, li) {

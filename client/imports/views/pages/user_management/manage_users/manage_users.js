@@ -12,6 +12,7 @@ const Ladda = require('ladda');
 /**
  * Created by sercan on 14.04.2016.
  */
+/*global swal*/
 
 
 const populateTableData = function (users) {
@@ -324,7 +325,7 @@ Template.manageUsers.events({
             customData = Helper.convertAndCheckJSON(customData);
 
             if (customData["ERROR"]) {
-                toastr.error("Syntax Error on customData: " + err.message);
+                toastr.error("Syntax Error on customData: " + customData["ERROR"]);
                 return;
             }
         }
