@@ -576,14 +576,8 @@ const populateConnectionModal = function () {
 Template.connections.onRendered(function () {
     let selector = $('#tblConnection');
     selector.find('tbody').on('click', 'tr', function () {
-        let table = selector.DataTable();
-        if ($(this).hasClass('selected')) {
-            $(this).removeClass('selected');
-        }
-        else {
-            table.$('tr.selected').removeClass('selected');
-            $(this).addClass('selected');
-        }
+        const table = selector.DataTable();
+        Helper.doTableRowSelectable(table,$(this));
 
         if (table.row(this).data()) {
             Session.set(Helper.strSessionConnection, table.row(this).data()._id);

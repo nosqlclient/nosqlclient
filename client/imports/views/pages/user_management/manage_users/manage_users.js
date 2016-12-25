@@ -37,13 +37,7 @@ const initiateRoleToAddTable = function () {
     const selector = $('#tblCurrentRoles');
     selector.find('tbody').on('click', 'tr', function () {
         const table = selector.DataTable();
-        if ($(this).hasClass('selected')) {
-            $(this).removeClass('selected');
-        }
-        else {
-            table.$('tr.selected').removeClass('selected');
-            $(this).addClass('selected');
-        }
+        Helper.doTableRowSelectable(table,$(this));
 
         if (table.row(this).data()) {
             $('#inputAddRoleToUserRolename').val(table.row(this).data().role);
@@ -51,9 +45,7 @@ const initiateRoleToAddTable = function () {
         }
     });
 
-    selector.find('tbody').on('click', 'a.editor_delete', function () {
-        selector.DataTable().row($(this).parents('tr')).remove().draw();
-    });
+    Helper.attachDeleteTableRowEvent(selector);
 };
 
 const populateUserRolesToSave = function () {

@@ -21,14 +21,7 @@ Template.queryHistories.onRendered(function () {
     const selector = $('#tblQueryHistories');
     selector.find('tbody').on('click', 'tr', function () {
         const table = selector.DataTable();
-
-        if ($(this).hasClass('selected')) {
-            $(this).removeClass('selected');
-        }
-        else {
-            table.$('tr.selected').removeClass('selected');
-            $(this).addClass('selected');
-        }
+        Helper.doTableRowSelectable(table,$(this));
 
         if (table.row(this).data()) {
             const selectedId = table.row(this).data()._id;

@@ -162,20 +162,14 @@ const initializeCommandCodeMirror = function () {
             let regex = new RegExp('^' + curWord, 'i');
             return {
                 list: (!curWord ? list : list.filter(function (item) {
-                    return item.match(regex);
-                })),
+                        return item.match(regex);
+                    })),
                 from: CodeMirror.Pos(cursor.line, start),
                 to: CodeMirror.Pos(cursor.line, end)
             };
         };
 
         divCommand.data('editor', codeMirror);
-
-        $('.CodeMirror').resizable({
-            resize: function () {
-                codeMirror.setSize($(this).width(), $(this).height());
-            }
-        });
 
         codeMirror.focus();
     }

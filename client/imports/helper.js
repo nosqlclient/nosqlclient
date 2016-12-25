@@ -1,7 +1,7 @@
 /**
  * Created by RSercan on 26.12.2015.
  */
-import { Blaze } from 'meteor/blaze';
+import {Blaze} from 'meteor/blaze';
 import {Template} from 'meteor/templating';
 import {Session} from 'meteor/session';
 import {Meteor} from 'meteor/meteor';
@@ -28,12 +28,35 @@ require("/node_modules/codemirror/addon/fold/xml-fold.js");
 require("/node_modules/codemirror/addon/hint/javascript-hint.js");
 require("/node_modules/codemirror/addon/hint/show-hint.js");
 
+const checkOption = function (val, result, optionEnum, option) {
+    if (val == "") result[optionEnum[option]] = {};
+    else {
+        val = this.convertAndCheckJSON(val);
+        if (val['ERROR']) {
+            result["ERROR"] = "Syntax Error on " + optionEnum[option] + ": " + val['ERROR'];
+        } else {
+            result[optionEnum[option]] = val;
+        }
+    }
+};
+
 const extractMiddleString = function (str) {
     if (!str) {
         return "";
     }
 
     return str.substring(str.indexOf("\"") + 1, str.lastIndexOf("\""));
+};
+
+const replaceShellStuff = function (str, regex, extendedJsonVersion) {
+    let matches = str.match(regex);
+    if (matches) {
+        for (let i = 0; i < matches.length; i++) {
+            str = str.replace(matches[i], "{" + extendedJsonVersion + ":\"" + extractMiddleString(matches[i]) + "\"}");
+        }
+    }
+
+    return str;
 };
 
 //supporting shell commands for ObjectID and ISODate, https://docs.mongodb.com/manual/reference/mongodb-extended-json/
@@ -44,24 +67,10 @@ const convertToExtendedJson = function (str) {
 
     // support shell stuff
     // replace objectID variations with $oid
-    let objectIDRegex = /objectid\("[A-Z0-9]*"\)/gmi;
-    let objIdMatches = str.match(objectIDRegex);
-
-    if (objIdMatches) {
-        for (let i = 0; i < objIdMatches.length; i++) {
-            str = str.replace(objIdMatches[i], "{$oid:\"" + extractMiddleString(objIdMatches[i]) + "\"}");
-        }
-    }
+    str = replaceShellStuff(str, /objectid\("[A-Z0-9]*"\)/gmi, "$oid");
 
     // replace ISODate|date variations with $date
-    let isoDateRegex = /isodate\("[A-Z0-9-:.]*"\)|date\("[A-Z0-9-:.]*"\)|newdate\("[A-Z0-9-:.]*"\)|newisodate\("[A-Z0-9-:.]*"\)/gmi;
-    let isoDateMatches = str.match(isoDateRegex);
-
-    if (isoDateMatches) {
-        for (let i = 0; i < isoDateMatches.length; i++) {
-            str = str.replace(isoDateMatches[i], "{$date:\"" + extractMiddleString(isoDateMatches[i]) + "\"}");
-        }
-    }
+    str = replaceShellStuff(str, /isodate\("[A-Z0-9-:.]*"\)|date\("[A-Z0-9-:.]*"\)|newdate\("[A-Z0-9-:.]*"\)|newisodate\("[A-Z0-9-:.]*"\)/gmi, "$date");
 
     return str;
 };
@@ -111,6 +120,22 @@ Helper.prototype = {
         });
     },
 
+    attachDeleteTableRowEvent (selector){
+        selector.find('tbody').on('click', 'a.editor_delete', function () {
+            selector.DataTable().row($(this).parents('tr')).remove().draw();
+        });
+    },
+
+    doTableRowSelectable(table, row){
+        if (row.hasClass('selected')) {
+            row.removeClass('selected');
+        }
+        else {
+            table.$('tr.selected').removeClass('selected');
+            row.addClass('selected');
+        }
+    },
+
     clearSessions () {
         Object.keys(Session.keys).forEach(function (key) {
             Session.set(key, undefined);
@@ -134,9 +159,7 @@ Helper.prototype = {
         });
 
         if (!noDeleteEvent) {
-            selector.find('tbody').on('click', 'a.editor_delete', function () {
-                selector.DataTable().row($(this).parents('tr')).remove().draw();
-            });
+            this.attachDeleteTableRowEvent(selector);
         }
     },
 
@@ -219,33 +242,13 @@ Helper.prototype = {
 
     checkCodeMirrorSelectorForOption  (option, result, optionEnum) {
         if ($.inArray(option, Session.get(this.strSessionSelectedOptions)) != -1) {
-            let val = getSelectorValue();
-
-            if (val == "") result[optionEnum[option]] = {};
-            else {
-                val = this.convertAndCheckJSON(val);
-                if (val['ERROR']) {
-                    result["ERROR"] = "Syntax Error on " + optionEnum[option] + ": " + val['ERROR'];
-                } else {
-                    result[optionEnum[option]] = val;
-                }
-            }
+            checkOption(getSelectorValue(), result, optionEnum, option);
         }
     },
 
     checkAndAddOption  (option, divSelector, result, optionEnum) {
         if ($.inArray(option, Session.get(this.strSessionSelectedOptions)) != -1) {
-            let val = this.getCodeMirrorValue(divSelector);
-
-            if (val == "") result[optionEnum[option]] = {};
-            else {
-                val = this.convertAndCheckJSON(val);
-                if (val['ERROR']) {
-                    result["ERROR"] = "Syntax Error on " + optionEnum[option] + ": " + val['ERROR'];
-                } else {
-                    result[optionEnum[option]] = val;
-                }
-            }
+            checkOption(this.getCodeMirrorValue(divSelector), result, optionEnum, option);
         }
     },
 
@@ -317,6 +320,14 @@ Helper.prototype = {
         });
     },
 
+    doCodeMirrorResizable(codeMirror){
+        $('.CodeMirror').resizable({
+            resize: function () {
+                codeMirror.setSize($(this).width(), $(this).height());
+            }
+        });
+    },
+
     initializeCodeMirror  (divSelector, txtAreaId, keepValue, height = 100) {
         let codeMirror;
         if (!divSelector.data('editor')) {
@@ -365,11 +376,7 @@ Helper.prototype = {
 
             divSelector.data('editor', codeMirror);
 
-            $('.CodeMirror').resizable({
-                resize: function () {
-                    codeMirror.setSize($(this).width(), $(this).height());
-                }
-            });
+            this.doCodeMirrorResizable(codeMirror);
         }
         else {
             codeMirror = divSelector.data('editor');

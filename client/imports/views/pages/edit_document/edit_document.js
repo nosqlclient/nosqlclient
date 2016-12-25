@@ -15,26 +15,6 @@ const Ladda = require('ladda');
  * Created by RSercan on 15.2.2016.
  */
 /*global swal*/
-const initializeCollectionsCombobox = function () {
-    const cmb = $('#cmbCollections');
-    cmb.append($("<optgroup id='optGroupCollections' label='Collections'></optgroup>"));
-    const cmbOptGroupCollection = cmb.find('#optGroupCollections');
-
-    const collectionNames = Session.get(Helper.strSessionCollectionNames);
-    $.each(collectionNames, function (index, value) {
-        cmbOptGroupCollection.append($("<option></option>")
-            .attr("value", value.name)
-            .text(value.name));
-    });
-    cmb.chosen();
-
-    cmb.on('change', function (evt, params) {
-        const selectedCollection = params.selected;
-        if (selectedCollection) {
-            Helper.getDistinctKeysForAutoComplete(selectedCollection);
-        }
-    });
-};
 
 const initializeResultArea = function (result) {
     const divResult = $('#divResult');
@@ -192,7 +172,7 @@ Template.editDocument.onRendered(function () {
 
     this.autorun(() => {
         if (settings.ready() && connections.ready()) {
-            initializeCollectionsCombobox();
+            Helper.initializeCollectionsCombobox();
             Session.set(Helper.strSessionEasyEditID, undefined);
             $('[data-toggle="tooltip"]').tooltip({trigger: 'hover'});
         }
