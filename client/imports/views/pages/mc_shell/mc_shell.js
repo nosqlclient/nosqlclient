@@ -222,47 +222,43 @@ Template.mcShell.onRendered(function () {
         return;
     }
 
-    let settings = this.subscribe('settings');
-    let connections = this.subscribe('connections');
-    let shellCommands = this.subscribe('shell_commands');
+    this.subscribe('settings');
+    this.subscribe('connections');
+    this.subscribe('shell_commands');
 
-    this.autorun(() => {
-        if (settings.ready() && connections.ready() && shellCommands.ready()) {
-            let divResult = $('#divShellResult');
-            let divCommand = $('#divShellCommand');
-            Helper.initializeCodeMirror(divResult, 'txtShellResult', false, 600);
-            divResult.data('editor').setOption("readOnly", true);
+    let divResult = $('#divShellResult');
+    let divCommand = $('#divShellCommand');
+    Helper.initializeCodeMirror(divResult, 'txtShellResult', false, 600);
+    divResult.data('editor').setOption("readOnly", true);
 
-            ShellCommands.find({connectionId: Session.get(Helper.strSessionConnection)}, {sort: {date: -1}}).observeChanges({
-                added: function (id, fields) {
-                    let previousValue = Helper.getCodeMirrorValue(divResult);
-                    if (previousValue && !previousValue.endsWith('\n')) {
-                        previousValue += '\n';
-                    }
+    ShellCommands.find({connectionId: Session.get(Helper.strSessionConnection)}, {sort: {date: -1}}).observeChanges({
+        added: function (id, fields) {
+            let previousValue = Helper.getCodeMirrorValue(divResult);
+            if (previousValue && !previousValue.endsWith('\n')) {
+                previousValue += '\n';
+            }
 
-                    let editorResult = divResult.data('editor');
+            let editorResult = divResult.data('editor');
 
-                    Helper.setCodeMirrorValue(divResult, previousValue + fields.message);
-                    if (editorResult) {
-                        editorResult.focus();
-                        editorResult.setCursor(editorResult.lineCount(), 0);
-                    }
+            Helper.setCodeMirrorValue(divResult, previousValue + fields.message);
+            if (editorResult) {
+                editorResult.focus();
+                editorResult.setCursor(editorResult.lineCount(), 0);
+            }
 
-                    if (divCommand.data('editor')) {
-                        divCommand.data('editor').focus();
-                    }
-                }
-            });
+            if (divCommand.data('editor')) {
+                divCommand.data('editor').focus();
+            }
+        }
+    });
 
-            initializeCommandCodeMirror();
+    initializeCommandCodeMirror();
 
-            Meteor.call("connectToShell", Session.get(Helper.strSessionConnection), (err) => {
-                if (err) {
-                    Helper.showMeteorFuncError(err, null, "Couldn't connect via shell");
-                } else {
-                    connected = true;
-                }
-            });
+    Meteor.call("connectToShell", Session.get(Helper.strSessionConnection), (err) => {
+        if (err) {
+            Helper.showMeteorFuncError(err, null, "Couldn't connect via shell");
+        } else {
+            connected = true;
         }
     });
 });
