@@ -1,6 +1,6 @@
 var app = require('app');
 var browser = require('browser-window');
-var electrify = require('electrify-updated-test')(__dirname);
+var electrify = require('electrify')(__dirname);
 // UNCOMMENT FOR MAC PACKAGE
 //var Menu = require("menu");
 
