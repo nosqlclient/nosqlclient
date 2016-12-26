@@ -1,5 +1,5 @@
-## Mongoclient, Featured MongoDB Management Tool
-Cross-platform, MongoDB 3.2+ support and more features!
+## Mongoclient, Cross-platform, easy to use MongoDB Management Tool
+MongoDB 3.4+ support and more features!
 
 [![Build Status](https://travis-ci.org/rsercano/mongoclient.svg?branch=master)](https://travis-ci.org/rsercano/mongoclient)
 [![Code Climate](https://codeclimate.com/github/rsercano/mongoclient/badges/gpa.svg)](https://codeclimate.com/github/rsercano/mongoclient)
