@@ -23,13 +23,15 @@ export let database;
 let spawnedShell;
 
 const getProperMongo = function () {
+    let currentDir = process.cwd().replace(/\\/g, '/');
+    currentDir = currentDir.substring(0, currentDir.lastIndexOf("/"));
     switch (os.platform()) {
         case 'darwin':
-            return '../../../../../lib/mongo/darwin/mongo';
+            return currentDir + '/web.browser/app/mongo/darwin/mongo';
         case 'win32':
-            return '../../../../../lib/mongo/win32/mongo.exe';
+            return currentDir + '/web.browser/app/mongo/win32/mongo.exe';
         case 'linux':
-            return '../../../../../lib/mongo/linux/mongo';
+            return currentDir + '/web.browser/app/mongo/linux/mongo';
         default :
             throw 'Not supported os: ' + os.platform();
     }
@@ -361,7 +363,9 @@ Meteor.methods({
     analyzeSchema(connectionId, collection){
         const connectionUrl = Helper.getConnectionUrl(Connections.findOne({_id: connectionId}));
         const mongoPath = getProperMongo();
-        let args = [connectionUrl, '--quiet', '--eval', 'var collection =\"' + collection + '\", outputFormat=\"json\"', '../../../../../lib/mongo/variety/variety.js_'];
+        let currentDir = process.cwd().replace(/\\/g, '/');
+        currentDir = currentDir.substring(0, currentDir.lastIndexOf("/"));
+        let args = [connectionUrl, '--quiet', '--eval', 'var collection =\"' + collection + '\", outputFormat=\"json\"',currentDir+'/web.browser/app/mongo/variety/variety.js_'];
 
         LOGGER.info('[analyzeSchema]', args, connectionUrl, collection);
         try {
