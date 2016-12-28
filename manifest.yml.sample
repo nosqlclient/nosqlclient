@@ -1,0 +1,14 @@
+---
+name: mc
+buildpack: https://github.com/yacloud-io/meteor-buildpack-horse.git
+memory: 512MB
+host: yamc
+env:
+  MONGOCLIENT_AUTH: true
+  MONGOCLIENT_USERNAME: admin
+  MONGOCLIENT_PASSWORD: password
+  BUILDPACK_VERBOSE: 1
+  BUILD_OPTIONS: --debug
+  TOOL_NODE_FLAGS: "--max-old-space-size=800 --gc_interval=100"
+  MONGO_URL: mongodb://admin:password@mymongodb.mlab.com:27017/mongodb-mc
+  ROOT_URL: https://yamc.eu-gb.mybluemix.net
