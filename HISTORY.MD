@@ -1,6 +1,6 @@
 # History
 
-## 1.5.0, 25 December 2016
+## 1.5.0, 28 December 2016
 - Added mongodb 3.4 support
 - Separated scrollbars for navigation and main view
 - Added native shell
