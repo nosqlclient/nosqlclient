@@ -67,7 +67,7 @@ And installed the [command line utility](https://docs.cloudfoundry.org/cf-cli/in
 Get the latest MongoClient
 
 ```
-git clone https://github.com/yacloud-io/mongoclient.git ~/mongoclient
+git clone https://github.com/rsercano/mongoclient.git ~/mongoclient
 cd ~/mongoclient
 ```
 
