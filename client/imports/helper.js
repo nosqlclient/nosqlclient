@@ -31,7 +31,7 @@ require("/node_modules/codemirror/addon/hint/show-hint.js");
 const checkOption = function (val, result, optionEnum, option) {
     if (val == "") result[optionEnum[option]] = {};
     else {
-        val = this.convertAndCheckJSON(val);
+        val = helper.convertAndCheckJSON(val);
         if (val['ERROR']) {
             result["ERROR"] = "Syntax Error on " + optionEnum[option] + ": " + val['ERROR'];
         } else {
