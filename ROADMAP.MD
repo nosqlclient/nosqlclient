@@ -7,6 +7,8 @@ The roadmap is likely that priorities will change, but the list below gives an i
 - Adding extension framework to make implementing new features easier to mongoclient for newbies. That means there'll be an addon section on mongoclient. 
 - Change blaze template to REACT.
 - [x] Move to ES6
+- [x] Move to Flow router
+- [x] Move to Meteor 1.4+
 - [x] Native shell
 - [x] Schema Analyze
 - Table View
