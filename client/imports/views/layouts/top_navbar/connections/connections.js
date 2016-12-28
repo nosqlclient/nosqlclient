@@ -47,6 +47,7 @@ const clearAllFieldsOfConnectionModal = function () {
     $('#inputReadFromSecondary').iCheck('uncheck');
     $('#inputAuthStandard').iCheck('check');
     $(":file").filestyle('clear');
+    $('#addEditModalSmall').html('');
 };
 
 const proceedSavingConnection = function (saveMethodName, connection) {
@@ -488,6 +489,7 @@ const populateConnectionModal = function () {
     let connection = Connections.findOne({_id: Session.get(Helper.strSessionConnection)});
     clearAllFieldsOfConnectionModal();
 
+    $('#addEditModalSmall').html(connection.name);
     if (connection.x509Username) {
         $('#divX509Username').show();
         $('#inputUseX509').iCheck('check');
