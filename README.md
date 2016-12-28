@@ -51,6 +51,38 @@ Then you can run it as a daemon:
 
 ```docker run -d -p 3000:3000 mongoclient/mongoclient```
 
+## Cloud Foundry
+You can optionally push the Mongoclient to the CloudFoundry
+
+Cloud Foundry or CF, is a PaaS, as a developer you can trail the instance of CF, either [IBM Bluemix](https://console.ng.bluemix.net) or [Pivotal](https://console.run.pivotal.io) 
+
+As the MongoClient is developed by the meteor, you need to have an mongodb instance to store the metadata info MC needed.
+[Mlab](https://mlab.com) has an experimental or sandbox offering or [compose](https://www.compose.com/) a commerical DBaaS provider you can register and try it.
+
+Assuming you have an mongodb instance, which something linke  
+``` mongodb://<dbuser>:<dbpassword>@ds145188.mlab.com:45188/mongodb-mc ```
+
+And installed the [command line utility](https://docs.cloudfoundry.org/cf-cli/install-go-cli.html)
+
+Get the latest MongoClient
+
+```
+git clone https://github.com/yacloud-io/mongoclient.git ~/mongoclient
+cd ~/mongoclient
+```
+
+edit the manifest.yml.sample, change the corresponding values to your environment
+
+```
+mv manifest.yml.sample manifest.yml
+cf login -a api.ng.bluemix.net -u username -p password
+cf push
+```
+
+after a while, your console will output something like 
+
+![cf push mongoclient](docs/cf_push_mc.png)
+
 ## History
 Please check [history](https://github.com/rsercano/mongoclient/blob/master/HISTORY.MD) file for version information.
 
