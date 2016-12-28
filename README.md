@@ -27,13 +27,13 @@ Cross-platform, easy to use, MongoDB 3.4+ support and more features!
 <img src="http://www.mongoclient.com/img/logo/head_only_medium.png" align="left" hspace="10" vspace="6">
 
 ## Download
-Version 1.4.0 has been released ! Chat is back, for more info checkout breaking changes from inside of application.
+Version 1.5.0 has been released !
 
 ### Distributions
 
-* [Linux x64](https://github.com/rsercano/mongoclient/releases/download/1.4.0/linux-portable-x64.zip)
-* [Windows x64](https://github.com/rsercano/mongoclient/releases/download/1.4.0/windows-portable-x64.zip)
-* [OSx](https://github.com/rsercano/mongoclient/releases/download/1.4.0/osx-portable.zip)
+* [Linux x64](https://github.com/rsercano/mongoclient/releases/download/1.5.0/linux-portable-x64.zip)
+* [Windows x64](https://github.com/rsercano/mongoclient/releases/download/1.5.0/windows-portable-x64.zip)
+* [OSx](https://github.com/rsercano/mongoclient/releases/download/1.5.0/osx-portable.zip)
 * [Web Application](https://github.com/rsercano/mongoclient/wiki#31-compile-from-source-browser-edition)
 
 To learn more see the [wiki](https://github.com/rsercano/mongoclient/wiki) page.
@@ -45,7 +45,7 @@ Mongoclient now officialy has a docker hub. To install master branch:
 
 To install latest stable release:
 
-```docker pull mongoclient/mongoclient:1.4.0```
+```docker pull mongoclient/mongoclient:1.5.0```
 
 Then you can run it as a daemon:
 
