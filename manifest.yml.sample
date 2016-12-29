@@ -11,4 +11,4 @@ env:
   BUILD_OPTIONS: --debug
   TOOL_NODE_FLAGS: "--max-old-space-size=800 --gc_interval=100"
   MONGO_URL: mongodb://admin:password@mymongodb.mlab.com:27017/mongodb-mc
-  ROOT_URL: https://yamc.eu-gb.mybluemix.net
+  ROOT_URL: https://blabla.com
