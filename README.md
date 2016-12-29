@@ -37,7 +37,8 @@ Version 1.5.0 has been released !
 * [Web Application](https://github.com/rsercano/mongoclient/wiki#31-compile-from-source-browser-edition)
 
 To learn more see the [wiki](https://github.com/rsercano/mongoclient/wiki) page.
-
+<br/>
+<br/>
 ## Docker
 Mongoclient now officialy has a docker hub. To install master branch:
 
