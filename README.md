@@ -1,7 +1,6 @@
 ## Mongoclient, MongoDB Management Tool
 Cross-platform, easy to use, MongoDB 3.4+ support and more features!
 
-[![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=Y5VD95E96NU6S)
 [![Build Status](https://travis-ci.org/rsercano/mongoclient.svg?branch=master)](https://travis-ci.org/rsercano/mongoclient)
 [![Code Climate](https://codeclimate.com/github/rsercano/mongoclient/badges/gpa.svg)](https://codeclimate.com/github/rsercano/mongoclient)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/6a75fc4e1d3f480f811b5339202400b5)](https://www.codacy.com/app/ozdemirsercan27/mongoclient?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=rsercano/mongoclient&amp;utm_campaign=Badge_Grade)
@@ -10,6 +9,7 @@ Cross-platform, easy to use, MongoDB 3.4+ support and more features!
 [![Docker Pulls](https://img.shields.io/docker/pulls/mongoclient/mongoclient.svg)](https://hub.docker.com/r/mongoclient/mongoclient/)
 [![MIT License](https://img.shields.io/badge/license-MIT-blue.svg?style=flat)](https://github.com/rsercano/mongoclient/blob/master/LICENSE)
 
+[![Paypal](https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=Y5VD95E96NU6S)
 
 *Mongoclient is in need of you to buy [INSPINA](https://wrapbootstrap.com/theme/inspinia-responsive-admin-theme-WB0R5L90S) theme's extended licence ($1000) to live longer. Thank you so much ! [Here's the list of donators, helpful people](https://github.com/rsercano/mongoclient/wiki/Donators) Can't you donate, no worries giving a star to this repository is free  and appreciated as much as donation !*
 
