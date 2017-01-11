@@ -1,8 +1,7 @@
-import {Template} from 'meteor/templating';
-import {Meteor} from 'meteor/meteor';
-import {Settings} from '/lib/imports/collections/settings';
-
-import './settings.html';
+import {Template} from "meteor/templating";
+import {Meteor} from "meteor/meteor";
+import {Settings} from "/lib/imports/collections/settings";
+import "./settings.html";
 
 const toastr = require('toastr');
 const Ladda = require('ladda');
@@ -19,7 +18,7 @@ const getSettingsFromForm = function () {
     settings.socketTimeoutInSeconds = $("#inputSocketTimeout").val();
     settings.connectionTimeoutInSeconds = $("#inputConnectionTimeout").val();
     settings.showDBStats = $('#divShowDBStats').iCheck('update')[0].checked;
-    settings.dumpPath = $('#divDumpPath').val();
+    settings.dumpPath = $('#inputDumpPath').val();
     return settings;
 };
 
