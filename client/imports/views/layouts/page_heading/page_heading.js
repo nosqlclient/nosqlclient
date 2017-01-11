@@ -1,10 +1,9 @@
-import {Template} from 'meteor/templating';
-import {Meteor} from 'meteor/meteor';
-import {Session} from 'meteor/session';
-import Helper from '/client/imports/helper';
-import {Settings} from '/lib/imports/collections/settings';
-
-import './page_heading.html';
+import {Template} from "meteor/templating";
+import {Meteor} from "meteor/meteor";
+import {Session} from "meteor/session";
+import Helper from "/client/imports/helper";
+import {Settings} from "/lib/imports/collections/settings";
+import "./page_heading.html";
 
 const Ladda = require('ladda');
 
@@ -18,28 +17,30 @@ Template.pageHeading.helpers({
             return;
         }
         let settings = Settings.findOne();
-        let btnExecuteQuery = document.querySelector('#btnExecuteQuery');
-        if (!settings || !btnExecuteQuery) {
-            return;
-        }
 
-        let laddaButton = Ladda.create(btnExecuteQuery);
-        laddaButton.start();
-
-        const selectedCollection = Session.get(Helper.strSessionSelectedCollection);
-
-        // get distinct field keys for auto complete on every collection change.
-        Helper.getDistinctKeysForAutoComplete(selectedCollection);
-
-        Meteor.call("stats", selectedCollection, {}, function (err, result) {
-            if (err || result.error) {
-                Helper.showMeteorFuncError(err, result, "Couldn't fetch connection informations");
+        Meteor.setTimeout(function () {
+            let btnExecuteQuery = document.querySelector('#btnExecuteQuery');
+            if (!settings || !btnExecuteQuery) {
+                return;
             }
-            else {
-                populateCollectionInfo(result.result, settings);
-            }
-            Ladda.stopAll();
-        });
+            let laddaButton = Ladda.create(btnExecuteQuery);
+            laddaButton.start();
+
+            const selectedCollection = Session.get(Helper.strSessionSelectedCollection);
+
+            // get distinct field keys for auto complete on every collection change.
+            Helper.getDistinctKeysForAutoComplete(selectedCollection);
+
+            Meteor.call("stats", selectedCollection, {}, function (err, result) {
+                if (err || result.error) {
+                    Helper.showMeteorFuncError(err, result, "Couldn't fetch connection informations");
+                }
+                else {
+                    populateCollectionInfo(result.result, settings);
+                }
+                Ladda.stopAll();
+            });
+        }, 150);
     }
 });
 
