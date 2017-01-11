@@ -18,12 +18,13 @@ const getSettingsFromForm = function () {
     settings.socketTimeoutInSeconds = $("#inputSocketTimeout").val();
     settings.connectionTimeoutInSeconds = $("#inputConnectionTimeout").val();
     settings.showDBStats = $('#divShowDBStats').iCheck('update')[0].checked;
+    settings.showLiveChat = $('#divShowLiveChat').iCheck('update')[0].checked;
     settings.dumpPath = $('#inputDumpPath').val();
     return settings;
 };
 
 Template.settings.onRendered(function () {
-    $('#divAutoCompleteFields, #divShowDBStats').iCheck({
+    $('#divAutoCompleteFields, #divShowDBStats, #divShowLiveChat').iCheck({
         checkboxClass: 'icheckbox_square-green'
     });
 
@@ -63,6 +64,7 @@ const load = function () {
     const inputSocketTimeout = $('#inputSocketTimeout');
     const inputConnectionTimeout = $('#inputConnectionTimeout');
     const inputAutoCompleteFields = $('#inputAutoCompleteFields');
+    const inputShowLiveChat = $('#inputShowLiveChat');
     const inputShowDBStats = $('#inputShowDBStats');
     const inputDumpPath = $('#inputDumpPath');
 
@@ -98,6 +100,12 @@ const load = function () {
         inputAutoCompleteFields.iCheck('check');
     } else {
         inputAutoCompleteFields.iCheck('uncheck');
+    }
+
+    if (settings.showLiveChat) {
+        inputShowLiveChat.iCheck('check');
+    } else {
+        inputShowLiveChat.iCheck('uncheck');
     }
 
     if (settings.showDBStats) {

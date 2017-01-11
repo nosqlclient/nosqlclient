@@ -1,13 +1,13 @@
 /**
  * Created by RSercan on 26.12.2015.
  */
-import {Meteor} from 'meteor/meteor';
-import {Actions} from '/lib/imports/collections/actions';
-import {QueryHistory} from '/lib/imports/collections/query_history';
-import {Dumps} from '/lib/imports/collections/dumps';
-import {Settings} from '/lib/imports/collections/settings';
-import {Connections} from '/lib/imports/collections/connections';
-import SchemaAnalyzeResult from '/lib/imports/collections/schema_analyze_result';
+import {Meteor} from "meteor/meteor";
+import {Actions} from "/lib/imports/collections/actions";
+import {QueryHistory} from "/lib/imports/collections/query_history";
+import {Dumps} from "/lib/imports/collections/dumps";
+import {Settings} from "/lib/imports/collections/settings";
+import {Connections} from "/lib/imports/collections/connections";
+import SchemaAnalyzeResult from "/lib/imports/collections/schema_analyze_result";
 
 
 Meteor.methods({
@@ -59,6 +59,7 @@ Meteor.methods({
                 socketTimeoutInSeconds: settings.socketTimeoutInSeconds,
                 connectionTimeoutInSeconds: settings.connectionTimeoutInSeconds,
                 showDBStats: settings.showDBStats,
+                showLiveChat: settings.showLiveChat,
                 dumpPath: settings.dumpPath
             }
         });

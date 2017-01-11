@@ -1,10 +1,9 @@
-import {Template} from 'meteor/templating';
-
-import '/client/imports/views/layouts/navigation/navigation';
-import '/client/imports/views/layouts/top_navbar/top_navbar';
-import '/client/imports/views/layouts/footer/footer.html';
-
-import './main.html';
+import {Template} from "meteor/templating";
+import "/client/imports/views/layouts/navigation/navigation";
+import "/client/imports/views/layouts/top_navbar/top_navbar";
+import "/client/imports/views/layouts/footer/footer.html";
+import {Settings} from "/lib/imports/collections/settings";
+import "./main.html";
 
 const toastr = require('toastr');
 
@@ -52,4 +51,45 @@ Template.mainLayout.rendered = function () {
             }
         }
     });
+
+    let settings = this.subscribe('settings');
+
+    this.autorun(() => {
+        if (settings.ready()) {
+            const foundSettings = Settings.findOne();
+            if (foundSettings && foundSettings.showLiveChat) {
+                liveChatFunc(window, window.nudgespot || []);
+                window.nudgespot.init("748ae792d632f6c5e14ad610e53ef745");
+            }
+        }
+    });
+
+};
+
+const liveChatFunc = function (d, n) {
+    let s, a, p;
+    s = document.createElement("script");
+    s.type = "text/javascript";
+    s.async = true;
+    s.src = (document.location.protocol === "https:" ? "https:" : "http:") + "//cdn.nudgespot.com" + "/nudgespot.js";
+    a = document.getElementsByTagName("script");
+    p = a[a.length - 1];
+    p.parentNode.insertBefore(s, p.nextSibling);
+    window.nudgespot = n;
+    n.init = function (t) {
+        function f(n, m) {
+            const a = m.split('.');
+            2 == a.length && (n = n[a[0]], m = a[1]);
+            n[m] = function () {
+                n.push([m].concat(Array.prototype.slice.call(arguments, 0)))
+            }
+        }
+
+        n._version = 0.1;
+        n._globals = [t];
+        n.people = n.people || [];
+        n.params = n.params || [];
+        let m = "track register unregister identify set_config people.delete people.create people.update people.create_property people.tag people.remove_Tag".split(" ");
+        for (let i = 0; i < m.length; i++)f(n, m[i])
+    }
 };
