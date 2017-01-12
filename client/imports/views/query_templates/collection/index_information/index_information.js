@@ -17,15 +17,15 @@ Template.indexInformation.onRendered(function () {
 
 Template.indexInformation.executeQuery = function (historyParams) {
     initExecuteQuery();
-    var selectedCollection = Session.get(Helper.strSessionSelectedCollection);
-    var fullVal = historyParams ? historyParams.full : $('#divFullInformation').iCheck('update')[0].checked;
+    const selectedCollection = Session.get(Helper.strSessionSelectedCollection);
+    const fullVal = historyParams ? historyParams.full : $('#divFullInformation').iCheck('update')[0].checked;
 
-    var params = {
+    const params = {
         full: fullVal
     };
 
     Meteor.call("indexInformation", selectedCollection, fullVal, function (err, result) {
-        Helper.renderAfterQueryExecution(err, result, false, "indexInformation", params, (historyParams ? false : true));
+        Helper.renderAfterQueryExecution(err, result, false, "indexInformation", params, (!historyParams));
     });
 };
 

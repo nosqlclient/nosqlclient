@@ -5,8 +5,8 @@ import {initExecuteQuery} from '/client/imports/views/pages/admin_queries/admin_
 
 import './validate_collection.html';
 
-var toastr = require('toastr');
-var Ladda = require('ladda');
+const toastr = require('toastr');
+const Ladda = require('ladda');
 /**
  * Created by RSercan on 10.1.2016.
  */
@@ -17,8 +17,8 @@ Template.validateCollection.onRendered(function () {
 
 Template.validateCollection.executeQuery = function () {
     initExecuteQuery();
-    var collectionName = $('#inputValidateCollection').val();
-    var options = Helper.getCodeMirrorValue($('#divOptions'));
+    const collectionName = $('#inputValidateCollection').val();
+    let options = Helper.getCodeMirrorValue($('#divOptions'));
 
     if (collectionName == null || collectionName.length === 0) {
         toastr.error('CollectionName can not be empty');

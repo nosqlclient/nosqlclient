@@ -4,8 +4,8 @@ import {renderCollectionNames} from '../navigation';
 
 import './add_collection.html';
 
-var toastr = require('toastr');
-var Ladda = require('ladda');
+const toastr = require('toastr');
+const Ladda = require('ladda');
 
 /**
  * Created by RSercan on 20.2.2016.
@@ -18,27 +18,24 @@ Template.addCollection.events({
     'click #btnCreateCollection'(e) {
         e.preventDefault();
 
-        var isCapped = $('#divIsCapped').iCheck('update')[0].checked;
-        var collectionName = $('#inputCollectionName').val();
-        var size = $('#inputCollectionSize').val();
-        var maxDocs = $('#inputMaxDocSize').val();
+        const isCapped = $('#divIsCapped').iCheck('update')[0].checked;
+        let collectionName = $('#inputCollectionName').val();
+        const size = $('#inputCollectionSize').val();
+        const maxDocs = $('#inputMaxDocSize').val();
 
         if (!collectionName) {
             toastr.error('Collection name is required !');
             return;
         }
 
-        var options = {
+        const laddaButton = Ladda.create(document.querySelector('#btnCreateCollection'));
+        laddaButton.start();
+
+        Meteor.call('createCollection', collectionName,  {
             size: size,
             capped: isCapped,
             max: maxDocs
-        };
-
-
-        var laddaButton = Ladda.create(document.querySelector('#btnCreateCollection'));
-        laddaButton.start();
-
-        Meteor.call('createCollection', collectionName, options, function (err) {
+        }, function (err) {
             if (err) {
                 toastr.error("Couldn't create collection: " + err.message);
 
@@ -56,7 +53,7 @@ Template.addCollection.events({
 });
 
 const initICheck = function (id, checked) {
-    var selector = $('#' + id);
+    const selector = $('#' + id);
     selector.iCheck({
         checkboxClass: 'icheckbox_square-green'
     });

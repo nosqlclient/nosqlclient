@@ -7,8 +7,8 @@ import {getSelectorValue} from '/client/imports/views/query_templates_options/se
 
 import './delete.html';
 
-var toastr = require('toastr');
-var Ladda = require('ladda');
+const toastr = require('toastr');
+const Ladda = require('ladda');
 /**
  * Created by RSercan on 2.1.2016.
  */
@@ -17,8 +17,8 @@ Template.delete.onRendered(function () {
 
 Template.delete.executeQuery = function (historyParams) {
     initExecuteQuery();
-    var selectedCollection = Session.get(Helper.strSessionSelectedCollection);
-    var selector = historyParams ? JSON.stringify(historyParams.selector) : getSelectorValue();
+    const selectedCollection = Session.get(Helper.strSessionSelectedCollection);
+    let selector = historyParams ? JSON.stringify(historyParams.selector) : getSelectorValue();
 
     selector = Helper.convertAndCheckJSON(selector);
     if (selector["ERROR"]) {
@@ -27,12 +27,12 @@ Template.delete.executeQuery = function (historyParams) {
         return;
     }
 
-    var params = {
+    const params = {
         selector: selector
     };
 
     Meteor.call("delete", selectedCollection, selector, function (err, result) {
-            Helper.renderAfterQueryExecution(err, result, false, "delete", params, (historyParams ? false : true));
+            Helper.renderAfterQueryExecution(err, result, false, "delete", params, (!historyParams));
         }
     );
 };

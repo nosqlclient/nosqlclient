@@ -9,8 +9,8 @@ import '/client/imports/views/query_templates_options/username/username.html'
 import './add_user.html';
 
 
-var toastr = require('toastr');
-var Ladda = require('ladda');
+const toastr = require('toastr');
+const Ladda = require('ladda');
 /**
  * Created by RSercan on 9.1.2016.
  */
@@ -20,7 +20,7 @@ Template.addUser.onRendered(function () {
 });
 
 const initializeOptions = function () {
-    var cmb = $('#cmbAddUserOptions');
+    const cmb = $('#cmbAddUserOptions');
     $.each(Helper.sortObjectByKey(Enums.ADD_USER_OPTIONS), function (key, value) {
         cmb.append($("<option></option>")
             .attr("value", key)
@@ -33,9 +33,9 @@ const initializeOptions = function () {
 
 Template.addUser.executeQuery = function () {
     initExecuteQuery();
-    var options = getOptions();
-    var username = $('#inputAddUserUsername').val();
-    var password = $('#inputAddUserPassword').val();
+    const options = getOptions();
+    const username = $('#inputAddUserUsername').val();
+    const password = $('#inputAddUserPassword').val();
 
     if (username == null || username.length === 0) {
         toastr.error('Username can not be empty');
@@ -55,7 +55,7 @@ Template.addUser.executeQuery = function () {
         return;
     }
 
-    var runOnAdminDB = $('#aRunOnAdminDB').iCheck('update')[0].checked;
+    const runOnAdminDB = $('#aRunOnAdminDB').iCheck('update')[0].checked;
 
     Meteor.call("addUser", username, password, options, runOnAdminDB, function (err, result) {
         Helper.renderAfterQueryExecution(err, result, true);

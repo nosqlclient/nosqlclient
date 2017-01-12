@@ -1,6 +1,8 @@
 /**
  * Created by RSercan on 9.2.2016.
  */
+/*global Async*/
+
 import LOGGER from "../internal/logger";
 import Helper from "./helper";
 import {database} from "./methods_common";

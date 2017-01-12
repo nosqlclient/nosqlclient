@@ -1,6 +1,8 @@
 /**
  * Created by Sercan on 10.12.2016.
  */
+/*global _*/
+
 import {Template} from 'meteor/templating';
 import {Meteor} from 'meteor/meteor';
 import {Session} from 'meteor/session';
@@ -76,7 +78,7 @@ Template.group.executeQuery = function (historyParams) {
         return;
     }
 
-    var params = {
+    const params = {
         keys: keys,
         condition: condition,
         initial: initial,
@@ -86,7 +88,7 @@ Template.group.executeQuery = function (historyParams) {
     };
 
     Meteor.call("group", selectedCollection, keys, condition, initial, reduce, finalize, command, function (err, result) {
-        Helper.renderAfterQueryExecution(err, result, false, "group", params, (historyParams ? false : true));
+        Helper.renderAfterQueryExecution(err, result, false, "group", params, (!historyParams));
     });
 };
 

@@ -9,8 +9,7 @@ import {initRoles} from './manage_roles/manage_roles';
 
 import './user_management.html';
 
-var toastr = require('toastr');
-var Ladda = require('ladda');
+const Ladda = require('ladda');
 //var Clipboard = require('clipboard');
 /**
  * Created by RSercan on 9.4.2016.
@@ -26,22 +25,22 @@ const initUserTree = function () {
     $('#btnManageRoles').hide();
 
 
-    var connection = Connections.findOne({_id: Session.get(Helper.strSessionConnection)});
-    var command = {
+    const connection = Connections.findOne({_id: Session.get(Helper.strSessionConnection)});
+    const command = {
         usersInfo: 1,
         showCredentials: true
     };
 
-    var runOnAdminDB = $('#aRunOnAdminDBToFetchUsers').iCheck('update')[0].checked;
+    const runOnAdminDB = $('#aRunOnAdminDBToFetchUsers').iCheck('update')[0].checked;
 
     Meteor.call('command', command, runOnAdminDB, function (err, result) {
         if (err || result.error) {
             Helper.showMeteorFuncError(err, result, "Couldn't fetch users");
         }
         else {
-            var dbName = runOnAdminDB ? 'admin' : connection.databaseName;
-            var children = populateTreeChildrenForUsers(result.result.users);
-            var finalObject = {
+            const dbName = runOnAdminDB ? 'admin' : connection.databaseName;
+            const children = populateTreeChildrenForUsers(result.result.users);
+            const finalObject = {
                 'core': {
                     'data': function (node, callback) {
                         if (node.id === "#") {
@@ -58,7 +57,7 @@ const initUserTree = function () {
                             ]);
                         }
                         else if (node.data[0].user) {
-                            var userInfoCommand = {
+                            const userInfoCommand = {
                                 usersInfo: {user: node.text, db: dbName},
                                 showCredentials: true,
                                 showPrivileges: true
@@ -74,7 +73,7 @@ const initUserTree = function () {
                             });
                         }
                         else if (node.data[0].role) {
-                            var roleInfoCommand = {
+                            const roleInfoCommand = {
                                 rolesInfo: {role: node.data[0].text, db: dbName},
                                 showPrivileges: true,
                                 showBuiltinRoles: true
@@ -93,7 +92,7 @@ const initUserTree = function () {
                 }
             };
 
-            var tree = $('#userTree');
+            const tree = $('#userTree');
             tree.jstree(finalObject);
 
             tree.bind("select_node.jstree", function (evt, data) {
@@ -106,7 +105,7 @@ const initUserTree = function () {
                         return;
                     }
 
-                    var node = data.instance.get_node(data.selected[0]);
+                    const node = data.instance.get_node(data.selected[0]);
 
                     if (node.text == Session.get(Helper.strSessionSelectionUserManagement)) {
                         return;
@@ -155,7 +154,7 @@ const getNodeInformation = function (node) {
 
 const getActionInfo = function (action) {
 
-    var l = Ladda.create(document.querySelector('#btnRefreshUsers'));
+    const l = Ladda.create(document.querySelector('#btnRefreshUsers'));
     l.start();
     loading = true;
 
@@ -174,7 +173,7 @@ const getActionInfo = function (action) {
 
 const getResourceInfo = function (resourceType) {
 
-    var l = Ladda.create(document.querySelector('#btnRefreshUsers'));
+    const l = Ladda.create(document.querySelector('#btnRefreshUsers'));
     l.start();
     loading = true;
 
@@ -193,7 +192,7 @@ const getResourceInfo = function (resourceType) {
 
 const getRoleInfo = function (role) {
 
-    var l = Ladda.create(document.querySelector('#btnRefreshUsers'));
+    const l = Ladda.create(document.querySelector('#btnRefreshUsers'));
     l.start();
     loading = true;
 
@@ -215,7 +214,7 @@ const populateTreeChildrenForPrivileges = function (role) {
         return [];
     }
 
-    var result = [];
+    const result = [];
     result.push({
         'text': 'Privileges',
         'data': [{
@@ -234,7 +233,7 @@ const populateTreeChildrenForPrivileges = function (role) {
     });
 
     if (role.privileges) {
-        for (var i = 0; i < role.privileges.length; i++) {
+        for (let i = 0; i < role.privileges.length; i++) {
             result[0].children.push({
                 data: [
                     {
@@ -250,7 +249,7 @@ const populateTreeChildrenForPrivileges = function (role) {
     }
 
     if (role.inheritedPrivileges) {
-        for (i = 0; i < role.inheritedPrivileges.length; i++) {
+        for (let i = 0; i < role.inheritedPrivileges.length; i++) {
             result[1].children.push({
                 data: [
                     {
@@ -273,8 +272,8 @@ const getPrivilegeActions = function (actions) {
         return [];
     }
 
-    var result = [];
-    for (var i = 0; i < actions.length; i++) {
+    const result = [];
+    for (let i = 0; i < actions.length; i++) {
         result.push({
             data: [
                 {
@@ -322,7 +321,7 @@ const getPrivilegeText = function (resource) {
         return "";
     }
 
-    var type = getPrivilegeType(resource);
+    const type = getPrivilegeType(resource);
 
     if (type == 'db+collection') {
         return resource.db + " " + resource.collection;
@@ -348,7 +347,7 @@ const populateTreeChildrenForRoles = function (user) {
     if (!user) {
         return [];
     }
-    var result = [];
+    const result = [];
     result.push({
         'text': 'Roles',
         'icon': 'fa fa-list-alt',
@@ -361,7 +360,7 @@ const populateTreeChildrenForRoles = function (user) {
     });
 
     if (user.roles) {
-        for (var i = 0; i < user.roles.length; i++) {
+        for (let i = 0; i < user.roles.length; i++) {
             result[0].children.push({
                 data: [
                     {
@@ -377,7 +376,7 @@ const populateTreeChildrenForRoles = function (user) {
     }
 
     if (user.inheritedRoles) {
-        for (i = 0; i < user.inheritedRoles.length; i++) {
+        for (let i = 0; i < user.inheritedRoles.length; i++) {
             result[1].children.push({
                 data: [
                     {
@@ -395,8 +394,8 @@ const populateTreeChildrenForRoles = function (user) {
 };
 
 const populateTreeChildrenForUsers = function (users) {
-    var result = [];
-    for (var i = 0; i < users.length; i++) {
+    const result = [];
+    for (let i = 0; i < users.length; i++) {
         result.push({
             id: users[i]._id,
             text: users[i].user,
@@ -425,10 +424,10 @@ Template.userManagement.onRendered(function () {
 
     this.autorun(() => {
         if (settings.ready() && connections.ready() && actions.ready()) {
-            var l = Ladda.create(document.querySelector('#btnRefreshUsers'));
+            const l = Ladda.create(document.querySelector('#btnRefreshUsers'));
             l.start();
 
-            var chckRunOnAdminDB = $('#aRunOnAdminDBToFetchUsers');
+            const chckRunOnAdminDB = $('#aRunOnAdminDBToFetchUsers');
             chckRunOnAdminDB.iCheck({
                 checkboxClass: 'icheckbox_square-green'
             });
@@ -462,7 +461,7 @@ Template.userManagement.events({
         e.preventDefault();
 
 
-        var l = Ladda.create(document.querySelector('#btnRefreshUsers'));
+        const l = Ladda.create(document.querySelector('#btnRefreshUsers'));
         l.start();
 
         $("#userTree").jstree('destroy');

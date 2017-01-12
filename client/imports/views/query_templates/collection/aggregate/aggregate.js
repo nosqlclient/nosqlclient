@@ -8,8 +8,8 @@ import {getAggregateOptions} from '/client/imports/views/query_templates_options
 
 import './aggregate.html';
 
-var toastr = require('toastr');
-var Ladda = require('ladda');
+const toastr = require('toastr');
+const Ladda = require('ladda');
 /**
  * Created by RSercan on 2.1.2016.
  */
@@ -19,7 +19,7 @@ Template.aggregate.onRendered(function () {
 });
 
 const initializeOptions = function () {
-    var cmb = $('#cmbAggregateOptions');
+    const cmb = $('#cmbAggregateOptions');
     $.each(Helper.sortObjectByKey(Enums.AGGREGATE_OPTIONS), function (key, value) {
         cmb.append($("<option></option>")
             .attr("value", key)
@@ -33,9 +33,9 @@ const initializeOptions = function () {
 
 Template.aggregate.executeQuery = function (historyParams) {
     initExecuteQuery();
-    var selectedCollection = Session.get(Helper.strSessionSelectedCollection);
-    var pipeline = historyParams ? JSON.stringify(historyParams.pipeline) : Helper.getCodeMirrorValue($('#divPipeline'));
-    var options = historyParams ? historyParams.options : getAggregateOptions();
+    const selectedCollection = Session.get(Helper.strSessionSelectedCollection);
+    let pipeline = historyParams ? JSON.stringify(historyParams.pipeline) : Helper.getCodeMirrorValue($('#divPipeline'));
+    const options = historyParams ? historyParams.options : getAggregateOptions();
 
     pipeline = Helper.convertAndCheckJSON(pipeline);
     if (pipeline["ERROR"]) {
@@ -50,13 +50,13 @@ Template.aggregate.executeQuery = function (historyParams) {
         return;
     }
 
-    var params = {
+    const params = {
         pipeline: pipeline,
         options: options
     };
 
     Meteor.call("aggregate", selectedCollection, pipeline, options, function (err, result) {
-            Helper.renderAfterQueryExecution(err, result, false, "aggregate", params, (historyParams ? false : true));
+            Helper.renderAfterQueryExecution(err, result, false, "aggregate", params, (!historyParams));
         }
     );
 };

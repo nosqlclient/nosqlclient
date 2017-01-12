@@ -11,16 +11,17 @@ import {getCursorOptions} from '/client/imports/views/query_templates_options/cu
 import '/client/imports/views/query_templates_options/explain/explain';
 import './find.html';
 
-var toastr = require('toastr');
-var Ladda = require('ladda');
+const toastr = require('toastr');
+const Ladda = require('ladda');
 /**
  * Created by sercan on 30.12.2015.
  */
+/*global _*/
 
 const proceedFindQuery = function (selectedCollection, selector, cursorOptions, saveHistory, exportFormat) {
-    var executeExplain = $('#inputExecuteExplain').iCheck('update')[0].checked;
+    const executeExplain = $('#inputExecuteExplain').iCheck('update')[0].checked;
 
-    var params = {
+    const params = {
         selector: selector,
         cursorOptions: cursorOptions,
         executeExplain: executeExplain
@@ -37,8 +38,8 @@ const proceedFindQuery = function (selectedCollection, selector, cursorOptions, 
 };
 
 const checkAverageSize = function (count, avgObjSize, maxAllowedFetchSize) {
-    var totalBytes = (count * avgObjSize) / (1024 * 1024);
-    var totalMegabytes = Math.round(totalBytes * 100) / 100;
+    const totalBytes = (count * avgObjSize) / (1024 * 1024);
+    const totalMegabytes = Math.round(totalBytes * 100) / 100;
 
     if (totalMegabytes > maxAllowedFetchSize) {
         Ladda.stopAll();
@@ -50,7 +51,7 @@ const checkAverageSize = function (count, avgObjSize, maxAllowedFetchSize) {
 };
 
 const initializeOptions = function () {
-    var cmb = $('#cmbFindCursorOptions');
+    const cmb = $('#cmbFindCursorOptions');
     $.each(Helper.sortObjectByKey(Enums.CURSOR_OPTIONS), function (key, value) {
         cmb.append($("<option></option>")
             .attr("value", key)
@@ -68,10 +69,10 @@ Template.find.onRendered(function () {
 
 Template.find.executeQuery = function (historyParams, exportFormat) {
     initExecuteQuery();
-    var selectedCollection = Session.get(Helper.strSessionSelectedCollection);
-    var maxAllowedFetchSize = Math.round(Settings.findOne().maxAllowedFetchSize * 100) / 100;
-    var cursorOptions = historyParams ? historyParams.cursorOptions : getCursorOptions();
-    var selector = historyParams ? JSON.stringify(historyParams.selector) : getSelectorValue();
+    const selectedCollection = Session.get(Helper.strSessionSelectedCollection);
+    const maxAllowedFetchSize = Math.round(Settings.findOne().maxAllowedFetchSize * 100) / 100;
+    const cursorOptions = historyParams ? historyParams.cursorOptions : getCursorOptions();
+    let selector = historyParams ? JSON.stringify(historyParams.selector) : getSelectorValue();
 
     selector = Helper.convertAndCheckJSON(selector);
     if (selector["ERROR"]) {
@@ -92,24 +93,24 @@ Template.find.executeQuery = function (historyParams, exportFormat) {
         Meteor.call("stats", selectedCollection, {}, function (statsError, statsResult) {
             if (statsError || statsResult.error || !(statsResult.result.avgObjSize)) {
                 // if there's an error, nothing we can do
-                proceedFindQuery(selectedCollection, selector, cursorOptions, (historyParams ? false : true), exportFormat);
+                proceedFindQuery(selectedCollection, selector, cursorOptions, (!historyParams), exportFormat);
             }
             else {
                 if (Enums.CURSOR_OPTIONS.LIMIT in cursorOptions) {
-                    var count = cursorOptions.limit;
+                    const count = cursorOptions.limit;
                     if (checkAverageSize(count, statsResult.result.avgObjSize, maxAllowedFetchSize)) {
-                        proceedFindQuery(selectedCollection, selector, cursorOptions, (historyParams ? false : true), exportFormat);
+                        proceedFindQuery(selectedCollection, selector, cursorOptions, (!historyParams), exportFormat);
                     }
                 }
                 else {
                     Meteor.call("count", selectedCollection, selector, function (err, result) {
                         if (err || result.error) {
-                            proceedFindQuery(selectedCollection, selector, cursorOptions, (historyParams ? false : true), exportFormat);
+                            proceedFindQuery(selectedCollection, selector, cursorOptions, (!historyParams), exportFormat);
                         }
                         else {
-                            var count = result.result;
+                            const count = result.result;
                             if (checkAverageSize(count, statsResult.result.avgObjSize, maxAllowedFetchSize)) {
-                                proceedFindQuery(selectedCollection, selector, cursorOptions, (historyParams ? false : true), exportFormat);
+                                proceedFindQuery(selectedCollection, selector, cursorOptions, (!historyParams), exportFormat);
                             }
                         }
                     });

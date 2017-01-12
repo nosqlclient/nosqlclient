@@ -6,31 +6,25 @@ import {QueryHistory} from '/lib/imports/collections/query_history';
 
 import './query_histories.html';
 
-var Ladda = require('ladda');
+const Ladda = require('ladda');
 
 /**
  * Created by RSercan on 24.2.2016.
  */
+/*global moment*/
 Template.queryHistories.onRendered(function () {
     if (Session.get(Helper.strSessionCollectionNames) == undefined) {
         FlowRouter.go('/databaseStats');
         return;
     }
 
-    var selector = $('#tblQueryHistories');
+    const selector = $('#tblQueryHistories');
     selector.find('tbody').on('click', 'tr', function () {
-        var table = selector.DataTable();
-
-        if ($(this).hasClass('selected')) {
-            $(this).removeClass('selected');
-        }
-        else {
-            table.$('tr.selected').removeClass('selected');
-            $(this).addClass('selected');
-        }
+        const table = selector.DataTable();
+        Helper.doTableRowSelectable(table,$(this));
 
         if (table.row(this).data()) {
-            var selectedId = table.row(this).data()._id;
+            const selectedId = table.row(this).data()._id;
             Session.set(Helper.strSessionSelectedQueryHistory, QueryHistory.findOne({_id: selectedId}));
             $('#btnExecuteAgain').prop('disabled', false);
         }
@@ -40,7 +34,7 @@ Template.queryHistories.onRendered(function () {
 Template.queryHistories.events({
     'click #btnExecuteAgain'  (e) {
         e.preventDefault();
-        var history = Session.get(Helper.strSessionSelectedQueryHistory);
+        const history = Session.get(Helper.strSessionSelectedQueryHistory);
         if (history) {
             Template[history.queryName].executeQuery(JSON.parse(history.params));
         }
@@ -50,19 +44,19 @@ Template.queryHistories.events({
 export const initQueryHistories = function () {
     // loading button
 
-    var l = Ladda.create(document.querySelector('#btnExecuteAgain'));
+    const l = Ladda.create(document.querySelector('#btnExecuteAgain'));
     l.start();
 
-    var connectionId = Session.get(Helper.strSessionConnection);
-    var selectedCollection = Session.get(Helper.strSessionSelectedCollection);
-    var tblQueryHistories = $('#tblQueryHistories');
+    const connectionId = Session.get(Helper.strSessionConnection);
+    const selectedCollection = Session.get(Helper.strSessionSelectedCollection);
+    const tblQueryHistories = $('#tblQueryHistories');
 
     // destroy jquery datatable to prevent reinitialization (https://datatables.net/manual/tech-notes/3)
     if ($.fn.dataTable.isDataTable('#tblQueryHistories')) {
         tblQueryHistories.DataTable().destroy();
     }
 
-    var queryHistories = QueryHistory.find(
+    const queryHistories = QueryHistory.find(
         {
             connectionId: connectionId,
             collectionName: selectedCollection

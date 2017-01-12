@@ -13,6 +13,8 @@ const Ladda = require('ladda');
 /**
  * Created by RSercan on 3.1.2016.
  */
+/*global _*/
+
 Template.mapReduce.onRendered(function () {
     Helper.initializeCodeMirror($('#divMap'), 'txtMap');
     Helper.initializeCodeMirror($('#divReduce'), 'txtReduce');
@@ -20,7 +22,7 @@ Template.mapReduce.onRendered(function () {
 });
 
 const initializeOptions = function () {
-    var cmb = $('#cmbMapReduceOptions');
+    const cmb = $('#cmbMapReduceOptions');
     $.each(Helper.sortObjectByKey(Enums.MAP_REDUCE_OPTIONS), function (key, value) {
         cmb.append($("<option></option>")
             .attr("value", key)
@@ -33,10 +35,10 @@ const initializeOptions = function () {
 
 Template.mapReduce.executeQuery = function (historyParams) {
     initExecuteQuery();
-    var selectedCollection = Session.get(Helper.strSessionSelectedCollection);
-    var options = historyParams ? historyParams.options : getOptions();
-    var map = historyParams ? JSON.stringify(historyParams.map) : Helper.getCodeMirrorValue($('#divMap'));
-    var reduce = historyParams ? JSON.stringify(historyParams.reduce) : Helper.getCodeMirrorValue($('#divReduce'));
+    const selectedCollection = Session.get(Helper.strSessionSelectedCollection);
+    const options = historyParams ? historyParams.options : getOptions();
+    const map = historyParams ? JSON.stringify(historyParams.map) : Helper.getCodeMirrorValue($('#divMap'));
+    const reduce = historyParams ? JSON.stringify(historyParams.reduce) : Helper.getCodeMirrorValue($('#divReduce'));
 
 
     if (map.parseFunction() == null) {
@@ -57,14 +59,14 @@ Template.mapReduce.executeQuery = function (historyParams) {
         return;
     }
 
-    var params = {
+    const params = {
         map: map,
         reduce: reduce,
         options: options
     };
 
     Meteor.call("mapReduce", selectedCollection, map, reduce, options, function (err, result) {
-        Helper.renderAfterQueryExecution(err, result, false, "mapReduce", params, (historyParams ? false : true));
+        Helper.renderAfterQueryExecution(err, result, false, "mapReduce", params, (!historyParams));
     });
 };
 

@@ -8,17 +8,18 @@ import {getOptions} from '/client/imports/views/query_templates_options/geo_near
 
 import './geo_near.html';
 
-var toastr = require('toastr');
-var Ladda = require('ladda');
+const toastr = require('toastr');
+const Ladda = require('ladda');
 /**
  * Created by RSercan on 3.1.2016.
  */
+/*global _*/
 Template.geoNear.onRendered(function () {
     initializeOptions();
 });
 
 const initializeOptions = function () {
-    var cmb = $('#cmbGeoNearOptions');
+    const cmb = $('#cmbGeoNearOptions');
     $.each(Helper.sortObjectByKey(Enums.GEO_NEAR_OPTIONS), function (key, value) {
         cmb.append($("<option></option>")
             .attr("value", key)
@@ -31,32 +32,32 @@ const initializeOptions = function () {
 
 Template.geoNear.executeQuery = function (historyParams) {
     initExecuteQuery();
-    var selectedCollection = Session.get(Helper.strSessionSelectedCollection);
-    var xAxis = historyParams ? historyParams.xAxis : $('#inputXAxis').val();
+    const selectedCollection = Session.get(Helper.strSessionSelectedCollection);
+    let xAxis = historyParams ? historyParams.xAxis : $('#inputXAxis').val();
     if (xAxis) {
         xAxis = parseInt(xAxis);
     }
 
-    var yAxis = historyParams ? historyParams.yAxis : $('#inputYAxis').val();
+    let yAxis = historyParams ? historyParams.yAxis : $('#inputYAxis').val();
     if (yAxis) {
         yAxis = parseInt(yAxis);
     }
 
-    var options = historyParams ? historyParams.options : getOptions();
+    const options = historyParams ? historyParams.options : getOptions();
     if (options["ERROR"]) {
         toastr.error("Syntax error: " + options["ERROR"]);
         Ladda.stopAll();
         return;
     }
 
-    var params = {
+    const params = {
         xAxis: xAxis,
         yAxis: yAxis,
         options: options
     };
 
     Meteor.call("geoNear", selectedCollection, xAxis, yAxis, options, function (err, result) {
-        Helper.renderAfterQueryExecution(err, result, false, "geoNear", params, (historyParams ? false : true));
+        Helper.renderAfterQueryExecution(err, result, false, "geoNear", params, (!historyParams));
     });
 };
 

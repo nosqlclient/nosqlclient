@@ -7,29 +7,29 @@ import {setResult} from './aggregate_result_modal/aggregate_result_modal';
 
 import './aggregate_pipeline.html';
 
-var toastr = require('toastr');
-var Ladda = require('ladda');
+const toastr = require('toastr');
+const Ladda = require('ladda');
 
 /**
  * Created by RSercan on 14.5.2016.
  */
-var stageNumbers = 0;
+let stageNumbers = 0;
 
 const initCodeMirrorStage = function () {
     Helper.initializeCodeMirror($('#wrapper' + stageNumbers), 'txtObjectStage' + stageNumbers);
 };
 
 const createPipeline = function (stageListElements) {
-    var pipeline = [];
-    stageListElements.each(function (index) {
-        var stage = {};
+    const pipeline = [];
+    stageListElements.each(function () {
+        const stage = {};
 
-        var liElement = $(this);
-        var queryName = liElement.text().split(' ')[0].trim();
+        const liElement = $(this);
+        const queryName = liElement.text().split(' ')[0].trim();
         if (liElement.find('[id^=inputNumberStage]').length != 0) {
             stage[queryName] = parseInt(liElement.find('[id^=inputNumberStage]').val());
         } else if (liElement.find('[id^=wrapper]').data('editor')) {
-            var jsonValue = liElement.find('[id^=wrapper]').data('editor').getValue();
+            let jsonValue = liElement.find('[id^=wrapper]').data('editor').getValue();
             jsonValue = Helper.convertAndCheckJSON(jsonValue);
             if (jsonValue["ERROR"]) {
                 throw queryName + " error: " + jsonValue["ERROR"];
@@ -76,8 +76,8 @@ Template.aggregatePipeline.events({
     'click #btnExecuteAggregatePipeline' (e) {
         e.preventDefault();
 
-        var selectedCollection = $("#cmbCollections").chosen().val();
-        var stages = $('#stages').find('li');
+        let selectedCollection = $("#cmbCollections").chosen().val();
+        const stages = $('#stages').find('li');
         if (!selectedCollection) {
             toastr.warning('Please select a collection first !');
             return;
@@ -89,10 +89,10 @@ Template.aggregatePipeline.events({
         }
 
 
-        var l = Ladda.create(document.querySelector('#btnExecuteAggregatePipeline'));
+        const l = Ladda.create(document.querySelector('#btnExecuteAggregatePipeline'));
         l.start();
 
-        var pipeline;
+        let pipeline;
         try {
             pipeline = createPipeline(stages);
         }
@@ -119,16 +119,16 @@ Template.aggregatePipeline.events({
     },
 
     'change #cmbStageQueries'() {
-        var cmb = $("#cmbStageQueries");
-        var query = cmb.chosen().val();
+        const cmb = $("#cmbStageQueries");
+        let query = cmb.chosen().val();
         if (query) {
             query = '$' + query;
-            var liElement = '<li class="success-element" id="stage' + stageNumbers + '">' + query + '<div id="wrapper' + stageNumbers + '" class="agile-detail">' +
+            let liElement = '<li class="success-element" id="stage' + stageNumbers + '">' + query + '<div id="wrapper' + stageNumbers + '" class="agile-detail">' +
                 '<a id="remove-stage-element" href="#" data-number="' + stageNumbers + '" class="pull-right btn btn-xs btn-white"><i class="fa fa-remove"></i> Remove</a>';
 
             let stringInput = '<input type="text" class="form-control" id="txtStringStage' + stageNumbers + '"/>';
             let numberInput = '<input id="inputNumberStage' + stageNumbers + '" min="0" type="number" class="form-control">';
-            var initCodeMirror;
+            let initCodeMirror;
             switch (query) {
                 case '$limit':
                     liElement += numberInput;
@@ -165,7 +165,7 @@ Template.aggregatePipeline.events({
 
     'click #remove-stage-element' (e) {
         e.preventDefault();
-        var stageId = '#stage' + $(e.target).data('number');
+        const stageId = '#stage' + $(e.target).data('number');
         $(stageId).remove();
     }
 });

@@ -1,0 +1,16 @@
+extends:
+  eslint:recommended
+
+parserOptions:
+  sourceType: module
+
+ecmaFeatures:
+  modules: true
+  jsx: true
+
+env:
+  amd: true
+  browser: true
+  es6: true
+  jquery: true
+  node: true

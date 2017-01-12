@@ -6,23 +6,24 @@ import {Connections} from '/lib/imports/collections/connections';
 
 import './manage_users.html';
 
-var JSONEditor = require('jsoneditor');
-var toastr = require('toastr');
-var Ladda = require('ladda');
+const JSONEditor = require('jsoneditor');
+const toastr = require('toastr');
+const Ladda = require('ladda');
 /**
  * Created by sercan on 14.04.2016.
  */
+/*global swal*/
 
 
 const populateTableData = function (users) {
-    var result = [];
-    for (var i = 0; i < users.length; i++) {
-        var obj = {
+    const result = [];
+    for (let i = 0; i < users.length; i++) {
+        const obj = {
             user: users[i].user,
             roles: []
         };
 
-        for (var j = 0; j < users[i].roles.length; j++) {
+        for (let j = 0; j < users[i].roles.length; j++) {
             obj.roles.push('<b>' + users[i].roles[j].role + '</b>@' + users[i].roles[j].db);
         }
 
@@ -33,16 +34,10 @@ const populateTableData = function (users) {
 };
 
 const initiateRoleToAddTable = function () {
-    var selector = $('#tblCurrentRoles');
+    const selector = $('#tblCurrentRoles');
     selector.find('tbody').on('click', 'tr', function () {
-        var table = selector.DataTable();
-        if ($(this).hasClass('selected')) {
-            $(this).removeClass('selected');
-        }
-        else {
-            table.$('tr.selected').removeClass('selected');
-            $(this).addClass('selected');
-        }
+        const table = selector.DataTable();
+        Helper.doTableRowSelectable(table,$(this));
 
         if (table.row(this).data()) {
             $('#inputAddRoleToUserRolename').val(table.row(this).data().role);
@@ -50,15 +45,13 @@ const initiateRoleToAddTable = function () {
         }
     });
 
-    selector.find('tbody').on('click', 'a.editor_delete', function () {
-        selector.DataTable().row($(this).parents('tr')).remove().draw();
-    });
+    Helper.attachDeleteTableRowEvent(selector);
 };
 
 const populateUserRolesToSave = function () {
-    var result = [];
-    var roles = $('#tblUserRoles').DataTable().rows().data();
-    for (var i = 0; i < roles.length; i++) {
+    const result = [];
+    const roles = $('#tblUserRoles').DataTable().rows().data();
+    for (let i = 0; i < roles.length; i++) {
         result.push({
             db: roles[i].db,
             role: roles[i].role
@@ -69,7 +62,7 @@ const populateUserRolesToSave = function () {
 };
 
 const populateUserRolesTable = function (roles, dataArray) {
-    var tblUserRoles = $('#tblUserRoles');
+    const tblUserRoles = $('#tblUserRoles');
     // destroy jquery datatable to prevent reinitialization (https://datatables.net/manual/tech-notes/3)
     if ($.fn.dataTable.isDataTable('#tblUserRoles')) {
         tblUserRoles.DataTable().destroy();
@@ -95,15 +88,15 @@ const populateUserRolesTable = function (roles, dataArray) {
 export const popEditUserModal = function (user) {
     $('#addEditUserModalTitle').text('Edit User');
 
-    var l = Ladda.create(document.querySelector('#btnCloseUMDB'));
+    const l = Ladda.create(document.querySelector('#btnCloseUMDB'));
     l.start();
 
-    var connection = Connections.findOne({_id: Session.get(Helper.strSessionConnection)});
-    var runOnAdminDB = $('#aRunOnAdminDBToFetchUsers').iCheck('update')[0].checked;
-    var dbName = runOnAdminDB ? 'admin' : connection.databaseName;
-    var username = user ? user : Session.get(Helper.strSessionUsermanagementUser).user;
+    const connection = Connections.findOne({_id: Session.get(Helper.strSessionConnection)});
+    const runOnAdminDB = $('#aRunOnAdminDBToFetchUsers').iCheck('update')[0].checked;
+    const dbName = runOnAdminDB ? 'admin' : connection.databaseName;
+    const username = user ? user : Session.get(Helper.strSessionUsermanagementUser).user;
 
-    var userInfoCommand = {
+    const userInfoCommand = {
         usersInfo: {user: username, db: dbName},
         showCredentials: true,
         showPrivileges: true
@@ -116,14 +109,14 @@ export const popEditUserModal = function (user) {
         else {
             $('#editUserModal').modal('show');
 
-            var user = result.result.users[0];
+            const user = result.result.users[0];
             populateUserRolesTable(user.roles);
 
-            var inputUsernameSelector = $('#inputUsernameUM');
+            const inputUsernameSelector = $('#inputUsernameUM');
             inputUsernameSelector.val(user.user);
             inputUsernameSelector.prop('disabled', true);
 
-            var inputPasswordSelector = $('#inputPasswordUM');
+            const inputPasswordSelector = $('#inputPasswordUM');
             inputPasswordSelector.val('');
             inputPasswordSelector.attr('placeholder', 'Leave this blank to keep old one');
 
@@ -140,22 +133,22 @@ export const popEditUserModal = function (user) {
 export const initUsers = function () {
     // loading button
 
-    var l = Ladda.create(document.querySelector('#btnCloseUMDB'));
+    const l = Ladda.create(document.querySelector('#btnCloseUMDB'));
     l.start();
 
-    var command = {
+    const command = {
         usersInfo: 1,
         showCredentials: true
     };
 
-    var runOnAdminDB = $('#aRunOnAdminDBToFetchUsers').iCheck('update')[0].checked;
+    const runOnAdminDB = $('#aRunOnAdminDBToFetchUsers').iCheck('update')[0].checked;
 
     Meteor.call('command', command, runOnAdminDB, function (err, result) {
         if (err || result.error) {
             Helper.showMeteorFuncError(err, result, "Couldn't fetch users");
         }
         else {
-            var tblUsers = $('#tblUsers');
+            const tblUsers = $('#tblUsers');
             // destroy jquery datatable to prevent reinitialization (https://datatables.net/manual/tech-notes/3)
             if ($.fn.dataTable.isDataTable('#tblUsers')) {
                 tblUsers.DataTable().destroy();
@@ -200,7 +193,7 @@ Template.manageUsers.onRendered(function () {
     initiateRoleToAddTable();
 
     $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
-        var target = $(e.target).attr("href");
+        const target = $(e.target).attr("href");
         if (target == '#tab-2') {
             Helper.initializeCodeMirror($('#divCustomData'), 'txtCustomData');
         }
@@ -236,12 +229,12 @@ Template.manageUsers.events({
         }, function (isConfirm) {
             if (isConfirm) {
 
-                var l = Ladda.create(document.querySelector('#btnCloseUMDB'));
+                const l = Ladda.create(document.querySelector('#btnCloseUMDB'));
                 l.start();
 
-                var command = {dropUser: Session.get(Helper.strSessionUsermanagementUser).user};
+                const command = {dropUser: Session.get(Helper.strSessionUsermanagementUser).user};
 
-                var runOnAdminDB = $('#aRunOnAdminDBToFetchUsers').iCheck('update')[0].checked;
+                const runOnAdminDB = $('#aRunOnAdminDBToFetchUsers').iCheck('update')[0].checked;
 
                 Meteor.call('command', command, runOnAdminDB, function (err, result) {
                     if (err || result.error) {
@@ -260,13 +253,13 @@ Template.manageUsers.events({
     'click .editor_show_custom_data' (e) {
         e.preventDefault();
 
-        var l = Ladda.create(document.querySelector('#btnCloseUMDB'));
+        const l = Ladda.create(document.querySelector('#btnCloseUMDB'));
         l.start();
 
-        var selectedUser = Session.get(Helper.strSessionUsermanagementUser);
+        const selectedUser = Session.get(Helper.strSessionUsermanagementUser);
         if (selectedUser) {
-            var editorDiv = $('#jsonEditorOfCustomData');
-            var jsonEditor = editorDiv.data('jsoneditor');
+            const editorDiv = $('#jsonEditorOfCustomData');
+            let jsonEditor = editorDiv.data('jsoneditor');
             if (!jsonEditor) {
                 jsonEditor = new JSONEditor(document.getElementById('jsonEditorOfCustomData'), {
                     mode: 'tree',
@@ -277,11 +270,11 @@ Template.manageUsers.events({
                 editorDiv.data('jsoneditor', jsonEditor);
             }
 
-            var connection = Connections.findOne({_id: Session.get(Helper.strSessionConnection)});
-            var runOnAdminDB = $('#aRunOnAdminDBToFetchUsers').iCheck('update')[0].checked;
-            var dbName = runOnAdminDB ? 'admin' : connection.databaseName;
+            const connection = Connections.findOne({_id: Session.get(Helper.strSessionConnection)});
+            const runOnAdminDB = $('#aRunOnAdminDBToFetchUsers').iCheck('update')[0].checked;
+            const dbName = runOnAdminDB ? 'admin' : connection.databaseName;
 
-            var userInfoCommand = {
+            const userInfoCommand = {
                 usersInfo: {user: selectedUser.user, db: dbName},
                 showCredentials: true,
                 showPrivileges: true
@@ -292,7 +285,7 @@ Template.manageUsers.events({
                     Helper.showMeteorFuncError(err, result, "Couldn't fetch userInfo");
                 }
                 else {
-                    var user = result.result.users[0];
+                    const user = result.result.users[0];
                     jsonEditor.set(user.customData);
                     $('#customDataModal').modal('show');
                 }
@@ -305,9 +298,9 @@ Template.manageUsers.events({
     'click #btnApplyAddEditUser'  (e) {
         e.preventDefault();
 
-        var usernameSelector = $('#inputUsernameUM');
-        var passwordSelector = $('#inputPasswordUM');
-        var titleSelector = $('#addEditUserModalTitle');
+        const usernameSelector = $('#inputUsernameUM');
+        const passwordSelector = $('#inputPasswordUM');
+        const titleSelector = $('#addEditUserModalTitle');
 
         if (!usernameSelector.val()) {
             toastr.warning('Username is required !');
@@ -319,17 +312,17 @@ Template.manageUsers.events({
             return;
         }
 
-        var customData = Helper.getCodeMirrorValue($('#divCustomData'));
+        let customData = Helper.getCodeMirrorValue($('#divCustomData'));
         if (customData) {
             customData = Helper.convertAndCheckJSON(customData);
 
             if (customData["ERROR"]) {
-                toastr.error("Syntax Error on customData: " + err.message);
+                toastr.error("Syntax Error on customData: " + customData["ERROR"]);
                 return;
             }
         }
 
-        var command = {};
+        const command = {};
         if (titleSelector.text() == 'Edit User') {
             command.updateUser = usernameSelector.val();
         } else {
@@ -347,10 +340,10 @@ Template.manageUsers.events({
         }
 
 
-        var l = Ladda.create(document.querySelector('#btnApplyAddEditUser'));
+        const l = Ladda.create(document.querySelector('#btnApplyAddEditUser'));
         l.start();
 
-        var runOnAdminDB = $('#aRunOnAdminDBToFetchUsers').iCheck('update')[0].checked;
+        const runOnAdminDB = $('#aRunOnAdminDBToFetchUsers').iCheck('update')[0].checked;
 
         Meteor.call('command', command, runOnAdminDB, function (err, result) {
             if (err || result.error) {
@@ -374,8 +367,8 @@ Template.manageUsers.events({
     'click #btnApplyAddRoleToUser' (e) {
         e.preventDefault();
 
-        var db = $('#cmbDatabasesForAddRoleToUser').chosen().val();
-        var roleName = $('#inputAddRoleToUserRolename').val();
+        let db = $('#cmbDatabasesForAddRoleToUser').chosen().val();
+        let roleName = $('#inputAddRoleToUserRolename').val();
         if (!db) {
             toastr.error('Database is required');
             return;
@@ -385,16 +378,16 @@ Template.manageUsers.events({
             return;
         }
 
-        var tableSelector = $('#tblUserRoles').DataTable();
-        var currentDatas = tableSelector.rows().data();
-        for (var i = 0; i < currentDatas.length; i++) {
+        const tableSelector = $('#tblUserRoles').DataTable();
+        const currentDatas = tableSelector.rows().data();
+        for (let i = 0; i < currentDatas.length; i++) {
             if (currentDatas[i].db == db && currentDatas[i].role == roleName) {
                 toastr.error('<b>' + roleName + '</b>@' + db + ' already exists !');
                 return;
             }
         }
 
-        var objectToAdd = {db: db, role: roleName};
+        const objectToAdd = {db: db, role: roleName};
         if (tableSelector.rows().data().length == 0) {
             populateUserRolesTable(null, [objectToAdd]);
         }
@@ -407,16 +400,16 @@ Template.manageUsers.events({
 
     'click #btnAddNewRoleToUser' (e) {
         e.preventDefault();
-        var cmb = $('#cmbDatabasesForAddRoleToUser');
+        const cmb = $('#cmbDatabasesForAddRoleToUser');
         cmb.append($("<optgroup id='optGroupDatabases' label='Databases'></optgroup>"));
-        var cmbOptGroupCollection = cmb.find('#optGroupDatabases');
+        const cmbOptGroupCollection = cmb.find('#optGroupDatabases');
 
         Meteor.call('getDatabases', function (err, result) {
             if (err || result.error) {
                 Helper.showMeteorFuncError(err, result, "Couldn't fetch databases");
             }
             else {
-                for (var i = 0; i < result.result.length; i++) {
+                for (let i = 0; i < result.result.length; i++) {
                     cmbOptGroupCollection.append($("<option></option>")
                         .attr("value", result.result[i].name)
                         .text(result.result[i].name));
@@ -431,13 +424,13 @@ Template.manageUsers.events({
             });
         });
 
-        var runOnAdminDB = $('#aRunOnAdminDBToFetchUsers').iCheck('update')[0].checked;
+        const runOnAdminDB = $('#aRunOnAdminDBToFetchUsers').iCheck('update')[0].checked;
         Meteor.call('command', {rolesInfo: 1, showBuiltinRoles: true}, runOnAdminDB, function (err, result) {
             if (err || result.error) {
                 Helper.showMeteorFuncError(err, result, "Couldn't fetch roles to populate table");
             }
             else {
-                var tblCurrentRoles = $('#tblCurrentRoles');
+                const tblCurrentRoles = $('#tblCurrentRoles');
                 // destroy jquery datatable to prevent reinitialization (https://datatables.net/manual/tech-notes/3)
                 if ($.fn.dataTable.isDataTable('#tblCurrentRoles')) {
                     tblCurrentRoles.DataTable().destroy();
@@ -458,8 +451,8 @@ Template.manageUsers.events({
     'click #btnAddNewUser'  (e) {
         e.preventDefault();
 
-        var inputUsernameSelector = $('#inputUsernameUM');
-        var inputPasswordSelector = $('#inputPasswordUM');
+        const inputUsernameSelector = $('#inputUsernameUM');
+        const inputPasswordSelector = $('#inputPasswordUM');
         $('#tblUserRoles').DataTable().clear().draw();
         inputUsernameSelector.val('');
         inputUsernameSelector.prop('disabled', false);

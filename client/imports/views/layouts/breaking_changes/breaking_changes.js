@@ -97,5 +97,5 @@ Template.breakingChanges.events({
         }
 
         $('#btnNext').prop('disabled', false);
-    },
+    }
 });

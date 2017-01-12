@@ -14,12 +14,12 @@ Template.options.onRendered(function () {
 
 Template.options.executeQuery = function (historyParams) {
     initExecuteQuery();
-    var selectedCollection = Session.get(Helper.strSessionSelectedCollection);
+    const selectedCollection = Session.get(Helper.strSessionSelectedCollection);
 
     Meteor.call("options", selectedCollection, function (err, result) {
-        Helper.renderAfterQueryExecution(err, result, false, "options", {}, (historyParams ? false : true));
+        Helper.renderAfterQueryExecution(err, result, false, "options", {}, (!historyParams));
     });
 };
 
-Template.options.renderQuery = function (query) {
+Template.options.renderQuery = function () {
 };

@@ -20,7 +20,7 @@ Template.count.onRendered(function () {
 
 
 const initializeOptions = function () {
-    var cmb = $('#cmbCountOptions');
+    const cmb = $('#cmbCountOptions');
     $.each(Helper.sortObjectByKey(Enums.COUNT_OPTIONS), function (key, value) {
         cmb.append($("<option></option>")
             .attr("value", key)
@@ -33,9 +33,9 @@ const initializeOptions = function () {
 
 Template.count.executeQuery = function (historyParams) {
     initExecuteQuery();
-    var selectedCollection = Session.get(Helper.strSessionSelectedCollection);
-    var selector = historyParams ? JSON.stringify(historyParams.selector) : getSelectorValue();
-    var options = historyParams ? historyParams.options : getCountOptions();
+    const selectedCollection = Session.get(Helper.strSessionSelectedCollection);
+    let selector = historyParams ? JSON.stringify(historyParams.selector) : getSelectorValue();
+    const options = historyParams ? historyParams.options : getCountOptions();
 
     selector = Helper.convertAndCheckJSON(selector);
     if (selector["ERROR"]) {
@@ -44,13 +44,13 @@ Template.count.executeQuery = function (historyParams) {
         return;
     }
 
-    var params = {
+    const params = {
         selector: selector,
         options: options
     };
 
     Meteor.call("count", selectedCollection, selector, options, function (err, result) {
-            Helper.renderAfterQueryExecution(err, result, false, "count", params, (historyParams ? false : true));
+            Helper.renderAfterQueryExecution(err, result, false, "count", params, (!historyParams));
         }
     );
 };

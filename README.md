@@ -1,8 +1,13 @@
-## Mongoclient, Featured MongoDB Management Tool
-Cross-platform, MongoDB 3.2+ support and more features!
+## Mongoclient, MongoDB Management Tool
+Cross-platform, easy to use, MongoDB 3.4+ support and more features!
 
-[![Join the chat at https://gitter.im/rsercano/mongoclient](https://badges.gitter.im/rsercano/mongoclient.svg)](https://gitter.im/rsercano/mongoclient?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)&nbsp;[![Build Status](https://travis-ci.org/rsercano/mongoclient.svg?branch=master)](https://travis-ci.org/rsercano/mongoclient)
-
+[![Build Status](https://travis-ci.org/rsercano/mongoclient.svg?branch=master)](https://travis-ci.org/rsercano/mongoclient)
+[![Code Climate](https://codeclimate.com/github/rsercano/mongoclient/badges/gpa.svg)](https://codeclimate.com/github/rsercano/mongoclient)
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/6a75fc4e1d3f480f811b5339202400b5)](https://www.codacy.com/app/ozdemirsercan27/mongoclient?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=rsercano/mongoclient&amp;utm_campaign=Badge_Grade)
+[![GitHub release](https://img.shields.io/github/release/rsercano/mongoclient.svg)](https://github.com/rsercano/mongoclient)
+[![Github All Releases](https://img.shields.io/github/downloads/rsercano/mongoclient/total.svg)](https://github.com/rsercano/mongoclient)
+[![Docker Pulls](https://img.shields.io/docker/pulls/mongoclient/mongoclient.svg)](https://hub.docker.com/r/mongoclient/mongoclient/)
+[![MIT License](https://img.shields.io/badge/license-MIT-blue.svg?style=flat)](https://github.com/rsercano/mongoclient/blob/master/LICENSE)
 
 [![Paypal](https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=Y5VD95E96NU6S)
 
@@ -21,17 +26,18 @@ Cross-platform, MongoDB 3.2+ support and more features!
 <img src="http://www.mongoclient.com/img/logo/head_only_medium.png" align="left" hspace="10" vspace="6">
 
 ## Download
-Version 1.4.0 has been released ! Chat is back, for more info checkout breaking changes from inside of application.
+Version 1.5.0 has been released !
 
 ### Distributions
 
-* [Linux x64](https://github.com/rsercano/mongoclient/releases/download/1.4.0/linux-portable-x64.zip)
-* [Windows x64](https://github.com/rsercano/mongoclient/releases/download/1.4.0/windows-portable-x64.zip)
-* [OSx](https://github.com/rsercano/mongoclient/releases/download/1.4.0/osx-portable.zip)
+* [Linux x64](https://github.com/rsercano/mongoclient/releases/download/1.5.0/linux-portable-x64.zip)
+* [Windows x64](https://github.com/rsercano/mongoclient/releases/download/1.5.0/windows-portable-x64.zip)
+* [OSx](https://github.com/rsercano/mongoclient/releases/download/1.5.0/osx-portable.zip)
 * [Web Application](https://github.com/rsercano/mongoclient/wiki#31-compile-from-source-browser-edition)
 
 To learn more see the [wiki](https://github.com/rsercano/mongoclient/wiki) page.
-
+<br/>
+<br/>
 ## Docker
 Mongoclient now officialy has a docker hub. To install master branch:
 
@@ -39,31 +45,49 @@ Mongoclient now officialy has a docker hub. To install master branch:
 
 To install latest stable release:
 
-```docker pull mongoclient/mongoclient:1.4.0```
+```docker pull mongoclient/mongoclient:1.5.0```
 
 Then you can run it as a daemon:
 
 ```docker run -d -p 3000:3000 mongoclient/mongoclient```
 
-## Version History
-### [1.3.0](https://github.com/rsercano/mongoclient/releases/1.3.0)
-Includes many features. [See details](https://github.com/rsercano/mongoclient/issues?q=milestone%3Av1.3.0)
+## Cloud Foundry
+You can optionally push the Mongoclient to the CloudFoundry
 
-### [1.2.2](https://github.com/rsercano/mongoclient/releases/1.2.2)  
-Includes bugfixes. [See details](https://github.com/rsercano/mongoclient/issues?q=milestone%3Av1.2.2)
+Cloud Foundry or CF, is a PaaS, as a developer you can trail the instance of CF, either [IBM Bluemix](https://console.ng.bluemix.net) or [Pivotal](https://console.run.pivotal.io) 
 
-### [1.2.1](https://github.com/rsercano/mongoclient/releases/1.2.1)  
-Includes bugfixes. [See details](https://github.com/rsercano/mongoclient/issues?q=milestone%3Av1.2.1)
+As the MongoClient is developed by the meteor, you need to have an mongodb instance to store the metadata info MC needed.
+[Mlab](https://mlab.com) has an experimental or sandbox offering or [compose](https://www.compose.com/) a commerical DBaaS provider you can register and try it.
 
-### [1.2.0](https://github.com/rsercano/mongoclient/releases/1.2.0)  
-Includes aggregation section. [See details](https://github.com/rsercano/mongoclient/issues?q=milestone%3Av1.2.0)
+Assuming you have an mongodb instance, which something linke  
+``` mongodb://<dbuser>:<dbpassword>@ds145188.mlab.com:45188/mongodb-mc ```
 
-### [1.1.0](https://github.com/rsercano/mongoclient/releases/1.1.0)  
-Includes usermanagement, and bugfixes generally. [See details](https://github.com/rsercano/mongoclient/issues?q=milestone%3Av1.1.0)
+And installed the [command line utility](https://docs.cloudfoundry.org/cf-cli/install-go-cli.html)
 
-### [1.0.0](https://github.com/rsercano/mongoclient/releases/1.0.0)  
-Includes basic mongodb management features. [See details](https://github.com/rsercano/mongoclient/issues?q=milestone%3Av1.0.0)
+Get the latest MongoClient
 
+```
+git clone https://github.com/rsercano/mongoclient.git ~/mongoclient
+cd ~/mongoclient
+```
+
+edit the manifest.yml.sample, change the corresponding values to your environment
+
+```
+mv manifest.yml.sample manifest.yml
+cf login -a api.ng.bluemix.net -u username -p password
+cf push
+```
+
+after a while, your console will output something like 
+
+![cf push mongoclient](docs/cf_push_mc.png)
+
+## History
+Please check [history](https://github.com/rsercano/mongoclient/blob/master/HISTORY.MD) file for version information.
+
+## Roadmap
+Please check [roadmap](https://github.com/rsercano/mongoclient/blob/master/ROADMAP.MD) file for further features.
 
 ## License
 Project is licensed under [MIT](https://en.wikipedia.org/wiki/MIT_License), which means you are free to do anything with full of my work as long as you provide attribution back to me. Thanks !

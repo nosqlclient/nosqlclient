@@ -1,7 +1,9 @@
 import {Template} from 'meteor/templating';
 import {Meteor} from 'meteor/meteor';
+import {Session} from 'meteor/session';
 import Helper from '/client/imports/helper';
 import {initExecuteQuery} from '/client/imports/views/pages/admin_queries/admin_queries';
+import {$} from 'meteor/jquery';
 import Enums from '/lib/imports/enums';
 
 import '/client/imports/views/query_templates_options/max_time_ms/max_time_ms.html';

@@ -1,6 +1,7 @@
 /**
  * Created by sercan on 09.02.2016.
  */
+/*global swal*/
 
 import {Template} from 'meteor/templating';
 import {Meteor} from 'meteor/meteor';
@@ -14,9 +15,9 @@ import './file_info/file_info';
 
 import './file_management.html';
 
-var JSONEditor = require('jsoneditor');
-var toastr = require('toastr');
-var Ladda = require('ladda');
+const JSONEditor = require('jsoneditor');
+const toastr = require('toastr');
+const Ladda = require('ladda');
 
 const proceedShowingMetadata = function (id, jsonEditor) {
     Meteor.call('getFile', $('#txtBucketName').val(), id, function (err, result) {
@@ -44,10 +45,10 @@ const convertObjectIdAndDateToString = function (arr) {
 };
 
 export const initFilesInformation = function () {
-    var l = Ladda.create(document.querySelector('#btnReloadFiles'));
+    const l = Ladda.create(document.querySelector('#btnReloadFiles'));
     l.start();
 
-    var selector = getSelectorValue();
+    let selector = getSelectorValue();
 
     selector = Helper.convertAndCheckJSON(selector);
     if (selector["ERROR"]) {
@@ -63,7 +64,7 @@ export const initFilesInformation = function () {
                 return;
             }
 
-            var tblFiles = $('#tblFiles');
+            const tblFiles = $('#tblFiles');
             // destroy jquery datatable to prevent reinitialization (https://datatables.net/manual/tech-notes/3)
             if ($.fn.dataTable.isDataTable('#tblFiles')) {
                 tblFiles.DataTable().destroy();
@@ -130,7 +131,7 @@ Template.fileManagement.events({
 
     'click .editor_download'  (e) {
         e.preventDefault();
-        var fileRow = Session.get(Helper.strSessionSelectedFile);
+        const fileRow = Session.get(Helper.strSessionSelectedFile);
         if (fileRow) {
             window.open('download?fileId=' + fileRow._id + '&bucketName=' + $('#txtBucketName').val());
         }
@@ -138,7 +139,7 @@ Template.fileManagement.events({
 
     'click .editor_delete'  (e) {
         e.preventDefault();
-        var fileRow = Session.get(Helper.strSessionSelectedFile);
+        const fileRow = Session.get(Helper.strSessionSelectedFile);
         if (fileRow) {
             swal({
                 title: "Are you sure ?",
@@ -151,7 +152,7 @@ Template.fileManagement.events({
             }, function (isConfirm) {
                 if (isConfirm) {
 
-                    var l = Ladda.create(document.querySelector('#btnReloadFiles'));
+                    const l = Ladda.create(document.querySelector('#btnReloadFiles'));
                     l.start();
                     Meteor.call('deleteFile', $('#txtBucketName').val(), fileRow._id, function (err) {
                         if (err) {
@@ -180,10 +181,10 @@ Template.fileManagement.events({
         }, function (isConfirm) {
             if (isConfirm) {
 
-                var l = Ladda.create(document.querySelector('#btnUpdateMetadata'));
+                const l = Ladda.create(document.querySelector('#btnUpdateMetadata'));
                 l.start();
-                var jsonEditor = $('#jsonEditorOfMetadata').data('jsoneditor');
-                var setValue = jsonEditor.get();
+                const jsonEditor = $('#jsonEditorOfMetadata').data('jsoneditor');
+                const setValue = jsonEditor.get();
                 delete setValue._id;
 
                 Meteor.call('updateOne', $('#txtBucketName').val() + '.files',
@@ -205,13 +206,13 @@ Template.fileManagement.events({
     'click .editor_show_metadata' (e) {
         e.preventDefault();
 
-        var l = Ladda.create(document.querySelector('#btnClose'));
+        const l = Ladda.create(document.querySelector('#btnClose'));
         l.start();
 
-        var fileRow = Session.get(Helper.strSessionSelectedFile);
+        const fileRow = Session.get(Helper.strSessionSelectedFile);
         if (fileRow) {
-            var editorDiv = $('#jsonEditorOfMetadata');
-            var jsonEditor = editorDiv.data('jsoneditor');
+            const editorDiv = $('#jsonEditorOfMetadata');
+            let jsonEditor = editorDiv.data('jsoneditor');
             if (!jsonEditor) {
                 jsonEditor = new JSONEditor(document.getElementById('jsonEditorOfMetadata'), {
                     mode: 'tree',

@@ -9,16 +9,19 @@ import {getOptions} from '/client/imports/views/query_templates_options/findone_
 
 import './findone_and_delete.html';
 
-var toastr = require('toastr');
+const toastr = require('toastr');
+const Ladda = require('ladda');
+
 /**
  * Created by RSercan on 1.1.2016.
  */
+/*global _*/
 Template.findOneAndDelete.onRendered(function () {
     initializeOptions();
 });
 
 const initializeOptions = function () {
-    var cmb = $('#cmbFindOneModifyOptions');
+    const cmb = $('#cmbFindOneModifyOptions');
     $.each(Helper.sortObjectByKey(Enums.FINDONE_MODIFY_OPTIONS), function (key, value) {
         // upsert and returnOriginal and upsert are not for delete
         if (value != Enums.FINDONE_MODIFY_OPTIONS.UPSERT && value != Enums.FINDONE_MODIFY_OPTIONS.RETURN_ORIGINAL) {
@@ -34,9 +37,9 @@ const initializeOptions = function () {
 
 Template.findOneAndDelete.executeQuery = function (historyParams) {
     initExecuteQuery();
-    var selectedCollection = Session.get(Helper.strSessionSelectedCollection);
-    var options = historyParams ? historyParams.options : getOptions();
-    var selector = historyParams ? JSON.stringify(historyParams.selector) : getSelectorValue();
+    const selectedCollection = Session.get(Helper.strSessionSelectedCollection);
+    const options = historyParams ? historyParams.options : getOptions();
+    let selector = historyParams ? JSON.stringify(historyParams.selector) : getSelectorValue();
 
     selector = Helper.convertAndCheckJSON(selector);
     if (selector["ERROR"]) {
@@ -51,13 +54,13 @@ Template.findOneAndDelete.executeQuery = function (historyParams) {
         return;
     }
 
-    var params = {
+    const params = {
         selector: selector,
         options: options
     };
 
     Meteor.call("findOneAndDelete", selectedCollection, selector, options, function (err, result) {
-            Helper.renderAfterQueryExecution(err, result, false, "findOneAndDelete", params, (historyParams ? false : true));
+            Helper.renderAfterQueryExecution(err, result, false, "findOneAndDelete", params, (!historyParams));
         }
     );
 };

@@ -5,6 +5,7 @@ import {Template} from 'meteor/templating';
 import Helper from '/client/imports/helper';
 import Enums from '/lib/imports/enums';
 import {Session} from 'meteor/session';
+import {$} from 'meteor/jquery';
 
 import '/client/imports/views/query_templates_options/bypass_document_validation/bypass_document_validation';
 
@@ -17,10 +18,10 @@ Template.ordered.onRendered(function () {
 });
 
 export const getBulkWriteOptions = function () {
-    var result = {};
+    const result = {};
 
     if ($.inArray("BYPASS_DOCUMENT_VALIDATION", Session.get(Helper.strSessionSelectedOptions)) != -1) {
-        var byPassDocValidation = $('#divBypassDocumentValidation').iCheck('update')[0].checked;
+        const byPassDocValidation = $('#divBypassDocumentValidation').iCheck('update')[0].checked;
         if (byPassDocValidation) {
             result[Enums.BULK_WRITE_OPTIONS.BYPASS_DOCUMENT_VALIDATION] = byPassDocValidation;
         }

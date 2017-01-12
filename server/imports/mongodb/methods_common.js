@@ -1,6 +1,8 @@
 /**
  * Created by RSercan on 5.3.2016.
  */
+/*global Async*/
+/*global moment*/
 
 import {Meteor} from 'meteor/meteor';
 import {Settings} from '/lib/imports/collections/settings';
@@ -9,6 +11,7 @@ import ShellCommands from '/lib/imports/collections/shell';
 import SchemaAnaylzeResult from '/lib/imports/collections/schema_analyze_result';
 import LOGGER from "../internal/logger";
 import Helper from "./helper";
+
 
 const mongodbApi = require('mongodb');
 const tunnelSsh = new require('tunnel-ssh');
@@ -20,13 +23,15 @@ export let database;
 let spawnedShell;
 
 const getProperMongo = function () {
+    let currentDir = process.cwd().replace(/\\/g, '/');
+    currentDir = currentDir.substring(0, currentDir.lastIndexOf("/"));
     switch (os.platform()) {
         case 'darwin':
-            return '../../../../../lib/mongo/darwin/mongo';
+            return currentDir + '/web.browser/app/mongo/darwin/mongo';
         case 'win32':
-            return '../../../../../lib/mongo/win32/mongo.exe';
+            return currentDir + '/web.browser/app/mongo/win32/mongo.exe';
         case 'linux':
-            return '../../../../../lib/mongo/linux/mongo';
+            return currentDir + '/web.browser/app/mongo/linux/mongo';
         default :
             throw 'Not supported os: ' + os.platform();
     }
@@ -250,7 +255,7 @@ Meteor.methods({
                 database.collections(function (err, collections) {
                     collections.forEach(function (collection) {
                         if (!collection.collectionName.startsWith('system')) {
-                            collection.drop(function (dropError) {
+                            collection.drop(function () {
                             });
                         }
                     });
@@ -270,7 +275,7 @@ Meteor.methods({
 
         return Async.runSync(function (done) {
             try {
-                database.createCollection(collectionName, options, function (err, result) {
+                database.createCollection(collectionName, options, function (err) {
                     done(err, null);
                 });
             }
@@ -358,7 +363,9 @@ Meteor.methods({
     analyzeSchema(connectionId, collection){
         const connectionUrl = Helper.getConnectionUrl(Connections.findOne({_id: connectionId}));
         const mongoPath = getProperMongo();
-        let args = [connectionUrl, '--quiet', '--eval', 'var collection =\"' + collection + '\", outputFormat=\"json\"', '../../../../../lib/mongo/variety/variety.js_'];
+        let currentDir = process.cwd().replace(/\\/g, '/');
+        currentDir = currentDir.substring(0, currentDir.lastIndexOf("/"));
+        let args = [connectionUrl, '--quiet', '--eval', 'var collection =\"' + collection + '\", outputFormat=\"json\"',currentDir+'/web.browser/app/mongo/variety/variety.js_'];
 
         LOGGER.info('[analyzeSchema]', args, connectionUrl, collection);
         try {
@@ -372,7 +379,6 @@ Meteor.methods({
 
             spawned.stderr.on('data', Meteor.bindEnvironment(function (data) {
                 if (data.toString()) {
-                    console.log(data.toString());
                     SchemaAnaylzeResult.insert({
                         'date': Date.now(),
                         'connectionId': connectionId,
