@@ -14,16 +14,16 @@ Template.isCapped.onRendered(function () {
 
 Template.isCapped.executeQuery = function (historyParams) {
     initExecuteQuery();
-    var selectedCollection = Session.get(Helper.strSessionSelectedCollection);
+    const selectedCollection = Session.get(Helper.strSessionSelectedCollection);
 
     Meteor.call("isCapped", selectedCollection, function (err, result) {
         if (!result.result) {
             result.result = false;
         }
-        Helper.renderAfterQueryExecution(err, result, false, "isCapped", {}, (historyParams ? false : true));
+        Helper.renderAfterQueryExecution(err, result, false, "isCapped", {}, (!historyParams));
     });
 };
 
 
-Template.isCapped.renderQuery = function (query) {
+Template.isCapped.renderQuery = function () {
 };

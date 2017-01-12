@@ -1,7 +1,8 @@
 var app = require('app');
 var browser = require('browser-window');
 var electrify = require('electrify')(__dirname);
-var Menu = require("menu");
+// UNCOMMENT FOR MAC PACKAGE
+//var Menu = require("menu");
 
 var window = null;
 

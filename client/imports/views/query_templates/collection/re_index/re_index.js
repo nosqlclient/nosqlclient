@@ -14,12 +14,12 @@ Template.reIndex.onRendered(function () {
 
 Template.reIndex.executeQuery = function (historyParams) {
     initExecuteQuery();
-    var selectedCollection = Session.get(Helper.strSessionSelectedCollection);
+    const selectedCollection = Session.get(Helper.strSessionSelectedCollection);
 
     Meteor.call("reIndex", selectedCollection, function (err, result) {
-        Helper.renderAfterQueryExecution(err, result, false, "reIndex", {}, (historyParams ? false : true));
+        Helper.renderAfterQueryExecution(err, result, false, "reIndex", {}, (!historyParams));
     });
 };
 
-Template.reIndex.renderQuery = function (query) {
+Template.reIndex.renderQuery = function () {
 };

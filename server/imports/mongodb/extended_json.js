@@ -1,18 +1,8 @@
 /**
  * Created by Sercan on 29.10.2016.
  */
-// a simple fork of https://github.com/mongodb/js-bson/blob/0.5/extended-json/index.js
-
-var bson = require('bson');
-var Binary = bson.Binary
-    , Long = bson.Long
-    , MaxKey = bson.MaxKey
-    , MinKey = bson.MinKey
-    , BSONRegExp = bson.BSONRegExp
-    , Timestamp = bson.Timestamp
-    , ObjectId = bson.ObjectId
-    , Code = bson.Code
-    , Decimal128 = bson.Decimal128;
+const bson = require('bson');
+const Binary = bson.Binary, Long = bson.Long, MaxKey = bson.MaxKey, MinKey = bson.MinKey, BSONRegExp = bson.BSONRegExp, Timestamp = bson.Timestamp, ObjectId = bson.ObjectId, Code = bson.Code, Decimal128 = bson.Decimal128;
 
 
 export const serialize = function (obj) {
@@ -78,21 +68,16 @@ export const deserialize = function (obj) {
 
 const deserializeResult = function (doc) {
     if (doc['$binary'] != undefined) {
-        var buffer = new Buffer(doc['$binary'], 'base64');
-        var type = new Buffer(doc['$type'], 'hex')[0];
-        return new Binary(buffer, type);
+        return new Binary(new Buffer(doc['$binary'], 'base64'), new Buffer(doc['$type'], 'hex')[0]);
     } else if (doc['$code'] != undefined) {
-        var code = doc['$code'];
-        var scope = doc['$scope'];
-        return new Code(code, scope);
+        return new Code(doc['$code'], doc['$scope']);
     } else if (doc['$date'] != undefined) {
         if (typeof doc['$date'] == 'string') {
             return new Date(doc['$date']);
         } else if (typeof doc['$date'] == 'object'
             && doc['$date']['$numberLong']) {
-            var time = parseInt(doc['$date']['$numberLong'], 10);
-            var date = new Date();
-            date.setTime(time);
+            let date = new Date();
+            date.setTime(parseInt(doc['$date']['$numberLong'], 10));
             return date;
         }
     } else if (doc['$numberLong'] != undefined) {
@@ -125,7 +110,7 @@ const serializeResult = function (doc) {
             '$type': new Buffer([doc.sub_type]).toString('hex')
         };
     } else if (doc instanceof Code || doc._bsontype == 'Code') {
-        var res = {'$code': doc.code};
+        let res = {'$code': doc.code};
         if (doc.scope) res['$scope'] = doc.scope;
         return res;
     } else if (doc instanceof Date) {

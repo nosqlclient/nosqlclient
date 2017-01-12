@@ -1,6 +1,8 @@
 /**
  * Created by RSercan on 29.12.2015.
  */
+/*global swal*/
+/*global _*/
 
 import {Template} from "meteor/templating";
 import {Meteor} from "meteor/meteor";
@@ -10,6 +12,9 @@ import {Settings} from "/lib/imports/collections/settings";
 import {FlowRouter} from 'meteor/kadira:flow-router';
 import Enums from "/lib/imports/enums";
 import {initQueryHistories} from "./query_histories/query_histories";
+import {AceEditor} from 'meteor/arch:ace-editor';
+
+/**queries*/
 import "/client/imports/views/query_templates/collection/aggregate/aggregate";
 import "/client/imports/views/query_templates/collection/bulk_write/bulk_write";
 import "/client/imports/views/query_templates/collection/count/count";
@@ -38,9 +43,6 @@ import "/client/imports/views/query_templates/collection/group/group";
 
 import '../../query_templates/collection/find/query_wizard/query_wizard';
 import "./browse_collection.html";
-
-
-// queries
 
 const JSONEditor = require('jsoneditor');
 const toastr = require('toastr');
@@ -91,7 +93,7 @@ const init = function () {
             },
             close_all: {
                 name: "Close All Tabs", icon: "fa-times", callback: function () {
-                    let resultTabs = $('#resultTabs li');
+                    let resultTabs = $('#resultTabs').find('li');
                     resultTabs.each(function (idx, li) {
                         let select = $(li);
                         $(select.children('a').attr('href')).remove();
@@ -106,12 +108,12 @@ const init = function () {
         }
     });
 
-    var resultTabs = $('#resultTabs');
+    const resultTabs = $('#resultTabs');
     resultTabs.on('show.bs.tab', function (e) {
-        var activeTabText = $(e.target).text();
-        var activeTabQueryInfo = activeTabText.substring(0, activeTabText.indexOf(' '));
+        const activeTabText = $(e.target).text();
+        const activeTabQueryInfo = activeTabText.substring(0, activeTabText.indexOf(' '));
 
-        var query = $($(e.target).attr('href')).data('query');
+        const query = $($(e.target).attr('href')).data('query');
         if (query) {
             renderQuery(query);
         }
@@ -149,14 +151,14 @@ const clearQueryIfAdmin = function () {
 
 export const initExecuteQuery = function () {
     // loading button
-    var l = Ladda.create(document.querySelector('#btnExecuteQuery'));
+    const l = Ladda.create(document.querySelector('#btnExecuteQuery'));
     l.start();
 };
 
 export const setQueryResult = function (result, queryInfo, queryParams, saveHistory) {
-    var jsonEditor = $('#divActiveJsonEditor');
-    var aceEditor = $('#divActiveAceEditor');
-    var settings = Settings.findOne();
+    const jsonEditor = $('#divActiveJsonEditor');
+    const aceEditor = $('#divActiveAceEditor');
+    const settings = Settings.findOne();
 
     if (jsonEditor.css('display') == 'none' && aceEditor.css('display') == 'none') {
         // there's only one tab, set results
@@ -170,11 +172,11 @@ export const setQueryResult = function (result, queryInfo, queryParams, saveHist
     }
     else {
         // open a new tab
-        var tabID = clarifyTabID();
-        var tabContent = getResultTabContent(tabID, settings.defaultResultView, queryInfo);
-        var tabTitle = queryInfo + " - " + Session.get(Helper.strSessionSelectedCollection);
+        const tabID = clarifyTabID();
+        const tabContent = getResultTabContent(tabID, settings.defaultResultView, queryInfo);
+        const tabTitle = queryInfo + " - " + Session.get(Helper.strSessionSelectedCollection);
         setAllTabsInactive();
-        var resultTabs = $('#resultTabs');
+        const resultTabs = $('#resultTabs');
 
         // set tab href
         resultTabs.append(
@@ -185,7 +187,7 @@ export const setQueryResult = function (result, queryInfo, queryParams, saveHist
         $('#resultTabContents').append(tabContent);
 
         // show last tab
-        var lastTab = resultTabs.find('a:last');
+        const lastTab = resultTabs.find('a:last');
         lastTab.tab('show');
 
         setResultToEditors(tabID, result, queryParams, queryInfo);
@@ -198,10 +200,10 @@ export const setQueryResult = function (result, queryInfo, queryParams, saveHist
 };
 
 const getWhichResultViewShowing = function () {
-    var jsonViews = $('div[id^="divActiveJsonEditor"]');
-    var aceViews = $('div[id^="divActiveAceEditor"]');
+    const jsonViews = $('div[id^="divActiveJsonEditor"]');
+    const aceViews = $('div[id^="divActiveAceEditor"]');
 
-    var whichIsDisplayed = 'none';
+    let whichIsDisplayed = 'none';
     jsonViews.each(function () {
         if ($(this).css('display') != 'none') {
             whichIsDisplayed = 'jsonEditor';
@@ -222,15 +224,13 @@ const saveQueryHistory = function (queryInfo, queryParams) {
         queryParams = {};
     }
 
-    var history = {
+    Meteor.call('saveQueryHistory', {
         connectionId: Session.get(Helper.strSessionConnection),
         collectionName: Session.get(Helper.strSessionSelectedCollection),
         queryName: queryInfo,
         params: JSON.stringify(queryParams),
         date: new Date()
-    };
-
-    Meteor.call('saveQueryHistory', history);
+    });
 };
 
 
@@ -258,8 +258,8 @@ const setResultToEditors = function (tabID, result, queryParams, queryInfo) {
 };
 
 const clarifyTabID = function () {
-    var result = 1;
-    var tabIDArray = Session.get(Helper.strSessionUsedTabIDs);
+    let result = 1;
+    let tabIDArray = Session.get(Helper.strSessionUsedTabIDs);
     if (tabIDArray == undefined || tabIDArray.length == 0) {
         tabIDArray = [result];
         Session.set(Helper.strSessionUsedTabIDs, tabIDArray);
@@ -275,11 +275,11 @@ const clarifyTabID = function () {
 
 const setAllTabsInactive = function () {
     $('#resultTabContents').each(function () {
-        var otherTab = $(this);
+        const otherTab = $(this);
         otherTab.removeClass('active');
         if (otherTab.find('#divActiveJsonEditor').length != 0) {
             // set all tabs different IDs to prevent setting result to existing editor.
-            var uniqueID = new Date().getTime();
+            const uniqueID = new Date().getTime();
             otherTab.find('#divActiveJsonEditor').attr('id', 'divActiveJsonEditor-' + uniqueID);
             otherTab.find('#activeJsonEditor').attr('id', 'activeJsonEditor-' + uniqueID);
             otherTab.find('#divActiveAceEditor').attr('id', 'divActiveAceEditor-' + uniqueID);
@@ -289,7 +289,7 @@ const setAllTabsInactive = function () {
 };
 
 const getResultTabContent = function (tabID, defaultView) {
-    var jsonEditorHtml = '<div class="tab-pane fade in active" id="tab-' + tabID + '">' +
+    const jsonEditorHtml = '<div class="tab-pane fade in active" id="tab-' + tabID + '">' +
         '<div id="divActiveJsonEditor" class="form-group"> ' +
         '<div id="activeJsonEditor" style="width: 100%;height:500px" class="col-lg-12"> ' +
         '</div> </div> ' +
@@ -298,7 +298,7 @@ const getResultTabContent = function (tabID, defaultView) {
         '<pre id="activeAceEditor" style="height: 500px"></pre> ' +
         '</div> </div> </div>';
 
-    var aceEditorHtml = '<div class="tab-pane fade in active" id="tab-' + tabID + '">' +
+    const aceEditorHtml = '<div class="tab-pane fade in active" id="tab-' + tabID + '">' +
         '<div id="divActiveJsonEditor" class="form-group" style="display:none;"> ' +
         '<div id="activeJsonEditor" style="width: 100%;height:500px" class="col-lg-12"> ' +
         '</div> </div> ' +
@@ -307,11 +307,11 @@ const getResultTabContent = function (tabID, defaultView) {
         '<pre id="activeAceEditor" style="height: 500px"></pre> ' +
         '</div> </div> </div>';
 
-    var whichIsDisplayed = getWhichResultViewShowing();
-    var result;
+    const whichIsDisplayed = getWhichResultViewShowing();
+    let result;
 
     if (whichIsDisplayed === 'none') {
-        var defaultIsAce = (defaultView !== 'Jsoneditor');
+        let defaultIsAce = (defaultView !== 'Jsoneditor');
         if (!defaultIsAce) {
             result = jsonEditorHtml;
         } else {
@@ -331,9 +331,9 @@ const getResultTabContent = function (tabID, defaultView) {
 };
 
 const getEditor = function (tabID) {
-    var tabView = $('#tab-' + tabID);
+    const tabView = $('#tab-' + tabID);
     if (!tabView.data('jsoneditor')) {
-        var jsonEditor = new JSONEditor(document.getElementById('activeJsonEditor'), {
+        const jsonEditor = new JSONEditor(document.getElementById('activeJsonEditor'), {
             mode: 'tree',
             modes: ['code', 'form', 'text', 'tree', 'view'],
             search: true
@@ -346,25 +346,25 @@ const getEditor = function (tabID) {
 };
 
 const getActiveTabHeader = function () {
-    var text = $('#resultTabs').find('li.active').find('a').text();
+    const text = $('#resultTabs').find('li.active').find('a').text();
     if (text && text.indexOf(' ') !== -1) {
         return text.substring(0, text.indexOf(' '));
     }
 };
 
 const getActiveEditorValue = function () {
-    var resultTabs = $('#resultTabs');
-    var resultContents = $('#resultTabContents');
+    const resultTabs = $('#resultTabs');
+    const resultContents = $('#resultTabContents');
 
-    var whichIsDisplayed = getWhichResultViewShowing();
+    const whichIsDisplayed = getWhichResultViewShowing();
     if (whichIsDisplayed == 'aceEditor') {
-        var foundAceEditor = resultContents.find('div.active').find('pre').attr('id');
+        const foundAceEditor = resultContents.find('div.active').find('pre').attr('id');
         if (foundAceEditor) {
-            return ace.edit(foundAceEditor).getValue();
+            return AceEditor.instance(foundAceEditor).getValue();
         }
     }
     else if (whichIsDisplayed == 'jsonEditor') {
-        var tabId = resultTabs.find('li.active').find('a').attr('href');
+        const tabId = resultTabs.find('li.active').find('a').attr('href');
         if ($(tabId).data('jsoneditor')) {
             return JSON.stringify($(tabId).data('jsoneditor').get());
         }
@@ -373,7 +373,7 @@ const getActiveEditorValue = function () {
 
 
 const saveEditor = function () {
-    var doc;
+    let doc;
     try {
         doc = Helper.convertAndCheckJSON(getActiveEditorValue());
     }
@@ -381,6 +381,7 @@ const saveEditor = function () {
         toastr.error('Syntax error, can not save document: ' + e);
         return;
     }
+
 
     swal({
         title: "Are you sure ?",
@@ -393,10 +394,10 @@ const saveEditor = function () {
     }, function (isConfirm) {
         if (isConfirm) {
 
-            var l = Ladda.create(document.querySelector('#btnSaveFindOne'));
+            const l = Ladda.create(document.querySelector('#btnSaveFindOne'));
             l.start();
 
-            var selectedCollection = Session.get(Helper.strSessionSelectedCollection);
+            const selectedCollection = Session.get(Helper.strSessionSelectedCollection);
             if (doc._id) {
                 Meteor.call("updateOne", selectedCollection, {_id: doc._id}, doc, {}, function (err, result) {
                     if (err || result.error) {
@@ -415,7 +416,7 @@ const saveEditor = function () {
 };
 
 const deleteDocument = function () {
-    var doc;
+    let doc;
     try {
         doc = Helper.convertAndCheckJSON(getActiveEditorValue());
     }
@@ -435,18 +436,17 @@ const deleteDocument = function () {
     }, function (isConfirm) {
         if (isConfirm) {
 
-            var l = Ladda.create(document.querySelector('#btnDelFindOne'));
+            const l = Ladda.create(document.querySelector('#btnDelFindOne'));
             l.start();
 
-            var selectedCollection = Session.get(Helper.strSessionSelectedCollection);
-            var i = 0;
+            const selectedCollection = Session.get(Helper.strSessionSelectedCollection);
             if (doc._id) {
                 Meteor.call("delete", selectedCollection, {_id: doc._id}, function (err, result) {
                     if (err || result.error) {
                         Helper.showMeteorFuncError(err, result, "Couldn't delete document");
                     } else {
                         toastr.success('Successfully deleted document');
-                        var tabToRemove = $('#resultTabs').find('li.active');
+                        const tabToRemove = $('#resultTabs').find('li.active');
                         tabToRemove.remove();
                         $(tabToRemove.find('a').attr('href')).remove();
 
@@ -476,7 +476,7 @@ const renderQuery = function (query) {
 const cmbQueriesChangeEvent = function () {
     Session.set(Helper.strSessionSelectedOptions, []);
 
-    var value = $('#cmbQueries').find(":selected").text();
+    const value = $('#cmbQueries').find(":selected").text();
     if (value) {
         Session.set(Helper.strSessionSelectedQuery, value);
     }
@@ -501,15 +501,11 @@ Template.browseCollection.onRendered(function () {
         return;
     }
 
-    let settings = this.subscribe('settings');
-    let connections = this.subscribe('connections');
-    let queryHistories = this.subscribe('queryHistories');
+    this.subscribe('settings');
+    this.subscribe('connections');
+    this.subscribe('queryHistories');
 
-    this.autorun(() => {
-        if (settings.ready() && connections.ready() && queryHistories.ready()) {
-            init();
-        }
-    });
+    init();
 });
 
 Template.browseCollection.events({
@@ -545,10 +541,10 @@ Template.browseCollection.events({
     },
 
     'click #btnSwitchView'  () {
-        var jsonViews = $('div[id^="divActiveJsonEditor"]');
-        var aceViews = $('div[id^="divActiveAceEditor"]');
+        const jsonViews = $('div[id^="divActiveJsonEditor"]');
+        const aceViews = $('div[id^="divActiveAceEditor"]');
 
-        var whichIsDisplayed = getWhichResultViewShowing();
+        const whichIsDisplayed = getWhichResultViewShowing();
 
         if (whichIsDisplayed != 'none') {
             if (whichIsDisplayed == 'jsonEditor') {
@@ -571,7 +567,7 @@ Template.browseCollection.events({
     },
 
     'click #btnExecuteQuery'  () {
-        var queryTemplate = Session.get(Helper.strSessionSelectedQuery);
+        const queryTemplate = Session.get(Helper.strSessionSelectedQuery);
         if (queryTemplate) {
             Template[queryTemplate].executeQuery();
         } else {
@@ -588,34 +584,34 @@ Template.browseCollection.helpers({
     'getHelpBlockForSelectedQuery' () {
         switch (Session.get(Helper.strSessionSelectedQuery)) {
             case Enums.QUERY_TYPES.FINDONE_AND_REPLACE:
-                return Spacebars.SafeString('This query replaces whole document which matched by <strong>selector</strong> with the <strong>set</strong> object');
+                return 'This query replaces whole document which matched by <strong>selector</strong> with the <strong>set</strong> object';
 
             case Enums.QUERY_TYPES.GROUP:
-                return Spacebars.SafeString('<strong>Deprecated since version 3.4</strong> Use db.collection.aggregate() with the $group stage or db.collection.mapReduce() instead');
+                return '<strong>Deprecated since version 3.4</strong> Use db.collection.aggregate() with the $group stage or db.collection.mapReduce() instead';
 
             case Enums.QUERY_TYPES.FINDONE_AND_DELETE:
-                return Spacebars.SafeString('<strong><font color=\'red\'>CAUTION:</font></strong> This query removes whole document which matched by <strong>selector</strong>');
+                return '<strong><span style="color: red; ">CAUTION:</span></strong> This query removes whole document which matched by <strong>selector</strong>';
 
             case Enums.QUERY_TYPES.CREATE_INDEX:
-                return Spacebars.SafeString('Since mongodb version <strong>3.0.0</strong>, this query can be used instead of <strong>ensureIndex</strong>');
+                return 'Since mongodb version <strong>3.0.0</strong>, this query can be used instead of <strong>ensureIndex</strong>';
 
             case Enums.QUERY_TYPES.DELETE:
-                return Spacebars.SafeString('<strong><font color=\'red\'>CAUTION:</font></strong> This query removes whole document(s) which matched by <strong>selector</strong>');
+                return '<strong><span style="color: red; ">CAUTION:</span></strong> This query removes whole document(s) which matched by <strong>selector</strong>';
 
             case Enums.QUERY_TYPES.GEO_HAYSTACK_SEARCH:
-                return Spacebars.SafeString('This query executes a geo search using a <strong>geo haystack index</strong> on a collection');
+                return 'This query executes a geo search using a <strong>geo haystack index</strong> on a collection';
 
             case Enums.QUERY_TYPES.IS_CAPPED:
-                return Spacebars.SafeString('Returns the information of if the collection is a <strong>capped</strong> collection');
+                return 'Returns the information of if the collection is a <strong>capped</strong> collection';
 
             case Enums.QUERY_TYPES.OPTIONS:
-                return Spacebars.SafeString('Returns <strong>collection</strong> options');
+                return 'Returns <strong>collection</strong> options';
 
             case Enums.QUERY_TYPES.RE_INDEX:
-                return Spacebars.SafeString('Reindex all indexes on the collection <strong>Warning:</strong> reIndex is a blocking operation <i>(indexes are rebuilt in the foreground)</i> and will be slow for large collections');
+                return 'Reindex all indexes on the collection <strong>Warning:</strong> reIndex is a blocking operation <i>(indexes are rebuilt in the foreground)</i> and will be slow for large collections';
 
             case Enums.QUERY_TYPES.UPDATE_MANY:
-                return Spacebars.SafeString('Updates all documents which matched by <strong>Selector</strong>');
+                return 'Updates all documents which matched by <strong>Selector</strong>';
 
             default:
                 return '';

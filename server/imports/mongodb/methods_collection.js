@@ -1,6 +1,8 @@
 /**
  * Created by RSercan on 27.12.2015.
  */
+/*global Async*/
+
 import LOGGER from "../internal/logger";
 import Helper from "./helper";
 import {Meteor} from "meteor/meteor";
@@ -300,10 +302,10 @@ Meteor.methods({
         return proceedQueryExecution(selectedCollection, methodArray);
     },
 
-    aggregate(selectedCollection, pipeline, options) {
+    aggregate(selectedCollection, pipeline, options = {}) {
         const methodArray = [
             {
-                "aggregate": [pipeline, options],
+                "aggregate": [pipeline, options]
             }
         ];
         return proceedQueryExecution(selectedCollection, methodArray);

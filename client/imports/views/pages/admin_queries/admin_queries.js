@@ -4,6 +4,8 @@ import {FlowRouter} from 'meteor/kadira:flow-router';
 import Helper from '/client/imports/helper';
 import {Settings} from '/lib/imports/collections/settings';
 import Enums from '/lib/imports/enums';
+import {AceEditor} from 'meteor/arch:ace-editor';
+
 
 // queries
 import '/client/imports/views/query_templates/admin/add_user/add_user';
@@ -21,9 +23,9 @@ import '/client/imports/views/query_templates/admin/validate_collection/validate
 
 import './admin_queries.html';
 
-var toastr = require('toastr');
-var Ladda = require('ladda');
-var JSONEditor = require('jsoneditor');
+const toastr = require('toastr');
+const Ladda = require('ladda');
+const JSONEditor = require('jsoneditor');
 /**
  * Created by RSercan on 10.1.2016.
  */
@@ -40,9 +42,9 @@ Template.adminQueries.onRendered(function () {
 
     this.autorun(() => {
         if (connections.ready() && settings.ready()) {
-            var cmb = $('#cmbAdminQueries');
+            const cmb = $('#cmbAdminQueries');
             cmb.append($("<optgroup id='optGroupAdminQueries' label='Admin Queries'></optgroup>"));
-            var cmbOptGroupCollection = cmb.find('#optGroupAdminQueries');
+            const cmbOptGroupCollection = cmb.find('#optGroupAdminQueries');
 
             $.each(Helper.sortObjectByKey(Enums.ADMIN_QUERY_TYPES), function (key, value) {
                 cmbOptGroupCollection.append($("<option></option>")
@@ -65,15 +67,15 @@ Template.adminQueries.events({
     'change #cmbAdminQueries'  () {
         Session.set(Helper.strSessionSelectedOptions, []);
 
-        var value = $('#cmbAdminQueries').find(":selected").text();
+        const value = $('#cmbAdminQueries').find(":selected").text();
         if (value) {
             Session.set(Helper.strSessionSelectedQuery, value);
         }
     },
 
     'click #btnSwitchView'  () {
-        var jsonView = $('#divJsonEditor');
-        var aceView = $('#divAceEditor');
+        const jsonView = $('#divJsonEditor');
+        const aceView = $('#divAceEditor');
 
         if (jsonView.css('display') == 'none' && aceView.css('display') == 'none') {
             return;
@@ -88,7 +90,7 @@ Template.adminQueries.events({
         }
     },
     'click #btnExecuteAdminQuery'() {
-        var queryTemplate = Session.get(Helper.strSessionSelectedQuery);
+        const queryTemplate = Session.get(Helper.strSessionSelectedQuery);
         if (queryTemplate) {
             Template[queryTemplate].executeQuery();
         } else {
@@ -105,34 +107,34 @@ Template.adminQueries.helpers({
     getHelpBlockForSelectedQuery () {
         switch (Session.get(Helper.strSessionSelectedQuery)) {
             case Enums.ADMIN_QUERY_TYPES.ADD_USER:
-                return Spacebars.SafeString('Add a user to the database');
+                return 'Add a user to the database';
 
             case Enums.ADMIN_QUERY_TYPES.BUILD_INFO:
-                return Spacebars.SafeString('Retrieve the server information for the current instance of the db client');
+                return 'Retrieve the server information for the current instance of the db client';
 
             case Enums.ADMIN_QUERY_TYPES.LIST_DATABASES:
-                return Spacebars.SafeString('List the available databases');
+                return 'List the available databases';
 
             case Enums.ADMIN_QUERY_TYPES.COMMAND:
-                return Spacebars.SafeString('Execute a command');
+                return 'Execute a command';
 
             case Enums.ADMIN_QUERY_TYPES.PING:
-                return Spacebars.SafeString('Ping the server and retrieve results');
+                return 'Ping the server and retrieve results';
 
             case Enums.ADMIN_QUERY_TYPES.PROFILING_INFO:
-                return Spacebars.SafeString('Retrive the current profiling information');
+                return 'Retrive the current profiling information';
 
             case Enums.ADMIN_QUERY_TYPES.REPL_SET_GET_STATUS:
-                return Spacebars.SafeString('Get <strong>ReplicaSet</strong> status');
+                return 'Get <strong>ReplicaSet</strong> status';
 
             case Enums.ADMIN_QUERY_TYPES.SERVER_STATUS:
-                return Spacebars.SafeString('Retrieve this <strong>db\'s</strong> server status.');
+                return 'Retrieve this <strong>db\'s</strong> server status.';
 
             case Enums.ADMIN_QUERY_TYPES.SET_PROFILING_LEVEL:
-                return Spacebars.SafeString('Set the current profiling level');
+                return 'Set the current profiling level';
 
             case Enums.ADMIN_QUERY_TYPES.VALIDATE_COLLECTION:
-                return Spacebars.SafeString('Validate an existing collection');
+                return 'Validate an existing collection';
 
             default:
                 return '';
@@ -141,7 +143,7 @@ Template.adminQueries.helpers({
 });
 
 export const initExecuteQuery = function () {
-    var l = Ladda.create(document.querySelector('#btnExecuteAdminQuery'));
+    const l = Ladda.create(document.querySelector('#btnExecuteAdminQuery'));
     l.start();
 };
 
@@ -162,10 +164,10 @@ export const setAdminResult = function (result) {
         editor.setValue(JSON.stringify(result, null, '\t'), -1);
     });
 
-    var jsonEditor = $('#divJsonEditor');
-    var aceEditor = $('#divAceEditor');
+    const jsonEditor = $('#divJsonEditor');
+    const aceEditor = $('#divAceEditor');
     if (jsonEditor.css('display') == 'none' && aceEditor.css('display') == 'none') {
-        var settings = Settings.findOne();
+        const settings = Settings.findOne();
         if (settings.defaultResultView == 'Jsoneditor') {
             jsonEditor.show('slow');
         }
@@ -175,7 +177,7 @@ export const setAdminResult = function (result) {
     }
 };
 
-var jsonEditor;
+let jsonEditor;
 const getEditor = function () {
     if ($('.jsoneditor').length == 0) {
         jsonEditor = new JSONEditor(document.getElementById('jsoneditor'), {

@@ -2,17 +2,19 @@
  * Created by Sercan on 26.10.2016.
  */
 import {WebApp} from 'meteor/webapp';
+import {Meteor} from 'meteor/meteor';
+import {Papa} from 'meteor/harrison:papa-parse';
 import {database} from "/server/imports/mongodb/methods_common";
 import LOGGER from "/server/imports/internal/logger";
 
 const mongodbApi = require('mongodb');
 
 WebApp.connectHandlers.use('/export', function (req, res) {
-    var urlParts = decodeURI(req.url).split('&');
-    var format = urlParts[0].substr(urlParts[0].indexOf('=') + 1);
-    var selectedCollection = urlParts[1].substr(urlParts[1].indexOf('=') + 1);
-    var selector = urlParts[2].substr(urlParts[2].indexOf('=') + 1);
-    var cursorOptions = urlParts[3].substr(urlParts[3].indexOf('=') + 1);
+    const urlParts = decodeURI(req.url).split('&');
+    const format = urlParts[0].substr(urlParts[0].indexOf('=') + 1);
+    const selectedCollection = urlParts[1].substr(urlParts[1].indexOf('=') + 1);
+    const selector = urlParts[2].substr(urlParts[2].indexOf('=') + 1);
+    const cursorOptions = urlParts[3].substr(urlParts[3].indexOf('=') + 1);
 
     LOGGER.info('[export]', format, selectedCollection, selector, cursorOptions);
 
@@ -22,7 +24,7 @@ WebApp.connectHandlers.use('/export', function (req, res) {
             res.writeHead(400);
             res.end('Query error: ' + JSON.stringify(err) + " " + JSON.stringify(result.error));
         } else {
-            var headers = {
+            const headers = {
                 'Content-type': 'application/octet-stream',
                 'Content-Disposition': 'attachment; filename=export_result.' + format
             };
@@ -47,9 +49,9 @@ WebApp.connectHandlers.use('/healthcheck', function (req, res) {
 });
 
 WebApp.connectHandlers.use("/download", function (req, res) {
-    var urlParts = decodeURI(req.url).split('&');
-    var fileId = urlParts[0].substr(urlParts[0].indexOf('=') + 1);
-    var bucketName = urlParts[1].substr(urlParts[1].indexOf('=') + 1);
+    const urlParts = decodeURI(req.url).split('&');
+    let fileId = urlParts[0].substr(urlParts[0].indexOf('=') + 1);
+    let bucketName = urlParts[1].substr(urlParts[1].indexOf('=') + 1);
 
     LOGGER.info('[downloadFile]', fileId, bucketName);
 
@@ -64,15 +66,15 @@ WebApp.connectHandlers.use("/download", function (req, res) {
         let filesCollection = database.collection(bucketName + '.files');
         filesCollection.find({_id: new mongodbApi.ObjectId(fileId)}).limit(1).next(function (err, doc) {
             if (doc) {
-                var bucket = new mongodbApi.GridFSBucket(database, {bucketName: bucketName});
-                var headers = {
+                const bucket = new mongodbApi.GridFSBucket(database, {bucketName: bucketName});
+                const headers = {
                     'Content-type': 'application/octet-stream',
                     'Content-Disposition': 'attachment; filename=' + doc.filename
                 };
                 LOGGER.info('[downloadFile]', 'file found and started downloading...');
-                var downloadStream = bucket.openDownloadStream(new mongodbApi.ObjectID(fileId));
+                const downloadStream = bucket.openDownloadStream(new mongodbApi.ObjectID(fileId));
                 res.writeHead(200, headers);
-                var pipeStream = downloadStream.pipe(res);
+                const pipeStream = downloadStream.pipe(res);
                 pipeStream.on('finish', function () {
                     LOGGER.info('[downloadFile]', 'file has been downloaded successfully');
                 });

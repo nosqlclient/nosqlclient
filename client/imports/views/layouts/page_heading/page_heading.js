@@ -1,10 +1,9 @@
-import {Template} from 'meteor/templating';
-import {Meteor} from 'meteor/meteor';
-import {Session} from 'meteor/session';
-import Helper from '/client/imports/helper';
-import {Settings} from '/lib/imports/collections/settings';
-
-import './page_heading.html';
+import {Template} from "meteor/templating";
+import {Meteor} from "meteor/meteor";
+import {Session} from "meteor/session";
+import Helper from "/client/imports/helper";
+import {Settings} from "/lib/imports/collections/settings";
+import "./page_heading.html";
 
 const Ladda = require('ladda');
 
@@ -18,34 +17,36 @@ Template.pageHeading.helpers({
             return;
         }
         let settings = Settings.findOne();
-        let btnExecuteQuery = document.querySelector('#btnExecuteQuery');
-        if (!settings || !btnExecuteQuery) {
-            return;
-        }
 
-        let laddaButton = Ladda.create(btnExecuteQuery);
-        laddaButton.start();
-
-        var selectedCollection = Session.get(Helper.strSessionSelectedCollection);
-
-        // get distinct field keys for auto complete on every collection change.
-        Helper.getDistinctKeysForAutoComplete(selectedCollection);
-
-        Meteor.call("stats", selectedCollection, {}, function (err, result) {
-            if (err || result.error) {
-                Helper.showMeteorFuncError(err, result, "Couldn't fetch connection informations");
+        Meteor.setTimeout(function () {
+            let btnExecuteQuery = document.querySelector('#btnExecuteQuery');
+            if (!settings || !btnExecuteQuery) {
+                return;
             }
-            else {
-                populateCollectionInfo(result.result, settings);
-            }
-            Ladda.stopAll();
-        });
+            let laddaButton = Ladda.create(btnExecuteQuery);
+            laddaButton.start();
+
+            const selectedCollection = Session.get(Helper.strSessionSelectedCollection);
+
+            // get distinct field keys for auto complete on every collection change.
+            Helper.getDistinctKeysForAutoComplete(selectedCollection);
+
+            Meteor.call("stats", selectedCollection, {}, function (err, result) {
+                if (err || result.error) {
+                    Helper.showMeteorFuncError(err, result, "Couldn't fetch connection informations");
+                }
+                else {
+                    populateCollectionInfo(result.result, settings);
+                }
+                Ladda.stopAll();
+            });
+        }, 150);
     }
 });
 
 const populateCollectionInfo = function (result, settings) {
-    var scale = 1;
-    var text = "Bytes";
+    let scale = 1;
+    let text = "Bytes";
 
     switch (settings.scale) {
         case "MegaBytes":
@@ -62,16 +63,16 @@ const populateCollectionInfo = function (result, settings) {
             break;
     }
     // we are manually doing the scale to prevent showing 0 MB for sizes 0.7, 0.8, 0.9 etc. MBs as mongodb does.
-    var resultString = "<div class=\"row\"><div class=\"col-lg-7\"><b>Count:</b></div><div class=\"col-lg-5\">" + result.count + "</div></div>";
+    let resultString = "<div class=\"row\"><div class=\"col-lg-7\"><b>Count:</b></div><div class=\"col-lg-5\">" + result.count + "</div></div>";
     resultString += "<div class=\"row\"><div class=\"col-lg-7\"><b>Index Count:</b></div><div class=\"col-lg-5\">" + result.nindexes + "</div></div>";
 
-    var size = isNaN(Number(result.size / scale).toFixed(2)) ? "0.00" : Number(result.size / scale).toFixed(2);
+    const size = isNaN(Number(result.size / scale).toFixed(2)) ? "0.00" : Number(result.size / scale).toFixed(2);
     resultString += "<div class=\"row\"><div class=\"col-lg-7\"><b>Size:</b></div><div class=\"col-lg-5\">" + size + " " + text + "</div></div>";
 
-    var totalIndexSize = isNaN(Number(result.totalIndexSize / scale).toFixed(2)) ? "0.00" : Number(result.totalIndexSize / scale).toFixed(2);
+    const totalIndexSize = isNaN(Number(result.totalIndexSize / scale).toFixed(2)) ? "0.00" : Number(result.totalIndexSize / scale).toFixed(2);
     resultString += "<div class=\"row\"><div class=\"col-lg-7\"><b>Total Index Size:</b></div><div class=\"col-lg-5\">" + totalIndexSize + " " + text + "</div></div>";
 
-    var avgObjSize = isNaN(Number(result.avgObjSize / scale).toFixed(2)) ? "0.00" : Number(result.avgObjSize / scale).toFixed(2);
+    const avgObjSize = isNaN(Number(result.avgObjSize / scale).toFixed(2)) ? "0.00" : Number(result.avgObjSize / scale).toFixed(2);
     resultString += "<div class=\"row\"><div class=\"col-lg-7\"><b>Average Object Size:</b></div><div class=\"col-lg-5\">" + avgObjSize + " " + text + "</div></div>";
     resultString += "<div class=\"row\"><div class=\"col-lg-7\"><b>Is Capped:</b></div><div class=\"col-lg-5\">" + result.capped + "</div></div>";
 

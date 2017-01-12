@@ -6,14 +6,14 @@ import {Settings} from '/lib/imports/collections/settings';
 
 import './database_stats.html';
 
-const toastr = require('toastr');
 /**
  * Created by RSercan on 26.12.2015.
  */
-var interval = null;
-var memoryChart = null, connectionsChart = null, networkChart = null, opCountersChart = null;
+/*global moment*/
+let interval = null;
+let memoryChart = null, connectionsChart = null, networkChart = null, opCountersChart = null;
 
-var lineOptions = {
+const lineOptions = {
     series: {
         lines: {
             show: true,
@@ -76,15 +76,15 @@ const fetchStatus = function () {
         if (settings) {
             Meteor.call("serverStatus", function (err, result) {
                 if (err || result.error) {
-                    var errorMessage = result.error ? result.error.message : err.message;
+                    const errorMessage = result.error ? result.error.message : err.message;
                     $('#errorMessage').text("Successfully connected but, couldn't fetch server status: " + errorMessage);
                     Session.set(Helper.strSessionServerStatus, undefined);
                 }
                 else {
                     Session.set(Helper.strSessionServerStatus, result.result);
-                    var memoryData = [], connectionsData = [], networkData = [], opCountersData = [];
-                    var memoryText = populateMemoryData(result.result, memoryData, settings);
-                    var availableConnections = populateConnectionData(result.result, connectionsData);
+                    const memoryData = [], connectionsData = [], networkData = [], opCountersData = [];
+                    const memoryText = populateMemoryData(result.result, memoryData, settings);
+                    const availableConnections = populateConnectionData(result.result, connectionsData);
                     populateNetworkData(result.result, networkData, settings);
                     populateOPCountersData(result.result, opCountersData);
 
@@ -103,7 +103,7 @@ const fetchStatus = function () {
 
 const populateOPCountersData = function (result, data) {
     if (result.opcounters) {
-        var counts = [
+        const counts = [
             [0, result.opcounters.insert],
             [1, result.opcounters.query],
             [2, result.opcounters.update],
@@ -117,11 +117,11 @@ const populateOPCountersData = function (result, data) {
 
 const populateConnectionData = function (result, data) {
     if (result.connections) {
-        var currentData = [];
-        var totalCreatedData = [];
+        const currentData = [];
+        const totalCreatedData = [];
 
 
-        var time = new Date().getTime();
+        const time = new Date().getTime();
 
         currentData.push([time, Math.round(result.connections.current * 100) / 100]);
         totalCreatedData.push([time, Math.round(result.connections.totalCreated * 100) / 100]);
@@ -136,12 +136,12 @@ const populateConnectionData = function (result, data) {
 
 const populateNetworkData = function (result, data, settings) {
     if (result.network) {
-        var bytesInData = [];
-        var bytesOutData = [];
-        var totalRequestsData = [];
+        let bytesInData = [];
+        let bytesOutData = [];
+        let totalRequestsData = [];
 
-        var scale = 1;
-        var text = "MB";
+        let scale = 1;
+        let text = "MB";
         switch (settings.scale) {
             case "KiloBytes":
                 scale = 1024;
@@ -158,7 +158,7 @@ const populateNetworkData = function (result, data, settings) {
         }
 
 
-        var time = new Date().getTime();
+        const time = new Date().getTime();
 
         bytesInData.push([time, Math.round((result.network.bytesIn / scale) * 100) / 100]);
         bytesOutData.push([time, Math.round((result.network.bytesOut / scale) * 100) / 100]);
@@ -172,8 +172,8 @@ const populateNetworkData = function (result, data, settings) {
 
 const populateMemoryData = function (result, data, settings) {
     if (result.mem) {
-        var scale = 1;
-        var text = "MB";
+        let scale = 1;
+        let text = "MB";
         switch (settings.scale) {
             case "KiloBytes":
                 scale = 1024;
@@ -189,12 +189,12 @@ const populateMemoryData = function (result, data, settings) {
                 break;
         }
 
-        var virtualMemData = [];
-        var mappedMemData = [];
-        var residentMemData = [];
+        let virtualMemData = [];
+        let mappedMemData = [];
+        let residentMemData = [];
 
 
-        var time = new Date().getTime();
+        const time = new Date().getTime();
 
         virtualMemData.push([time, Math.round((result.mem.virtual * scale) * 100) / 100]);
         mappedMemData.push([time, Math.round((result.mem.mapped * scale) * 100) / 100]);
@@ -210,8 +210,8 @@ const populateMemoryData = function (result, data, settings) {
 };
 
 const convertInformationsToKB = function (stats, settings) {
-    var scale = 1024;
-    var text = "Bytes";
+    let scale = 1024;
+    let text = "Bytes";
     switch (settings.scale) {
         case "MegaBytes":
             scale = 1024 * 1024;
@@ -235,13 +235,13 @@ const convertInformationsToKB = function (stats, settings) {
 
 const initOperationCountersChart = function (data) {
     if (Session.get(Helper.strSessionCollectionNames) != undefined) {
-        var divChart = $('#divOperationCountersChart');
+        const divChart = $('#divOperationCountersChart');
         if (data == undefined || data.length == 0) {
             divChart.html('This feature is not supported on this platform (OS)');
             return;
         }
         if (divChart.find('.flot-base').length <= 0) {
-            var customOptions = jQuery.extend(true, {}, lineOptions);
+            const customOptions = jQuery.extend(true, {}, lineOptions);
             customOptions.colors = [];
             customOptions.bars = {
                 align: "center",
@@ -276,14 +276,14 @@ const initOperationCountersChart = function (data) {
 
 const initNetworkChart = function (data) {
     if (Session.get(Helper.strSessionCollectionNames) != undefined) {
-        var divChart = $('#divNetworkChart');
+        const divChart = $('#divNetworkChart');
         if (data == undefined || data.length == 0) {
             divChart.html('This feature is not supported on this platform (OS)');
             return;
         }
 
         if (divChart.find('.flot-base').length <= 0) {
-            var customLineOptions = jQuery.extend(true, {}, lineOptions);
+            const customLineOptions = jQuery.extend(true, {}, lineOptions);
             customLineOptions.colors.push("#273be2");
             try {
                 networkChart = $.plot(divChart, data, customLineOptions);
@@ -293,7 +293,7 @@ const initNetworkChart = function (data) {
             }
         }
         else {
-            var existingData = networkChart.getData();
+            const existingData = networkChart.getData();
             if (existingData[0].data.length == 15) {
                 existingData[0].data = existingData[0].data.slice(1, 15);
 
@@ -324,7 +324,7 @@ const initNetworkChart = function (data) {
 
 const initConnectionsChart = function (data, availableConnections) {
     if (Session.get(Helper.strSessionCollectionNames) != undefined) {
-        var divChart = $('#divConnectionsChart');
+        const divChart = $('#divConnectionsChart');
         if (data == undefined || data.length == 0) {
             divChart.html('This feature is not supported on this platform (OS)');
             return;
@@ -341,7 +341,7 @@ const initConnectionsChart = function (data, availableConnections) {
             }
         }
         else {
-            var existingData = connectionsChart.getData();
+            const existingData = connectionsChart.getData();
             if (existingData[0].data.length == 10) {
                 existingData[0].data = existingData[0].data.slice(1, 10);
 
@@ -366,14 +366,14 @@ const initConnectionsChart = function (data, availableConnections) {
 
 const initMemoryChart = function (data, text) {
     if (Session.get(Helper.strSessionCollectionNames) != undefined) {
-        var divChart = $('#divHeapMemoryChart');
+        const divChart = $('#divHeapMemoryChart');
         if (data == undefined || data.length == 0) {
             divChart.html('This feature is not supported on this platform (OS)');
             return;
         }
 
         if (divChart.find('.flot-base').length <= 0) {
-            var customLineOptions = jQuery.extend(true, {}, lineOptions);
+            const customLineOptions = jQuery.extend(true, {}, lineOptions);
             customLineOptions.colors.push("#273be2");
             customLineOptions.yaxis = {
                 tickFormatter(val) {
@@ -388,7 +388,7 @@ const initMemoryChart = function (data, text) {
             }
         }
         else {
-            var existingData = memoryChart.getData();
+            const existingData = memoryChart.getData();
             if (existingData[0].data.length == 15) {
                 existingData[0].data = existingData[0].data.slice(1, 15);
 

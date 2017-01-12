@@ -46,7 +46,7 @@ const ensureFieldsDataForDatatable = function (data) {
 };
 
 const populateFieldsTable = function (data) {
-    var tblFields = $('#tblFieldsDetails');
+    const tblFields = $('#tblFieldsDetails');
     if ($.fn.dataTable.isDataTable('#tblFieldsDetails')) {
         tblFields.DataTable().destroy();
     }
@@ -144,7 +144,7 @@ Template.schemaAnalyzer.onRendered(function () {
                         return;
                     }
 
-                    var l = Ladda.create(document.querySelector('#btnAnalyzeNow'));
+                    const l = Ladda.create(document.querySelector('#btnAnalyzeNow'));
                     l.start();
 
                     populateFieldsTable(jsonData);
@@ -173,7 +173,7 @@ Template.schemaAnalyzer.events({
             return;
         }
 
-        var l = Ladda.create(document.querySelector('#btnAnalyzeNow'));
+        const l = Ladda.create(document.querySelector('#btnAnalyzeNow'));
         l.start();
 
         Meteor.call("analyzeSchema", Session.get(Helper.strSessionConnection), collection, (err) => {

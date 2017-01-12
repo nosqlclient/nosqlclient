@@ -4,7 +4,7 @@ import {proceedUploading} from '../upload_file/upload_file';
 
 import './file_info.html';
 
-var toastr = require('toastr');
+const toastr = require('toastr');
 /**
  * Created by RSercan on 14.2.2016.
  */
@@ -12,8 +12,8 @@ var toastr = require('toastr');
 Template.fileInfo.events({
     'click #btnAddAlias'(e)  {
         e.preventDefault();
-        var input = $('#inputAlias');
-        var inputVal = input.val();
+        const input = $('#inputAlias');
+        const inputVal = input.val();
         if (inputVal) {
             $('#selectAliases').append($('<option>', {
                 value: inputVal,
@@ -30,16 +30,16 @@ Template.fileInfo.events({
 
     'click #btnKeepUploading' (e)  {
         e.preventDefault();
-        var contentType = $('#inputContentType').val();
-        var blob = $('#inputFile')[0].files[0];
-        var metaData = Helper.getCodeMirrorValue($('#divMetadata'));
+        const contentType = $('#inputContentType').val();
+        const blob = $('#inputFile')[0].files[0];
+        let metaData = Helper.getCodeMirrorValue($('#divMetadata'));
         metaData = Helper.convertAndCheckJSON(metaData);
         if (metaData["ERROR"]) {
             toastr.error("Syntax error on metaData: " + metaData["ERROR"]);
             return;
         }
 
-        var aliases = [];
+        const aliases = [];
         $("#selectAliases").find("option").each(function () {
             aliases.push($(this).val());
         });
