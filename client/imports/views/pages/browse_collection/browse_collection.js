@@ -89,6 +89,7 @@ const init = function () {
                     if (getActiveTabHeader() !== 'findOne') {
                         $('#divBrowseCollectionFooter').hide();
                     }
+
                 }
             },
             close_all: {
@@ -119,11 +120,12 @@ const init = function () {
         }
 
         // if active tab is not findOne hide footer
-        if (activeTabQueryInfo == 'findOne') {
+        if (activeTabQueryInfo === 'findOne') {
             $('#divBrowseCollectionFooter').show();
         } else {
             $('#divBrowseCollectionFooter').hide();
         }
+
     });
 
     // set onclose
