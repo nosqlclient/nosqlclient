@@ -3,12 +3,11 @@
  */
 /*global Async*/
 /*global moment*/
-
-import {Meteor} from 'meteor/meteor';
-import {Settings} from '/lib/imports/collections/settings';
-import {Connections} from '/lib/imports/collections/connections';
-import ShellCommands from '/lib/imports/collections/shell';
-import SchemaAnaylzeResult from '/lib/imports/collections/schema_analyze_result';
+import {Meteor} from "meteor/meteor";
+import {Settings} from "/lib/imports/collections/settings";
+import {Connections} from "/lib/imports/collections/connections";
+import ShellCommands from "/lib/imports/collections/shell";
+import SchemaAnaylzeResult from "/lib/imports/collections/schema_analyze_result";
 import LOGGER from "../internal/logger";
 import Helper from "./helper";
 
@@ -22,16 +21,29 @@ const os = require('os');
 export let database;
 let spawnedShell;
 
-const getProperMongo = function () {
+const getMongoExternalsPath = function () {
     let currentDir = process.cwd().replace(/\\/g, '/');
-    currentDir = currentDir.substring(0, currentDir.lastIndexOf("/"));
+    currentDir = currentDir.substring(0, currentDir.lastIndexOf("/")) + '/web.browser/app/mongo/';
+
+    // make sure everything has correct permissions
+    fs.chmodSync(currentDir, '777');
+    fs.chmodSync(currentDir + "darwin/mongo", '777');
+    fs.chmodSync(currentDir + "win32/mongo.exe", '777');
+    fs.chmodSync(currentDir + "linux/mongo", '777');
+    fs.chmodSync(currentDir + "variety/variety.js_", '777');
+
+    return currentDir;
+};
+
+const getProperMongo = function () {
+    let currentDir = getMongoExternalsPath();
     switch (os.platform()) {
         case 'darwin':
-            return currentDir + '/web.browser/app/mongo/darwin/mongo';
+            return currentDir + 'darwin/mongo';
         case 'win32':
-            return currentDir + '/web.browser/app/mongo/win32/mongo.exe';
+            return currentDir + 'win32/mongo.exe';
         case 'linux':
-            return currentDir + '/web.browser/app/mongo/linux/mongo';
+            return currentDir + 'linux/mongo';
         default :
             throw 'Not supported os: ' + os.platform();
     }
@@ -363,9 +375,8 @@ Meteor.methods({
     analyzeSchema(connectionId, collection){
         const connectionUrl = Helper.getConnectionUrl(Connections.findOne({_id: connectionId}));
         const mongoPath = getProperMongo();
-        let currentDir = process.cwd().replace(/\\/g, '/');
-        currentDir = currentDir.substring(0, currentDir.lastIndexOf("/"));
-        let args = [connectionUrl, '--quiet', '--eval', 'var collection =\"' + collection + '\", outputFormat=\"json\"',currentDir+'/web.browser/app/mongo/variety/variety.js_'];
+
+        let args = [connectionUrl, '--quiet', '--eval', 'var collection =\"' + collection + '\", outputFormat=\"json\"', getMongoExternalsPath() + '/variety/variety.js_'];
 
         LOGGER.info('[analyzeSchema]', args, connectionUrl, collection);
         try {
