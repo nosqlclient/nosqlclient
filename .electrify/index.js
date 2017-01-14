@@ -1,6 +1,5 @@
-var app = require('app');
-var browser = require('browser-window');
-var electrify = require('electrify')(__dirname);
+const {app, BrowserWindow} = require('electron');
+const electrify = require('electrify')(__dirname);
 // UNCOMMENT FOR MAC PACKAGE
 //var Menu = require("menu");
 
@@ -12,7 +11,7 @@ app.on('ready', function () {
     electrify.start(function (meteor_root_url) {
 
         // creates a new electron window
-        window = new browser({
+        window = new BrowserWindow({
             width: 1200, height: 900,
             'node-integration': false // node integration must to be off
         });
@@ -21,30 +20,30 @@ app.on('ready', function () {
         window.loadURL(meteor_root_url);
 
         /* UNCOMMENT FOR MAC PACKAGE
-        var template = [{
-            label: "Application",
-            submenu: [
-                {
-                    label: "Quit", accelerator: "Command+Q", click: function () {
-                    app.quit();
-                }
-                }
-            ]
-        }, {
-            label: "Edit",
-            submenu: [
-                {label: "Undo", accelerator: "CmdOrCtrl+Z", selector: "undo:"},
-                {label: "Redo", accelerator: "Shift+CmdOrCtrl+Z", selector: "redo:"},
-                {type: "separator"},
-                {label: "Cut", accelerator: "CmdOrCtrl+X", selector: "cut:"},
-                {label: "Copy", accelerator: "CmdOrCtrl+C", selector: "copy:"},
-                {label: "Paste", accelerator: "CmdOrCtrl+V", selector: "paste:"},
-                {label: "Select All", accelerator: "CmdOrCtrl+A", selector: "selectAll:"}
-            ]
-        }
-        ];
+         var template = [{
+         label: "Application",
+         submenu: [
+         {
+         label: "Quit", accelerator: "Command+Q", click: function () {
+         app.quit();
+         }
+         }
+         ]
+         }, {
+         label: "Edit",
+         submenu: [
+         {label: "Undo", accelerator: "CmdOrCtrl+Z", selector: "undo:"},
+         {label: "Redo", accelerator: "Shift+CmdOrCtrl+Z", selector: "redo:"},
+         {type: "separator"},
+         {label: "Cut", accelerator: "CmdOrCtrl+X", selector: "cut:"},
+         {label: "Copy", accelerator: "CmdOrCtrl+C", selector: "copy:"},
+         {label: "Paste", accelerator: "CmdOrCtrl+V", selector: "paste:"},
+         {label: "Select All", accelerator: "CmdOrCtrl+A", selector: "selectAll:"}
+         ]
+         }
+         ];
 
-        Menu.setApplicationMenu(Menu.buildFromTemplate(template));*/
+         Menu.setApplicationMenu(Menu.buildFromTemplate(template));*/
     });
 });
 
