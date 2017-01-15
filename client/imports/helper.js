@@ -1,16 +1,16 @@
 /**
  * Created by RSercan on 26.12.2015.
  */
-import {Blaze} from 'meteor/blaze';
-import {Template} from 'meteor/templating';
-import {Session} from 'meteor/session';
-import {Meteor} from 'meteor/meteor';
-import {$} from 'meteor/jquery';
-import {Connections} from '/lib/imports/collections/connections';
-import {Settings} from '/lib/imports/collections/settings';
-import {setAdminResult} from '/client/imports/views/pages/admin_queries/admin_queries';
-import {setQueryResult} from '/client/imports/views/pages/browse_collection/browse_collection';
-import {getSelectorValue} from '/client/imports/views/query_templates_options/selector/selector';
+import {Blaze} from "meteor/blaze";
+import {Template} from "meteor/templating";
+import {Session} from "meteor/session";
+import {Meteor} from "meteor/meteor";
+import {$} from "meteor/jquery";
+import {Connections} from "/lib/imports/collections/connections";
+import {Settings} from "/lib/imports/collections/settings";
+import {setAdminResult} from "/client/imports/views/pages/admin_queries/admin_queries";
+import {setQueryResult} from "/client/imports/views/pages/browse_collection/browse_collection";
+import {getSelectorValue} from "/client/imports/views/query_templates_options/selector/selector";
 
 const toastr = require('toastr');
 const Ladda = require('ladda');
@@ -182,10 +182,10 @@ Helper.prototype = {
         let errorMessage;
         if (err) {
             errorMessage = err.message;
-        } else if (result.error.message) {
+        } else if (result && result.error && result.error.message) {
             errorMessage = result.error.message;
         }
-        else if (result.error) {
+        else if (result && result.error) {
             errorMessage = JSON.stringify(result.error);
         }
         if (errorMessage) {

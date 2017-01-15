@@ -2,7 +2,6 @@
  * Created by RSercan on 27.12.2015.
  */
 /*global Async*/
-
 import LOGGER from "../internal/logger";
 import Helper from "./helper";
 import {Meteor} from "meteor/meteor";
@@ -81,6 +80,15 @@ export const proceedQueryExecution = function (selectedCollection, methodArray, 
 };
 
 Meteor.methods({
+    saveFindResult(selectedCollection, updateObjects, deleteObjectIds, addedObjects){
+        for (let obj of updateObjects) {
+            proceedQueryExecution(selectedCollection, [{"updateOne": [{_id: obj._id}, obj, {}]}]);
+        }
+
+        proceedQueryExecution(selectedCollection, [{"deleteMany": [{_id: {$in: deleteObjectIds}}]}]);
+        proceedQueryExecution(selectedCollection, [{"insertMany": [addedObjects]}]);
+    },
+
     bulkWrite(selectedCollection, operations, options) {
         const methodArray = [
             {
