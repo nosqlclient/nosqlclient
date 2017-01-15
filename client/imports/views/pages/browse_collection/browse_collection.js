@@ -398,7 +398,7 @@ const getChangedObjects = function (findData, activeEditorValue, deletedObjectId
         }
 
         if (!_.isEqual(oldObj, currentObj)) {
-            updateObjects.push(oldObj);
+            updateObjects.push(currentObj);
         }
     }
 
