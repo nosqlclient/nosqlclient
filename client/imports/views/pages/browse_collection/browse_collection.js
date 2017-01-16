@@ -3,18 +3,15 @@
  */
 /*global swal*/
 /*global _*/
-
 import {Template} from "meteor/templating";
 import {Meteor} from "meteor/meteor";
 import {Session} from "meteor/session";
 import Helper from "/client/imports/helper";
 import {Settings} from "/lib/imports/collections/settings";
-import {FlowRouter} from 'meteor/kadira:flow-router';
+import {FlowRouter} from "meteor/kadira:flow-router";
 import Enums from "/lib/imports/enums";
 import {initQueryHistories} from "./query_histories/query_histories";
-import {AceEditor} from 'meteor/arch:ace-editor';
-
-/**queries*/
+import {AceEditor} from "meteor/arch:ace-editor";
 import "/client/imports/views/query_templates/collection/aggregate/aggregate";
 import "/client/imports/views/query_templates/collection/bulk_write/bulk_write";
 import "/client/imports/views/query_templates/collection/count/count";
@@ -40,8 +37,7 @@ import "/client/imports/views/query_templates/collection/stats/stats";
 import "/client/imports/views/query_templates/collection/update_many/update_many";
 import "/client/imports/views/query_templates/collection/update_one/update_one";
 import "/client/imports/views/query_templates/collection/group/group";
-
-import '../../query_templates/collection/find/query_wizard/query_wizard';
+import "../../query_templates/collection/find/query_wizard/query_wizard";
 import "./browse_collection.html";
 
 const JSONEditor = require('jsoneditor');
@@ -90,6 +86,9 @@ const init = function () {
                         $('#divBrowseCollectionFooter').hide();
                     }
 
+                    if (getActiveTabHeader() !== 'find') {
+                        $('#divBrowseCollectionFindFooter').hide();
+                    }
                 }
             },
             close_all: {
@@ -119,13 +118,19 @@ const init = function () {
             renderQuery(query);
         }
 
-        // if active tab is not findOne hide footer
+        // if active tab is not findOne hide save/delete footer
         if (activeTabQueryInfo === 'findOne') {
             $('#divBrowseCollectionFooter').show();
         } else {
             $('#divBrowseCollectionFooter').hide();
         }
 
+        // if active tab is not find hide save footer
+        if (activeTabQueryInfo === 'find') {
+            $('#divBrowseCollectionFindFooter').show();
+        } else {
+            $('#divBrowseCollectionFindFooter').hide();
+        }
     });
 
     // set onclose
@@ -253,10 +258,18 @@ const setResultToEditors = function (tabID, result, queryParams, queryInfo) {
         editor.setValue(JSON.stringify(result, null, '\t'), -1);
     });
 
-    $('#tab-' + tabID).data('query', {
+    const activeTab = $('#tab-' + tabID);
+
+    // cache query data
+    activeTab.data('query', {
         queryInfo: queryInfo,
         queryParams: queryParams
     });
+
+    // cache find data
+    if (queryInfo === 'find') {
+        activeTab.data('findData', result);
+    }
 };
 
 const clarifyTabID = function () {
@@ -373,17 +386,113 @@ const getActiveEditorValue = function () {
     }
 };
 
+const getChangedObjects = function (findData, activeEditorValue, deletedObjectIds, updateObjects, addedObjects) {
+    for (let oldObj of findData) {
+        let currentObj = _.find(activeEditorValue, function (it) {
+            return _.isEqual(it._id, oldObj._id);
+        });
 
-const saveEditor = function () {
-    let doc;
-    try {
-        doc = Helper.convertAndCheckJSON(getActiveEditorValue());
+        if (!currentObj) {
+            deletedObjectIds.push(oldObj._id);
+            continue;
+        }
+
+        if (!_.isEqual(oldObj, currentObj)) {
+            updateObjects.push(currentObj);
+        }
     }
-    catch (e) {
-        toastr.error('Syntax error, can not save document: ' + e);
+
+    for (let currentObj of activeEditorValue) {
+        let foundObj = _.find(findData, function (oldObj) {
+            return _.isEqual(currentObj._id, oldObj._id)
+        });
+        if (!foundObj) {
+            addedObjects.push(currentObj);
+        }
+    }
+};
+
+const checkAllElementsAreObject = function (arr, arr2) {
+    for (let obj of arr) {
+        if (obj === null || typeof obj !== 'object') {
+            return false;
+        }
+    }
+
+    for (let obj of arr2) {
+        if (obj === null || typeof obj !== 'object') {
+            return false;
+        }
+    }
+
+    return true;
+};
+
+const saveFindEditor = function () {
+    const activeTab = $('#resultTabs').find('li.active').find('a').attr('href');
+    const findData = $(activeTab).data('findData');
+    if (!findData) {
+        toastr.error('Could not find query execution result, can not save !');
         return;
     }
 
+    let deletedObjectIds = [];
+    let updateObjects = [];
+    let addedObjects = [];
+
+    let activeEditorValue = Helper.convertAndCheckJSON(getActiveEditorValue());
+    if (activeEditorValue['ERROR']) {
+        toastr.error('Syntax error, can not save document: ' + activeEditorValue['ERROR']);
+        return;
+    }
+
+    getChangedObjects(findData, activeEditorValue, deletedObjectIds, updateObjects, addedObjects);
+
+    if (deletedObjectIds.length === 0 && updateObjects.length === 0 && addedObjects.length === 0) {
+        toastr.info('Nothing to save, all objects are identical with old result');
+        Ladda.stopAll();
+        return;
+    }
+
+    if (!checkAllElementsAreObject(updateObjects, addedObjects)) {
+        toastr.warning('All documents should be object, can not save !');
+        Ladda.stopAll();
+        return;
+    }
+
+    swal({
+        title: "Are you sure ?",
+        text: deletedObjectIds.length + ' documents will be deleted, ' + updateObjects.length + ' documents will be updated and ' + addedObjects.length + ' documents will be inserted, are you sure ?',
+        type: "info",
+        showCancelButton: true,
+        confirmButtonColor: "#DD6B55",
+        confirmButtonText: "Yes!",
+        cancelButtonText: "No"
+    }, function (isConfirm) {
+        if (isConfirm) {
+            Ladda.create(document.querySelector('#btnSaveFind')).start();
+
+            const selectedCollection = Session.get(Helper.strSessionSelectedCollection);
+
+            Meteor.call("saveFindResult", selectedCollection, updateObjects, deletedObjectIds, addedObjects, function (err) {
+                if (err) {
+                    Helper.showMeteorFuncError(err, null, "Couldn't proceed saving find result");
+                } else {
+                    toastr.success('Successfully saved !');
+                }
+
+                Ladda.stopAll();
+            });
+        }
+    });
+};
+
+const saveEditor = function () {
+    let doc = Helper.convertAndCheckJSON(getActiveEditorValue());
+    if (doc['ERROR']) {
+        toastr.error('Syntax error, can not save document: ' + doc['ERROR']);
+        return;
+    }
 
     swal({
         title: "Are you sure ?",
@@ -418,12 +527,9 @@ const saveEditor = function () {
 };
 
 const deleteDocument = function () {
-    let doc;
-    try {
-        doc = Helper.convertAndCheckJSON(getActiveEditorValue());
-    }
-    catch (e) {
-        toastr.error('Syntax error, can not delete document: ' + e);
+    let doc = Helper.convertAndCheckJSON(getActiveEditorValue());
+    if (doc['ERROR']) {
+        toastr.error('Syntax error, can not delete document: ' + doc['ERROR']);
         return;
     }
 
@@ -519,6 +625,11 @@ Template.browseCollection.events({
     'click #btnSaveFindOne' (e) {
         e.preventDefault();
         saveEditor();
+    },
+
+    'click #btnSaveFind' (e){
+        e.preventDefault();
+        saveFindEditor();
     },
 
     'click #btnDelFindOne' (e) {
