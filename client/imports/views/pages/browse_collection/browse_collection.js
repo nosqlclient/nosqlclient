@@ -612,6 +612,13 @@ Template.browseCollection.onRendered(function () {
     this.subscribe('settings');
     this.subscribe('connections');
     this.subscribe('queryHistories');
+    this.subscribe('mongoclient_update');
+
+    Meteor.call("checkMongoclientVersion", function (err, res) {
+        if (res) {
+            toastr.info(res, 'Update', {timeOut: 0, extendedTimeOut: 0, preventDuplicates: true});
+        }
+    });
 
     init();
 });

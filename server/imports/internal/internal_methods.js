@@ -8,9 +8,22 @@ import {Dumps} from "/lib/imports/collections/dumps";
 import {Settings} from "/lib/imports/collections/settings";
 import {Connections} from "/lib/imports/collections/connections";
 import SchemaAnalyzeResult from "/lib/imports/collections/schema_analyze_result";
+import {HTTP} from "meteor/http";
 
+const packageJson = require('/package.json');
 
 Meteor.methods({
+    checkMongoclientVersion(){
+        try {
+            const response = HTTP.get('https://api.github.com/repos/rsercano/mongoclient/releases/latest', {headers: {"User-Agent": "Mongoclient"}});
+            if (response && response.data && response.data.name && response.data.name !== packageJson.version) {
+                return "There's a new version of mongoclient: " + response.data.name + ", <a href='https://github.com/rsercano/mongoclient/releases/latest'>download here</a>";
+            }
+        } catch (e) {
+            return null;
+        }
+    },
+
     removeSchemaAnalyzeResult(){
         SchemaAnalyzeResult.remove({});
     },
