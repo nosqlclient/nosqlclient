@@ -73,6 +73,7 @@ Meteor.methods({
                 connectionTimeoutInSeconds: settings.connectionTimeoutInSeconds,
                 showDBStats: settings.showDBStats,
                 showLiveChat: settings.showLiveChat,
+                dbStatsScheduler: settings.dbStatsScheduler,
                 dumpPath: settings.dumpPath
             }
         });

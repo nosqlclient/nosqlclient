@@ -17,6 +17,7 @@ const getSettingsFromForm = function () {
     settings.maxAllowedFetchSize = $("#inputMaxAllowedFetchSize").val();
     settings.socketTimeoutInSeconds = $("#inputSocketTimeout").val();
     settings.connectionTimeoutInSeconds = $("#inputConnectionTimeout").val();
+    settings.dbStatsScheduler = $("#inputDBStatsScheduler").val();
     settings.showDBStats = $('#divShowDBStats').iCheck('update')[0].checked;
     settings.showLiveChat = $('#divShowLiveChat').iCheck('update')[0].checked;
     settings.dumpPath = $('#inputDumpPath').val();
@@ -63,6 +64,7 @@ const load = function () {
     const inputMaxAllowedFetchSize = $('#inputMaxAllowedFetchSize');
     const inputSocketTimeout = $('#inputSocketTimeout');
     const inputConnectionTimeout = $('#inputConnectionTimeout');
+    const inputDBStatsScheduler = $('#inputDBStatsScheduler');
     const inputAutoCompleteFields = $('#inputAutoCompleteFields');
     const inputShowLiveChat = $('#inputShowLiveChat');
     const inputShowDBStats = $('#inputShowDBStats');
@@ -94,6 +96,12 @@ const load = function () {
         inputConnectionTimeout.val(settings.connectionTimeoutInSeconds);
     } else {
         inputConnectionTimeout.val(0);
+    }
+
+    if (settings.dbStatsScheduler) {
+        inputDBStatsScheduler.val(settings.dbStatsScheduler);
+    } else {
+        inputDBStatsScheduler.val(3000);
     }
 
     if (settings.autoCompleteFields) {

@@ -1,10 +1,9 @@
-import {Template} from 'meteor/templating';
-import {Meteor} from 'meteor/meteor';
-import {Session} from 'meteor/session';
-import Helper from '/client/imports/helper';
-import {Settings} from '/lib/imports/collections/settings';
-
-import './database_stats.html';
+import {Template} from "meteor/templating";
+import {Meteor} from "meteor/meteor";
+import {Session} from "meteor/session";
+import Helper from "/client/imports/helper";
+import {Settings} from "/lib/imports/collections/settings";
+import "./database_stats.html";
 
 /**
  * Created by RSercan on 26.12.2015.
@@ -424,10 +423,11 @@ Template.databaseStats.onRendered(function () {
 
     this.autorun(() => {
         if (settings.ready() && connections.ready()) {
-            if (Settings.findOne().showDBStats && !interval) {
+            const fetchedSettings = Settings.findOne();
+            if (fetchedSettings.showDBStats && !interval) {
                 interval = Meteor.setInterval(function () {
                     fetchStatus();
-                }, 3000);
+                }, fetchedSettings.dbStatsScheduler ? fetchedSettings.dbStatsScheduler : 3000);
 
                 // fetch stats only once.
                 fetchStats();

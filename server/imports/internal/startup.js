@@ -18,6 +18,7 @@ Meteor.startup(function () {
             autoCompleteFields: false,
             socketTimeoutInSeconds: 5,
             connectionTimeoutInSeconds: 3,
+            dbStatsScheduler: 3000,
             showDBStats: true,
             showLiveChat: false,
             dumpPath: home + "/myDumps/"
