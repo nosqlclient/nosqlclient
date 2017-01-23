@@ -51,6 +51,8 @@ Then you can run it as a daemon:
 
 ```docker run -d -p 3000:3000 mongoclient/mongoclient```
 
+To set an external mongodb which is required for meteor to work, you can set ```MONGO_URL``` environment variable. Otherwise mongoclient will install mongodb to container and use it.
+
 ## Cloud Foundry
 You can optionally push the Mongoclient to the CloudFoundry
 
