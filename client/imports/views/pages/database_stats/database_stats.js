@@ -5,12 +5,22 @@ import Helper from "/client/imports/helper";
 import {Settings} from "/lib/imports/collections/settings";
 import "./database_stats.html";
 
+require('datatables.net')(window, $);
+require('datatables.net-buttons')(window, $);
+require('datatables.net-responsive')(window, $);
+
+require('datatables.net-bs')(window, $);
+require('datatables.net-buttons-bs')(window, $);
+require('datatables.net-responsive-bs')(window, $);
+require('bootstrap-filestyle');
+
 /**
  * Created by RSercan on 26.12.2015.
  */
 /*global moment*/
 let interval = null;
-let memoryChart = null, connectionsChart = null, networkChart = null, opCountersChart = null;
+let memoryChart = null, connectionsChart = null, networkChart = null, opCountersChart = null, queuedReadWriteChart = null, activeReadWriteChart = null;
+let previousTopData = {};
 
 const lineOptions = {
     series: {
@@ -62,10 +72,27 @@ const fetchStats = function () {
                 Session.set(Helper.strSessionDBStats, undefined);
             }
             else {
-                convertInformationsToKB(result.result, settings);
+                convertInformationsToCorrectUnit(result.result, settings);
                 Session.set(Helper.strSessionDBStats, result.result);
             }
         });
+    }
+};
+
+const poopulateActiveReadWriteData = function (result, data) {
+    if (result.globalLock && result.globalLock.activeClients) {
+        const readers = [], writers = [];
+
+        const time = new Date().getTime();
+
+        readers.push([time, result.globalLock.activeClients.readers]);
+        writers.push([time, result.globalLock.activeClients.writers]);
+
+
+        data.push({data: readers, label: "Readers"});
+        data.push({data: writers, label: "Writers"});
+
+        return result.globalLock.activeClients.total;
     }
 };
 
@@ -81,23 +108,107 @@ const fetchStatus = function () {
                 }
                 else {
                     Session.set(Helper.strSessionServerStatus, result.result);
-                    const memoryData = [], connectionsData = [], networkData = [], opCountersData = [];
+                    const memoryData = [], connectionsData = [], networkData = [], opCountersData = [], queuedReadWriteData = [], activeReadWriteData = [];
                     const memoryText = populateMemoryData(result.result, memoryData, settings);
                     const availableConnections = populateConnectionData(result.result, connectionsData);
-                    populateNetworkData(result.result, networkData, settings);
+                    const totalRequests = populateNetworkData(result.result, networkData, settings);
                     populateOPCountersData(result.result, opCountersData);
+                    const totalQueuedReadWrite = poopulateQueuedReadWriteData(result.result, queuedReadWriteData);
+                    const totalActiveReadWrite = poopulateActiveReadWriteData(result.result, activeReadWriteData);
 
-                    // make sure gui is rendered
-                    Meteor.setTimeout(function () {
-                        initMemoryChart(memoryData, memoryText);
-                        initConnectionsChart(connectionsData, availableConnections);
-                        initNetworkChart(networkData);
-                        initOperationCountersChart(opCountersData)
-                    }, 1000);
+                    initMemoryChart(memoryData, memoryText);
+                    initConnectionsChart(connectionsData, availableConnections);
+                    initNetworkChart(networkData, totalRequests);
+                    initOperationCountersChart(opCountersData);
+                    initQueuedReadWriteChart(queuedReadWriteData, totalQueuedReadWrite);
+                    initActiveReadWriteChart(activeReadWriteData, totalActiveReadWrite);
+                }
+            });
+
+            Meteor.call("top", function (err, result) {
+                if (result && result.result && result.result.totals) {
+                    const collectionReadWriteData = populateTopReadWriteData(result.result.totals);
+                    initCollectionsReadWriteTable(collectionReadWriteData);
+                    previousTopData = result.result.totals;
                 }
             });
         }
     }
+};
+
+const initCollectionsReadWriteTable = function (collectionReadWriteData) {
+    const table = $('#tblCollectionsReadWrite');
+    if ($.fn.dataTable.isDataTable('#tblCollectionsReadWrite')) {
+        table.DataTable().destroy();
+    }
+
+    table.DataTable({
+        stateSave: true,
+        lengthMenu: [[5, 10, 25, -1], [5, 10, 25, "All"]],
+        data: collectionReadWriteData,
+        columns: [
+            {data: "collection"},
+            {data: "read"},
+            {data: "write"}
+        ]
+    });
+};
+
+const poopulateQueuedReadWriteData = function (result, data) {
+    if (result.globalLock && result.globalLock.currentQueue) {
+        const readers = [], writers = [];
+
+        const time = new Date().getTime();
+
+        readers.push([time, result.globalLock.currentQueue.readers]);
+        writers.push([time, result.globalLock.currentQueue.writers]);
+
+
+        data.push({data: readers, label: "Readers"});
+        data.push({data: writers, label: "Writers"});
+
+        return result.globalLock.currentQueue.total;
+    }
+};
+
+const populateTopReadWriteData = function (data) {
+    let result = [];
+
+    for (let collectionName in data) {
+        if (collectionName === 'note') {
+            continue;
+        }
+        if (data.hasOwnProperty(collectionName)) {
+            let readTime = data[collectionName].readLock.time;
+            let readCount = data[collectionName].readLock.count;
+            let writeTime = data[collectionName].writeLock.time;
+            let writeCount = data[collectionName].writeLock.count;
+
+            let previousReadTime, previousReadCount, previousWriteTime, previousWriteCount;
+            if (previousTopData[collectionName]) {
+                previousReadTime = previousTopData[collectionName].readLock.time;
+                previousReadCount = previousTopData[collectionName].readLock.count;
+                previousWriteTime = previousTopData[collectionName].writeLock.time;
+                previousWriteCount = previousTopData[collectionName].writeLock.count;
+            } else {
+                previousReadTime = readTime;
+                previousReadCount = readCount;
+                previousWriteTime = writeTime;
+                previousWriteCount = writeCount;
+            }
+
+            let calculatedReadTime = Number((readTime - previousReadTime) / (readCount - previousReadCount)).toFixed(2);
+            let calculatedWriteTime = Number((writeTime - previousWriteTime) / (writeCount - previousWriteCount)).toFixed(2);
+
+            result.push({
+                collection: collectionName,
+                read: isNaN(calculatedReadTime) ? 0 : calculatedReadTime,
+                write: isNaN(calculatedWriteTime) ? 0 : calculatedWriteTime
+            });
+        }
+    }
+
+    return result;
 };
 
 const populateOPCountersData = function (result, data) {
@@ -137,7 +248,6 @@ const populateNetworkData = function (result, data, settings) {
     if (result.network) {
         let bytesInData = [];
         let bytesOutData = [];
-        let totalRequestsData = [];
 
         let scale = 1;
         let text = "MB";
@@ -161,11 +271,11 @@ const populateNetworkData = function (result, data, settings) {
 
         bytesInData.push([time, Math.round((result.network.bytesIn / scale) * 100) / 100]);
         bytesOutData.push([time, Math.round((result.network.bytesOut / scale) * 100) / 100]);
-        totalRequestsData.push([time, result.network.numRequests]);
 
         data.push({data: bytesInData, label: "Incoming " + text});
         data.push({data: bytesOutData, label: "Outgoing " + text});
-        data.push({data: totalRequestsData, label: "Total Requests"});
+
+        return result.network.numRequests;
     }
 };
 
@@ -208,7 +318,7 @@ const populateMemoryData = function (result, data, settings) {
     }
 };
 
-const convertInformationsToKB = function (stats, settings) {
+const convertInformationsToCorrectUnit = function (stats, settings) {
     let scale = 1024;
     let text = "Bytes";
     switch (settings.scale) {
@@ -225,10 +335,10 @@ const convertInformationsToKB = function (stats, settings) {
             text = "Bytes";
             break;
     }
-    stats.dataSize = isNaN(Number(stats.dataSize / scale).toFixed(2)) ? "0.00 " + text : Number(stats.dataSize / scale).toFixed(2) + " " + text;
-    stats.storageSize = isNaN(Number(stats.storageSize / scale).toFixed(2)) ? "0.00 " + text : Number(stats.storageSize / scale).toFixed(2) + " " + text;
-    stats.indexSize = isNaN(Number(stats.indexSize / scale).toFixed(2)) ? "0.00 " + text : Number(stats.indexSize / scale).toFixed(2) + " " + text;
-    stats.fileSize = isNaN(Number(stats.fileSize / scale).toFixed(2)) ? "0.00 " + text : Number(stats.fileSize / scale).toFixed(2) + " " + text;
+    stats.dataSize = isNaN(Number(stats.dataSize / scale).toFixed(2)) ? "0 " + text : Number(stats.dataSize / scale).toFixed(2) + " " + text;
+    stats.storageSize = isNaN(Number(stats.storageSize / scale).toFixed(2)) ? "0 " + text : Number(stats.storageSize / scale).toFixed(2) + " " + text;
+    stats.indexSize = isNaN(Number(stats.indexSize / scale).toFixed(2)) ? "0 " + text : Number(stats.indexSize / scale).toFixed(2) + " " + text;
+    stats.fileSize = isNaN(Number(stats.fileSize / scale).toFixed(2)) ? "0 " + text : Number(stats.fileSize / scale).toFixed(2) + " " + text;
 };
 
 
@@ -273,8 +383,115 @@ const initOperationCountersChart = function (data) {
     }
 };
 
-const initNetworkChart = function (data) {
+const initQueuedReadWriteChart = function (data, totalQueuedReadWrite) {
     if (Session.get(Helper.strSessionCollectionNames) != undefined) {
+        if (totalQueuedReadWrite) {
+            $('#spanTotalQueuedRW').html(', Total: ' + totalQueuedReadWrite);
+        }
+
+        const divChart = $('#divQueuedReadWrite');
+        if (data == undefined || data.length == 0) {
+            divChart.html('This feature is not supported for current mongodb version');
+            return;
+        }
+
+        if (divChart.find('.flot-base').length <= 0) {
+            const customLineOptions = jQuery.extend(true, {}, lineOptions);
+            try {
+                queuedReadWriteChart = $.plot(divChart, data, customLineOptions);
+            }
+            catch (e) {
+                queuedReadWriteChart = null;
+            }
+        }
+        else {
+            const existingData = queuedReadWriteChart.getData();
+            if (existingData[0].data.length == 15) {
+                existingData[0].data = existingData[0].data.slice(1, 15);
+
+                if (existingData.length >= 2 && existingData[1].data) {
+                    existingData[1].data = existingData[1].data.slice(1, 15);
+                }
+
+                if (existingData.length >= 3 && existingData[2].data) {
+                    existingData[2].data = existingData[2].data.slice(1, 15);
+                }
+            }
+
+            existingData[0].data.push.apply(existingData[0].data, data[0].data);
+
+            if (existingData.length >= 2 && existingData[1].data && data[1].data) {
+                existingData[1].data.push.apply(existingData[1].data, data[1].data);
+            }
+            if (existingData.length >= 3 && existingData[2].data && data[2].data) {
+                existingData[2].data.push.apply(existingData[2].data, data[2].data);
+            }
+
+            queuedReadWriteChart.setData(existingData);
+            queuedReadWriteChart.setupGrid();
+            queuedReadWriteChart.draw();
+        }
+    }
+};
+
+const initActiveReadWriteChart = function (data, totalActiveReadWrite) {
+    if (Session.get(Helper.strSessionCollectionNames) != undefined) {
+        if (totalActiveReadWrite) {
+            $('#spanTotalActiveRW').html(', Total: ' + totalActiveReadWrite);
+        }
+
+        const divChart = $('#divActiveReadWrite');
+        if (data == undefined || data.length == 0) {
+            divChart.html('This feature is not supported for current mongodb version');
+            return;
+        }
+
+        if (divChart.find('.flot-base').length <= 0) {
+            const customLineOptions = jQuery.extend(true, {}, lineOptions);
+
+            try {
+                activeReadWriteChart = $.plot(divChart, data, customLineOptions);
+            }
+            catch (e) {
+                activeReadWriteChart = null;
+            }
+        }
+        else {
+            const existingData = activeReadWriteChart.getData();
+            if (existingData[0].data.length == 15) {
+                existingData[0].data = existingData[0].data.slice(1, 15);
+
+                if (existingData.length >= 2 && existingData[1].data) {
+                    existingData[1].data = existingData[1].data.slice(1, 15);
+                }
+
+                if (existingData.length >= 3 && existingData[2].data) {
+                    existingData[2].data = existingData[2].data.slice(1, 15);
+                }
+            }
+
+            existingData[0].data.push.apply(existingData[0].data, data[0].data);
+
+            if (existingData.length >= 2 && existingData[1].data && data[1].data) {
+                existingData[1].data.push.apply(existingData[1].data, data[1].data);
+            }
+            if (existingData.length >= 3 && existingData[2].data && data[2].data) {
+                existingData[2].data.push.apply(existingData[2].data, data[2].data);
+            }
+
+            activeReadWriteChart.setData(existingData);
+            activeReadWriteChart.setupGrid();
+            activeReadWriteChart.draw();
+        }
+    }
+};
+
+const initNetworkChart = function (data, totalRequests) {
+    if (Session.get(Helper.strSessionCollectionNames) != undefined) {
+        if (totalRequests) {
+            $('#spanTotalRequests').html(', Total Requests: ' + totalRequests);
+        }
+
         const divChart = $('#divNetworkChart');
         if (data == undefined || data.length == 0) {
             divChart.html('This feature is not supported on this platform (OS)');
@@ -283,7 +500,6 @@ const initNetworkChart = function (data) {
 
         if (divChart.find('.flot-base').length <= 0) {
             const customLineOptions = jQuery.extend(true, {}, lineOptions);
-            customLineOptions.colors.push("#273be2");
             try {
                 networkChart = $.plot(divChart, data, customLineOptions);
             }
@@ -420,6 +636,11 @@ const initMemoryChart = function (data, text) {
 Template.databaseStats.onRendered(function () {
     let settings = this.subscribe('settings');
     let connections = this.subscribe('connections');
+
+    $('#divCollectionsReadWrite').slimScroll({
+        height: '200px',
+        railOpacity: 0.9
+    });
 
     this.autorun(() => {
         if (settings.ready() && connections.ready()) {

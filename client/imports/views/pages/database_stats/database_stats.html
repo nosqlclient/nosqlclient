@@ -16,7 +16,7 @@
                                     <h4>The server is up for {{getServerStatus.uptime}} seconds</h4>
                                     <small>
                                         The performances which are shown here are coming from
-                                        <strong>serverStatus</strong>
+                                        <strong>serverStatus</strong>, <strong>top</strong>
                                         and
                                         <strong>stats</strong> queries.
                                         Therefore, before having a look at below graphs consider
@@ -95,6 +95,34 @@
                     </div>
 
                     <div class="row">
+                        <!-- QUEUED READ/WRITE -->
+                        <div class="col-lg-6">
+                            <div class="ibox float-e-margins">
+                                <div class="ibox-title">
+                                    <h5>Queued Read/Write <span id="spanTotalQueuedRW"></span></h5>
+                                </div>
+                                <div class="ibox-content">
+                                    <div id="divQueuedReadWrite" class="flot-chart">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- ACTIVE READ/WRITE -->
+                        <div class="col-lg-6">
+                            <div class="ibox float-e-margins">
+                                <div class="ibox-title">
+                                    <h5>Active Read/Write <span id="spanTotalActiveRW"></span></h5>
+                                </div>
+                                <div class="ibox-content">
+                                    <div id="divActiveReadWrite" class="flot-chart">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
                         <!-- CONNECTIONS -->
                         <div class="col-lg-6">
                             <div class="ibox float-e-margins">
@@ -112,11 +140,38 @@
                         <div class="col-lg-6">
                             <div class="ibox float-e-margins">
                                 <div class="ibox-title">
-                                    <h5>Network</h5>
+                                    <h5>Network <span id="spanTotalRequests"></span></h5>
                                 </div>
                                 <div class="ibox-content">
                                     <div id="divNetworkChart" class="flot-chart">
                                     </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- COLLECTION READ/WRITE -->
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <div class="ibox float-e-margins">
+                                <div class="ibox-title">
+                                    <h5>Collections Read/Write</h5>
+                                </div>
+                                <div id="divCollectionsReadWrite" class="ibox-content">
+                                    <table id="tblCollectionsReadWrite"
+                                           class="table table-striped table-bordered table-hover dataTables-example dataTable"
+                                           style="width: 100%">
+                                        <thead>
+                                        <tr>
+                                            <th>Collection</th>
+                                            <th>Read (Microseconds)</th>
+                                            <th>Write (Microseconds)</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+
+                                        </tbody>
+                                    </table>
                                 </div>
                             </div>
                         </div>
