@@ -435,7 +435,6 @@ const saveFindEditor = function () {
         toastr.error('Could not find query execution result, can not save !');
         return;
     }
-
     let deletedObjectIds = [];
     let updateObjects = [];
     let addedObjects = [];
@@ -479,6 +478,7 @@ const saveFindEditor = function () {
                     Helper.showMeteorFuncError(err, null, "Couldn't proceed saving find result");
                 } else {
                     toastr.success('Successfully saved !');
+                    $(activeTab).data('findData', activeEditorValue);
                 }
 
                 Ladda.stopAll();

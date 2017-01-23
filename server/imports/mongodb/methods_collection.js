@@ -85,8 +85,13 @@ Meteor.methods({
             proceedQueryExecution(selectedCollection, [{"updateOne": [{_id: obj._id}, obj, {}]}]);
         }
 
-        proceedQueryExecution(selectedCollection, [{"deleteMany": [{_id: {$in: deleteObjectIds}}]}]);
-        proceedQueryExecution(selectedCollection, [{"insertMany": [addedObjects]}]);
+        if (deleteObjectIds.length > 0) {
+            proceedQueryExecution(selectedCollection, [{"deleteMany": [{_id: {$in: deleteObjectIds}}]}]);
+        }
+
+        if (addedObjects.length > 0) {
+            proceedQueryExecution(selectedCollection, [{"insertMany": [addedObjects]}]);
+        }
     },
 
     bulkWrite(selectedCollection, operations, options) {

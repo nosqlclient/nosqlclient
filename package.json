@@ -3,7 +3,7 @@
   "name": "mongoclient",
   "version": "1.5.0",
   "devDependencies": {
-    "eslint":"^3.12.2"
+    "eslint": "^3.12.2"
   },
   "dependencies": {
     "typed.js": "1.1.1",
