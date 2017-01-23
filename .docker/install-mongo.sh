@@ -6,7 +6,6 @@ if [ -f $APP_SOURCE_DIR/launchpad.conf ]; then
   source <(grep INSTALL_MONGO $APP_SOURCE_DIR/launchpad.conf)
 fi
 
-if [ "$INSTALL_MONGO" = true ]; then
   printf "\n[-] Installing MongoDB ${MONGO_VERSION}...\n\n"
 
 	apt-key adv --keyserver ha.pool.sks-keyservers.net --recv-keys 0C49F3730359A14518585931BC711F9BA15703C6
@@ -25,5 +24,3 @@ if [ "$INSTALL_MONGO" = true ]; then
 	rm -rf /var/lib/apt/lists/*
 	rm -rf /var/lib/mongodb
   mv /etc/mongod.conf /etc/mongod.conf.orig
-
-fi
