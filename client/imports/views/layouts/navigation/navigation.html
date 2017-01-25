@@ -104,10 +104,10 @@
                                 </a>
                             </li>
 
-                            <li class="{{isActivePath regex='editDocument'}}">
-                                <a class="aNavigations" href="{{pathFor route='editDocument'}}"><i
-                                        class="fa fa-edit"></i> <span
-                                        class="nav-label">Easy Edit</span>
+                            <li class="{{isActivePath regex='validationRules'}}">
+                                <a class="aNavigations" href="{{pathFor route='validationRules'}}"><i
+                                        class="fa fa-check-circle"></i> <span
+                                        class="nav-label">Validation Rules</span>
                                 </a>
                             </li>
 
@@ -130,8 +130,6 @@
                     <li>
                         <a href=""><i class="fa fa-dashboard"></i> <span
                                 class="nav-label">Collections</span>
-                            <span id="btnAddCollection" class="label label-info"
-                                  style="margin-left: 90px;">Add</span>
                             <span class="fa arrow pull-right"></span>
                         </a>
 
@@ -141,8 +139,6 @@
                                     <a class="navCollection" href="{{pathFor route='browseCollection'}}"><i
                                             class="fa fa-book"></i> <span
                                             class="nav-label">{{name}}</span>
-                                        <span id="btnDropCollection"
-                                              class="pull-right label label-danger">Drop</span>
                                     </a>
                                 </li>
                             {{/each}}
@@ -168,12 +164,13 @@
                             </ul>
                         </li>
                     {{/if}}
+
                     {{initializeMetisMenu}}
                 {{/if}}
             </ul>
         </div>
     </nav>
 
-    {{>addCollection}}
+    {{> addCollection}}
 
 </template>

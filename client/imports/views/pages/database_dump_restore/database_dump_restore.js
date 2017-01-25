@@ -28,8 +28,6 @@ const initCollectionsForImport = function () {
     const cmbGroup = cmb.find('#optCollections');
 
     const connection = Connections.findOne({_id: Session.get(Helper.strSessionConnection)});
-
-
     Meteor.call('listCollectionNames', connection.databaseName, function (err, result) {
         if (err || result.error) {
             Helper.showMeteorFuncError(err, result, "Couldn't fetch collection names");
