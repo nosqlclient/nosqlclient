@@ -1,14 +1,13 @@
 /*global swal*/
-import {Meteor} from 'meteor/meteor';
-import {Template} from 'meteor/templating';
-import {Session} from 'meteor/session';
-import {FlowRouter} from 'meteor/kadira:flow-router';
-import {Connections} from '/lib/imports/collections/connections';
-import Helper from '/client/imports/helper';
-import {connect} from '/client/imports/views/layouts/top_navbar/connections/connections';
-
-import './add_collection/add_collection';
-import './navigation.html';
+import {Meteor} from "meteor/meteor";
+import {Template} from "meteor/templating";
+import {Session} from "meteor/session";
+import {FlowRouter} from "meteor/kadira:flow-router";
+import {Connections} from "/lib/imports/collections/connections";
+import Helper from "/client/imports/helper";
+import {connect} from "/client/imports/views/layouts/top_navbar/connections/connections";
+import "./add_collection/add_collection";
+import "./navigation.html";
 
 const toastr = require('toastr');
 
@@ -98,33 +97,9 @@ Template.navigation.events({
         FlowRouter.go('/databaseDumpRestore');
     },
 
-    'click #btnAddCollection' (e) {
-        e.preventDefault();
-        $('#collectionAddModal').modal('show');
-    },
-
     'click #btnRefreshCollections' (e) {
         e.preventDefault();
         connect(true);
-    },
-
-    'click #btnDropCollection' (e) {
-        e.preventDefault();
-
-        let collectionName = this.name;
-        swal({
-            title: "Are you sure?",
-            text: this.name + " collection will be dropped, are you sure ?",
-            type: "warning",
-            showCancelButton: true,
-            confirmButtonColor: "#DD6B55",
-            confirmButtonText: "Yes, drop it!",
-            closeOnConfirm: true
-        }, function (isConfirm) {
-            if (isConfirm) {
-                dropCollection(collectionName);
-            }
-        });
     },
 
     'click #btnDropAllCollections' (e) {
@@ -215,6 +190,41 @@ Template.navigation.events({
 
         Session.set(Helper.strSessionSelectedCollection, name);
     }
+});
+
+Template.navigation.onRendered(function () {
+    $.contextMenu({
+        selector: ".navCollection",
+        items: {
+            add_collection: {
+                name: "Add Collection", icon: "fa-plus", callback: function () {
+                    $('#collectionAddModal').modal('show');
+                }
+            },
+            drop_collection: {
+                name: "Drop Collection", icon: "fa-trash", callback: function () {
+                    if ($(this) && $(this).context && $(this).context.innerText) {
+                        let collectionName = $(this).context.innerText.substring(1);
+                        swal({
+                            title: "Are you sure?",
+                            text: collectionName + " collection will be dropped, are you sure ?",
+                            type: "warning",
+                            showCancelButton: true,
+                            confirmButtonColor: "#DD6B55",
+                            confirmButtonText: "Yes, drop it!",
+                            closeOnConfirm: true
+                        }, function (isConfirm) {
+                            if (isConfirm) {
+                                dropCollection(collectionName);
+                            }
+                        });
+                    } else {
+                        toastr.warning('No collection selected !');
+                    }
+                }
+            }
+        }
+    });
 });
 
 Template.navigation.helpers({

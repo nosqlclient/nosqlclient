@@ -2,10 +2,9 @@
  * Created by RSercan on 10.1.2016.
  */
 /*global Async*/
-
 import LOGGER from "../internal/logger";
 import Helper from "./helper";
-import {Meteor} from 'meteor/meteor';
+import {Meteor} from "meteor/meteor";
 import {database} from "./methods_common";
 
 
@@ -45,6 +44,24 @@ const proceedQueryExecution = function (methodArray, runOnAdminDB) {
 };
 
 Meteor.methods({
+    top(){
+        LOGGER.info('[top]');
+
+        let result = Async.runSync(function (done) {
+            try {
+                database.executeDbAdminCommand({top: 1}, {}, function (err, res) {
+                    done(err, res);
+                });
+            }
+            catch (ex) {
+                LOGGER.error('[top]', ex);
+                done(new Meteor.Error(ex.message), null);
+            }
+        });
+
+        return Helper.convertBSONtoJSON(result);
+    },
+
     dbStats() {
         LOGGER.info('[stats]');
 

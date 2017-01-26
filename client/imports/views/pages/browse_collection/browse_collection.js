@@ -435,7 +435,6 @@ const saveFindEditor = function () {
         toastr.error('Could not find query execution result, can not save !');
         return;
     }
-
     let deletedObjectIds = [];
     let updateObjects = [];
     let addedObjects = [];
@@ -479,6 +478,7 @@ const saveFindEditor = function () {
                     Helper.showMeteorFuncError(err, null, "Couldn't proceed saving find result");
                 } else {
                     toastr.success('Successfully saved !');
+                    $(activeTab).data('findData', activeEditorValue);
                 }
 
                 Ladda.stopAll();
@@ -612,6 +612,13 @@ Template.browseCollection.onRendered(function () {
     this.subscribe('settings');
     this.subscribe('connections');
     this.subscribe('queryHistories');
+    this.subscribe('mongoclient_update');
+
+    Meteor.call("checkMongoclientVersion", function (err, res) {
+        if (res) {
+            toastr.info(res, 'Update', {timeOut: 0, extendedTimeOut: 0, preventDuplicates: true});
+        }
+    });
 
     init();
 });
