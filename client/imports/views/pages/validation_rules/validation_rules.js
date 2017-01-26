@@ -15,16 +15,15 @@ const Ladda = require('ladda');
  */
 /*global swal*/
 
+const setupForm = function (validator) {
+    //TODO set rules
+    /*
+     $('#divAutoCompleteFields, #divShowDBStats, #divShowLiveChat').iCheck({
+     checkboxClass: 'icheckbox_square-green'
+     });
+     */
 
-/*
- <div class="form-group">
- <label class="col-lg-2 control-label">Bucket Name</label>
- <div class="col-lg-10">
- <input id="txtBucketName" type="text" class="form-control"
- value="fs">
- </div>
- </div>
- * */
+};
 
 const initRules = function (selectedCollection) {
     Ladda.create(document.querySelector('#btnSaveValidationRules')).start();
@@ -38,10 +37,10 @@ const initRules = function (selectedCollection) {
     const cmbValidationAction = $('#cmbValidationAction');
     const cmbValidationLevel = $('#cmbValidationLevel');
 
+    // clear form
+    //TODO clear validators
     cmbValidationLevel.prop('disabled', false).val('off').trigger("chosen:updated");
     cmbValidationAction.prop('disabled', false).val('warn').trigger("chosen:updated");
-
-    //TODO empty all validators first
 
     const connection = Connections.findOne({_id: Session.get(Helper.strSessionConnection)});
     Meteor.call('listCollectionNames', connection.databaseName, function (err, result) {
@@ -61,9 +60,9 @@ const initRules = function (selectedCollection) {
                             cmbValidationLevel.val(collection.options.validationLevel);
                         }
 
-                        console.log(collection.options);
-
-                        //TODO iterate validators and add
+                        if (collection.options.validator) {
+                            setupForm(collection.options.validator);
+                        }
                     }
                 }
             }
@@ -101,6 +100,11 @@ Template.validationRules.events({
 
     'click #btnSaveValidationRules'  (e) {
         e.preventDefault();
+        //TODO
+    },
 
+    'click #btnAddRule' (e){
+        e.preventDefault();
+        //TODO
     }
 });
