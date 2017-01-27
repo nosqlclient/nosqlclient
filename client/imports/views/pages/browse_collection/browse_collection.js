@@ -102,6 +102,7 @@ const init = function () {
 
                     if (resultTabs.find('li').length == 0 || resultTabs.find('li.active').length == 0) {
                         $('#divBrowseCollectionFooter').hide();
+                        $('#divBrowseCollectionFindFooter').hide();
                     }
                 }
             }
@@ -140,6 +141,7 @@ const init = function () {
 
         if (resultTabs.find('li').length == 0 || resultTabs.find('li.active').length == 0) {
             $('#divBrowseCollectionFooter').hide();
+            $('#divBrowseCollectionFindFooter').hide();
         }
     });
 
