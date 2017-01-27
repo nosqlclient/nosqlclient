@@ -7,23 +7,11 @@ import Helper from "/client/imports/helper";
 import "./validation_rules.html";
 
 const toastr = require('toastr');
-
 const Ladda = require('ladda');
 
 /**
  * Created by RSercan on 15.2.2016.
  */
-/*global swal*/
-
-const setupForm = function (validator) {
-    //TODO set rules
-    /*
-     $('#divAutoCompleteFields, #divShowDBStats, #divShowLiveChat').iCheck({
-     checkboxClass: 'icheckbox_square-green'
-     });
-     */
-
-};
 
 const initRules = function (selectedCollection) {
     Ladda.create(document.querySelector('#btnSaveValidationRules')).start();
@@ -38,7 +26,6 @@ const initRules = function (selectedCollection) {
     const cmbValidationLevel = $('#cmbValidationLevel');
 
     // clear form
-    //TODO clear validators
     cmbValidationLevel.prop('disabled', false).val('off').trigger("chosen:updated");
     cmbValidationAction.prop('disabled', false).val('warn').trigger("chosen:updated");
 
@@ -51,7 +38,6 @@ const initRules = function (selectedCollection) {
             if (result.result) {
                 for (let collection of result.result) {
                     if (collection.name === selectedCollection) {
-                        $('#btnAddRule').prop('disabled', false);
                         if (collection.options && collection.options.validationAction) {
                             cmbValidationAction.val(collection.options.validationAction);
                         }
@@ -61,7 +47,9 @@ const initRules = function (selectedCollection) {
                         }
 
                         if (collection.options.validator) {
-                            setupForm(collection.options.validator);
+                            Helper.setCodeMirrorValue($('#divValidator'), JSON.stringify(collection.options.validator, null, 1));
+                        } else {
+                            Helper.setCodeMirrorValue($('#divValidator'), "");
                         }
                     }
                 }
@@ -83,6 +71,7 @@ Template.validationRules.onRendered(function () {
 
     this.autorun(() => {
         if (settings.ready() && connections.ready()) {
+            Helper.initializeCodeMirror($('#divValidator'), 'txtValidator', false, 300);
             initRules();
         }
     });
@@ -100,11 +89,40 @@ Template.validationRules.events({
 
     'click #btnSaveValidationRules'  (e) {
         e.preventDefault();
-        //TODO
-    },
 
-    'click #btnAddRule' (e){
-        e.preventDefault();
-        //TODO
+        Ladda.create(document.querySelector('#btnSaveValidationRules')).start();
+
+        const validationAction = $('#cmbValidationAction').val();
+        const validationLevel = $('#cmbValidationLevel').val();
+        const selectedCollection = $('#cmbCollections').val();
+
+        let validator = Helper.getCodeMirrorValue($('#divValidator')) || {};
+        if (validator) {
+            validator = Helper.convertAndCheckJSON(validator);
+
+            if (validator["ERROR"]) {
+                toastr.error("Syntax Error on validator: " + validator["ERROR"]);
+                Ladda.stopAll();
+                return;
+            }
+        }
+
+
+        const command = {};
+        command.collMod = selectedCollection;
+        command.validator = validator;
+        command.validationLevel = validationLevel;
+        command.validationAction = validationAction;
+
+        Meteor.call('command', command, false, {}, function (err, result) {
+            if (err || result.error) {
+                Helper.showMeteorFuncError(err, result, "Couldn't save rule");
+            } else {
+                toastr.success("Successfully saved");
+            }
+
+            Ladda.stopAll();
+        });
     }
+
 });
