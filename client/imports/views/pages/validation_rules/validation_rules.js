@@ -96,10 +96,15 @@ Template.validationRules.events({
         const validationLevel = $('#cmbValidationLevel').val();
         const selectedCollection = $('#cmbCollections').val();
 
+        if (!selectedCollection) {
+            toastr.warning("Please select a collection first !");
+            Ladda.stopAll();
+            return;
+        }
+
         let validator = Helper.getCodeMirrorValue($('#divValidator')) || {};
         if (validator) {
             validator = Helper.convertAndCheckJSON(validator);
-
             if (validator["ERROR"]) {
                 toastr.error("Syntax Error on validator: " + validator["ERROR"]);
                 Ladda.stopAll();
