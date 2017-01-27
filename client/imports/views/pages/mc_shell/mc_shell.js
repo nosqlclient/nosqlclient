@@ -1,15 +1,13 @@
 /**
  * Created by Sercan on 12.11.2016.
  */
-
-import {Template} from 'meteor/templating';
-import {Meteor} from 'meteor/meteor';
-import {Session} from 'meteor/session';
-import {FlowRouter} from 'meteor/kadira:flow-router';
-import Helper from '/client/imports/helper';
-import ShellCommands from '/lib/imports/collections/shell';
-
-import './mc_shell.html';
+import {Template} from "meteor/templating";
+import {Meteor} from "meteor/meteor";
+import {Session} from "meteor/session";
+import {FlowRouter} from "meteor/kadira:flow-router";
+import Helper from "/client/imports/helper";
+import ShellCommands from "/lib/imports/collections/shell";
+import "./mc_shell.html";
 
 const CodeMirror = require("codemirror");
 let connected, lastRegex;
@@ -170,6 +168,7 @@ const initializeCommandCodeMirror = function () {
         };
 
         divCommand.data('editor', codeMirror);
+        Helper.doCodeMirrorResizable(codeMirror);
 
         codeMirror.focus();
     }

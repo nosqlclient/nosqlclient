@@ -86,7 +86,6 @@ let Helper = function () {
     this.strSessionUsedTabIDs = "usedTabIDs";
     this.strSessionSelectedDump = "selectedDump";
     this.strSessionSelectedFile = "selectedFile";
-    this.strSessionEasyEditID = "easyEditID";
     this.strSessionDistinctFields = "distinctFields";
     this.strSessionSelectedQueryHistory = "selectedQueryHistory";
     this.strSessionSelectorValue = "selectorValue";

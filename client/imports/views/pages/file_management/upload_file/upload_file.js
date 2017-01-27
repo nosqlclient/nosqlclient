@@ -1,11 +1,10 @@
-import {Template} from 'meteor/templating';
-import {Meteor} from 'meteor/meteor';
-import {Session} from 'meteor/session';
-import {FlowRouter} from 'meteor/kadira:flow-router';
-import Helper from '/client/imports/helper';
-import {initFilesInformation} from '../file_management';
-
-import './upload_file.html';
+import {Template} from "meteor/templating";
+import {Meteor} from "meteor/meteor";
+import {Session} from "meteor/session";
+import {FlowRouter} from "meteor/kadira:flow-router";
+import Helper from "/client/imports/helper";
+import {initFilesInformation} from "../file_management";
+import "./upload_file.html";
 
 const toastr = require('toastr');
 const Ladda = require('ladda');
@@ -62,9 +61,9 @@ export const proceedUploading = function (blob, contentType, metaData, aliases) 
             else {
                 toastr.success('Successfuly uploaded file');
                 initFilesInformation();
-
-                Ladda.stopAll();
             }
+
+            Ladda.stopAll();
         });
     };
     fileReader.readAsArrayBuffer(blob);
