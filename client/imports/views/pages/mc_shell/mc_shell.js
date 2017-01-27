@@ -70,12 +70,12 @@ const gatherCommandAutoCompletions = function (editorValue, curWord) {
 
     switch (analyzeEditorValue(editorValue)) {
         case 'collection':
-            return lastRegex = ['aggregate(', 'bulkWrite(', 'count(', 'copyTo(', 'createView(',
+            return lastRegex = ['aggregate(', 'bulkWrite(', 'count(', 'copyTo(',
                 'craeteIndex(', 'dataSize(', 'deleteOne(', 'deleteMany(',
                 'distinct(', 'drop(', 'dropIndex(', 'dropIndexes(', 'ensureIndex(', 'explain(', 'find(',
                 'findAndModify(', 'findOne(', 'findOneAndDelete(', 'findOneAndReplace(',
                 'findOneAndUpdate(', 'getIndexes(', 'getPlanCache(', 'getShardDistribution(', 'getShardVersion(',
-                'group(', 'insert(', 'insertOne(', 'insertMany(', 'isCapped(', 'mapReduce(',
+                'group(', 'insert(', 'insertOne(', 'insertMany(', 'isCapped(','latencyStats(', 'mapReduce(',
                 'reIndex(', 'replaceOne(', 'remove(', 'renameCollection(', 'save(', 'stats(',
                 'storageSize(', 'totalSize(', 'totalIndexSize(', 'update(', 'updateOne(', 'updateMany(', 'validate('];
         case 'cursor':
@@ -85,7 +85,7 @@ const gatherCommandAutoCompletions = function (editorValue, curWord) {
                 'returnKey(', 'showRecordId(', 'size(', 'skip(', 'snapshot(', 'sort(', 'tailable(', 'toArray('];
         case 'db':
             return lastRegex = gatherCollectionNames().concat(['cloneCollection(', 'cloneDatabase(',
-                'commandHelp(', 'copyDatabase(', 'createCollection(', 'currentOp(',
+                'commandHelp(', 'createView(', 'copyDatabase(', 'createCollection(', 'currentOp(',
                 'dropDatabase(', 'eval(', 'fsyncLock(', 'fsyncUnlock(', 'getCollection(',
                 'getCollectionInfos(', 'getCollectionNames(', 'getLastError(', 'getLastErrorObj(', 'getLogComponents(',
                 'getMongo(', 'getName(', 'getPrevError(', 'getProfilingLevel(', 'getProfilingStatus(', 'getReplicationInfo(',
