@@ -1,11 +1,11 @@
-### Docker/Portable Name/Web:
+#### Docker/Portable Name/Web:
 
-### Feature Request/Issue:
+#### Feature Request/Issue:
 
-### Short Description:
+#### Short Description:
 
-### Reproduce Steps (for issue):
+#### Reproduce Steps (for issue):
 
-### Logs (optional, but recommended for quick fix):
+#### Logs (optional, but recommended for quick fix):
 
-### Screenshots (optional, but recommended for quick fix):
+#### Screenshots (optional, but recommended for quick fix):
