@@ -10,48 +10,67 @@ const Ladda = require('ladda');
 
 const populateTableData = function (indexInfo, stats, indexStats) {
     let result = [];
-
     for (let obj of indexInfo.result) {
-        if (!indexInfo.result.hasOwnProperty(obj)) {
-            continue;
-        }
-
         let index = {
             name: obj.name,
-            asc_fields: "",
-            desc_fields: "",
-            sphere_fields: "",
-            size: "",
-            usage_count: 0,
-            usage_since: "",
-            partial: "",
+            asc_fields: [],
+            desc_fields: [],
+            sphere_fields: [],
+            hashed: [],
+            text: [],
             properties: ""
         };
 
-        for (let field of obj.key) {
-            if (obj.key[field] === 1) {
-                index.asc_fields += field + ", ";
-            } else if (obj.key[field] === -1) {
-                index.desc_fields += field + ", ";
-            } else if (obj.key[field] === "2dsphere") {
-                index.sphere_fields += field + ", ";
+        if (obj.weights) {
+            index.text.push(Object.keys(obj.weights)[0]);
+        }
+        if (obj.background) {
+            index.background = true;
+        }
+        if (obj.sparse) {
+            index.sparse = true;
+        }
+        if (obj.unique) {
+            index.unique = true;
+        }
+        if (obj.expireAfterSeconds) {
+            index.ttl = obj.expireAfterSeconds + " seconds ";
+        }
+        if (obj.partialFilterExpression) {
+            index.partial = obj.partialFilterExpression;
+        }
+
+        if (obj.key && Object.prototype.toString.call(obj.key) === '[object Object]') {
+            for (let field in obj.key) {
+                if (obj.key[field] === 1) {
+                    index.asc_fields.push(field);
+                } else if (obj.key[field] === -1) {
+                    index.desc_fields.push(field);
+                } else if (obj.key[field] === "2dsphere") {
+                    index.sphere_fields.push(field);
+                } else if (obj.key[field] === "hashed") {
+                    index.hashed.push(field);
+                }
             }
         }
 
-        if (obj.background) {
-            index.properties += "background, ";
+        if (stats.result.indexSizes && stats.result.indexSizes[index.name]) {
+            index.size = stats.result.indexSizes[index.name];
         }
 
-        //TODO
-
-
-        for (let statObj of stats.result) {
+        if (indexStats && indexStats.result) {
+            for (let indexStat of indexStats.result) {
+                if (indexStat.name === index.name) {
+                    index.usage = indexStat.accesses.ops;
+                    index.usage_since = indexStat.accesses.since.$date;
+                }
+            }
         }
 
         result.push(index);
     }
 
-
+    return result;
 };
 
 const initIndexes = function () {
@@ -73,6 +92,7 @@ const initIndexes = function () {
                     Meteor.call("aggregate", selectedCollection, [{$indexStats: {}}], {}, function (aggregateErr, indexStats) {
                         const data = populateTableData(indexInformation, stats, indexStats);
 
+                        console.log(data);
                         initializeIndexesTable(data);
                         Ladda.stopAll();
                     });
@@ -84,32 +104,30 @@ const initIndexes = function () {
 };
 
 const initializeIndexesTable = function (data) {
-    let tblIndexes = $('#tblIndexes');
-    if ($.fn.dataTable.isDataTable('#tblIndexes')) {
-        tblIndexes.DataTable().destroy();
+    const tblIndexes = $('#tblIndexes');
+    const tbody = tblIndexes.find('tbody');
+
+    for (let index of data) {
+        let row = '<tr><td>';
+        for (let field of index.asc_fields) {
+            row += "<button class='btn btn-info btn-xs'> " + field + "</button>"
+        }
+        for (let field of index.desc_fields) {
+            row += "<button class='btn btn-success btn-xs'> " + field + "</button>"
+        }
+        for (let field of index.hashed) {
+            row += "<button class='btn btn-warning btn-xs'> " + field + "</button>"
+        }
+        for (let field of index.sphere_fields) {
+            row += "<button class='btn btn-info btn-xs'> " + field + "</button>"
+        }
+        for (let field of index.text) {
+            row += "<button class='btn btn-warning btn-xs'> " + field + "</button>"
+        }
+
+        row += "</td></tr>";
+        tbody.append(row);
     }
-    tblIndexes.DataTable({
-        data: data,
-        columns: [
-            {data: "name"},
-            {data: "asc_fields"},
-            {data: "desc_fields"},
-            {data: "sphere_fields"},
-            {data: "size"},
-            {data: "usage_count"},
-            {data: "usage_since"},
-            {data: "partial"},
-            {data: "properties"}
-        ],
-        columnDefs: [
-            {
-                targets: [9],
-                data: null,
-                bSortable: false,
-                defaultContent: '<a href="" title="Delete" class="editor_remove"><i class="fa fa-remove text-navy"></i></a>'
-            }
-        ]
-    });
 };
 
 Template.indexManagement.onRendered(function () {
@@ -120,8 +138,6 @@ Template.indexManagement.onRendered(function () {
 
     let settings = this.subscribe('settings');
     let connections = this.subscribe('connections');
-
-    initializeIndexesTable([]);
 
     this.autorun(() => {
         if (settings.ready() && connections.ready()) {
