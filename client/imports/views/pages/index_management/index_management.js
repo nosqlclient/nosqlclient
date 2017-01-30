@@ -4,6 +4,7 @@ import {Session} from "meteor/session";
 import Helper from "/client/imports/helper";
 import "./index_management.html";
 import {FlowRouter} from "meteor/kadira:flow-router";
+import "./partial_filter_expression/partial_filter_expression";
 
 const toastr = require('toastr');
 const Ladda = require('ladda');
@@ -18,25 +19,26 @@ const populateTableData = function (indexInfo, stats, indexStats) {
             sphere_fields: [],
             hashed: [],
             text: [],
-            properties: ""
+            properties: []
         };
 
         if (obj.weights) {
             index.text.push(Object.keys(obj.weights)[0]);
         }
         if (obj.background) {
-            index.background = true;
+            index.properties.push("background");
         }
         if (obj.sparse) {
-            index.sparse = true;
+            index.properties.push("sparse");
         }
         if (obj.unique) {
-            index.unique = true;
+            index.properties.push("unique");
         }
         if (obj.expireAfterSeconds) {
-            index.ttl = obj.expireAfterSeconds + " seconds ";
+            index.properties.push("ttl " + obj.expireAfterSeconds);
         }
         if (obj.partialFilterExpression) {
+            index.properties.push("partial");
             index.partial = obj.partialFilterExpression;
         }
 
@@ -74,9 +76,12 @@ const populateTableData = function (indexInfo, stats, indexStats) {
 };
 
 const initIndexes = function () {
-    Ladda.create(document.querySelector('#btnAddIndex')).start();
     const selectedCollection = $('#cmbCollections').val();
+    if (!selectedCollection) {
+        return;
+    }
 
+    Ladda.create(document.querySelector('#btnAddIndex')).start();
     Meteor.call("indexInformation", selectedCollection, true, function (err, indexInformation) {
         if (err || indexInformation.error) {
             Helper.showMeteorFuncError(err, indexInformation, "Couldn't fetch indexes");
@@ -92,7 +97,6 @@ const initIndexes = function () {
                     Meteor.call("aggregate", selectedCollection, [{$indexStats: {}}], {}, function (aggregateErr, indexStats) {
                         const data = populateTableData(indexInformation, stats, indexStats);
 
-                        console.log(data);
                         initializeIndexesTable(data);
                         Ladda.stopAll();
                     });
@@ -106,26 +110,53 @@ const initIndexes = function () {
 const initializeIndexesTable = function (data) {
     const tblIndexes = $('#tblIndexes');
     const tbody = tblIndexes.find('tbody');
+    tbody.html("");
 
     for (let index of data) {
         let row = '<tr><td>';
+
+        //start of fields
         for (let field of index.asc_fields) {
-            row += "<button class='btn btn-info btn-xs'> " + field + "</button>"
+            row += "<button class='btn btn-white btn-xs'>" + field + "</button>  "
         }
         for (let field of index.desc_fields) {
-            row += "<button class='btn btn-success btn-xs'> " + field + "</button>"
+            row += "<button class='btn btn-danger btn-xs'>" + field + "</button>  "
         }
         for (let field of index.hashed) {
-            row += "<button class='btn btn-warning btn-xs'> " + field + "</button>"
+            row += "<button class='btn btn-warning btn-xs'>" + field + "</button>  "
         }
         for (let field of index.sphere_fields) {
-            row += "<button class='btn btn-info btn-xs'> " + field + "</button>"
+            row += "<button class='btn btn-info btn-xs'>" + field + "</button>  "
         }
         for (let field of index.text) {
-            row += "<button class='btn btn-warning btn-xs'> " + field + "</button>"
+            row += "<button class='btn btn-success btn-xs'>" + field + "</button>  "
+        }
+        row += "</td>";
+
+        // start of index name/info
+        row += "<td class='issue-info'><a href='#'>" + index.name + "</a><small>";
+        if (index.usage) {
+            row += "Usage count: <b>" + index.usage + "</b>, since: <b>" + moment(index.usage_since).format('MMMM Do YYYY, h:mm:ss a') + "</b>";
+        }
+        row += "</small></td>";
+
+        // start of size
+        row += "<td>" + index.size + " bytes</td>";
+
+        // start of properties
+        row += "<td>";
+        for (let property of index.properties) {
+            row += "<button class='btn btn-white btn-xs'>" + property + "</button>  "
+        }
+        row += "</td>";
+
+        // start of partial
+        row += "<td>";
+        if (index.partial) {
+            row += "<a href='' title='Show Partial Filter Expression' data-partial='" + JSON.stringify(index.partial) + "' class='editor_partial'><i class='fa fa-book text-navy'></i></a>";
         }
 
-        row += "</td></tr>";
+        row += "</td><td><a href='' title='Drop' id='" + index.name + "' class='editor_remove'><i class='fa fa-remove text-navy'></i></a></td></tr>";
         tbody.append(row);
     }
 };
@@ -141,7 +172,6 @@ Template.indexManagement.onRendered(function () {
 
     this.autorun(() => {
         if (settings.ready() && connections.ready()) {
-            Helper.initiateDatatable($('#tblIndexes'), Helper.strSessionSelectedIndex);
             Helper.initializeCollectionsCombobox();
         }
     });
@@ -157,32 +187,53 @@ Template.indexManagement.events({
         //TODO
     },
 
+    'click #btnRefreshIndexes'(){
+        initIndexes();
+    },
+
     'change #cmbCollections'(){
-        if ($('#cmbCollections').val()) {
-            initIndexes();
-        }
+        initIndexes();
+    },
+
+    'click .editor_partial'(e){
+        let modal = $('#partialFilterExpressionModal');
+        modal.on('shown.bs.modal', function () {
+            const divSelector = $('#divPartialFilterExpression');
+            Helper.initializeCodeMirror(divSelector, 'txtPartialFilterExpression');
+            Helper.setCodeMirrorValue(divSelector, JSON.stringify($(e.currentTarget).data('partial')));
+        });
+        modal.modal('show');
     },
 
     'click .editor_remove'  (e) {
         e.preventDefault();
+        const selectedCollection = $('#cmbCollections').val();
+        const indexName = e.currentTarget.id;
 
-        let laddaButton = Ladda.create(document.querySelector('#btnAddIndex'));
-        laddaButton.start();
+        if (indexName && selectedCollection) {
+            swal({
+                title: "Are you sure ?",
+                text: indexName + " will be dropped, are you sure ?",
+                type: "info",
+                showCancelButton: true,
+                confirmButtonColor: "#DD6B55",
+                confirmButtonText: "Yes!",
+                cancelButtonText: "No"
+            }, function (isConfirm) {
+                if (isConfirm) {
+                    Ladda.create(document.querySelector('#btnAddIndex')).start();
+                    Meteor.call("dropIndex", selectedCollection, indexName, function (err, result) {
+                        if (err || result.error) {
+                            Helper.showMeteorFuncError(err, result, "Couldn't drop index");
+                        } else {
+                            toastr.success("Successfully dropped index: " + indexName);
+                            initIndexes();
+                        }
 
-        $('#tblIndexes').DataTable().$('tr.selected').removeClass('selected');
-
-        const selectedCollection = Session.get(Helper.strSessionSelectedCollection);
-        const indexName = Session.get(Helper.strSessionSelectedIndex);
-
-        Meteor.call("dropIndex", selectedCollection, indexName, function (err, result) {
-            if (err || result.err) {
-                Helper.showMeteorFuncError(err, result, "Couldn't drop index");
-            } else {
-                toastr.error("Successfully dropped index: " + indexName);
-            }
-
-            Ladda.stopAll();
-        });
-
+                        Ladda.stopAll();
+                    });
+                }
+            });
+        }
     },
 });

@@ -85,7 +85,6 @@ let Helper = function () {
     this.strSessionDBStats = "dbStats";
     this.strSessionUsedTabIDs = "usedTabIDs";
     this.strSessionSelectedDump = "selectedDump";
-    this.strSessionSelectedIndex = "selectedIndex";
     this.strSessionSelectedFile = "selectedFile";
     this.strSessionDistinctFields = "distinctFields";
     this.strSessionSelectedQueryHistory = "selectedQueryHistory";
