@@ -5,6 +5,7 @@ import Helper from "/client/imports/helper";
 import "./index_management.html";
 import {FlowRouter} from "meteor/kadira:flow-router";
 import "./partial_filter_expression/partial_filter_expression";
+import "./add_index/add_index";
 
 const toastr = require('toastr');
 const Ladda = require('ladda');
@@ -173,6 +174,9 @@ Template.indexManagement.onRendered(function () {
     this.autorun(() => {
         if (settings.ready() && connections.ready()) {
             Helper.initializeCollectionsCombobox();
+            $('#divUnique, #divBackground').iCheck({
+                checkboxClass: 'icheckbox_square-green'
+            });
         }
     });
 });
@@ -184,7 +188,7 @@ Template.indexManagement.events({
             return;
         }
 
-        //TODO
+        $('#addIndexModal').modal('show');
     },
 
     'click #btnRefreshIndexes'(){

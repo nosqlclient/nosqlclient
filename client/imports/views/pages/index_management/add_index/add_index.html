@@ -1,0 +1,120 @@
+<template name="addIndex">
+    <div class="modal inmodal" id="addIndexModal" tabindex="-1" role="dialog" aria-hidden="true"
+         style="display: none;">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content animated bounceInRight">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span><span
+                            class="sr-only">Close</span></button>
+                    <h4 class="modal-title">Add Index</h4>
+                </div>
+                <div class="modal-body">
+                    <form method="get" class="form-horizontal">
+
+                        <div class="form-group">
+                            <div class="col-lg-12">
+                                <input id="inputIndexName" type="text" placeholder="Index name (optional)"
+                                       class="form-control">
+                            </div>
+                        </div>
+
+                        <div class="form-group divField">
+                            <div class="col-lg-6">
+                                <div class="input-group"><input type="text" placeholder="Field name"
+                                                                class="form-control txtFieldName">
+                                    <div class="input-group-btn">
+                                        <button data-toggle="dropdown" class="btn btn-white dropdown-toggle"
+                                                type="button"><span class="caret"></span></button>
+                                        <ul class="dropdown-menu pull-right">
+                                            <li><a class="addField" href="#"><i class="fa fa-plus"></i> Add Another</a></li>
+                                            <li><a class="deleteField" href="#"><i class="fa fa-remove"></i> Delete</a></li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-6">
+                                <select
+                                        data-placeholder="Select field type"
+                                        class="chosen-select form-control cmbIndexTypes"
+                                        tabindex="-1">
+                                    <option value="1">1 (ascending)</option>
+                                    <option value="-1">-1 (descending)</option>
+                                    <option value="hashed">Hashed</option>
+                                    <option value="2d">2dsphere</option>
+                                    <option value="text">text</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="col-lg-12">
+                                <div class="panel-group" id="accordion">
+                                    <div class="panel panel-default">
+                                        <div class="panel-heading">
+                                            <h5 class="panel-title">
+                                                <a id="anchorOptions" data-toggle="collapse" data-parent="#accordion"
+                                                   href="#collapseOne"
+                                                   aria-expanded="true" class="">Options</a>
+                                            </h5>
+                                        </div>
+                                        <div id="collapseOne" class="panel-collapse collapse"
+                                             aria-expanded="true">
+                                            <div class="panel-body">
+                                                <form class="form-horizontal">
+                                                    <div class="form-group">
+                                                        <label class="col-lg-3 control-label">Background
+                                                            Creation</label>
+                                                        <div id="divBackground" class="col-lg-9">
+                                                            <input id="inputBackground" type="checkbox"
+                                                                   class="form-control"
+                                                                   checked=""
+                                                                   style="position: absolute; opacity: 0;"/>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="form-group">
+                                                        <label class="col-lg-3 control-label">Unique</label>
+                                                        <div id="divUnique" class="col-lg-9">
+                                                            <input id="inputUnique" type="checkbox"
+                                                                   class="form-control"
+                                                                   checked=""
+                                                                   style="position: absolute; opacity: 0;"/>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="form-group">
+                                                        <label class="col-lg-3 control-label">Time to Live</label>
+                                                        <div class="col-lg-9">
+                                                            <input id="inputTTL" type="number"
+                                                                   class="form-control"
+                                                                   placeholder="Leave empty for no TTL"/>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="form-group">
+                                                        <label class="col-lg-3 control-label">Partial Filter
+                                                            Expression</label>
+                                                        <div id="divPartial" class="col-lg-9">
+                                                            <textarea id="txtPartial" class="form-control"></textarea>
+                                                            <span class="help-block m-b-none">Leave empty for no partial filter expression</span>
+                                                        </div>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <div class="pull-left">
+                        <button type="button" class="btn btn-white" data-dismiss="modal">Close</button>
+                    </div>
+                    <button id="btnSaveIndex" type="button" class="btn btn-primary">Save</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</template>
