@@ -9,7 +9,7 @@
                     <h4 class="modal-title">Add Index</h4>
                 </div>
                 <div class="modal-body">
-                    <form method="get" class="form-horizontal">
+                    <form class="form-horizontal">
 
                         <div class="form-group">
                             <div class="col-lg-12">
@@ -18,7 +18,7 @@
                             </div>
                         </div>
 
-                        <div class="form-group divField">
+                        <div class="form-group divField" style="display: none">
                             <div class="col-lg-6">
                                 <div class="input-group"><input type="text" placeholder="Field name"
                                                                 class="form-control txtFieldName">
@@ -26,8 +26,10 @@
                                         <button data-toggle="dropdown" class="btn btn-white dropdown-toggle"
                                                 type="button"><span class="caret"></span></button>
                                         <ul class="dropdown-menu pull-right">
-                                            <li><a class="addField" href="#"><i class="fa fa-plus"></i> Add Another</a></li>
-                                            <li><a class="deleteField" href="#"><i class="fa fa-remove"></i> Delete</a></li>
+                                            <li><a class="addField" href="#"><i class="fa fa-plus"></i> Add Another</a>
+                                            </li>
+                                            <li><a class="deleteField" href="#"><i class="fa fa-remove"></i> Delete</a>
+                                            </li>
                                         </ul>
                                     </div>
                                 </div>
@@ -39,7 +41,7 @@
                                         tabindex="-1">
                                     <option value="1">1 (ascending)</option>
                                     <option value="-1">-1 (descending)</option>
-                                    <option value="hashed">Hashed</option>
+                                    <option value="hashed">hashed</option>
                                     <option value="2d">2dsphere</option>
                                     <option value="text">text</option>
                                 </select>
@@ -83,7 +85,18 @@
                                                     </div>
 
                                                     <div class="form-group">
-                                                        <label class="col-lg-3 control-label">Time to Live</label>
+                                                        <label class="col-lg-3 control-label">Sparse</label>
+                                                        <div id="divSparse" class="col-lg-9">
+                                                            <input id="inputSparse" type="checkbox"
+                                                                   class="form-control"
+                                                                   checked=""
+                                                                   style="position: absolute; opacity: 0;"/>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="form-group">
+                                                        <label class="col-lg-3 control-label">Time to Live
+                                                            (Seconds)</label>
                                                         <div class="col-lg-9">
                                                             <input id="inputTTL" type="number"
                                                                    class="form-control"
@@ -112,7 +125,7 @@
                     <div class="pull-left">
                         <button type="button" class="btn btn-white" data-dismiss="modal">Close</button>
                     </div>
-                    <button id="btnSaveIndex" type="button" class="btn btn-primary">Save</button>
+                    <button id="btnSaveIndex" type="button" class="btn btn-primary ladda-button">Save</button>
                 </div>
             </div>
         </div>

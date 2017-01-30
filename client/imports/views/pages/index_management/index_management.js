@@ -5,7 +5,7 @@ import Helper from "/client/imports/helper";
 import "./index_management.html";
 import {FlowRouter} from "meteor/kadira:flow-router";
 import "./partial_filter_expression/partial_filter_expression";
-import "./add_index/add_index";
+import {clearForm} from "./add_index/add_index";
 
 const toastr = require('toastr');
 const Ladda = require('ladda');
@@ -49,7 +49,7 @@ const populateTableData = function (indexInfo, stats, indexStats) {
                     index.asc_fields.push(field);
                 } else if (obj.key[field] === -1) {
                     index.desc_fields.push(field);
-                } else if (obj.key[field] === "2dsphere") {
+                } else if (obj.key[field] === "2dsphere" || obj.key[field] === "2d") {
                     index.sphere_fields.push(field);
                 } else if (obj.key[field] === "hashed") {
                     index.hashed.push(field);
@@ -76,7 +76,7 @@ const populateTableData = function (indexInfo, stats, indexStats) {
     return result;
 };
 
-const initIndexes = function () {
+export const initIndexes = function () {
     const selectedCollection = $('#cmbCollections').val();
     if (!selectedCollection) {
         return;
@@ -189,6 +189,7 @@ Template.indexManagement.events({
         }
 
         $('#addIndexModal').modal('show');
+        clearForm();
     },
 
     'click #btnRefreshIndexes'(){
