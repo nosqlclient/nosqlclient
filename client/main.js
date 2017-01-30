@@ -19,6 +19,7 @@ import '/client/imports/views/pages/schema_analyzer/schema_analyzer';
 import '/client/imports/views/pages/validation_rules/validation_rules';
 import '/client/imports/views/pages/database_dump_restore/database_dump_restore';
 import '/client/imports/views/pages/file_management/file_management';
+import '/client/imports/views/pages/index_management/index_management';
 import '/client/imports/views/pages/database_stats/database_stats';
 
 
