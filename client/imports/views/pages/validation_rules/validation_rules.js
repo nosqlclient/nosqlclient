@@ -102,14 +102,12 @@ Template.validationRules.events({
             return;
         }
 
-        let validator = Helper.getCodeMirrorValue($('#divValidator')) || {};
-        if (validator) {
-            validator = Helper.convertAndCheckJSON(validator);
-            if (validator["ERROR"]) {
-                toastr.error("Syntax Error on validator: " + validator["ERROR"]);
-                Ladda.stopAll();
-                return;
-            }
+        let validator = Helper.getCodeMirrorValue($('#divValidator'));
+        validator = Helper.convertAndCheckJSON(validator);
+        if (validator["ERROR"]) {
+            toastr.error("Syntax Error on validator: " + validator["ERROR"]);
+            Ladda.stopAll();
+            return;
         }
 
 
