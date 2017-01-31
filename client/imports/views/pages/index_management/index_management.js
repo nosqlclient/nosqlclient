@@ -6,75 +6,13 @@ import "./index_management.html";
 import {FlowRouter} from "meteor/kadira:flow-router";
 import "./partial_filter_expression/partial_filter_expression";
 import {clearForm} from "./add_index/add_index";
+import {Settings} from "/lib/imports/collections/settings";
+
+/*global moment*/
+/*global swal*/
 
 const toastr = require('toastr');
 const Ladda = require('ladda');
-
-const populateTableData = function (indexInfo, stats, indexStats) {
-    let result = [];
-    for (let obj of indexInfo.result) {
-        let index = {
-            name: obj.name,
-            asc_fields: [],
-            desc_fields: [],
-            sphere_fields: [],
-            hashed: [],
-            text: [],
-            properties: []
-        };
-
-        if (obj.weights) {
-            index.text.push(Object.keys(obj.weights)[0]);
-        }
-        if (obj.background) {
-            index.properties.push("background");
-        }
-        if (obj.sparse) {
-            index.properties.push("sparse");
-        }
-        if (obj.unique) {
-            index.properties.push("unique");
-        }
-        if (obj.expireAfterSeconds) {
-            index.properties.push("ttl " + obj.expireAfterSeconds);
-        }
-        if (obj.partialFilterExpression) {
-            index.properties.push("partial");
-            index.partial = obj.partialFilterExpression;
-        }
-
-        if (obj.key && Object.prototype.toString.call(obj.key) === '[object Object]') {
-            for (let field in obj.key) {
-                if (obj.key[field] === 1) {
-                    index.asc_fields.push(field);
-                } else if (obj.key[field] === -1) {
-                    index.desc_fields.push(field);
-                } else if (obj.key[field] === "2dsphere" || obj.key[field] === "2d") {
-                    index.sphere_fields.push(field);
-                } else if (obj.key[field] === "hashed") {
-                    index.hashed.push(field);
-                }
-            }
-        }
-
-        if (stats.result.indexSizes && stats.result.indexSizes[index.name]) {
-            index.size = stats.result.indexSizes[index.name];
-        }
-
-        if (indexStats && indexStats.result) {
-            for (let indexStat of indexStats.result) {
-                if (indexStat.name === index.name) {
-                    index.usage = indexStat.accesses.ops;
-                    index.usage_since = indexStat.accesses.since.$date;
-                }
-            }
-        }
-
-        result.push(index);
-    }
-
-    return result;
-};
 
 export const initIndexes = function () {
     const selectedCollection = $('#cmbCollections').val();
@@ -108,6 +46,101 @@ export const initIndexes = function () {
     });
 };
 
+const getCorrectSize = function (size) {
+    if (!size) {
+        return "";
+    }
+
+    const settings = Settings.findOne();
+    let scale = 1;
+    let text = "Bytes";
+    switch (settings.scale) {
+        case "MegaBytes":
+            scale = 1024 * 1024;
+            text = "MB";
+            break;
+        case "KiloBytes":
+            scale = 1024;
+            text = "KB";
+            break;
+        default:
+            scale = 1;
+            text = "Bytes";
+            break;
+    }
+    return isNaN(Number(size / scale).toFixed(2)) ? "0 " + text : Number(size / scale).toFixed(2) + " " + text;
+};
+
+const populateTableData = function (indexInfo, stats, indexStats) {
+    let result = [];
+    for (let obj of indexInfo.result) {
+        let index = {
+            name: obj.name,
+            asc_fields: [],
+            desc_fields: [],
+            sphere_fields: [],
+            twod_fields: [],
+            hashed: [],
+            text: [],
+            properties: []
+        };
+
+        if (obj.weights) {
+            index.text.push(Object.keys(obj.weights)[0]);
+        }
+        if (obj.background) {
+            index.properties.push("background");
+        }
+        if (obj.sparse) {
+            index.properties.push("sparse");
+        }
+        if (obj.unique) {
+            index.properties.push("unique");
+        }
+        if (obj.expireAfterSeconds) {
+            index.properties.push("ttl " + obj.expireAfterSeconds);
+        }
+        if (obj.partialFilterExpression) {
+            index.properties.push("partial");
+            index.partial = obj.partialFilterExpression;
+        }
+
+        if (obj.key && Object.prototype.toString.call(obj.key) === '[object Object]') {
+            for (let field in obj.key) {
+                if (obj.key[field] === 1) {
+                    index.asc_fields.push(field);
+                } else if (obj.key[field] === -1) {
+                    index.desc_fields.push(field);
+                } else if (obj.key[field] === "2dsphere") {
+                    index.sphere_fields.push(field);
+                } else if (obj.key[field] === "2d") {
+                    index.twod_fields.push(field);
+                }
+                else if (obj.key[field] === "hashed") {
+                    index.hashed.push(field);
+                }
+            }
+        }
+
+        if (stats.result.indexSizes && stats.result.indexSizes[index.name]) {
+            index.size = stats.result.indexSizes[index.name];
+        }
+
+        if (indexStats && indexStats.result) {
+            for (let indexStat of indexStats.result) {
+                if (indexStat.name === index.name) {
+                    index.usage = indexStat.accesses.ops;
+                    index.usage_since = indexStat.accesses.since.$date;
+                }
+            }
+        }
+
+        result.push(index);
+    }
+
+    return result;
+};
+
 const initializeIndexesTable = function (data) {
     const tblIndexes = $('#tblIndexes');
     const tbody = tblIndexes.find('tbody');
@@ -129,6 +162,9 @@ const initializeIndexesTable = function (data) {
         for (let field of index.sphere_fields) {
             row += "<button class='btn btn-info btn-xs'>" + field + "</button>  "
         }
+        for (let field of index.twod_fields) {
+            row += "<button class='btn btn-primary btn-xs'>" + field + "</button>  "
+        }
         for (let field of index.text) {
             row += "<button class='btn btn-success btn-xs'>" + field + "</button>  "
         }
@@ -142,7 +178,7 @@ const initializeIndexesTable = function (data) {
         row += "</small></td>";
 
         // start of size
-        row += "<td>" + index.size + " bytes</td>";
+        row += "<td>" + getCorrectSize(index.size) + "</td>";
 
         // start of properties
         row += "<td>";
