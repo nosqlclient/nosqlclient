@@ -2,15 +2,56 @@
  * Created by RSercan on 9.2.2016.
  */
 /*global Async*/
-
 import LOGGER from "../internal/logger";
 import Helper from "./helper";
 import {database} from "./methods_common";
-import {Meteor} from 'meteor/meteor';
+import {Meteor} from "meteor/meteor";
 
 const mongodbApi = require('mongodb');
 
 Meteor.methods({
+    deleteFiles(bucketName, selector){
+        LOGGER.info('[deleteFiles]', bucketName, selector);
+
+        let result = Async.runSync(function (done) {
+            try {
+                let filesCollection = database.collection(bucketName + ".files");
+                let chunksCollection = database.collection(bucketName + ".chunks");
+
+                filesCollection.find(selector).toArray(function (err, docs) {
+                    if (err) {
+                        done(err, docs);
+                        return;
+                    }
+
+                    let ids = [];
+                    for (let obj of docs) {
+                        ids.push(obj._id);
+                    }
+
+                    LOGGER.info(JSON.stringify(selector) + " removing from " + bucketName + ".files");
+                    filesCollection.deleteMany({_id: {$in: ids}}, {}, function (err) {
+                        if (err) {
+                            done(err, null);
+                            return;
+                        }
+
+                        LOGGER.info(JSON.stringify(selector) + " removing from " + bucketName + ".chunks");
+                        chunksCollection.deleteMany({files_id: {$in: ids}}, function (err) {
+                            done(err, null);
+                        })
+                    });
+                });
+            }
+            catch (ex) {
+                LOGGER.error('[deleteFiles]', ex);
+                done(new Meteor.Error(ex.message), null);
+            }
+        });
+
+        return Helper.convertBSONtoJSON(result);
+    },
+
     deleteFile(bucketName, fileId) {
         LOGGER.info('[deleteFile]', bucketName, fileId);
 

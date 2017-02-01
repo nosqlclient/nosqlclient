@@ -2,18 +2,15 @@
  * Created by sercan on 09.02.2016.
  */
 /*global swal*/
-
-import {Template} from 'meteor/templating';
-import {Meteor} from 'meteor/meteor';
-import {Session} from 'meteor/session';
-import {FlowRouter} from 'meteor/kadira:flow-router';
-import Helper from '/client/imports/helper';
-import {getSelectorValue} from '/client/imports/views/query_templates_options/selector/selector';
-
-import './upload_file/upload_file';
-import './file_info/file_info';
-
-import './file_management.html';
+import {Template} from "meteor/templating";
+import {Meteor} from "meteor/meteor";
+import {Session} from "meteor/session";
+import {FlowRouter} from "meteor/kadira:flow-router";
+import Helper from "/client/imports/helper";
+import {getSelectorValue} from "/client/imports/views/query_templates_options/selector/selector";
+import "./upload_file/upload_file";
+import "./file_info/file_info";
+import "./file_management.html";
 
 const JSONEditor = require('jsoneditor');
 const toastr = require('toastr');
@@ -53,7 +50,6 @@ export const initFilesInformation = function () {
     selector = Helper.convertAndCheckJSON(selector);
     if (selector["ERROR"]) {
         toastr.error("Syntax error on selector: " + selector["ERROR"]);
-
         Ladda.stopAll();
         return;
     }
@@ -125,6 +121,40 @@ Template.fileManagement.onRendered(function () {
 });
 
 Template.fileManagement.events({
+    'click #btnDeleteFiles' (){
+        swal({
+            title: "Are you sure ?",
+            text: "All files that are matched by selector will be deleted, are you sure ?",
+            type: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#DD6B55",
+            confirmButtonText: "Yes!",
+            cancelButtonText: "No"
+        }, function (isConfirm) {
+            if (isConfirm) {
+                Ladda.create(document.querySelector('#btnDeleteFiles')).start();
+
+                let selector = getSelectorValue();
+                selector = Helper.convertAndCheckJSON(selector);
+                if (selector["ERROR"]) {
+                    toastr.error("Syntax error on selector: " + selector["ERROR"]);
+                    Ladda.stopAll();
+                    return;
+                }
+
+                Meteor.call('deleteFiles', $('#txtBucketName').val(), selector, function (err, result) {
+                    if (err || result.err) {
+                        Helper.showMeteorFuncError(err, result, "Couldn't delete files");
+                    } else {
+                        toastr.success('Successfuly deleted !');
+                        initFilesInformation();
+                    }
+                    Ladda.stopAll();
+                });
+            }
+        });
+    },
+
     'click #btnReloadFiles'  () {
         initFilesInformation();
     },
