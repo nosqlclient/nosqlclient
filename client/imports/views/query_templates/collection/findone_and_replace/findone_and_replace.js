@@ -107,6 +107,9 @@ Template.findOneAndReplace.renderQuery = function (query) {
                     if (option === inverted.projection) {
                         Helper.setCodeMirrorValue($('#divProject'), JSON.stringify(query.queryParams.options.projection, null, 1));
                     }
+                    if (option === inverted.maxTimeMS) {
+                        $('#inputMaxTimeMs').val(query.queryParams.options.maxTimeMS);
+                    }
                     if (option === inverted.sort) {
                         Helper.setCodeMirrorValue($('#divSort'), JSON.stringify(query.queryParams.options.sort, null, 1));
                     }

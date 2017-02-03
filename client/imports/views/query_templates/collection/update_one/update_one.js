@@ -121,7 +121,7 @@ Template.updateOne.renderQuery = function (query) {
                 for (let i = 0; i < optionsArray.length; i++) {
                     let option = optionsArray[i];
                     let inverted = (_.invert(Enums.UPDATE_OPTIONS));
-                    if (option === inverted.verbose) {
+                    if (option === inverted.upsert) {
                         $('#divUpsert').iCheck(query.queryParams.options.upsert ? 'check' : 'uncheck');
                     }
                 }

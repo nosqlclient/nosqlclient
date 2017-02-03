@@ -1,13 +1,11 @@
-import {Template} from 'meteor/templating';
-import Helper from '/client/imports/helper';
-import Enums from '/lib/imports/enums';
-import {Session} from 'meteor/session';
-import {$} from 'meteor/jquery';
-
-import '/client/imports/views/query_templates_options/max_distance/max_distance.html';
-import '/client/imports/views/query_templates_options/selector/selector';
-
-import './geo_near_options.html';
+import {Template} from "meteor/templating";
+import Helper from "/client/imports/helper";
+import Enums from "/lib/imports/enums";
+import {Session} from "meteor/session";
+import {$} from "meteor/jquery";
+import "/client/imports/views/query_templates_options/max_distance/max_distance.html";
+import "/client/imports/views/query_templates_options/selector/selector";
+import "./geo_near_options.html";
 
 /**
  * Created by RSercan on 3.1.2016.
@@ -63,24 +61,15 @@ export const getOptions = function () {
     }
 
     if ($.inArray("SPHERICAL", Session.get(Helper.strSessionSelectedOptions)) != -1) {
-        const spherical = $('#divSpherical').iCheck('update')[0].checked;
-        if (spherical) {
-            result[Enums.GEO_NEAR_OPTIONS.SPHERICAL] = spherical;
-        }
+        result[Enums.GEO_NEAR_OPTIONS.SPHERICAL] = $('#divSpherical').iCheck('update')[0].checked;
     }
 
     if ($.inArray("UNIQUE_DOCS", Session.get(Helper.strSessionSelectedOptions)) != -1) {
-        const uniqueDocs = $('#divUniqueDocs').iCheck('update')[0].checked;
-        if (uniqueDocs) {
-            result[Enums.GEO_NEAR_OPTIONS.UNIQUE_DOCS] = uniqueDocs;
-        }
+        result[Enums.GEO_NEAR_OPTIONS.UNIQUE_DOCS] = $('#divUniqueDocs').iCheck('update')[0].checked;
     }
 
     if ($.inArray("INCLUDE_LOCS", Session.get(Helper.strSessionSelectedOptions)) != -1) {
-        const includeLocs = $('#divIncludeLocs').iCheck('update')[0].checked;
-        if (includeLocs) {
-            result[Enums.GEO_NEAR_OPTIONS.INCLUDE_LOCS] = includeLocs;
-        }
+        result[Enums.GEO_NEAR_OPTIONS.INCLUDE_LOCS] = $('#divIncludeLocs').iCheck('update')[0].checked;
     }
 
     return result;

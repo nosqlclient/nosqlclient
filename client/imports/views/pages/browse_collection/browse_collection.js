@@ -268,7 +268,7 @@ const setResultToEditors = function (tabID, result, queryParams, queryInfo) {
         queryParams: queryParams
     });
 
-    // cache find data
+    // cache find data for save button
     if (queryInfo === 'find') {
         activeTab.data('findData', result);
     }

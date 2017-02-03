@@ -2,15 +2,13 @@
  * Created by Sercan on 10.12.2016.
  */
 /*global _*/
-
-import {Template} from 'meteor/templating';
-import {Meteor} from 'meteor/meteor';
-import {Session} from 'meteor/session';
-import Helper from '/client/imports/helper';
-import Enums from '/lib/imports/enums';
-import {initExecuteQuery} from '/client/imports/views/pages/browse_collection/browse_collection';
-
-import './group.html';
+import {Template} from "meteor/templating";
+import {Meteor} from "meteor/meteor";
+import {Session} from "meteor/session";
+import Helper from "/client/imports/helper";
+import Enums from "/lib/imports/enums";
+import {initExecuteQuery} from "/client/imports/views/pages/browse_collection/browse_collection";
+import "./group.html";
 
 const toastr = require('toastr');
 const Ladda = require('ladda');
@@ -96,10 +94,29 @@ Template.group.executeQuery = function (historyParams) {
 Template.group.renderQuery = function (query) {
     if (query.queryParams) {
         // let all stuff initialize
-        if (query.queryParams.map) {
+        if (query.queryParams.keys) {
             Meteor.setTimeout(function () {
-                let str = JSON.stringify(query.queryParams.map, null, 1).replace(/\\n/g, '\n');
-                Helper.setCodeMirrorValue($('#divMap'), str.substring(1, str.length - 1));
+                if (query.queryParams.keys.startsWith('function')) {
+                    Helper.setCodeMirrorValue($('#divKeys'), query.queryParams.keys);
+                } else {
+                    let str = JSON.stringify(query.queryParams.keys, null, 1).replace(/\\n/g, '\n');
+                    Helper.setCodeMirrorValue($('#divKeys'), str.substring(1, str.length - 1));
+                }
+
+            }, 100);
+        }
+
+        if (query.queryParams.condition) {
+            Meteor.setTimeout(function () {
+                let str = JSON.stringify(query.queryParams.condition, null, 1).replace(/\\n/g, '\n');
+                Helper.setCodeMirrorValue($('#divCondition'), str.substring(1, str.length - 1));
+            }, 100);
+        }
+
+        if (query.queryParams.initial) {
+            Meteor.setTimeout(function () {
+                let str = JSON.stringify(query.queryParams.initial, null, 1).replace(/\\n/g, '\n');
+                Helper.setCodeMirrorValue($('#divInitial'), str.substring(1, str.length - 1));
             }, 100);
         }
 
@@ -110,20 +127,17 @@ Template.group.renderQuery = function (query) {
             }, 100);
         }
 
-        if (query.queryParams.options) {
-            let optionsArray = [];
-            for (let property in query.queryParams.options) {
-                if (query.queryParams.options.hasOwnProperty(property) && (_.invert(Enums.MAP_REDUCE_OPTIONS))[property]) {
-                    optionsArray.push((_.invert(Enums.MAP_REDUCE_OPTIONS))[property]);
-                }
-            }
-
+        if (query.queryParams.finalize) {
             Meteor.setTimeout(function () {
-                $('#cmbMapReduceOptions').val(optionsArray).trigger('chosen:updated');
-                Session.set(Helper.strSessionSelectedOptions, optionsArray);
-
+                let str = JSON.stringify(query.queryParams.finalize, null, 1).replace(/\\n/g, '\n');
+                Helper.setCodeMirrorValue($('#divFinalize'), str.substring(1, str.length - 1));
             }, 100);
         }
 
+        if (query.queryParams.command) {
+            Meteor.setTimeout(function () {
+                $('#divCommand').iCheck(query.queryParams.options.command ? 'check' : 'uncheck');
+            }, 100);
+        }
     }
 };

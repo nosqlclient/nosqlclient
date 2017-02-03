@@ -123,7 +123,7 @@ Template.updateMany.renderQuery = function (query) {
                     let option = optionsArray[i];
                     let inverted = (_.invert(Enums.UPDATE_OPTIONS));
                     if (option === inverted.upsert) {
-                        $('#divVerbose').iCheck(query.queryParams.options.upsert ? 'check' : 'uncheck');
+                        $('#divUpsert').iCheck(query.queryParams.options.upsert ? 'check' : 'uncheck');
                     }
                 }
             }, 200);

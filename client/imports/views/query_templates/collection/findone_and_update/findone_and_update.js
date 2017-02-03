@@ -111,6 +111,9 @@ Template.findOneAndUpdate.renderQuery = function (query) {
                     if (option === inverted.sort) {
                         Helper.setCodeMirrorValue($('#divSort'), JSON.stringify(query.queryParams.options.sort, null, 1));
                     }
+                    if (option === inverted.maxTimeMS) {
+                        $('#inputMaxTimeMs').val(query.queryParams.options.maxTimeMS);
+                    }
                     if (option === inverted.upsert) {
                         $('#divUpsert').iCheck(query.queryParams.options.upsert ? 'check' : 'uncheck');
                     }

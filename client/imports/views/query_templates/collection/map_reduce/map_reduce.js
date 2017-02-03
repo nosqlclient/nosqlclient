@@ -128,6 +128,9 @@ Template.mapReduce.renderQuery = function (query) {
                     if (option === inverted.verbose) {
                         $('#divVerbose').iCheck(query.queryParams.options.verbose ? 'check' : 'uncheck');
                     }
+                    if (option === inverted.keeptemp) {
+                        $('#divKeepTemp').iCheck(query.queryParams.options.keeptemp ? 'check' : 'uncheck');
+                    }
                     if (option === inverted.bypassDocumentValidation) {
                         $('#divBypassDocumentValidation').iCheck(query.queryParams.options.bypassDocumentValidation ? 'check' : 'uncheck');
                     }

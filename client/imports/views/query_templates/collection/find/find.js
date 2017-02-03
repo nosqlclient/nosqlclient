@@ -163,6 +163,9 @@ Template.find.renderQuery = function (query) {
                     if (option === inverted.limit) {
                         $('#inputLimit').val(query.queryParams.cursorOptions.limit);
                     }
+                    if (option === inverted.maxTimeMS) {
+                        $('#inputMaxTimeMs').val(query.queryParams.cursorOptions.maxTimeMS);
+                    }
                     if (option === inverted.max) {
                         Helper.setCodeMirrorValue($('#divMax'), JSON.stringify(query.queryParams.cursorOptions.max, null, 1));
                     }

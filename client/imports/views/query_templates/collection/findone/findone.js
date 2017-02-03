@@ -1,13 +1,12 @@
-import {Template} from 'meteor/templating';
-import {Meteor} from 'meteor/meteor';
-import {Session} from 'meteor/session';
-import Helper from '/client/imports/helper';
-import Enums from '/lib/imports/enums';
-import {initExecuteQuery} from '/client/imports/views/pages/browse_collection/browse_collection';
-import {getSelectorValue} from '/client/imports/views/query_templates_options/selector/selector';
-import {getCursorOptions} from '/client/imports/views/query_templates_options/cursor_options/cursor_options';
-
-import './findone.html';
+import {Template} from "meteor/templating";
+import {Meteor} from "meteor/meteor";
+import {Session} from "meteor/session";
+import Helper from "/client/imports/helper";
+import Enums from "/lib/imports/enums";
+import {initExecuteQuery} from "/client/imports/views/pages/browse_collection/browse_collection";
+import {getSelectorValue} from "/client/imports/views/query_templates_options/selector/selector";
+import {getCursorOptions} from "/client/imports/views/query_templates_options/cursor_options/cursor_options";
+import "./findone.html";
 
 const toastr = require('toastr');
 const Ladda = require('ladda');
@@ -99,6 +98,9 @@ Template.findOne.renderQuery = function (query) {
                     }
                     if (option === inverted.sort) {
                         Helper.setCodeMirrorValue($('#divSort'), JSON.stringify(query.queryParams.cursorOptions.sort, null, 1));
+                    }
+                    if (option === inverted.maxTimeMS) {
+                        $('#inputMaxTimeMs').val(query.queryParams.cursorOptions.maxTimeMS);
                     }
                     if (option === inverted.max) {
                         Helper.setCodeMirrorValue($('#divMax'), JSON.stringify(query.queryParams.cursorOptions.max, null, 1));

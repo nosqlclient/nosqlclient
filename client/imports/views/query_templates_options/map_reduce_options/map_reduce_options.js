@@ -1,15 +1,13 @@
-import {Template} from 'meteor/templating';
-import Helper from '/client/imports/helper';
-import Enums from '/lib/imports/enums';
-import {Session} from 'meteor/session';
-import {$} from 'meteor/jquery';
-
-import '/client/imports/views/query_templates_options/sort/sort';
-import '/client/imports/views/query_templates_options/limit/limit.html';
-import '/client/imports/views/query_templates_options/selector/selector';
-import '/client/imports/views/query_templates_options/bypass_document_validation/bypass_document_validation';
-
-import './map_reduce_options.html';
+import {Template} from "meteor/templating";
+import Helper from "/client/imports/helper";
+import Enums from "/lib/imports/enums";
+import {Session} from "meteor/session";
+import {$} from "meteor/jquery";
+import "/client/imports/views/query_templates_options/sort/sort";
+import "/client/imports/views/query_templates_options/limit/limit.html";
+import "/client/imports/views/query_templates_options/selector/selector";
+import "/client/imports/views/query_templates_options/bypass_document_validation/bypass_document_validation";
+import "./map_reduce_options.html";
 /**
  * Created by RSercan on 3.1.2016.
  */
@@ -67,31 +65,19 @@ export const getOptions = function () {
 
 
     if ($.inArray("VERBOSE", Session.get(Helper.strSessionSelectedOptions)) != -1) {
-        const verBose = $('#divVerbose').iCheck('update')[0].checked;
-        if (verBose) {
-            result[Enums.MAP_REDUCE_OPTIONS.VERBOSE] = verBose;
-        }
+        result[Enums.MAP_REDUCE_OPTIONS.VERBOSE] = $('#divVerbose').iCheck('update')[0].checked;
     }
 
     if ($.inArray("KEEP_TEMP", Session.get(Helper.strSessionSelectedOptions)) != -1) {
-        const keepTemp = $('#divKeepTemp').iCheck('update')[0].checked;
-        if (keepTemp) {
-            result[Enums.MAP_REDUCE_OPTIONS.KEEP_TEMP] = keepTemp;
-        }
+        result[Enums.MAP_REDUCE_OPTIONS.KEEP_TEMP] = $('#divKeepTemp').iCheck('update')[0].checked;
     }
 
     if ($.inArray("JS_MODE", Session.get(Helper.strSessionSelectedOptions)) != -1) {
-        const jsMode = $('#divJsMode').iCheck('update')[0].checked;
-        if (jsMode) {
-            result[Enums.MAP_REDUCE_OPTIONS.JS_MODE] = jsMode;
-        }
+        result[Enums.MAP_REDUCE_OPTIONS.JS_MODE] = $('#divJsMode').iCheck('update')[0].checked;
     }
 
     if ($.inArray("BYPASS_DOCUMENT_VALIDATION", Session.get(Helper.strSessionSelectedOptions)) != -1) {
-        const byPassDocValidation = $('#divBypassDocumentValidation').iCheck('update')[0].checked;
-        if (byPassDocValidation) {
-            result[Enums.MAP_REDUCE_OPTIONS.BYPASS_DOCUMENT_VALIDATION] = byPassDocValidation;
-        }
+        result[Enums.MAP_REDUCE_OPTIONS.BYPASS_DOCUMENT_VALIDATION] = $('#divBypassDocumentValidation').iCheck('update')[0].checked;
     }
 
     return result;

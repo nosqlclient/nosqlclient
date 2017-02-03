@@ -1,12 +1,11 @@
-import {Template} from 'meteor/templating';
-import {Meteor} from 'meteor/meteor';
-import Helper from '/client/imports/helper';
-import {Session} from 'meteor/session';
-import Enums from '/lib/imports/enums';
-import {initExecuteQuery} from '/client/imports/views/pages/browse_collection/browse_collection';
-import {getOptions} from '/client/imports/views/query_templates_options/create_index_options/create_index_options';
-
-import './create_index.html';
+import {Template} from "meteor/templating";
+import {Meteor} from "meteor/meteor";
+import Helper from "/client/imports/helper";
+import {Session} from "meteor/session";
+import Enums from "/lib/imports/enums";
+import {initExecuteQuery} from "/client/imports/views/pages/browse_collection/browse_collection";
+import {getOptions} from "/client/imports/views/query_templates_options/create_index_options/create_index_options";
+import "./create_index.html";
 
 
 const toastr = require('toastr');
@@ -89,6 +88,9 @@ Template.createIndex.renderQuery = function (query) {
                 for (let i = 0; i < optionsArray.length; i++) {
                     let option = optionsArray[i];
                     let inverted = (_.invert(Enums.CREATE_INDEX_OPTIONS));
+                    if (option === inverted.collation) {
+                        Helper.setCodeMirrorValue($('#divCollation'), JSON.stringify(query.queryParams.options.collation, null, 1));
+                    }
                     if (option === inverted.max) {
                         Helper.setCodeMirrorValue($('#divMax'), JSON.stringify(query.queryParams.options.max, null, 1));
                     }
@@ -98,14 +100,20 @@ Template.createIndex.renderQuery = function (query) {
                     if (option === inverted.unique) {
                         $('#divUnique').iCheck(query.queryParams.options.unique ? 'check' : 'uncheck');
                     }
+                    if (option === inverted.dropDups) {
+                        $('#divDropDups').iCheck(query.queryParams.options.dropDups ? 'check' : 'uncheck');
+                    }
                     if (option === inverted.sparse) {
-                        $('#divUnique').iCheck(query.queryParams.options.sparse ? 'check' : 'uncheck');
+                        $('#divSparse').iCheck(query.queryParams.options.sparse ? 'check' : 'uncheck');
                     }
                     if (option === inverted.background) {
-                        $('#divUnique').iCheck(query.queryParams.options.background ? 'check' : 'uncheck');
+                        $('#divBackground').iCheck(query.queryParams.options.background ? 'check' : 'uncheck');
                     }
                     if (option === inverted.name) {
                         $('#inputIndexName').val(query.queryParams.options.name);
+                    }
+                    if (option === inverted.expireAfterSeconds) {
+                        $('#inputExpireAfterSeconds').val(query.queryParams.options.expireAfterSeconds);
                     }
                 }
             }, 200);

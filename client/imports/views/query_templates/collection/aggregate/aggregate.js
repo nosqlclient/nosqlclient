@@ -1,12 +1,11 @@
-import {Template} from 'meteor/templating';
-import {Meteor} from 'meteor/meteor';
-import Helper from '/client/imports/helper';
-import {Session} from 'meteor/session';
-import Enums from '/lib/imports/enums';
-import {initExecuteQuery} from '/client/imports/views/pages/browse_collection/browse_collection';
-import {getAggregateOptions} from '/client/imports/views/query_templates_options/aggregate_options/aggregate_options';
-
-import './aggregate.html';
+import {Template} from "meteor/templating";
+import {Meteor} from "meteor/meteor";
+import Helper from "/client/imports/helper";
+import {Session} from "meteor/session";
+import Enums from "/lib/imports/enums";
+import {initExecuteQuery} from "/client/imports/views/pages/browse_collection/browse_collection";
+import {getAggregateOptions} from "/client/imports/views/query_templates_options/aggregate_options/aggregate_options";
+import "./aggregate.html";
 
 const toastr = require('toastr');
 const Ladda = require('ladda');
@@ -67,5 +66,43 @@ Template.aggregate.renderQuery = function (query) {
         Meteor.setTimeout(function () {
             Helper.setCodeMirrorValue($('#divPipeline'), JSON.stringify(query.queryParams.pipeline, null, 1));
         }, 100);
+    }
+
+
+    if (query.queryParams.options) {
+        let optionsArray = [];
+        for (let property in query.queryParams.options) {
+            if (query.queryParams.options.hasOwnProperty(property) && (_.invert(Enums.AGGREGATE_OPTIONS))[property]) {
+                optionsArray.push((_.invert(Enums.AGGREGATE_OPTIONS))[property]);
+            }
+        }
+
+        Meteor.setTimeout(function () {
+            $('#cmbAggregateOptions').val(optionsArray).trigger('chosen:updated');
+            Session.set(Helper.strSessionSelectedOptions, optionsArray);
+        }, 100);
+
+        // options load
+        Meteor.setTimeout(function () {
+            for (let i = 0; i < optionsArray.length; i++) {
+                let option = optionsArray[i];
+                let inverted = (_.invert(Enums.AGGREGATE_OPTIONS));
+                if (option === inverted.collation) {
+                    Helper.setCodeMirrorValue($('#divCollation'), JSON.stringify(query.queryParams.options.collation, null, 1));
+                }
+                if (option === inverted.bypassDocumentValidation) {
+                    $('#divBypassDocumentValidation').iCheck(query.queryParams.options.bypassDocumentValidation ? 'check' : 'uncheck');
+                }
+                if (option === inverted.maxTimeMS) {
+                    $('#inputMaxTimeMs').val(query.queryParams.options.maxTimeMS);
+                }
+                if (option === inverted.allowDiskUse) {
+                    $('#divAllowDiskUse').iCheck(query.queryParams.options.allowDiskUse ? 'check' : 'uncheck');
+                }
+                if (option === inverted.explain) {
+                    $('#divExecuteExplain').iCheck(query.queryParams.options.explain ? 'check' : 'uncheck');
+                }
+            }
+        }, 200);
     }
 };

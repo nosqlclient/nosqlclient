@@ -1,13 +1,12 @@
-import {Template} from 'meteor/templating';
-import Helper from '/client/imports/helper';
-import Enums from '/lib/imports/enums';
-import {Session} from 'meteor/session';
-import {$} from 'meteor/jquery';
-
-import '/client/imports/views/query_templates_options/min/min';
-import '/client/imports/views/query_templates_options/max/max';
-import '/client/imports/views/query_templates_options/collation/collation';
-import './create_index_options.html';
+import {Template} from "meteor/templating";
+import Helper from "/client/imports/helper";
+import Enums from "/lib/imports/enums";
+import {Session} from "meteor/session";
+import {$} from "meteor/jquery";
+import "/client/imports/views/query_templates_options/min/min";
+import "/client/imports/views/query_templates_options/max/max";
+import "/client/imports/views/query_templates_options/collation/collation";
+import "./create_index_options.html";
 
 
 /**
@@ -45,17 +44,11 @@ export const getOptions = function () {
     Helper.checkAndAddOption("COLLATION", $('#divCollation'), result, Enums.CREATE_INDEX_OPTIONS);
 
     if ($.inArray("UNIQUE", Session.get(Helper.strSessionSelectedOptions)) != -1) {
-        const uniqueVal = $('#divUnique').iCheck('update')[0].checked;
-        if (uniqueVal) {
-            result[Enums.CREATE_INDEX_OPTIONS.UNIQUE] = uniqueVal;
-        }
+        result[Enums.CREATE_INDEX_OPTIONS.UNIQUE] = $('#divUnique').iCheck('update')[0].checked;
     }
 
     if ($.inArray("DROP_DUPS", Session.get(Helper.strSessionSelectedOptions)) != -1) {
-        const dropDups = $('#divDropDups').iCheck('update')[0].checked;
-        if (dropDups) {
-            result[Enums.CREATE_INDEX_OPTIONS.DROP_DUPS] = dropDups;
-        }
+        result[Enums.CREATE_INDEX_OPTIONS.DROP_DUPS] = $('#divDropDups').iCheck('update')[0].checked;
     }
 
     if ($.inArray("EXPIRE_AFTER_SECONDS", Session.get(Helper.strSessionSelectedOptions)) != -1) {
@@ -66,17 +59,11 @@ export const getOptions = function () {
     }
 
     if ($.inArray("SPARSE", Session.get(Helper.strSessionSelectedOptions)) != -1) {
-        const sparseVal = $('#divSparse').iCheck('update')[0].checked;
-        if (sparseVal) {
-            result[Enums.CREATE_INDEX_OPTIONS.SPARSE] = sparseVal;
-        }
+        result[Enums.CREATE_INDEX_OPTIONS.SPARSE] = $('#divSparse').iCheck('update')[0].checked;
     }
 
     if ($.inArray("BACKGROUND", Session.get(Helper.strSessionSelectedOptions)) != -1) {
-        const backgroundVal = $('#divBackground').iCheck('update')[0].checked;
-        if (backgroundVal) {
-            result[Enums.CREATE_INDEX_OPTIONS.BACKGROUND] = backgroundVal;
-        }
+        result[Enums.CREATE_INDEX_OPTIONS.BACKGROUND] = $('#divBackground').iCheck('update')[0].checked;
     }
 
     if ($.inArray("NAME", Session.get(Helper.strSessionSelectedOptions)) != -1) {

@@ -1,16 +1,13 @@
-import Helper from '/client/imports/helper';
-import Enums from '/lib/imports/enums';
-import {Session} from 'meteor/session';
-import {$} from 'meteor/jquery';
-
-import '/client/imports/views/query_templates_options/max_time_ms/max_time_ms.html';
-import '/client/imports/views/query_templates_options/project/project';
-import '/client/imports/views/query_templates_options/sort/sort';
-import '/client/imports/views/query_templates_options/return_original/return_original';
-import '/client/imports/views/query_templates_options/upsert/upsert';
-
-
-import './findone_modify_options.html';
+import Helper from "/client/imports/helper";
+import Enums from "/lib/imports/enums";
+import {Session} from "meteor/session";
+import {$} from "meteor/jquery";
+import "/client/imports/views/query_templates_options/max_time_ms/max_time_ms.html";
+import "/client/imports/views/query_templates_options/project/project";
+import "/client/imports/views/query_templates_options/sort/sort";
+import "/client/imports/views/query_templates_options/return_original/return_original";
+import "/client/imports/views/query_templates_options/upsert/upsert";
+import "./findone_modify_options.html";
 
 /**
  * Created by RSercan on 1.1.2016.
@@ -21,10 +18,7 @@ export const getOptions = function () {
     Helper.checkAndAddOption("SORT", $('#divSort'), result, Enums.FINDONE_MODIFY_OPTIONS);
 
     if ($.inArray("RETURN_ORIGINAL", Session.get(Helper.strSessionSelectedOptions)) != -1) {
-        const returnOrgVal = $('#divReturnOriginal').iCheck('update')[0].checked;
-        if (returnOrgVal) {
-            result[Enums.FINDONE_MODIFY_OPTIONS.RETURN_ORIGINAL] = returnOrgVal;
-        }
+        result[Enums.FINDONE_MODIFY_OPTIONS.RETURN_ORIGINAL] = $('#divReturnOriginal').iCheck('update')[0].checked;
     }
 
     if ($.inArray("MAX_TIME_MS", Session.get(Helper.strSessionSelectedOptions)) != -1) {
@@ -35,10 +29,7 @@ export const getOptions = function () {
     }
 
     if ($.inArray("UPSERT", Session.get(Helper.strSessionSelectedOptions)) != -1) {
-        const upsertVal = $('#divUpsert').iCheck('update')[0].checked;
-        if (upsertVal) {
-            result[Enums.FINDONE_MODIFY_OPTIONS.UPSERT] = upsertVal;
-        }
+        result[Enums.FINDONE_MODIFY_OPTIONS.UPSERT] = $('#divUpsert').iCheck('update')[0].checked;
     }
 
     return result;

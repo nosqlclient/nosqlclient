@@ -1,12 +1,11 @@
-import {Template} from 'meteor/templating';
-import {Meteor} from 'meteor/meteor';
-import {Session} from 'meteor/session';
-import Helper from '/client/imports/helper';
-import Enums from '/lib/imports/enums';
-import {initExecuteQuery} from '/client/imports/views/pages/browse_collection/browse_collection';
-import {getBulkWriteOptions} from '/client/imports/views/query_templates_options/bulk_write_options/bulk_write_options';
-
-import './bulk_write.html';
+import {Template} from "meteor/templating";
+import {Meteor} from "meteor/meteor";
+import {Session} from "meteor/session";
+import Helper from "/client/imports/helper";
+import Enums from "/lib/imports/enums";
+import {initExecuteQuery} from "/client/imports/views/pages/browse_collection/browse_collection";
+import {getBulkWriteOptions} from "/client/imports/views/query_templates_options/bulk_write_options/bulk_write_options";
+import "./bulk_write.html";
 
 /**
  * Created by RSercan on 15.10.2016.
@@ -64,5 +63,34 @@ Template.bulkWrite.renderQuery = function (query) {
         Meteor.setTimeout(function () {
             Helper.setCodeMirrorValue($('#divBulkWrite'), JSON.stringify(query.queryParams.selector, null, 1));
         }, 100);
+    }
+
+    if (query.queryParams.options) {
+        let optionsArray = [];
+        for (let property in query.queryParams.options) {
+            if (query.queryParams.options.hasOwnProperty(property) && (_.invert(Enums.BULK_WRITE_OPTIONS))[property]) {
+                optionsArray.push((_.invert(Enums.BULK_WRITE_OPTIONS))[property]);
+            }
+        }
+
+        Meteor.setTimeout(function () {
+            $('#cmbBulkWriteOptions').val(optionsArray).trigger('chosen:updated');
+            Session.set(Helper.strSessionSelectedOptions, optionsArray);
+        }, 100);
+
+        // options load
+        Meteor.setTimeout(function () {
+            for (let i = 0; i < optionsArray.length; i++) {
+                let option = optionsArray[i];
+                let inverted = (_.invert(Enums.BULK_WRITE_OPTIONS));
+                if (option === inverted.ordered) {
+                    $('#inputOrdered').val(query.queryParams.options.ordered);
+                }
+                if (option === inverted.bypassDocumentValidation) {
+                    $('#divBypassDocumentValidation').iCheck(query.queryParams.options.bypassDocumentValidation ? 'check' : 'uncheck');
+                }
+            }
+
+        }, 200);
     }
 };

@@ -1,13 +1,12 @@
-import {Template} from 'meteor/templating';
-import {Meteor} from 'meteor/meteor';
-import {Session} from 'meteor/session';
-import Helper from '/client/imports/helper';
-import Enums from '/lib/imports/enums';
-import {initExecuteQuery} from '/client/imports/views/pages/browse_collection/browse_collection';
-import {getSelectorValue} from '/client/imports/views/query_templates_options/selector/selector';
-import {getOptions} from '/client/imports/views/query_templates_options/findone_modify_options/findone_modify_options';
-
-import './findone_and_delete.html';
+import {Template} from "meteor/templating";
+import {Meteor} from "meteor/meteor";
+import {Session} from "meteor/session";
+import Helper from "/client/imports/helper";
+import Enums from "/lib/imports/enums";
+import {initExecuteQuery} from "/client/imports/views/pages/browse_collection/browse_collection";
+import {getSelectorValue} from "/client/imports/views/query_templates_options/selector/selector";
+import {getOptions} from "/client/imports/views/query_templates_options/findone_modify_options/findone_modify_options";
+import "./findone_and_delete.html";
 
 const toastr = require('toastr');
 const Ladda = require('ladda');
@@ -98,6 +97,9 @@ Template.findOneAndDelete.renderQuery = function (query) {
                     }
                     if (option === inverted.sort) {
                         Helper.setCodeMirrorValue($('#divSort'), JSON.stringify(query.queryParams.options.sort, null, 1));
+                    }
+                    if (option === inverted.maxTimeMS) {
+                        $('#inputMaxTimeMs').val(query.queryParams.options.maxTimeMS);
                     }
                 }
             }, 200);
