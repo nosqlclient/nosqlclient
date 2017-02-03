@@ -7,9 +7,12 @@ import {Connections} from "/lib/imports/collections/connections";
 import Helper from "/client/imports/helper";
 import {connect} from "/client/imports/views/layouts/top_navbar/connections/connections";
 import "./add_collection/add_collection";
+import {initializeFilterTable} from "./filter_collection/filter_collection";
 import "./navigation.html";
 
 const toastr = require('toastr');
+
+export let filterRegex = "", excludedCollectionsByFilter = [];
 
 const handleNavigationAndSessions = function () {
     $('#listCollectionNames').find('li').each(function (index, li) {
@@ -193,6 +196,11 @@ Template.navigation.events({
 });
 
 Template.navigation.onRendered(function () {
+    const filterModal = $('#collectionFilterModal');
+    filterModal.on('shown.bs.modal', function () {
+        initializeFilterTable();
+    });
+
     $.contextMenu({
         selector: ".navCollection",
         items: {
@@ -201,6 +209,13 @@ Template.navigation.onRendered(function () {
                     $('#collectionAddModal').modal('show');
                 }
             },
+
+            filter_collections: {
+                name: "Filter Collections", icon: "fa-filter", callback: function () {
+                    filterModal.modal('show');
+                }
+            },
+
             drop_collection: {
                 name: "Drop Collection", icon: "fa-trash", callback: function () {
                     if ($(this) && $(this).context && $(this).context.innerText) {
