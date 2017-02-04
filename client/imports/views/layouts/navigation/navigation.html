@@ -136,9 +136,13 @@
                     </li>
 
                     <li>
-                        <a href=""><i class="fa fa-dashboard"></i> <span
+                        <a class="navCollectionTop" href=""><i class="fa fa-dashboard"></i> <span
                                 class="nav-label">Collections</span>
                             <span class="fa arrow pull-right"></span>
+
+                            {{#if filtered}}
+                                <span title="Filtered" style="margin-left: 15px" class="label label-info">Filtered</span>
+                            {{/if}}
                         </a>
 
                         <ul id="listCollectionNames" class="nav nav-second-level">

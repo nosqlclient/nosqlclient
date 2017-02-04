@@ -1,5 +1,6 @@
 /*global swal*/
 import {Meteor} from "meteor/meteor";
+import {ReactiveVar} from "meteor/reactive-var";
 import {Template} from "meteor/templating";
 import {Session} from "meteor/session";
 import {FlowRouter} from "meteor/kadira:flow-router";
@@ -12,7 +13,13 @@ import "./navigation.html";
 
 const toastr = require('toastr');
 
-export let filterRegex = "", excludedCollectionsByFilter = [];
+export let filterRegex = new ReactiveVar(""), excludedCollectionsByFilter = new ReactiveVar([]);
+export const setExcludedCollectionsByFilter = function (arr) {
+    excludedCollectionsByFilter.set(arr);
+};
+export const setFilterRegex = function (regex) {
+    filterRegex.set(regex);
+};
 
 const handleNavigationAndSessions = function () {
     $('#listCollectionNames').find('li').each(function (index, li) {
@@ -202,43 +209,54 @@ Template.navigation.onRendered(function () {
     });
 
     $.contextMenu({
-        selector: ".navCollection",
-        items: {
-            add_collection: {
-                name: "Add Collection", icon: "fa-plus", callback: function () {
-                    $('#collectionAddModal').modal('show');
-                }
-            },
+        selector: ".navCollection, .navCollectionTop",
+        build: function (trigger) {
+            let items = {
+                add_collection: {
+                    name: "Add Collection", icon: "fa-plus", callback: function () {
+                        $('#collectionAddModal').modal('show');
+                    }
+                },
 
-            filter_collections: {
-                name: "Filter Collections", icon: "fa-filter", callback: function () {
-                    filterModal.modal('show');
-                }
-            },
+                filter_collections: {
+                    name: "Filter Collections", icon: "fa-filter", callback: function () {
+                        filterModal.modal('show');
+                    }
+                },
 
-            drop_collection: {
-                name: "Drop Collection", icon: "fa-trash", callback: function () {
-                    if ($(this) && $(this).context && $(this).context.innerText) {
-                        let collectionName = $(this).context.innerText.substring(1);
-                        swal({
-                            title: "Are you sure?",
-                            text: collectionName + " collection will be dropped, are you sure ?",
-                            type: "warning",
-                            showCancelButton: true,
-                            confirmButtonColor: "#DD6B55",
-                            confirmButtonText: "Yes, drop it!",
-                            closeOnConfirm: true
-                        }, function (isConfirm) {
-                            if (isConfirm) {
-                                dropCollection(collectionName);
-                            }
-                        });
-                    } else {
-                        toastr.warning('No collection selected !');
+                drop_collection: {
+                    name: "Drop Collection", icon: "fa-trash", callback: function () {
+                        if ($(this) && $(this).context && $(this).context.innerText) {
+                            let collectionName = $(this).context.innerText.substring(1);
+                            swal({
+                                title: "Are you sure?",
+                                text: collectionName + " collection will be dropped, are you sure ?",
+                                type: "warning",
+                                showCancelButton: true,
+                                confirmButtonColor: "#DD6B55",
+                                confirmButtonText: "Yes, drop it!",
+                                closeOnConfirm: true
+                            }, function (isConfirm) {
+                                if (isConfirm) {
+                                    dropCollection(collectionName);
+                                }
+                            });
+                        } else {
+                            toastr.warning('No collection selected !');
+                        }
                     }
                 }
+            };
+
+            if (trigger.hasClass('navCollectionTop')) {
+                delete items.drop_collection;
             }
+
+            return {
+                items: items
+            };
         }
+
     });
 });
 
@@ -251,11 +269,24 @@ Template.navigation.helpers({
         });
     },
 
+    filtered (){
+        if (filterRegex.get() || excludedCollectionsByFilter.get().length !== 0) {
+            return true;
+        }
+    },
+
     getCollectionNames () {
         const collectionNames = Session.get(Helper.strSessionCollectionNames);
         if (collectionNames != undefined) {
             const result = [];
             collectionNames.forEach(function (collectionName) {
+                if (filterRegex.get() && !collectionName.name.match(new RegExp(filterRegex.get(), "i"))) {
+                    return;
+                }
+                if ($.inArray(collectionName.name, excludedCollectionsByFilter.get()) !== -1) {
+                    return;
+                }
+
                 if (!collectionName.name.startsWith('system')) {
                     result.push(collectionName);
                 }
@@ -272,6 +303,13 @@ Template.navigation.helpers({
         if (collectionNames != undefined) {
             const result = [];
             collectionNames.forEach(function (collectionName) {
+                if (filterRegex.get() && !collectionName.name.match(new RegExp(filterRegex.get(), "i"))) {
+                    return;
+                }
+                if ($.inArray(collectionName.name, excludedCollectionsByFilter.get()) !== -1) {
+                    return;
+                }
+
                 if (collectionName.name.startsWith('system')) {
                     result.push(collectionName);
                 }
