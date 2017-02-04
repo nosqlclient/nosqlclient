@@ -45,8 +45,7 @@ Template.settings.events({
     'click #btnSaveSettings' (e) {
         e.preventDefault();
 
-        const laddaButton = Ladda.create(document.querySelector('#btnSaveSettings'));
-        laddaButton.start();
+        Ladda.create(document.querySelector('#btnSaveSettings')).start();
 
         Meteor.call('updateSettings', getSettingsFromForm());
         toastr.success('Successfuly saved !');

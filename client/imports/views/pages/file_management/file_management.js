@@ -42,8 +42,7 @@ const convertObjectIdAndDateToString = function (arr) {
 };
 
 export const initFilesInformation = function () {
-    const l = Ladda.create(document.querySelector('#btnReloadFiles'));
-    l.start();
+    Ladda.create(document.querySelector('#btnReloadFiles')).start();
 
     let selector = getSelectorValue();
 
@@ -182,8 +181,7 @@ Template.fileManagement.events({
             }, function (isConfirm) {
                 if (isConfirm) {
 
-                    const l = Ladda.create(document.querySelector('#btnReloadFiles'));
-                    l.start();
+                    Ladda.create(document.querySelector('#btnReloadFiles')).start();
                     Meteor.call('deleteFile', $('#txtBucketName').val(), fileRow._id, function (err) {
                         if (err) {
                             toastr.error("Couldn't delete: " + err.message);
@@ -211,8 +209,7 @@ Template.fileManagement.events({
         }, function (isConfirm) {
             if (isConfirm) {
 
-                const l = Ladda.create(document.querySelector('#btnUpdateMetadata'));
-                l.start();
+                Ladda.create(document.querySelector('#btnUpdateMetadata')).start();
                 const jsonEditor = $('#jsonEditorOfMetadata').data('jsoneditor');
                 const setValue = jsonEditor.get();
                 delete setValue._id;
@@ -236,8 +233,7 @@ Template.fileManagement.events({
     'click .editor_show_metadata' (e) {
         e.preventDefault();
 
-        const l = Ladda.create(document.querySelector('#btnClose'));
-        l.start();
+        Ladda.create(document.querySelector('#btnClose')).start();
 
         const fileRow = Session.get(Helper.strSessionSelectedFile);
         if (fileRow) {

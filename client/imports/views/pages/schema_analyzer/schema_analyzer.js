@@ -1,14 +1,13 @@
 /**
  * Created by sercan on 02.12.2016.
  */
-import {Template} from 'meteor/templating';
-import {Meteor} from 'meteor/meteor';
-import {Session} from 'meteor/session';
-import {FlowRouter} from 'meteor/kadira:flow-router';
-import Helper from '/client/imports/helper';
-import SchemaAnalyzeResult from '/lib/imports/collections/schema_analyze_result';
-
-import './schema_analyzer.html';
+import {Template} from "meteor/templating";
+import {Meteor} from "meteor/meteor";
+import {Session} from "meteor/session";
+import {FlowRouter} from "meteor/kadira:flow-router";
+import Helper from "/client/imports/helper";
+import SchemaAnalyzeResult from "/lib/imports/collections/schema_analyze_result";
+import "./schema_analyzer.html";
 
 const toastr = require('toastr');
 const Ladda = require('ladda');
@@ -144,9 +143,7 @@ Template.schemaAnalyzer.onRendered(function () {
                         return;
                     }
 
-                    const l = Ladda.create(document.querySelector('#btnAnalyzeNow'));
-                    l.start();
-
+                    Ladda.create(document.querySelector('#btnAnalyzeNow')).start();
                     populateFieldsTable(jsonData);
                     $('#divFieldsDetails').show();
 
@@ -173,8 +170,7 @@ Template.schemaAnalyzer.events({
             return;
         }
 
-        const l = Ladda.create(document.querySelector('#btnAnalyzeNow'));
-        l.start();
+        Ladda.create(document.querySelector('#btnAnalyzeNow')).start();
 
         Meteor.call("analyzeSchema", Session.get(Helper.strSessionConnection), collection, (err) => {
             if (err) {

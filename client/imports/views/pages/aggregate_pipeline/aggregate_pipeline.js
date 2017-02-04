@@ -88,9 +88,7 @@ Template.aggregatePipeline.events({
             return;
         }
 
-
-        const l = Ladda.create(document.querySelector('#btnExecuteAggregatePipeline'));
-        l.start();
+        Ladda.create(document.querySelector('#btnExecuteAggregatePipeline')).start();
 
         let pipeline;
         try {

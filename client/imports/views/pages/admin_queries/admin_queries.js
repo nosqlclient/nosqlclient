@@ -143,8 +143,7 @@ Template.adminQueries.helpers({
 });
 
 export const initExecuteQuery = function () {
-    const l = Ladda.create(document.querySelector('#btnExecuteAdminQuery'));
-    l.start();
+    Ladda.create(document.querySelector('#btnExecuteAdminQuery')).start();
 };
 
 export const setAdminResult = function (result) {

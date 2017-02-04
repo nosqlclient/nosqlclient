@@ -160,8 +160,7 @@ const clearQueryIfAdmin = function () {
 
 export const initExecuteQuery = function () {
     // loading button
-    const l = Ladda.create(document.querySelector('#btnExecuteQuery'));
-    l.start();
+    Ladda.create(document.querySelector('#btnExecuteQuery')).start();
 };
 
 export const setQueryResult = function (result, queryInfo, queryParams, saveHistory) {
@@ -507,8 +506,7 @@ const saveEditor = function () {
     }, function (isConfirm) {
         if (isConfirm) {
 
-            const l = Ladda.create(document.querySelector('#btnSaveFindOne'));
-            l.start();
+            Ladda.create(document.querySelector('#btnSaveFindOne')).start();
 
             const selectedCollection = Session.get(Helper.strSessionSelectedCollection);
             if (doc._id) {
@@ -546,8 +544,7 @@ const deleteDocument = function () {
     }, function (isConfirm) {
         if (isConfirm) {
 
-            const l = Ladda.create(document.querySelector('#btnDelFindOne'));
-            l.start();
+            Ladda.create(document.querySelector('#btnDelFindOne')).start();
 
             const selectedCollection = Session.get(Helper.strSessionSelectedCollection);
             if (doc._id) {

@@ -1,13 +1,12 @@
-import {Template} from 'meteor/templating';
-import {Meteor} from 'meteor/meteor';
-import {Session} from 'meteor/session';
-import {FlowRouter} from 'meteor/kadira:flow-router';
-import Helper from '/client/imports/helper';
-import {Connections} from '/lib/imports/collections/connections';
-import {initUsers, popEditUserModal} from './manage_users/manage_users';
-import {initRoles} from './manage_roles/manage_roles';
-
-import './user_management.html';
+import {Template} from "meteor/templating";
+import {Meteor} from "meteor/meteor";
+import {Session} from "meteor/session";
+import {FlowRouter} from "meteor/kadira:flow-router";
+import Helper from "/client/imports/helper";
+import {Connections} from "/lib/imports/collections/connections";
+import {initUsers, popEditUserModal} from "./manage_users/manage_users";
+import {initRoles} from "./manage_roles/manage_roles";
+import "./user_management.html";
 
 const Ladda = require('ladda');
 //var Clipboard = require('clipboard');
@@ -154,8 +153,7 @@ const getNodeInformation = function (node) {
 
 const getActionInfo = function (action) {
 
-    const l = Ladda.create(document.querySelector('#btnRefreshUsers'));
-    l.start();
+    Ladda.create(document.querySelector('#btnRefreshUsers')).start();
     loading = true;
 
     Meteor.call('getActionInfo', action, function (err, result) {
@@ -173,8 +171,7 @@ const getActionInfo = function (action) {
 
 const getResourceInfo = function (resourceType) {
 
-    const l = Ladda.create(document.querySelector('#btnRefreshUsers'));
-    l.start();
+    Ladda.create(document.querySelector('#btnRefreshUsers')).start();
     loading = true;
 
     Meteor.call('getResourceInfo', resourceType, function (err, result) {
@@ -192,8 +189,7 @@ const getResourceInfo = function (resourceType) {
 
 const getRoleInfo = function (role) {
 
-    const l = Ladda.create(document.querySelector('#btnRefreshUsers'));
-    l.start();
+    Ladda.create(document.querySelector('#btnRefreshUsers')).start();
     loading = true;
 
     Meteor.call('getRoleInfo', role, function (err, result) {
@@ -424,8 +420,7 @@ Template.userManagement.onRendered(function () {
 
     this.autorun(() => {
         if (settings.ready() && connections.ready() && actions.ready()) {
-            const l = Ladda.create(document.querySelector('#btnRefreshUsers'));
-            l.start();
+            Ladda.create(document.querySelector('#btnRefreshUsers')).start();
 
             const chckRunOnAdminDB = $('#aRunOnAdminDBToFetchUsers');
             chckRunOnAdminDB.iCheck({
@@ -459,10 +454,7 @@ Template.userManagement.events({
 
     'click #btnRefreshUsers'(e) {
         e.preventDefault();
-
-
-        const l = Ladda.create(document.querySelector('#btnRefreshUsers'));
-        l.start();
+        Ladda.create(document.querySelector('#btnRefreshUsers')).start();
 
         $("#userTree").jstree('destroy');
         initUserTree();

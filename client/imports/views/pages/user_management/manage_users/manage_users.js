@@ -1,10 +1,9 @@
-import {Template} from 'meteor/templating';
-import {Meteor} from 'meteor/meteor';
-import {Session} from 'meteor/session';
-import Helper from '/client/imports/helper';
-import {Connections} from '/lib/imports/collections/connections';
-
-import './manage_users.html';
+import {Template} from "meteor/templating";
+import {Meteor} from "meteor/meteor";
+import {Session} from "meteor/session";
+import Helper from "/client/imports/helper";
+import {Connections} from "/lib/imports/collections/connections";
+import "./manage_users.html";
 
 const JSONEditor = require('jsoneditor');
 const toastr = require('toastr');
@@ -37,7 +36,7 @@ const initiateRoleToAddTable = function () {
     const selector = $('#tblCurrentRoles');
     selector.find('tbody').on('click', 'tr', function () {
         const table = selector.DataTable();
-        Helper.doTableRowSelectable(table,$(this));
+        Helper.doTableRowSelectable(table, $(this));
 
         if (table.row(this).data()) {
             $('#inputAddRoleToUserRolename').val(table.row(this).data().role);
@@ -88,8 +87,7 @@ const populateUserRolesTable = function (roles, dataArray) {
 export const popEditUserModal = function (user) {
     $('#addEditUserModalTitle').text('Edit User');
 
-    const l = Ladda.create(document.querySelector('#btnCloseUMDB'));
-    l.start();
+    Ladda.create(document.querySelector('#btnCloseUMDB')).start();
 
     const connection = Connections.findOne({_id: Session.get(Helper.strSessionConnection)});
     const runOnAdminDB = $('#aRunOnAdminDBToFetchUsers').iCheck('update')[0].checked;
@@ -133,8 +131,7 @@ export const popEditUserModal = function (user) {
 export const initUsers = function () {
     // loading button
 
-    const l = Ladda.create(document.querySelector('#btnCloseUMDB'));
-    l.start();
+    Ladda.create(document.querySelector('#btnCloseUMDB')).start();
 
     const command = {
         usersInfo: 1,
@@ -229,11 +226,8 @@ Template.manageUsers.events({
         }, function (isConfirm) {
             if (isConfirm) {
 
-                const l = Ladda.create(document.querySelector('#btnCloseUMDB'));
-                l.start();
-
+                Ladda.create(document.querySelector('#btnCloseUMDB')).start();
                 const command = {dropUser: Session.get(Helper.strSessionUsermanagementUser).user};
-
                 const runOnAdminDB = $('#aRunOnAdminDBToFetchUsers').iCheck('update')[0].checked;
 
                 Meteor.call('command', command, runOnAdminDB, function (err, result) {
@@ -253,8 +247,7 @@ Template.manageUsers.events({
     'click .editor_show_custom_data' (e) {
         e.preventDefault();
 
-        const l = Ladda.create(document.querySelector('#btnCloseUMDB'));
-        l.start();
+        Ladda.create(document.querySelector('#btnCloseUMDB')).start();
 
         const selectedUser = Session.get(Helper.strSessionUsermanagementUser);
         if (selectedUser) {
@@ -340,9 +333,7 @@ Template.manageUsers.events({
         }
 
 
-        const l = Ladda.create(document.querySelector('#btnApplyAddEditUser'));
-        l.start();
-
+        Ladda.create(document.querySelector('#btnApplyAddEditUser')).start();
         const runOnAdminDB = $('#aRunOnAdminDBToFetchUsers').iCheck('update')[0].checked;
 
         Meteor.call('command', command, runOnAdminDB, function (err, result) {

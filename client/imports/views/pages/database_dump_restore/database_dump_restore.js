@@ -52,8 +52,7 @@ const initCollectionsForImport = function () {
 };
 
 const populateDatatable = function () {
-    const laddaButton = Ladda.create(document.querySelector('#btnTakeDump'));
-    laddaButton.start();
+    Ladda.create(document.querySelector('#btnTakeDump')).start();
 
     const tblDumps = $('#tblDumps');
     if ($.fn.dataTable.isDataTable('#tblDumps')) {
@@ -114,7 +113,7 @@ const populateDatatable = function () {
                             break;
                     }
 
-                    return isNaN(Number(cellData / scale).toFixed(2)) ? "0.00" : Number(cellData / scale).toFixed(2)+" "+text;
+                    return isNaN(Number(cellData / scale).toFixed(2)) ? "0.00" : Number(cellData / scale).toFixed(2) + " " + text;
                 },
                 className: 'center'
             },
@@ -174,8 +173,7 @@ Template.databaseDumpRestore.events({
             return;
         }
 
-        const laddaButton = Ladda.create(document.querySelector('#btnProceedMongoimport'));
-        laddaButton.start();
+        Ladda.create(document.querySelector('#btnProceedMongoimport')).start();
 
         const fileReader = new FileReader();
         fileReader.onload = function (file) {
@@ -217,8 +215,7 @@ Template.databaseDumpRestore.events({
         e.preventDefault();
         const settings = Settings.findOne();
 
-        const laddaButton = Ladda.create(document.querySelector('#btnTakeDump'));
-        laddaButton.start();
+        Ladda.create(document.querySelector('#btnTakeDump')).start();
 
         Meteor.call('takeDump', Session.get(Helper.strSessionConnection), settings.dumpPath, function (err) {
             if (err) {
@@ -245,8 +242,7 @@ Template.databaseDumpRestore.events({
                 closeOnConfirm: true
             }, function () {
 
-                const laddaButton = Ladda.create(document.querySelector('#btnTakeDump'));
-                laddaButton.start();
+                Ladda.create(document.querySelector('#btnTakeDump')).start();
 
                 const dumpInfo = Session.get(Helper.strSessionSelectedDump);
                 dumpInfo.status = Enums.DUMP_STATUS.IN_PROGRESS;

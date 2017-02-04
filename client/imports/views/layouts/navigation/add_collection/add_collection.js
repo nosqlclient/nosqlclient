@@ -28,8 +28,7 @@ Template.addCollection.events({
             return;
         }
 
-        const laddaButton = Ladda.create(document.querySelector('#btnCreateCollection'));
-        laddaButton.start();
+        Ladda.create(document.querySelector('#btnCreateCollection')).start();
 
         Meteor.call('createCollection', collectionName,  {
             size: size,

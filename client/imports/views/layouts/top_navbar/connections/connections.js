@@ -665,8 +665,7 @@ Template.connections.events({
     'click .editor_remove'  (e) {
         e.preventDefault();
 
-        let laddaButton = Ladda.create(document.querySelector('#btnConnect'));
-        laddaButton.start();
+        Ladda.create(document.querySelector('#btnConnect')).start();
 
         $('#tblConnection').DataTable().$('tr.selected').removeClass('selected');
         Meteor.call('removeConnection', Session.get(Helper.strSessionConnection), function (err) {
@@ -768,8 +767,7 @@ Template.connections.events({
         }
 
 
-        let laddaButton = Ladda.create(document.querySelector('#btnSaveConnection'));
-        laddaButton.start();
+        Ladda.create(document.querySelector('#btnSaveConnection')).start();
 
         let isEdit = $('#addEditConnectionModalTitle').text() == 'Edit Connection';
         let currentConnection;

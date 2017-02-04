@@ -50,8 +50,7 @@ Template.uploadFile.events({
 
 export const proceedUploading = function (blob, contentType, metaData, aliases) {
 
-    const l = Ladda.create(document.querySelector('#btnUpload'));
-    l.start();
+    Ladda.create(document.querySelector('#btnUpload')).start();
     const fileReader = new FileReader();
     fileReader.onload = function (file) {
         Meteor.call('uploadFile', $('#txtBucketName').val(), new Uint8Array(file.target.result), blob.name, contentType, metaData, aliases, function (err, result) {

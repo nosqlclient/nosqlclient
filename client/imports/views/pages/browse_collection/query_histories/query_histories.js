@@ -1,10 +1,9 @@
-import {Template} from 'meteor/templating';
-import {Session} from 'meteor/session';
-import {FlowRouter} from 'meteor/kadira:flow-router';
-import Helper from '/client/imports/helper';
-import {QueryHistory} from '/lib/imports/collections/query_history';
-
-import './query_histories.html';
+import {Template} from "meteor/templating";
+import {Session} from "meteor/session";
+import {FlowRouter} from "meteor/kadira:flow-router";
+import Helper from "/client/imports/helper";
+import {QueryHistory} from "/lib/imports/collections/query_history";
+import "./query_histories.html";
 
 const Ladda = require('ladda');
 
@@ -21,7 +20,7 @@ Template.queryHistories.onRendered(function () {
     const selector = $('#tblQueryHistories');
     selector.find('tbody').on('click', 'tr', function () {
         const table = selector.DataTable();
-        Helper.doTableRowSelectable(table,$(this));
+        Helper.doTableRowSelectable(table, $(this));
 
         if (table.row(this).data()) {
             const selectedId = table.row(this).data()._id;
@@ -44,8 +43,7 @@ Template.queryHistories.events({
 export const initQueryHistories = function () {
     // loading button
 
-    const l = Ladda.create(document.querySelector('#btnExecuteAgain'));
-    l.start();
+    Ladda.create(document.querySelector('#btnExecuteAgain')).start();
 
     const connectionId = Session.get(Helper.strSessionConnection);
     const selectedCollection = Session.get(Helper.strSessionSelectedCollection);

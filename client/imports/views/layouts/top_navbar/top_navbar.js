@@ -1,14 +1,13 @@
-import {Template} from 'meteor/templating';
-import {Meteor} from 'meteor/meteor';
-import {Session} from 'meteor/session';
-import {FlowRouter} from 'meteor/kadira:flow-router';
-import Helper from '/client/imports/helper';
-import {Connections} from '/lib/imports/collections/connections';
-import {connect, populateConnectionsTable} from '/client/imports/views/layouts/top_navbar/connections/connections';
-
-import '/client/imports/views/layouts/breaking_changes/breaking_changes';
-import '/client/imports/views/layouts/top_navbar/connections/connections';
-import './top_navbar.html';
+import {Template} from "meteor/templating";
+import {Meteor} from "meteor/meteor";
+import {Session} from "meteor/session";
+import {FlowRouter} from "meteor/kadira:flow-router";
+import Helper from "/client/imports/helper";
+import {Connections} from "/lib/imports/collections/connections";
+import {connect, populateConnectionsTable} from "/client/imports/views/layouts/top_navbar/connections/connections";
+import "/client/imports/views/layouts/breaking_changes/breaking_changes";
+import "/client/imports/views/layouts/top_navbar/connections/connections";
+import "./top_navbar.html";
 
 const toastr = require('toastr');
 const Ladda = require('ladda');
@@ -24,7 +23,7 @@ const init = function () {
     let selectorForSwitchDatabases = $('#tblSwitchDatabases');
     selectorForSwitchDatabases.find('tbody').on('click', 'tr', function () {
         let table = selectorForSwitchDatabases.DataTable();
-        Helper.doTableRowSelectable(table,$(this));
+        Helper.doTableRowSelectable(table, $(this));
 
         if (table.row(this).data()) {
             $('#inputDatabaseNameToSwitch').val(table.row(this).data().name);
@@ -135,8 +134,7 @@ Template.topNavbar.events({
         e.preventDefault();
         $('#switchDatabaseModal').modal('show');
 
-        let laddaButton = Ladda.create(document.querySelector('#btnConnectSwitchedDatabase'));
-        laddaButton.start();
+        Ladda.create(document.querySelector('#btnConnectSwitchedDatabase')).start();
 
         Meteor.call('listDatabases', function (err, result) {
             if (err || result.error) {
@@ -175,8 +173,7 @@ Template.topNavbar.events({
             return;
         }
 
-        let laddaButton = Ladda.create(document.querySelector('#btnConnectSwitchedDatabase'));
-        laddaButton.start();
+        Ladda.create(document.querySelector('#btnConnectSwitchedDatabase')).start();
         let connection = Connections.findOne({_id: Session.get(Helper.strSessionConnection)});
         connection.databaseName = selector.val();
         Meteor.call('updateConnection', connection);
@@ -215,10 +212,7 @@ Template.topNavbar.events({
 
     'click #btnConnect' () {
         // loading button
-
-        let laddaButton = Ladda.create(document.querySelector('#btnConnect'));
-        laddaButton.start();
-
+        Ladda.create(document.querySelector('#btnConnect')).start();
         connect(false);
     },
 

@@ -3,14 +3,12 @@
  */
 /*global _*/
 /*global swal*/
-
-import {Template} from 'meteor/templating';
-import {Meteor} from 'meteor/meteor';
-import {Session} from 'meteor/session';
-import Helper from '/client/imports/helper';
-import {Connections} from '/lib/imports/collections/connections';
-
-import './manage_roles.html';
+import {Template} from "meteor/templating";
+import {Meteor} from "meteor/meteor";
+import {Session} from "meteor/session";
+import Helper from "/client/imports/helper";
+import {Connections} from "/lib/imports/collections/connections";
+import "./manage_roles.html";
 
 const toastr = require('toastr');
 const Ladda = require('ladda');
@@ -18,8 +16,7 @@ const Ladda = require('ladda');
 const popEditRoleModal = function (role) {
     $('#addEditRoleModalTitle').text('Edit Role');
 
-    const l = Ladda.create(document.querySelector('#btnCloseUMRoles'));
-    l.start();
+    Ladda.create(document.querySelector('#btnCloseUMRoles')).start();
 
     const connection = Connections.findOne({_id: Session.get(Helper.strSessionConnection)});
     const runOnAdminDB = $('#aRunOnAdminDBToFetchUsers').iCheck('update')[0].checked;
@@ -443,8 +440,7 @@ const populateInheritRolesToSave = function () {
 export const initRoles = function () {
     // loading button
 
-    const l = Ladda.create(document.querySelector('#btnCloseUMRoles'));
-    l.start();
+    Ladda.create(document.querySelector('#btnCloseUMRoles')).start();
 
     const command = {
         rolesInfo: 1,
@@ -537,11 +533,9 @@ Template.manageRoles.events({
         }, function (isConfirm) {
             if (isConfirm) {
 
-                const l = Ladda.create(document.querySelector('#btnCloseUMRoles'));
-                l.start();
+                Ladda.create(document.querySelector('#btnCloseUMRoles')).start();
 
                 const command = {dropRole: Session.get(Helper.strSessionUsermanagementRole).role};
-
                 const runOnAdminDB = $('#aRunOnAdminDBToFetchUsers').iCheck('update')[0].checked;
 
                 Meteor.call('command', command, runOnAdminDB, function (err, result) {
@@ -573,8 +567,7 @@ Template.manageRoles.events({
         $('#addEditPrivilegeModalText').text('');
 
 
-        const l = Ladda.create(document.querySelector('#btnApplyAddPrivilegeToRole'));
-        l.start();
+        Ladda.create(document.querySelector('#btnApplyAddPrivilegeToRole')).start();
 
         const selectedResource = Session.get(Helper.strSessionUsermanagementPrivilege).resource;
         let dbToSelect = '', collectionToSelect = '';
@@ -611,8 +604,7 @@ Template.manageRoles.events({
         $('#addEditPrivilegeModalText').text('Role ' + (Session.get(Helper.strSessionUsermanagementRole) ? Session.get(Helper.strSessionUsermanagementRole).role : ''));
 
 
-        const l = Ladda.create(document.querySelector('#btnApplyAddPrivilegeToRole'));
-        l.start();
+        Ladda.create(document.querySelector('#btnApplyAddPrivilegeToRole')).start();
 
         initResourcesForPrivileges();
         initActionsForPrivilege();
@@ -628,8 +620,7 @@ Template.manageRoles.events({
         }
 
 
-        const l = Ladda.create(document.querySelector('#btnAddInheritRole'));
-        l.start();
+        Ladda.create(document.querySelector('#btnAddInheritRole')).start();
 
         initDatabasesForInheritRole();
         $('#addRoleToInherit').modal('show');
@@ -666,8 +657,7 @@ Template.manageRoles.events({
         command.roles = populateInheritRolesToSave();
 
 
-        const l = Ladda.create(document.querySelector('#btnApplyAddEditRole'));
-        l.start();
+        Ladda.create(document.querySelector('#btnApplyAddEditRole')).start();
 
         const runOnAdminDB = $('#aRunOnAdminDBToFetchUsers').iCheck('update')[0].checked;
 
@@ -706,8 +696,7 @@ Template.manageRoles.events({
         const db = $('#cmbPrivilegeResource').find(":selected").text();
         if (db && db != 'anyResource' && db != 'cluster') {
 
-            const l = Ladda.create(document.querySelector('#btnApplyAddPrivilegeToRole'));
-            l.start();
+            Ladda.create(document.querySelector('#btnApplyAddPrivilegeToRole')).start();
 
             initCollectionsForPrivilege(null, db, true);
         } else {

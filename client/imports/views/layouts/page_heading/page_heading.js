@@ -23,9 +23,8 @@ Template.pageHeading.helpers({
             if (!settings || !btnExecuteQuery) {
                 return;
             }
-            let laddaButton = Ladda.create(btnExecuteQuery);
-            laddaButton.start();
 
+            Ladda.create(btnExecuteQuery).start();
             const selectedCollection = Session.get(Helper.strSessionSelectedCollection);
 
             // get distinct field keys for auto complete on every collection change.
