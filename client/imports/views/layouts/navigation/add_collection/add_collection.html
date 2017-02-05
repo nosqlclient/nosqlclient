@@ -6,45 +6,169 @@
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span><span
                             class="sr-only">Close</span></button>
-                    <h4 class="modal-title">Create Collection</h4>
+                    <h4 class="modal-title">Create Collection/View</h4>
                     <small class="font-bold">{{getConnection.name}}
                     </small>
                 </div>
                 <div class="modal-body">
-                    <form id="formCreateCollection" class="form-horizontal">
-                        <div class="form-group">
-                            <label class="col-lg-2 control-label">Name</label>
-                            <div class="col-lg-10">
-                                <input id="inputCollectionName" required="true"
-                                       type="text"
-                                       placeholder="Collection Name" class="form-control">
+                    <div class="tabs-container">
+                        <ul class="nav nav-tabs">
+                            <li class="active"><a data-toggle="tab" href="#tab-1-options"
+                                                  aria-expanded="true">
+                                General</a>
+                            </li>
+                            <li class=""><a id="anchorStorageEngine" data-toggle="tab" href="#tab-2-engine"
+                                            aria-expanded="false">Storage Engine</a>
+                            </li>
+                            <li class=""><a id="anchorValidator" data-toggle="tab" href="#tab-3-validator"
+                                            aria-expanded="false">Validator</a>
+                            </li>
+                            <li class=""><a data-toggle="tab" href="#tab-4-collation"
+                                            aria-expanded="false">Collation</a>
+                            </li>
+                        </ul>
+                        <div class="tab-content">
+                            <!-- TAB 1 -->
+                            <div id="tab-1-options" class="tab-pane active">
+                                <div class="panel-body no-borders modal-background">
+                                    <form class="form-horizontal">
+                                        <div class="form-group">
+                                            <label class="col-lg-2 control-label">Collection/View</label>
+                                            <div class="col-lg-10">
+                                                <select id="cmbCollectionOrView"
+                                                        data-placeholder="Collection or View..."
+                                                        class="chosen-select form-control"
+                                                        tabindex="-1">
+                                                    <option value="collection">Collection</option>
+                                                    <option value="view">View</option>
+                                                </select>
+                                                <span class="help-block m-b-none">View option is ignored for below <b>Mongodb 3.4</b></span>
+                                            </div>
+                                        </div>
+                                        <div id="divViewCollections" class="form-group" style="display: none;">
+                                            <label class="col-lg-2 control-label">Collections</label>
+                                            <div class="col-lg-10">
+                                                <select id="cmbCollectionsAddCollection"
+                                                        data-placeholder="Choose a collection to create view on"
+                                                        class="chosen-select form-control"
+                                                        tabindex="-1">
+                                                    <option></option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="form-group"><label class="col-lg-2 control-label">
+                                            Name</label>
+                                            <div class="col-lg-10"><input id="inputCollectionViewName"
+                                                                          data-required="true"
+                                                                          type="text"
+                                                                          placeholder="Collection/View Name"
+                                                                          class="form-control">
+                                            </div>
+                                        </div>
+                                        <div id="divViewPipelineFormGroup" class="form-group" style="display: none;">
+                                            <label class="col-lg-2 control-label">View's Pipeline</label>
+                                            <div id="divViewPipeline" class="col-lg-10">
+                                                <textarea id="txtViewPipeline" class="form-control"></textarea>
+                                            </div>
+                                        </div>
+
+                                        <div class="hr-line-dashed"></div>
+
+                                        <div class="form-group">
+                                            <label class="col-lg-2 control-label">Options</label>
+                                            <div class="col-lg-10">
+                                                <select id="cmbAddCollectionViewOptions"
+                                                        data-placeholder="Choose one or more options.."
+                                                        multiple="true"
+                                                        class="chosen-select form-control"
+                                                        tabindex="-1">
+                                                    <option></option>
+                                                </select>
+                                            </div>
+                                        </div>
+
+                                        {{> addCollectionOptions}}
+                                    </form>
+                                </div>
                             </div>
-                        </div>
-                        <div class="form-group">
-                            <label class="col-lg-2 control-label">Is Capped</label>
-                            <div id="divIsCapped" class="col-lg-10">
-                                <input id="inputIsCapped" type="checkbox" value=""
-                                       class="form-control"
-                                       checked=""
-                                       style="position: absolute; opacity: 0;"/>
+
+                            <!-- TAB 2 -->
+                            <div id="tab-2-engine" class="tab-pane">
+                                <div class="panel-body no-borders modal-background">
+                                    <form class="form-horizontal">
+                                        <div class="form-group">
+                                            <label class="col-lg-2 control-label">Storage Engine</label>
+                                            <div id="divStorageEngine" class="col-lg-10">
+                                                <textarea id="txtStorageEngine" class="form-control"></textarea>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
                             </div>
-                        </div>
-                        <div class="form-group"><label class="col-lg-2 control-label">Size (If it's capped)</label>
-                            <div class="col-lg-10">
-                                <input id="inputCollectionSize" required="true" type="number"
-                                       min="0"
-                                       placeholder="In Bytes"
-                                       class="form-control">
+
+                            <!--TAB 3 -->
+                            <div id="tab-3-validator" class="tab-pane">
+                                <div class="panel-body no-borders modal-background">
+                                    <form class="form-horizontal">
+                                        <div class="form-group">
+                                            <label class="col-lg-2 control-label">Validation Action</label>
+                                            <div class="col-lg-10">
+                                                <select id="cmbValidationActionAddCollection"
+                                                        data-placeholder="Leave empty for no action"
+                                                        class="chosen-select form-control"
+                                                        tabindex="-1">
+                                                    <option></option>
+                                                    <option value="warn">Warning</option>
+                                                    <option value="error">Error</option>
+                                                </select>
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label class="col-lg-2 control-label">Validation Level</label>
+                                            <div class="col-lg-10">
+                                                <select id="cmbValidationLevelAddCollection"
+                                                        data-placeholder="Leave empty for no level"
+                                                        class="chosen-select form-control"
+                                                        tabindex="-1">
+                                                    <option></option>
+                                                    <option value="off">Off</option>
+                                                    <option value="strict">Strict</option>
+                                                    <option value="moderate">Moderate</option>
+                                                </select>
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label class="col-lg-2 control-label">Validator</label>
+                                            <div id="divValidatorAddCollection" class="col-lg-10">
+                                                <textarea id="txtValidatorAddCollection"
+                                                          class="form-control"></textarea>
+                                                <span class="help-block m-b-none">Valid for <b>Mongodb 3.2</b> and higher</span>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
                             </div>
-                        </div>
-                        <div class="form-group"><label class="col-lg-2 control-label">Max Documents (If it's
-                            capped)</label>
-                            <div class="col-lg-10">
-                                <input id="inputMaxDocSize" required="true" type="number" min="1"
-                                       class="form-control">
+
+                            <!-- TAB 4-->
+                            <div id="tab-4-collation" class="tab-pane">
+                                <div class="panel-body no-borders modal-background">
+                                    <form class="form-horizontal">
+                                        <div class="form-group">
+                                            <label class="col-lg-2 control-label">Collation</label>
+                                            <div id="divCollationAddCollection" class="col-lg-10">
+                                                <textarea id="txtCollationAddCollection"
+                                                          class="form-control"></textarea>
+                                                <span class="help-block m-b-none">Valid for <b>Mongodb 3.4</b> and higher</span>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
                             </div>
+
                         </div>
-                    </form>
+                    </div>
                 </div>
                 <div class="modal-footer">
                     <div class="pull-left">

@@ -24,11 +24,12 @@ export const initializeFilterTable = function () {
     selector.DataTable({
         data: collectionNames,
         columns: [
-            {data: "name"}
+            {data: "name"},
+            {data: "type"}
         ],
         columnDefs: [
             {
-                targets: [1],
+                targets: [2],
                 data: null,
                 width: "10%",
                 render: function (data) {

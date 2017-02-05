@@ -1,0 +1,80 @@
+<template name="addCollectionOptions">
+    {{#if isAddCollectionOptionSelected "CAPPED"}}
+        {{> capped}}
+    {{/if}}
+    {{#if isAddCollectionOptionSelected "AUTO_INDEX_ID"}}
+        {{> autoIndexId}}
+    {{/if}}
+    {{#if isAddCollectionOptionSelected "FLAGS"}}
+        {{> flags}}
+    {{/if}}
+    {{#if isAddCollectionOptionSelected "INDEX_OPTION_DEFAULTS"}}
+        {{> indexOptionDefaults}}
+    {{/if}}
+</template>
+
+
+<template name="capped">
+    <div class="form-group">
+        <label class="col-lg-2 control-label">Capped
+        </label>
+        <div class="col-lg-5">
+            <input id="inputCappedCollectionSize" required="true" type="number"
+                   min="0"
+                   placeholder="Size (In Bytes)"
+                   class="form-control">
+        </div>
+        <div class="col-lg-5">
+            <input id="inputCappedCollectionMaxDocs" required="true" type="number" min="0"
+                   placeholder="Max Documents"
+                   class="form-control">
+        </div>
+    </div>
+</template>
+
+<template name="autoIndexId">
+    <div class="form-group">
+        <label class="col-lg-2 control-label">Auto Index ID
+        </label>
+        <div id="divAutoIndexID" class="col-lg-10">
+            <input id="inputAutoIndexID" type="checkbox"
+                   class="form-control"
+                   checked=""
+                   style="position: absolute; opacity: 0;"/>
+        </div>
+    </div>
+</template>
+
+<template name="flags">
+    <div class="form-group">
+        <label class="col-lg-2 control-label">Use 2-Sizes Indexes
+        </label>
+        <div id="divTwoSizesIndexes" class="col-lg-10">
+            <input id="inputTwoSizesIndexes" type="checkbox"
+                   class="form-control"
+                   checked=""
+                   style="position: absolute; opacity: 0;"/>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-lg-2 control-label">No padding
+        </label>
+        <div id="divNoPadding" class="col-lg-10">
+            <input id="inputNoPadding" type="checkbox"
+                   class="form-control"
+                   checked=""
+                   style="position: absolute; opacity: 0;"/>
+        </div>
+    </div>
+</template>
+
+<template name="indexOptionDefaults">
+    <div class="form-group">
+        <label class="col-lg-2 control-label">Index Option Defaults
+        </label>
+        <div id="divIndexOptionDefaults" class="col-lg-10">
+                                                <textarea id="txtIndexOptionDefaults"
+                                                          class="form-control"></textarea>
+        </div>
+    </div>
+</template>

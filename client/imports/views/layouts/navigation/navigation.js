@@ -213,8 +213,11 @@ Template.navigation.onRendered(function () {
         build: function (trigger) {
             let items = {
                 add_collection: {
-                    name: "Add Collection", icon: "fa-plus", callback: function () {
-                        $('#collectionAddModal').modal('show');
+                    name: "Add Collection/View", icon: "fa-plus", callback: function () {
+                        $('#collectionAddModal').modal({
+                            backdrop: 'static',
+                            keyboard: false
+                        });
                     }
                 },
 
@@ -224,10 +227,16 @@ Template.navigation.onRendered(function () {
                     }
                 },
 
+                refresh_collections: {
+                    name: "Refresh Collections", icon: "fa-refresh", callback: function () {
+                        connect(true);
+                    }
+                },
+
                 drop_collection: {
                     name: "Drop Collection", icon: "fa-trash", callback: function () {
                         if ($(this) && $(this).context && $(this).context.innerText) {
-                            let collectionName = $(this).context.innerText.substring(1);
+                            let collectionName = $(this).context.innerText.substring(1).split(' ')[0];
                             swal({
                                 title: "Are you sure?",
                                 text: collectionName + " collection will be dropped, are you sure ?",
@@ -261,6 +270,10 @@ Template.navigation.onRendered(function () {
 });
 
 Template.navigation.helpers({
+    equals (a, b){
+        return a === b;
+    },
+
     initializeMetisMenu() {
         Meteor.setTimeout(function () {
             const sideMenu = $('#side-menu');

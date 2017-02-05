@@ -32,7 +32,7 @@ Template.pageHeading.helpers({
 
             Meteor.call("stats", selectedCollection, {}, function (err, result) {
                 if (err || result.error) {
-                    Helper.showMeteorFuncError(err, result, "Couldn't fetch connection informations");
+                    $('#divCollectionInfo').html("<div class=\"row\"><div class=\"col-lg-7\"><b>Couldn't fetch stats:</b></div><div class=\"col-lg-5\">" + Helper.getErrorMessage(err, result) + "</div></div>");
                 }
                 else {
                     populateCollectionInfo(result.result, settings);

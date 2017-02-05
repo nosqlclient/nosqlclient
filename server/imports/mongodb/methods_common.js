@@ -283,7 +283,7 @@ Meteor.methods({
     },
 
     createCollection(collectionName, options) {
-        LOGGER.info('[createCollection]', collectionName, options);
+        LOGGER.info('[createCollection]', collectionName, JSON.stringify(options));
 
         return Async.runSync(function (done) {
             try {

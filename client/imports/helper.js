@@ -95,6 +95,7 @@ let Helper = function () {
     this.strSessionUsermanagementUser = "userManagementUser";
     this.strSessionUsermanagementRole = "userManagementRole";
     this.strSessionUsermanagementPrivilege = "userManagementPrivilege";
+    this.strSessionSelectedAddCollectionOptions = "selectedAddCollectionOptions";
 };
 
 Helper.prototype = {
@@ -177,7 +178,7 @@ Helper.prototype = {
         }
     },
 
-    showMeteorFuncError  (err, result, message) {
+    getErrorMessage: function (err, result) {
         let errorMessage;
         if (err) {
             errorMessage = err.message;
@@ -187,6 +188,11 @@ Helper.prototype = {
         else if (result && result.error) {
             errorMessage = JSON.stringify(result.error);
         }
+        return errorMessage;
+    },
+
+    showMeteorFuncError  (err, result, message) {
+        let errorMessage = this.getErrorMessage(err, result);
         if (errorMessage) {
             toastr.error(message + ": " + errorMessage);
         } else {

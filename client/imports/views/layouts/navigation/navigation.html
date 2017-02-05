@@ -141,7 +141,8 @@
                             <span class="fa arrow pull-right"></span>
 
                             {{#if filtered}}
-                                <span title="Filtered" style="margin-left: 15px" class="label label-info">Filtered</span>
+                                <span title="Filtered" style="margin-left: 15px"
+                                      class="label label-info">Filtered</span>
                             {{/if}}
                         </a>
 
@@ -151,6 +152,10 @@
                                     <a class="navCollection" href="{{pathFor route='browseCollection'}}"><i
                                             class="fa fa-book"></i> <span
                                             class="nav-label">{{name}}</span>
+                                        {{#if equals type 'view'}}
+                                            <span title="View" style="margin-left: 15px"
+                                                  class="label label-info">View</span>
+                                        {{/if}}
                                     </a>
                                 </li>
                             {{/each}}
