@@ -2,6 +2,7 @@ import {Template} from "meteor/templating";
 import {Session} from "meteor/session";
 import {Meteor} from "meteor/meteor";
 import Enums from "/lib/imports/enums";
+import {Connections} from "/lib/imports/collections/connections";
 import Helper from "/client/imports/helper";
 import "./add_collection.html";
 import {getOptions} from "./options/add_collection_options";
@@ -10,7 +11,32 @@ import {renderCollectionNames} from "../navigation";
 const toastr = require('toastr');
 const Ladda = require('ladda');
 
-const clearForm = function () {
+export const initializeForm = function (collection) {
+    Ladda.create(document.querySelector('#btnCreateCollection')).start();
+
+    const connection = Connections.findOne({_id: Session.get(Helper.strSessionConnection)});
+    Meteor.call('listCollectionNames', connection.databaseName, function (err, result) {
+        if (err || result.error) {
+            Helper.showMeteorFuncError(err, result, "Couldn't fetch data");
+            $('#collectionAddModal').hide();
+        }
+        else {
+            if (result.result) {
+                for (let col of result.result) {
+                    if (col.name === collection) {
+                        $('#collectionAddModalTitle').text('Edit Collection/View');
+                        $('#spanColName').text(collection);
+                        console.log(col);
+                    }
+                }
+            }
+        }
+
+        Ladda.stopAll();
+    });
+};
+
+export const clearForm = function () {
     Helper.setCodeMirrorValue($('#divValidatorAddCollection'), '');
     Helper.setCodeMirrorValue($('#divStorageEngine'), '');
     Helper.setCodeMirrorValue($('#divCollationAddCollection'), '');
@@ -25,6 +51,7 @@ const clearForm = function () {
     $('#divAutoIndexID').iCheck('check');
     $('#cmbCollectionOrView, #cmbCollectionsAddCollection, #cmbAddCollectionViewOptions, #cmbValidationActionAddCollection, #cmbValidationLevelAddCollection')
         .find('option').prop('selected', false).trigger('chosen:updated');
+    $('#collectionAddModalTitle').text('Create Collection/View');
     Session.set(Helper.strSessionSelectedAddCollectionOptions, []);
 };
 
@@ -126,9 +153,6 @@ Template.addCollection.onRendered(function () {
     $('#cmbCollectionOrView').chosen();
     initializeOptions();
 
-    $('#collectionAddModal').on('shown.bs.modal', function () {
-        clearForm();
-    });
 });
 
 Template.addCollection.events({

@@ -7,7 +7,7 @@ import {FlowRouter} from "meteor/kadira:flow-router";
 import {Connections} from "/lib/imports/collections/connections";
 import Helper from "/client/imports/helper";
 import {connect} from "/client/imports/views/layouts/top_navbar/connections/connections";
-import "./add_collection/add_collection";
+import {clearForm, initializeForm} from "./add_collection/add_collection";
 import {initializeFilterTable} from "./filter_collection/filter_collection";
 import "./navigation.html";
 
@@ -208,16 +208,39 @@ Template.navigation.onRendered(function () {
         initializeFilterTable();
     });
 
+    const addCollectionModal = $('#collectionAddModal');
+    addCollectionModal.on('shown.bs.modal', function () {
+        clearForm();
+        console.log('geldi', addCollectionModal.data('is-edit'));
+        if (addCollectionModal.data('is-edit')) {
+            initializeForm(addCollectionModal.data('is-edit'));
+        }
+    });
+
     $.contextMenu({
         selector: ".navCollection, .navCollectionTop",
         build: function (trigger) {
             let items = {
                 add_collection: {
                     name: "Add Collection/View", icon: "fa-plus", callback: function () {
-                        $('#collectionAddModal').modal({
+                        addCollectionModal.data('is-edit', '');
+                        addCollectionModal.modal({
                             backdrop: 'static',
                             keyboard: false
                         });
+                    }
+                },
+
+                edit_collection: {
+                    name: "Edit Collection/View", icon: "fa-edit", callback: function () {
+                        if ($(this) && $(this).context && $(this).context.innerText) {
+                            const collectionName = $(this).context.innerText.substring(1).split(' ')[0];
+                            addCollectionModal.data('is-edit', collectionName);
+                            addCollectionModal.modal({
+                                backdrop: 'static',
+                                keyboard: false
+                            });
+                        }
                     }
                 },
 
@@ -236,7 +259,7 @@ Template.navigation.onRendered(function () {
                 drop_collection: {
                     name: "Drop Collection", icon: "fa-trash", callback: function () {
                         if ($(this) && $(this).context && $(this).context.innerText) {
-                            let collectionName = $(this).context.innerText.substring(1).split(' ')[0];
+                            const collectionName = $(this).context.innerText.substring(1).split(' ')[0];
                             swal({
                                 title: "Are you sure?",
                                 text: collectionName + " collection will be dropped, are you sure ?",
@@ -259,6 +282,7 @@ Template.navigation.onRendered(function () {
 
             if (trigger.hasClass('navCollectionTop')) {
                 delete items.drop_collection;
+                delete items.edit_collection;
             }
 
             return {
