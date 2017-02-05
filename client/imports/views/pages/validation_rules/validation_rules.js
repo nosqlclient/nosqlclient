@@ -72,6 +72,8 @@ Template.validationRules.onRendered(function () {
     this.autorun(() => {
         if (settings.ready() && connections.ready()) {
             Helper.initializeCodeMirror($('#divValidator'), 'txtValidator', false, 300);
+            $('#cmbValidationLevel').chosen();
+            $('#cmbValidationAction').chosen();
             initRules();
         }
     });
