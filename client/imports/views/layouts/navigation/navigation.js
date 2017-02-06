@@ -10,6 +10,7 @@ import {connect} from "/client/imports/views/layouts/top_navbar/connections/conn
 import {resetForm, initializeForm} from "./add_collection/add_collection";
 import {resetForm as resetCappedForm} from "./convert_capped_collection/convert_to_capped";
 import {resetForm as resetRenameForm} from "./rename_collection/rename_collection";
+import {resetForm as resetValidationRulesForm} from "./validation_rules/validation_rules";
 import {initializeFilterTable} from "./filter_collection/filter_collection";
 import "./navigation.html";
 
@@ -21,6 +22,30 @@ export const setExcludedCollectionsByFilter = function (arr) {
 };
 export const setFilterRegex = function (regex) {
     filterRegex.set(regex);
+};
+
+const dropAllCollections = function () {
+    swal({
+        title: "Are you sure?",
+        text: "All collections except system, will be dropped, are you sure ?",
+        type: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#DD6B55",
+        confirmButtonText: "Yes, drop them!",
+        closeOnConfirm: true
+    }, function (isConfirm) {
+        if (isConfirm) {
+            Meteor.call('dropAllCollections', function (err, result) {
+                if (err || result.error) {
+                    Helper.showMeteorFuncError(err, result, "Couldn't drop all collections");
+                }
+                else {
+                    renderCollectionNames();
+                    toastr.success('Successfully dropped all collections/views except system');
+                }
+            });
+        }
+    });
 };
 
 const handleNavigationAndSessions = function () {
@@ -127,29 +152,7 @@ Template.navigation.events({
 
     'click #btnDropAllCollections' (e) {
         e.preventDefault();
-        swal({
-            title: "Are you sure?",
-            text: "All collections except system, will be dropped, are you sure ?",
-            type: "warning",
-            showCancelButton: true,
-            confirmButtonColor: "#DD6B55",
-            confirmButtonText: "Yes, drop them!",
-            closeOnConfirm: false
-        }, function () {
-            Meteor.call('dropAllCollections', function (err, result) {
-                if (err || result.error) {
-                    Helper.showMeteorFuncError(err, result, "Couldn't drop all collections");
-                }
-                else {
-                    Helper.clearSessions();
-                    swal({
-                        title: "Dropped!",
-                        text: "Successfuly dropped all collections database ",
-                        type: "success"
-                    });
-                }
-            });
-        });
+        dropAllCollections();
     },
 
     'click #btnDropDatabase' (e) {
@@ -239,6 +242,11 @@ Template.navigation.onRendered(function () {
         resetRenameForm();
     });
 
+    const validationRulesModal = $('#validationRulesModal');
+    validationRulesModal.on('shown.bs.modal', function () {
+        resetValidationRulesForm();
+    });
+
     $.contextMenu({
         selector: ".navCollection, .navCollectionTop",
         build: function (trigger) {
@@ -279,6 +287,16 @@ Template.navigation.onRendered(function () {
                                 const collectionName = $(this).context.innerText.substring(1).split(' ')[0];
                                 renameModal.data('collection', collectionName);
                                 renameModal.modal('show');
+                            }
+                        },
+
+                        validation_rules: {
+                            icon: "fa-check-circle",
+                            name: "Edit Validation Rules",
+                            callback: function () {
+                                const collectionName = $(this).context.innerText.substring(1).split(' ')[0];
+                                validationRulesModal.data('collection', collectionName);
+                                validationRulesModal.modal('show');
                             }
                         },
 
@@ -334,7 +352,7 @@ Template.navigation.onRendered(function () {
                     }
                 },
 
-                sep1: "---------",
+                sep1: {"type": "cm_separator"},
 
                 add_collection: {
                     name: "Add Collection/View",
@@ -359,6 +377,13 @@ Template.navigation.onRendered(function () {
                     icon: "fa-refresh",
                     callback: function () {
                         connect(true);
+                    }
+                },
+                drop_collections: {
+                    name: "Drop All Collections",
+                    icon: "fa-ban",
+                    callback: function () {
+                        dropAllCollections();
                     }
                 }
             };

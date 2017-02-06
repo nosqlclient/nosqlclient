@@ -80,16 +80,9 @@
                                 </a>
                             </li>
 
-                            <li class="{{isActivePath regex='validationRules'}}">
-                                <a class="aNavigations" href="{{pathFor route='validationRules'}}"><i
-                                        class="fa fa-check-circle"></i> <span
-                                        class="nav-label">Validation Rules</span>
-                                </a>
-                            </li>
-
                             <li class="{{isActivePath regex='indexManagement'}}">
                                 <a class="aNavigations" href="{{pathFor route='indexManagement'}}"><i
-                                        class="fa fa-info"></i> <span
+                                        class="fa fa-bolt"></i> <span
                                         class="nav-label">Index Management</span>
                                 </a>
                             </li>
@@ -192,5 +185,6 @@
     {{> addCollection}}
     {{> convertToCapped}}
     {{> renameCollection}}
+    {{> validationRules}}
 
 </template>
