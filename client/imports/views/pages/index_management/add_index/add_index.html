@@ -9,119 +9,191 @@
                     <h4 class="modal-title">Add Index</h4>
                 </div>
                 <div class="modal-body">
-                    <form class="form-horizontal">
-
-                        <div class="form-group">
-                            <div class="col-lg-12">
-                                <input id="inputIndexName" type="text" placeholder="Index name (optional)"
-                                       class="form-control">
-                            </div>
-                        </div>
-
-                        <div class="form-group divField" style="display: none">
-                            <div class="col-lg-6">
-                                <div class="input-group"><input type="text" placeholder="Field name"
-                                                                class="form-control txtFieldName">
-                                    <div class="input-group-btn">
-                                        <button data-toggle="dropdown" class="btn btn-white dropdown-toggle"
-                                                type="button"><span class="caret"></span></button>
-                                        <ul class="dropdown-menu pull-right">
-                                            <li><a class="addField" href="#"><i class="fa fa-plus"></i> Add Another</a>
-                                            </li>
-                                            <li><a class="deleteField" href="#"><i class="fa fa-remove"></i> Delete</a>
-                                            </li>
-                                        </ul>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-lg-6">
-                                <select
-                                        data-placeholder="Select field type"
-                                        class="chosen-select form-control cmbIndexTypes"
-                                        tabindex="-1">
-                                    <option value="1">1 (ascending)</option>
-                                    <option value="-1">-1 (descending)</option>
-                                    <option value="hashed">hashed</option>
-                                    <option value="2dsphere">2dsphere</option>
-                                    <option value="2d">2d</option>
-                                    <option value="text">text</option>
-                                    <option value="geoHaystack">geoHaystack</option>
-                                </select>
-                            </div>
-                        </div>
-
-                        <div class="form-group">
-                            <div class="col-lg-12">
-                                <div class="panel-group" id="accordion">
-                                    <div class="panel panel-default">
-                                        <div class="panel-heading">
-                                            <h5 class="panel-title">
-                                                <a id="anchorOptions" data-toggle="collapse" data-parent="#accordion"
-                                                   href="#collapseOne"
-                                                   aria-expanded="true" class="">Options</a>
-                                            </h5>
-                                        </div>
-                                        <div id="collapseOne" class="panel-collapse collapse"
-                                             aria-expanded="true">
-                                            <div class="panel-body">
-                                                <form class="form-horizontal">
-                                                    <div class="form-group">
-                                                        <label class="col-lg-3 control-label">Background
-                                                            Creation</label>
-                                                        <div id="divBackground" class="col-lg-9">
-                                                            <input id="inputBackground" type="checkbox"
-                                                                   class="form-control"
-                                                                   checked=""
-                                                                   style="position: absolute; opacity: 0;"/>
-                                                        </div>
-                                                    </div>
-
-                                                    <div class="form-group">
-                                                        <label class="col-lg-3 control-label">Unique</label>
-                                                        <div id="divUnique" class="col-lg-9">
-                                                            <input id="inputUnique" type="checkbox"
-                                                                   class="form-control"
-                                                                   checked=""
-                                                                   style="position: absolute; opacity: 0;"/>
-                                                        </div>
-                                                    </div>
-
-                                                    <div class="form-group">
-                                                        <label class="col-lg-3 control-label">Sparse</label>
-                                                        <div id="divSparse" class="col-lg-9">
-                                                            <input id="inputSparse" type="checkbox"
-                                                                   class="form-control"
-                                                                   checked=""
-                                                                   style="position: absolute; opacity: 0;"/>
-                                                        </div>
-                                                    </div>
-
-                                                    <div class="form-group">
-                                                        <label class="col-lg-3 control-label">Time to Live
-                                                            (Seconds)</label>
-                                                        <div class="col-lg-9">
-                                                            <input id="inputTTL" type="number"
-                                                                   class="form-control"
-                                                                   placeholder="Leave empty for no TTL"/>
-                                                        </div>
-                                                    </div>
-
-                                                    <div class="form-group">
-                                                        <label class="col-lg-3 control-label">Partial Filter
-                                                            Expression</label>
-                                                        <div id="divPartial" class="col-lg-9">
-                                                            <textarea id="txtPartial" class="form-control"></textarea>
-                                                            <span class="help-block m-b-none">Leave empty for no partial filter expression</span>
-                                                        </div>
-                                                    </div>
-                                                </form>
+                    <div class="tabs-container">
+                        <ul class="nav nav-tabs">
+                            <li class="active"><a data-toggle="tab" href="#tab-1-indexes"
+                                                  aria-expanded="true">
+                                General</a>
+                            </li>
+                            <li class=""><a id="anchorStorageEngine" data-toggle="tab" href="#tab-2-text-options"
+                                            aria-expanded="false">Text Options</a>
+                            </li>
+                            <li class=""><a id="anchorValidator" data-toggle="tab" href="#tab-3-geo-options"
+                                            aria-expanded="false">Geo Options</a>
+                            </li>
+                            <li class=""><a data-toggle="tab" href="#tab-4-indexes-collation"
+                                            aria-expanded="false">Collation</a>
+                            </li>
+                        </ul>
+                        <div class="tab-content">
+                            <!-- TAB 1 -->
+                            <div id="tab-1-indexes" class="tab-pane active">
+                                <div class="panel-body no-borders modal-background">
+                                    <form class="form-horizontal">
+                                        <div class="form-group">
+                                            <div class="col-lg-12">
+                                                <input id="inputIndexName" type="text"
+                                                       placeholder="Index name (optional)"
+                                                       class="form-control">
                                             </div>
                                         </div>
-                                    </div>
+                                        <div class="form-group divField" style="display: none">
+                                            <div class="col-lg-6">
+                                                <div class="input-group"><input type="text" placeholder="Field name"
+                                                                                class="form-control txtFieldName">
+                                                    <div class="input-group-btn">
+                                                        <button data-toggle="dropdown"
+                                                                class="btn btn-white dropdown-toggle"
+                                                                type="button"><span class="caret"></span></button>
+                                                        <ul class="dropdown-menu pull-right">
+                                                            <li><a class="addField" href="#"><i class="fa fa-plus"></i>
+                                                                Add Another</a>
+                                                            </li>
+                                                            <li><a class="deleteField" href="#"><i
+                                                                    class="fa fa-remove"></i> Delete</a>
+                                                            </li>
+                                                        </ul>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-6">
+                                                <select
+                                                        data-placeholder="Select field type"
+                                                        class="chosen-select form-control cmbIndexTypes"
+                                                        tabindex="-1">
+                                                    <option value="1">1 (ascending)</option>
+                                                    <option value="-1">-1 (descending)</option>
+                                                    <option value="hashed">hashed</option>
+                                                    <option value="2dsphere">2dsphere</option>
+                                                    <option value="2d">2d</option>
+                                                    <option value="text">text</option>
+                                                    <option value="geoHaystack">geoHaystack</option>
+                                                </select>
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <div class="col-lg-12">
+                                                <div class="panel-group" id="accordion">
+                                                    <div class="panel panel-default">
+                                                        <div class="panel-heading">
+                                                            <h5 class="panel-title">
+                                                                <a id="anchorOptions" data-toggle="collapse"
+                                                                   data-parent="#accordion"
+                                                                   href="#collapseOne"
+                                                                   aria-expanded="true" class="">Options</a>
+                                                            </h5>
+                                                        </div>
+                                                        <div id="collapseOne" class="panel-collapse collapse"
+                                                             aria-expanded="true">
+                                                            <div class="panel-body">
+                                                                <form class="form-horizontal">
+                                                                    <div class="form-group">
+                                                                        <label class="col-lg-3 control-label">Background
+                                                                            Creation</label>
+                                                                        <div id="divBackground" class="col-lg-9">
+                                                                            <input id="inputBackground" type="checkbox"
+                                                                                   class="form-control"
+                                                                                   checked=""
+                                                                                   style="position: absolute; opacity: 0;"/>
+                                                                        </div>
+                                                                    </div>
+
+                                                                    <div class="form-group">
+                                                                        <label class="col-lg-3 control-label">Unique</label>
+                                                                        <div id="divUnique" class="col-lg-9">
+                                                                            <input id="inputUnique" type="checkbox"
+                                                                                   class="form-control"
+                                                                                   checked=""
+                                                                                   style="position: absolute; opacity: 0;"/>
+                                                                        </div>
+                                                                    </div>
+
+                                                                    <div class="form-group">
+                                                                        <label class="col-lg-3 control-label">Sparse</label>
+                                                                        <div id="divSparse" class="col-lg-9">
+                                                                            <input id="inputSparse" type="checkbox"
+                                                                                   class="form-control"
+                                                                                   checked=""
+                                                                                   style="position: absolute; opacity: 0;"/>
+                                                                        </div>
+                                                                    </div>
+
+                                                                    <div class="form-group">
+                                                                        <label class="col-lg-3 control-label">Time to
+                                                                            Live
+                                                                            (Seconds)</label>
+                                                                        <div class="col-lg-9">
+                                                                            <input id="inputTTL" type="number"
+                                                                                   class="form-control"
+                                                                                   placeholder="Leave empty for no TTL"/>
+                                                                        </div>
+                                                                    </div>
+
+                                                                    <div class="form-group">
+                                                                        <label class="col-lg-3 control-label">Partial
+                                                                            Filter
+                                                                            Expression</label>
+                                                                        <div id="divPartial" class="col-lg-9">
+                                                                            <textarea id="txtPartial"
+                                                                                      class="form-control"></textarea>
+                                                                            <span class="help-block m-b-none">Leave empty for no partial filter expression</span>
+                                                                        </div>
+                                                                    </div>
+                                                                </form>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </form>
                                 </div>
                             </div>
+
+                            <!-- TAB 2 -->
+                            <div id="tab-2-text-options" class="tab-pane">
+                                <div class="panel-body no-borders modal-background">
+                                    <form class="form-horizontal">
+                                        <div class="form-group">
+                                            <label class="col-lg-2 control-label">Version</label>
+                                            <div class="col-lg-10">
+                                                <select id="cmbTextIndexVersion"
+                                                        data-placeholder="Leave empty for no version"
+                                                        class="chosen-select form-control"
+                                                        tabindex="-1">
+                                                    <option></option>
+                                                    <option value="1">1</option>
+                                                    <option value="2">2</option>
+                                                    <option value="3">3</option>
+                                                </select>
+                                            </div>
+                                        </div>
+
+                                        <!--TODO-->
+                                    </form>
+                                </div>
+                            </div>
+
+                            <!--TAB 3 -->
+                            <div id="tab-3-geo-options" class="tab-pane">
+                                <div class="panel-body no-borders modal-background">
+                                    <form class="form-horizontal">
+
+                                    </form>
+                                </div>
+                            </div>
+
+                            <!-- TAB 4-->
+                            <div id="tab-4-indexes-collation" class="tab-pane">
+                                <div class="panel-body no-borders modal-background">
+                                    <form class="form-horizontal">
+                                    </form>
+                                </div>
+                            </div>
+
                         </div>
-                    </form>
+                    </div>
                 </div>
                 <div class="modal-footer">
                     <div class="pull-left">

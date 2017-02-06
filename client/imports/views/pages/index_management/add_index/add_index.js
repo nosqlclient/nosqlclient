@@ -8,6 +8,7 @@ const toastr = require('toastr');
 const Ladda = require('ladda');
 
 export const clearForm = function () {
+    $('.nav-tabs a[href="#tab-1-indexes"]').tab('show');
     $('.divField:visible').remove();
     $('#inputIndexName').val('');
     $('#inputTTL').val('');

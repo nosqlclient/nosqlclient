@@ -229,8 +229,11 @@ Template.indexManagement.events({
             return;
         }
 
-        $('#addIndexModal').modal('show');
-        clearForm();
+        const addIndexModal = $('#addIndexModal');
+        addIndexModal.modal('show');
+        addIndexModal.on('shown.bs.modal', function () {
+            clearForm();
+        });
     },
 
     'click #btnRefreshIndexes'(){
