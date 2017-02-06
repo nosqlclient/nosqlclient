@@ -79,6 +79,7 @@ const populateTableData = function (indexInfo, stats, indexStats) {
             asc_fields: [],
             desc_fields: [],
             sphere_fields: [],
+            geo_haystack_fields: [],
             twod_fields: [],
             hashed: [],
             text: [],
@@ -115,8 +116,9 @@ const populateTableData = function (indexInfo, stats, indexStats) {
                     index.sphere_fields.push(field);
                 } else if (obj.key[field] === "2d") {
                     index.twod_fields.push(field);
-                }
-                else if (obj.key[field] === "hashed") {
+                } else if (obj.key[field] === "geoHaystack") {
+                    index.geo_haystack_fields.push(field);
+                } else if (obj.key[field] === "hashed") {
                     index.hashed.push(field);
                 }
             }
@@ -164,6 +166,9 @@ const initializeIndexesTable = function (data) {
         }
         for (let field of index.twod_fields) {
             row += "<button class='btn btn-primary btn-xs'>" + field + "</button>  "
+        }
+        for (let field of index.geo_haystack_fields) {
+            row += "<button class='btn index-button btn-xs'>" + field + "</button>  "
         }
         for (let field of index.text) {
             row += "<button class='btn btn-success btn-xs'>" + field + "</button>  "
