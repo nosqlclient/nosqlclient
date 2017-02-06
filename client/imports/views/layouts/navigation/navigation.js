@@ -7,7 +7,7 @@ import {FlowRouter} from "meteor/kadira:flow-router";
 import {Connections} from "/lib/imports/collections/connections";
 import Helper from "/client/imports/helper";
 import {connect} from "/client/imports/views/layouts/top_navbar/connections/connections";
-import {clearForm, initializeForm} from "./add_collection/add_collection";
+import {resetForm, initializeForm} from "./add_collection/add_collection";
 import {initializeFilterTable} from "./filter_collection/filter_collection";
 import "./navigation.html";
 
@@ -36,6 +36,17 @@ const handleNavigationAndSessions = function () {
 
     $('#cmbQueries').val('').trigger('chosen:updated');
     $('#cmbAdminQueries').val('').trigger('chosen:updated');
+};
+
+const clearCollection = function (collectionName) {
+    Meteor.call('delete', collectionName, {}, function (err, result) {
+        if (err || result.error) {
+            Helper.showMeteorFuncError(err, result, "Couldn't clear collection");
+        }
+        else {
+            toastr.success('Successfuly cleared collection: ' + collectionName);
+        }
+    });
 };
 
 const dropCollection = function (collectionName) {
@@ -210,8 +221,7 @@ Template.navigation.onRendered(function () {
 
     const addCollectionModal = $('#collectionAddModal');
     addCollectionModal.on('shown.bs.modal', function () {
-        clearForm();
-        console.log('geldi', addCollectionModal.data('is-edit'));
+        resetForm();
         if (addCollectionModal.data('is-edit')) {
             initializeForm(addCollectionModal.data('is-edit'));
         }
@@ -253,6 +263,29 @@ Template.navigation.onRendered(function () {
                 refresh_collections: {
                     name: "Refresh Collections", icon: "fa-refresh", callback: function () {
                         connect(true);
+                    }
+                },
+
+                clear_collection: {
+                    name: "Clear Collection", icon: "fa-remove", callback: function () {
+                        if ($(this) && $(this).context && $(this).context.innerText) {
+                            const collectionName = $(this).context.innerText.substring(1).split(' ')[0];
+                            swal({
+                                title: "Are you sure?",
+                                text: collectionName + " collection's all data will be wiped, are you sure ?",
+                                type: "warning",
+                                showCancelButton: true,
+                                confirmButtonColor: "#DD6B55",
+                                confirmButtonText: "Yes, clear it!",
+                                closeOnConfirm: true
+                            }, function (isConfirm) {
+                                if (isConfirm) {
+                                    clearCollection(collectionName);
+                                }
+                            });
+                        } else {
+                            toastr.warning('No collection selected !');
+                        }
                     }
                 },
 

@@ -392,9 +392,11 @@ Helper.prototype = {
         }
     },
 
-    setCodeMirrorValue (divSelector, val) {
+    setCodeMirrorValue (divSelector, val, txtSelector) {
         if (divSelector.data('editor')) {
             divSelector.data('editor').setValue(val);
+        } else if (txtSelector) {
+            txtSelector.val(val);
         }
     },
 
