@@ -1,7 +1,6 @@
 import {Template} from "meteor/templating";
-import {Session} from "meteor/session";
 import {Meteor} from "meteor/meteor";
-import {FlowRouter} from "meteor/kadira:flow-router";
+import {Session} from "meteor/session";
 import {Connections} from "/lib/imports/collections/connections";
 import Helper from "/client/imports/helper";
 import "./validation_rules.html";
@@ -9,14 +8,22 @@ import "./validation_rules.html";
 const toastr = require('toastr');
 const Ladda = require('ladda');
 
-/**
- * Created by RSercan on 15.2.2016.
- */
+export const resetForm = function () {
+    const combos = $('#cmbValidationAction, #cmbValidationLevel');
+    const divValidator = $('#divValidator');
 
-const initRules = function (selectedCollection) {
+    Helper.initializeCodeMirror(divValidator, 'txtValidator');
+    Helper.setCodeMirrorValue(divValidator, '', $('#txtValidator'));
+    $('#spanCollectionNameValidationRules').html("Valid for MongoDB 3.2 and higher<br/>" + $('#validationRulesModal').data('collection'));
+    combos.chosen();
+    combos.find('option').prop('selected', false).trigger('chosen:updated');
+    initRules();
+};
+
+const initRules = function () {
     Ladda.create(document.querySelector('#btnSaveValidationRules')).start();
-    Helper.initializeCollectionsCombobox();
 
+    const selectedCollection = $('#validationRulesModal').data('collection');
     if (!selectedCollection) {
         Ladda.stopAll();
         return;
@@ -24,10 +31,6 @@ const initRules = function (selectedCollection) {
 
     const cmbValidationAction = $('#cmbValidationAction');
     const cmbValidationLevel = $('#cmbValidationLevel');
-
-    // clear form
-    cmbValidationLevel.prop('disabled', false).val('off').trigger("chosen:updated");
-    cmbValidationAction.prop('disabled', false).val('warn').trigger("chosen:updated");
 
     const connection = Connections.findOne({_id: Session.get(Helper.strSessionConnection)});
     Meteor.call('listCollectionNames', connection.databaseName, function (err, result) {
@@ -39,11 +42,11 @@ const initRules = function (selectedCollection) {
                 for (let collection of result.result) {
                     if (collection.name === selectedCollection) {
                         if (collection.options && collection.options.validationAction) {
-                            cmbValidationAction.val(collection.options.validationAction);
+                            cmbValidationAction.val(collection.options.validationAction).trigger('chosen:updated');
                         }
 
                         if (collection.options && collection.options.validationLevel) {
-                            cmbValidationLevel.val(collection.options.validationLevel);
+                            cmbValidationLevel.val(collection.options.validationLevel).trigger('chosen:updated');
                         }
 
                         if (collection.options.validator) {
@@ -60,49 +63,13 @@ const initRules = function (selectedCollection) {
     });
 };
 
-Template.validationRules.onRendered(function () {
-    if (Session.get(Helper.strSessionCollectionNames) == undefined) {
-        FlowRouter.go('/databaseStats');
-        return;
-    }
-
-    let settings = this.subscribe('settings');
-    let connections = this.subscribe('connections');
-
-    this.autorun(() => {
-        if (settings.ready() && connections.ready()) {
-            Helper.initializeCodeMirror($('#divValidator'), 'txtValidator', false, 300);
-            $('#cmbValidationLevel').chosen();
-            $('#cmbValidationAction').chosen();
-            initRules();
-        }
-    });
-
-});
-
 Template.validationRules.events({
-    'change #cmbCollections'(e){
-        e.preventDefault();
-        const selectedCollection = $("#cmbCollections").chosen().val();
-        if (selectedCollection) {
-            initRules(selectedCollection);
-        }
-    },
-
-    'click #btnSaveValidationRules'  (e) {
-        e.preventDefault();
-
+    'click #btnSaveValidationRules'(){
         Ladda.create(document.querySelector('#btnSaveValidationRules')).start();
 
         const validationAction = $('#cmbValidationAction').val();
         const validationLevel = $('#cmbValidationLevel').val();
-        const selectedCollection = $('#cmbCollections').val();
-
-        if (!selectedCollection) {
-            toastr.warning("Please select a collection first !");
-            Ladda.stopAll();
-            return;
-        }
+        const selectedCollection = $('#validationRulesModal').data('collection');
 
         let validator = Helper.getCodeMirrorValue($('#divValidator'));
         validator = Helper.convertAndCheckJSON(validator);
@@ -124,10 +91,10 @@ Template.validationRules.events({
                 Helper.showMeteorFuncError(err, result, "Couldn't save rule");
             } else {
                 toastr.success("Successfully saved");
+                $('#validationRulesModal').modal('hide');
             }
 
             Ladda.stopAll();
         });
     }
-
 });

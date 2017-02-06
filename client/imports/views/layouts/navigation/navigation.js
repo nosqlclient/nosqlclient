@@ -7,7 +7,10 @@ import {FlowRouter} from "meteor/kadira:flow-router";
 import {Connections} from "/lib/imports/collections/connections";
 import Helper from "/client/imports/helper";
 import {connect} from "/client/imports/views/layouts/top_navbar/connections/connections";
-import "./add_collection/add_collection";
+import {resetForm, initializeForm} from "./add_collection/add_collection";
+import {resetForm as resetCappedForm} from "./convert_capped_collection/convert_to_capped";
+import {resetForm as resetRenameForm} from "./rename_collection/rename_collection";
+import {resetForm as resetValidationRulesForm} from "./validation_rules/validation_rules";
 import {initializeFilterTable} from "./filter_collection/filter_collection";
 import "./navigation.html";
 
@@ -19,6 +22,30 @@ export const setExcludedCollectionsByFilter = function (arr) {
 };
 export const setFilterRegex = function (regex) {
     filterRegex.set(regex);
+};
+
+const dropAllCollections = function () {
+    swal({
+        title: "Are you sure?",
+        text: "All collections except system, will be dropped, are you sure ?",
+        type: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#DD6B55",
+        confirmButtonText: "Yes, drop them!",
+        closeOnConfirm: true
+    }, function (isConfirm) {
+        if (isConfirm) {
+            Meteor.call('dropAllCollections', function (err, result) {
+                if (err || result.error) {
+                    Helper.showMeteorFuncError(err, result, "Couldn't drop all collections");
+                }
+                else {
+                    renderCollectionNames();
+                    toastr.success('Successfully dropped all collections/views except system');
+                }
+            });
+        }
+    });
 };
 
 const handleNavigationAndSessions = function () {
@@ -36,6 +63,17 @@ const handleNavigationAndSessions = function () {
 
     $('#cmbQueries').val('').trigger('chosen:updated');
     $('#cmbAdminQueries').val('').trigger('chosen:updated');
+};
+
+const clearCollection = function (collectionName) {
+    Meteor.call('delete', collectionName, {}, function (err, result) {
+        if (err || result.error) {
+            Helper.showMeteorFuncError(err, result, "Couldn't clear collection");
+        }
+        else {
+            toastr.success('Successfuly cleared collection: ' + collectionName);
+        }
+    });
 };
 
 const dropCollection = function (collectionName) {
@@ -114,29 +152,7 @@ Template.navigation.events({
 
     'click #btnDropAllCollections' (e) {
         e.preventDefault();
-        swal({
-            title: "Are you sure?",
-            text: "All collections except system, will be dropped, are you sure ?",
-            type: "warning",
-            showCancelButton: true,
-            confirmButtonColor: "#DD6B55",
-            confirmButtonText: "Yes, drop them!",
-            closeOnConfirm: false
-        }, function () {
-            Meteor.call('dropAllCollections', function (err, result) {
-                if (err || result.error) {
-                    Helper.showMeteorFuncError(err, result, "Couldn't drop all collections");
-                }
-                else {
-                    Helper.clearSessions();
-                    swal({
-                        title: "Dropped!",
-                        text: "Successfuly dropped all collections database ",
-                        type: "success"
-                    });
-                }
-            });
-        });
+        dropAllCollections();
     },
 
     'click #btnDropDatabase' (e) {
@@ -208,57 +224,173 @@ Template.navigation.onRendered(function () {
         initializeFilterTable();
     });
 
+    const addCollectionModal = $('#collectionAddModal');
+    addCollectionModal.on('shown.bs.modal', function () {
+        resetForm();
+        if (addCollectionModal.data('is-view')) {
+            initializeForm(addCollectionModal.data('is-view'));
+        }
+    });
+
+    const convertToCappedModal = $('#convertToCappedModal');
+    convertToCappedModal.on('shown.bs.modal', function () {
+        resetCappedForm();
+    });
+
+    const renameModal = $('#renameCollectionModal');
+    renameModal.on('shown.bs.modal', function () {
+        resetRenameForm();
+    });
+
+    const validationRulesModal = $('#validationRulesModal');
+    validationRulesModal.on('shown.bs.modal', function () {
+        resetValidationRulesForm();
+    });
+
     $.contextMenu({
         selector: ".navCollection, .navCollectionTop",
         build: function (trigger) {
             let items = {
+                manage_collection: {
+                    name: "Manage",
+                    icon: "fa-pencil",
+                    items: {
+                        view_collection: {
+                            name: "Show Collection/View",
+                            icon: "fa-book",
+                            callback: function () {
+                                if ($(this) && $(this).context && $(this).context.innerText) {
+                                    const collectionName = $(this).context.innerText.substring(1).split(' ')[0];
+                                    addCollectionModal.data('is-view', collectionName);
+                                    addCollectionModal.modal({
+                                        backdrop: 'static',
+                                        keyboard: false
+                                    });
+                                }
+                            }
+                        },
+
+                        convert_to_capped: {
+                            icon: "fa-level-down",
+                            name: "Convert to Capped",
+                            callback: function () {
+                                const collectionName = $(this).context.innerText.substring(1).split(' ')[0];
+                                convertToCappedModal.data('collection', collectionName);
+                                convertToCappedModal.modal('show');
+                            }
+                        },
+
+                        rename_collection: {
+                            icon: "fa-pencil-square-o",
+                            name: "Rename",
+                            callback: function () {
+                                const collectionName = $(this).context.innerText.substring(1).split(' ')[0];
+                                renameModal.data('collection', collectionName);
+                                renameModal.modal('show');
+                            }
+                        },
+
+                        validation_rules: {
+                            icon: "fa-check-circle",
+                            name: "Edit Validation Rules",
+                            callback: function () {
+                                const collectionName = $(this).context.innerText.substring(1).split(' ')[0];
+                                validationRulesModal.data('collection', collectionName);
+                                validationRulesModal.modal('show');
+                            }
+                        },
+
+                        clear_collection: {
+                            name: "Clear Collection",
+                            icon: "fa-remove",
+                            callback: function () {
+                                if ($(this) && $(this).context && $(this).context.innerText) {
+                                    const collectionName = $(this).context.innerText.substring(1).split(' ')[0];
+                                    swal({
+                                        title: "Are you sure?",
+                                        text: collectionName + " collection's all data will be wiped, are you sure ?",
+                                        type: "warning",
+                                        showCancelButton: true,
+                                        confirmButtonColor: "#DD6B55",
+                                        confirmButtonText: "Yes, clear it!",
+                                        closeOnConfirm: true
+                                    }, function (isConfirm) {
+                                        if (isConfirm) {
+                                            clearCollection(collectionName);
+                                        }
+                                    });
+                                } else {
+                                    toastr.warning('No collection selected !');
+                                }
+                            }
+                        },
+
+                        drop_collection: {
+                            name: "Drop Collection",
+                            icon: "fa-trash",
+                            callback: function () {
+                                if ($(this) && $(this).context && $(this).context.innerText) {
+                                    const collectionName = $(this).context.innerText.substring(1).split(' ')[0];
+                                    swal({
+                                        title: "Are you sure?",
+                                        text: collectionName + " collection will be dropped, are you sure ?",
+                                        type: "warning",
+                                        showCancelButton: true,
+                                        confirmButtonColor: "#DD6B55",
+                                        confirmButtonText: "Yes, drop it!",
+                                        closeOnConfirm: true
+                                    }, function (isConfirm) {
+                                        if (isConfirm) {
+                                            dropCollection(collectionName);
+                                        }
+                                    });
+                                } else {
+                                    toastr.warning('No collection selected !');
+                                }
+                            }
+                        }
+                    }
+                },
+
+                sep1: {"type": "cm_separator"},
+
                 add_collection: {
-                    name: "Add Collection/View", icon: "fa-plus", callback: function () {
-                        $('#collectionAddModal').modal({
+                    name: "Add Collection/View",
+                    icon: "fa-plus",
+                    callback: function () {
+                        addCollectionModal.data('is-view', '');
+                        addCollectionModal.modal({
                             backdrop: 'static',
                             keyboard: false
                         });
                     }
                 },
-
                 filter_collections: {
-                    name: "Filter Collections", icon: "fa-filter", callback: function () {
+                    name: "Filter Collections",
+                    icon: "fa-filter",
+                    callback: function () {
                         filterModal.modal('show');
                     }
                 },
-
                 refresh_collections: {
-                    name: "Refresh Collections", icon: "fa-refresh", callback: function () {
+                    name: "Refresh Collections",
+                    icon: "fa-refresh",
+                    callback: function () {
                         connect(true);
                     }
                 },
-
-                drop_collection: {
-                    name: "Drop Collection", icon: "fa-trash", callback: function () {
-                        if ($(this) && $(this).context && $(this).context.innerText) {
-                            let collectionName = $(this).context.innerText.substring(1).split(' ')[0];
-                            swal({
-                                title: "Are you sure?",
-                                text: collectionName + " collection will be dropped, are you sure ?",
-                                type: "warning",
-                                showCancelButton: true,
-                                confirmButtonColor: "#DD6B55",
-                                confirmButtonText: "Yes, drop it!",
-                                closeOnConfirm: true
-                            }, function (isConfirm) {
-                                if (isConfirm) {
-                                    dropCollection(collectionName);
-                                }
-                            });
-                        } else {
-                            toastr.warning('No collection selected !');
-                        }
+                drop_collections: {
+                    name: "Drop All Collections",
+                    icon: "fa-ban",
+                    callback: function () {
+                        dropAllCollections();
                     }
                 }
             };
 
             if (trigger.hasClass('navCollectionTop')) {
-                delete items.drop_collection;
+                delete items.manage_collection;
+                delete items.sep1;
             }
 
             return {

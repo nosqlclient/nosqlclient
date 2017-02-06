@@ -1,0 +1,63 @@
+<template name="validationRules">
+    <div class="modal inmodal" id="validationRulesModal" tabindex="-1" role="dialog" aria-hidden="true"
+         style="display: none;">
+        <div class="modal-dialog">
+            <div class="modal-content animated bounceInRight">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span><span
+                            class="sr-only">Close</span></button>
+                    <h4 class="modal-title">Validation Rules</h4>
+                    <small id="spanCollectionNameValidationRules" class="font-bold"></small>
+                </div>
+                <div class="modal-body">
+                    <form class="form-horizontal">
+                        <div class="form-group">
+                            <label class="col-lg-2 control-label">Validation Action</label>
+                            <div class="col-lg-10">
+                                <select id="cmbValidationAction"
+                                        data-placeholder="Leave empty for no action"
+                                        class="chosen-select form-control"
+                                        tabindex="-1">
+                                    <option></option>
+                                    <option value="warn">Warning</option>
+                                    <option value="error">Error</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-lg-2 control-label">Validation Level</label>
+                            <div class="col-lg-10">
+                                <select id="cmbValidationLevel"
+                                        data-placeholder="Leave empty for no level"
+                                        class="chosen-select form-control"
+                                        tabindex="-1">
+                                    <option></option>
+                                    <option value="off">Off</option>
+                                    <option value="strict">Strict</option>
+                                    <option value="moderate">Moderate</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-lg-2 control-label">Validator</label>
+                            <div id="divValidator" class="col-lg-10">
+                                                <textarea id="txtValidator"
+                                                          class="form-control"></textarea>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <div class="pull-left">
+                        <button type="button" class="btn btn-white" data-dismiss="modal">Close</button>
+                    </div>
+                    <button id="btnSaveValidationRules" data-style="contract" type="button"
+                            class="btn btn-primary ladda-button">Save
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</template>
