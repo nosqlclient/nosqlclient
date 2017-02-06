@@ -17,26 +17,34 @@ export const initializeForm = function (collection) {
     const connection = Connections.findOne({_id: Session.get(Helper.strSessionConnection)});
     Meteor.call('listCollectionNames', connection.databaseName, function (err, result) {
         if (err || result.error) {
+            Ladda.stopAll();
             Helper.showMeteorFuncError(err, result, "Couldn't fetch data");
-            $('#collectionAddModal').hide();
+            $('#collectionAddModal').modal('hide');
         }
         else {
+            Ladda.stopAll();
+            let found = false;
             if (result.result) {
                 for (let col of result.result) {
                     if (col.name === collection) {
-                        prepareEditForm(col);
+                        prepareShowForm(col);
+                        found = true;
                     }
                 }
             }
+
+            if (!found) {
+                toastr.warning("Couldn't find collection in response of getCollectionInfos");
+                $('#collectionAddModal').modal('hide');
+            }
         }
 
-        Ladda.stopAll();
     });
 };
 
 export const resetForm = function () {
     prepareFormAsCollection();
-
+    $('.nav-tabs a[href="#tab-1-options"]').tab('show');
     Helper.setCodeMirrorValue($('#divValidatorAddCollection'), '', $('#txtValidatorAddCollection'));
     Helper.setCodeMirrorValue($('#divStorageEngine'), '', $('#txtStorageEngine'));
     Helper.setCodeMirrorValue($('#divCollationAddCollection'), '', $('#txtCollationAddCollection'));
@@ -47,17 +55,63 @@ export const resetForm = function () {
     $('#inputCappedCollectionMaxDocs').val('');
     $('#inputCappedCollectionSize').val('');
     $('#inputCapped, #inputNoPadding, #inputTwoSizesIndexes').iCheck('uncheck');
-    $('#divAutoIndexID').iCheck('check');
-    $('#cmbCollectionOrView, #cmbCollectionsAddCollection, #cmbValidationActionAddCollection, #cmbValidationLevelAddCollection')
+    $('#cmbCollectionOrView, #cmbCollectionsAddCollection, #cmbAddCollectionViewOptions, #cmbValidationActionAddCollection, #cmbValidationLevelAddCollection')
         .find('option').prop('selected', false).trigger('chosen:updated');
     $('#collectionAddModalTitle').text('Create Collection/View');
     $('#spanColName').text(Connections.findOne({_id: Session.get(Helper.strSessionConnection)}).name);
-    $('#btnCreateCollection').text('Create');
+    $('#btnCreateCollection').prop('disabled', false);
+
     Session.set(Helper.strSessionSelectedAddCollectionOptions, []);
 };
 
 const setOptionsForCollection = function (col) {
-    console.log(col);
+    let optionsToSelect = [];
+    if (col.options.capped) {
+        optionsToSelect.push('CAPPED');
+        Session.set(Helper.strSessionSelectedAddCollectionOptions, optionsToSelect);
+
+        // let view initialize
+        Meteor.setTimeout(function () {
+            $('#inputCappedCollectionMaxDocs').val(col.options.max);
+            $('#inputCappedCollectionSize').val(col.options.size);
+        }, 100);
+    }
+    if (col.options.flags) {
+        optionsToSelect.push('FLAGS');
+        Session.set(Helper.strSessionSelectedAddCollectionOptions, optionsToSelect);
+
+        // let view initialize
+        Meteor.setTimeout(function () {
+            const twoSizesIndexes = $('#inputTwoSizesIndexes');
+            const noPadding = $('#inputNoPadding');
+
+            if (col.options.flags === 0) {
+                twoSizesIndexes.iCheck('uncheck');
+                noPadding.iCheck('uncheck');
+            } else if (col.options.flags === 1) {
+                twoSizesIndexes.iCheck('check');
+                noPadding.iCheck('uncheck');
+            } else if (col.options.flags === 2) {
+                twoSizesIndexes.iCheck('uncheck');
+                noPadding.iCheck('check');
+            } else if (col.options.flags === 3) {
+                twoSizesIndexes.iCheck('check');
+                noPadding.iCheck('check');
+            }
+        }, 100);
+
+    }
+    if (col.options.indexOptionDefaults) {
+        Session.set(Helper.strSessionSelectedAddCollectionOptions, optionsToSelect);
+        optionsToSelect.push('INDEX_OPTION_DEFAULTS');
+
+        // let view initialize
+        Meteor.setTimeout(function () {
+            Helper.setCodeMirrorValue($('#divIndexOptionDefaults'), JSON.stringify(col.options.indexOptionDefaults), $('#txtIndexOptionDefaults'));
+        }, 100);
+    }
+
+    $('#cmbAddCollectionViewOptions').val(optionsToSelect).trigger('chosen:updated');
 };
 
 const setStorageEngineAndValidator = function (col) {
@@ -66,7 +120,7 @@ const setStorageEngineAndValidator = function (col) {
     }
     if (col.options.validator || col.options.validationLevel || col.options.validationAction) {
         if (col.options.validator) {
-            Helper.setCodeMirrorValue($('#divValidator'), JSON.stringify(col.options.validator), $('#txtValidatorAddCollection'));
+            Helper.setCodeMirrorValue($('#divValidatorAddCollection'), JSON.stringify(col.options.validator), $('#txtValidatorAddCollection'));
         }
         if (col.options.validationAction) {
             $('#cmbValidationActionAddCollection').val(col.options.validationAction).trigger('chosen:updated');
@@ -78,37 +132,34 @@ const setStorageEngineAndValidator = function (col) {
     }
 };
 
-const prepareEditForm = function (col) {
+const prepareShowForm = function (col) {
     const cmbCollectionOrView = $('#cmbCollectionOrView');
     const modalTitle = $('#collectionAddModalTitle');
-    const firstTab = $('.nav-tabs a[href="#tab-1-options"]');
+    $('.nav-tabs a[href="#tab-1-options"]').tab('show');
 
-    firstTab.tab('show');
     if (col.type === 'view') {
         prepareFormAsView();
-        modalTitle.text('Edit View');
+        modalTitle.text('View Information');
         cmbCollectionOrView.val('view').trigger('chosen:updated');
         $('#cmbCollectionsAddCollection').val(col.options.viewOn).trigger('chosen:updated');
         if (col.options.pipeline) {
-            Helper.setCodeMirrorValue($('#divViewPipeline'), JSON.stringify(col.options.pipeline));
+            Helper.setCodeMirrorValue($('#divViewPipeline'), JSON.stringify(col.options.pipeline), $('#txtViewPipeline'));
         }
     }
     else {
         prepareFormAsCollection();
-        modalTitle.text('Edit Collection');
+        modalTitle.text('Collection Information');
         cmbCollectionOrView.val('collection').trigger('chosen:updated');
-        setStorageEngineAndValidator(col, firstTab);
+        setStorageEngineAndValidator(col);
         setOptionsForCollection(col);
     }
 
     $('#inputCollectionViewName').val(col.name);
     $('#spanColName').text(col.name);
-    $('#btnCreateCollection').text('Update');
+    $('#btnCreateCollection').prop('disabled', true);
 
     if (col.options.collation) {
-        $('.nav-tabs a[href="#tab-4-collation"]').tab('show');
-        Helper.setCodeMirrorValue($('#divCollationAddCollection'), JSON.stringify(col.options.collation));
-        $('.nav-tabs a[href="#tab-1-options"]').tab('show');
+        Helper.setCodeMirrorValue($('#divCollationAddCollection'), JSON.stringify(col.options.collation), $('#txtCollationAddCollection'));
     }
 
 };
@@ -282,6 +333,7 @@ Template.addCollection.events({
         }
 
         Ladda.create(document.querySelector('#btnCreateCollection')).start();
+
         Meteor.call('createCollection', name, options, function (err, res) {
             if (err || (res && res.error)) {
                 Helper.showMeteorFuncError(err, res, "Couldn't create");

@@ -124,6 +124,10 @@ const initUserTree = function () {
 
 const getNodeInformation = function (node) {
     if (!node.data || node.data[0].db || node.data[0].user) {
+        if (!node.data[0]) {
+            return defaultInformationText;
+        }
+
         if (node.data[0].user) {
             Session.set(Helper.strSessionUsermanagementManageSelection, node.text);
             $('#btnEditUser').show();

@@ -19,10 +19,6 @@ export const getOptions = function () {
         }
     }
 
-    if ($.inArray("AUTO_INDEX_ID", Session.get(Helper.strSessionSelectedAddCollectionOptions)) != -1) {
-        result[Enums.ADD_COLLECTION_OPTIONS.AUTO_INDEX_ID] = $('#divAutoIndexID').iCheck('update')[0].checked;
-    }
-
     if ($.inArray("FLAGS", Session.get(Helper.strSessionSelectedAddCollectionOptions)) != -1) {
         result[Enums.ADD_COLLECTION_OPTIONS.FLAGS] = getFlagValue();
     }
@@ -68,15 +64,6 @@ Template.addCollectionOptions.helpers({
     isAddCollectionOptionSelected (opt){
         return $.inArray(opt, Session.get(Helper.strSessionSelectedAddCollectionOptions)) !== -1;
     }
-});
-
-Template.capped.onRendered(function () {
-    initICheck($('#divCapped'));
-    $('#inputCapped').iCheck('uncheck');
-});
-
-Template.autoIndexId.onRendered(function () {
-    initICheck($('#divAutoIndexID'));
 });
 
 Template.indexOptionDefaults.onRendered(function () {

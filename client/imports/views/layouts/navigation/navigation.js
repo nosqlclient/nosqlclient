@@ -8,6 +8,8 @@ import {Connections} from "/lib/imports/collections/connections";
 import Helper from "/client/imports/helper";
 import {connect} from "/client/imports/views/layouts/top_navbar/connections/connections";
 import {resetForm, initializeForm} from "./add_collection/add_collection";
+import {resetForm as resetCappedForm} from "./convert_capped_collection/convert_to_capped";
+import {resetForm as resetRenameForm} from "./rename_collection/rename_collection";
 import {initializeFilterTable} from "./filter_collection/filter_collection";
 import "./navigation.html";
 
@@ -222,100 +224,148 @@ Template.navigation.onRendered(function () {
     const addCollectionModal = $('#collectionAddModal');
     addCollectionModal.on('shown.bs.modal', function () {
         resetForm();
-        if (addCollectionModal.data('is-edit')) {
-            initializeForm(addCollectionModal.data('is-edit'));
+        if (addCollectionModal.data('is-view')) {
+            initializeForm(addCollectionModal.data('is-view'));
         }
+    });
+
+    const convertToCappedModal = $('#convertToCappedModal');
+    convertToCappedModal.on('shown.bs.modal', function () {
+        resetCappedForm();
+    });
+
+    const renameModal = $('#renameCollectionModal');
+    renameModal.on('shown.bs.modal', function () {
+        resetRenameForm();
     });
 
     $.contextMenu({
         selector: ".navCollection, .navCollectionTop",
         build: function (trigger) {
             let items = {
+                manage_collection: {
+                    name: "Manage",
+                    icon: "fa-pencil",
+                    items: {
+                        view_collection: {
+                            name: "Show Collection/View",
+                            icon: "fa-book",
+                            callback: function () {
+                                if ($(this) && $(this).context && $(this).context.innerText) {
+                                    const collectionName = $(this).context.innerText.substring(1).split(' ')[0];
+                                    addCollectionModal.data('is-view', collectionName);
+                                    addCollectionModal.modal({
+                                        backdrop: 'static',
+                                        keyboard: false
+                                    });
+                                }
+                            }
+                        },
+
+                        convert_to_capped: {
+                            icon: "fa-level-down",
+                            name: "Convert to Capped",
+                            callback: function () {
+                                const collectionName = $(this).context.innerText.substring(1).split(' ')[0];
+                                convertToCappedModal.data('collection', collectionName);
+                                convertToCappedModal.modal('show');
+                            }
+                        },
+
+                        rename_collection: {
+                            icon: "fa-pencil-square-o",
+                            name: "Rename",
+                            callback: function () {
+                                const collectionName = $(this).context.innerText.substring(1).split(' ')[0];
+                                renameModal.data('collection', collectionName);
+                                renameModal.modal('show');
+                            }
+                        },
+
+                        clear_collection: {
+                            name: "Clear Collection",
+                            icon: "fa-remove",
+                            callback: function () {
+                                if ($(this) && $(this).context && $(this).context.innerText) {
+                                    const collectionName = $(this).context.innerText.substring(1).split(' ')[0];
+                                    swal({
+                                        title: "Are you sure?",
+                                        text: collectionName + " collection's all data will be wiped, are you sure ?",
+                                        type: "warning",
+                                        showCancelButton: true,
+                                        confirmButtonColor: "#DD6B55",
+                                        confirmButtonText: "Yes, clear it!",
+                                        closeOnConfirm: true
+                                    }, function (isConfirm) {
+                                        if (isConfirm) {
+                                            clearCollection(collectionName);
+                                        }
+                                    });
+                                } else {
+                                    toastr.warning('No collection selected !');
+                                }
+                            }
+                        },
+
+                        drop_collection: {
+                            name: "Drop Collection",
+                            icon: "fa-trash",
+                            callback: function () {
+                                if ($(this) && $(this).context && $(this).context.innerText) {
+                                    const collectionName = $(this).context.innerText.substring(1).split(' ')[0];
+                                    swal({
+                                        title: "Are you sure?",
+                                        text: collectionName + " collection will be dropped, are you sure ?",
+                                        type: "warning",
+                                        showCancelButton: true,
+                                        confirmButtonColor: "#DD6B55",
+                                        confirmButtonText: "Yes, drop it!",
+                                        closeOnConfirm: true
+                                    }, function (isConfirm) {
+                                        if (isConfirm) {
+                                            dropCollection(collectionName);
+                                        }
+                                    });
+                                } else {
+                                    toastr.warning('No collection selected !');
+                                }
+                            }
+                        }
+                    }
+                },
+
+                sep1: "---------",
+
                 add_collection: {
-                    name: "Add Collection/View", icon: "fa-plus", callback: function () {
-                        addCollectionModal.data('is-edit', '');
+                    name: "Add Collection/View",
+                    icon: "fa-plus",
+                    callback: function () {
+                        addCollectionModal.data('is-view', '');
                         addCollectionModal.modal({
                             backdrop: 'static',
                             keyboard: false
                         });
                     }
                 },
-
-                edit_collection: {
-                    name: "Edit Collection/View", icon: "fa-edit", callback: function () {
-                        if ($(this) && $(this).context && $(this).context.innerText) {
-                            const collectionName = $(this).context.innerText.substring(1).split(' ')[0];
-                            addCollectionModal.data('is-edit', collectionName);
-                            addCollectionModal.modal({
-                                backdrop: 'static',
-                                keyboard: false
-                            });
-                        }
-                    }
-                },
-
                 filter_collections: {
-                    name: "Filter Collections", icon: "fa-filter", callback: function () {
+                    name: "Filter Collections",
+                    icon: "fa-filter",
+                    callback: function () {
                         filterModal.modal('show');
                     }
                 },
-
                 refresh_collections: {
-                    name: "Refresh Collections", icon: "fa-refresh", callback: function () {
+                    name: "Refresh Collections",
+                    icon: "fa-refresh",
+                    callback: function () {
                         connect(true);
-                    }
-                },
-
-                clear_collection: {
-                    name: "Clear Collection", icon: "fa-remove", callback: function () {
-                        if ($(this) && $(this).context && $(this).context.innerText) {
-                            const collectionName = $(this).context.innerText.substring(1).split(' ')[0];
-                            swal({
-                                title: "Are you sure?",
-                                text: collectionName + " collection's all data will be wiped, are you sure ?",
-                                type: "warning",
-                                showCancelButton: true,
-                                confirmButtonColor: "#DD6B55",
-                                confirmButtonText: "Yes, clear it!",
-                                closeOnConfirm: true
-                            }, function (isConfirm) {
-                                if (isConfirm) {
-                                    clearCollection(collectionName);
-                                }
-                            });
-                        } else {
-                            toastr.warning('No collection selected !');
-                        }
-                    }
-                },
-
-                drop_collection: {
-                    name: "Drop Collection", icon: "fa-trash", callback: function () {
-                        if ($(this) && $(this).context && $(this).context.innerText) {
-                            const collectionName = $(this).context.innerText.substring(1).split(' ')[0];
-                            swal({
-                                title: "Are you sure?",
-                                text: collectionName + " collection will be dropped, are you sure ?",
-                                type: "warning",
-                                showCancelButton: true,
-                                confirmButtonColor: "#DD6B55",
-                                confirmButtonText: "Yes, drop it!",
-                                closeOnConfirm: true
-                            }, function (isConfirm) {
-                                if (isConfirm) {
-                                    dropCollection(collectionName);
-                                }
-                            });
-                        } else {
-                            toastr.warning('No collection selected !');
-                        }
                     }
                 }
             };
 
             if (trigger.hasClass('navCollectionTop')) {
-                delete items.drop_collection;
-                delete items.edit_collection;
+                delete items.manage_collection;
+                delete items.sep1;
             }
 
             return {

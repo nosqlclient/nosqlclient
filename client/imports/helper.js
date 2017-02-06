@@ -390,6 +390,8 @@ Helper.prototype = {
         if (keepValue && Session.get(this.strSessionSelectorValue)) {
             codeMirror.setValue(Session.get(this.strSessionSelectorValue));
         }
+
+        codeMirror.refresh();
     },
 
     setCodeMirrorValue (divSelector, val, txtSelector) {
