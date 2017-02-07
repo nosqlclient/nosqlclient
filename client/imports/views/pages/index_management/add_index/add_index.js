@@ -7,7 +7,55 @@ import "./add_index.html";
 const toastr = require('toastr');
 const Ladda = require('ladda');
 
-export const clearForm = function () {
+export const prepareFormForView = function () {
+    clearForm();
+
+    const modal = $('#addIndexModal');
+    const selectedCollection = modal.data('collection');
+    const indexName = modal.data('index');
+
+    if (!selectedCollection || !indexName) {
+        addField();
+        return;
+    }
+
+    Meteor.call("indexInformation", selectedCollection, true, function (err, indexInformation) {
+        if (err || indexInformation.error) {
+            Helper.showMeteorFuncError(err, indexInformation, "Couldn't fetch index information");
+        }
+        else {
+            let found = false;
+            for (let index of indexInformation.result) {
+                if (index.name === indexName) {
+                    found = true;
+                    proceedPreparingFormForView(index);
+                }
+            }
+
+            if (!found) {
+                toastr.error("Couldn't find index: " + indexName);
+            }
+        }
+
+    });
+};
+
+const proceedPreparingFormForView = function (index) {
+    $('#addIndexModalTitle').html(index.name);
+    $('#inputIndexName').val(index.name);
+    $('#btnSaveIndex').prop('disabled', true);
+
+    for (let key in index.key) {
+        if (!index.key.hasOwnProperty(key) || key === '_fts' || key === '_ftsx') {
+            continue;
+        }
+        addField(key, index.key[key] + '');
+    }
+
+    //TODO
+};
+
+const clearForm = function () {
     $('.nav-tabs a[href="#tab-1-indexes"]').tab('show');
     Helper.setCodeMirrorValue($('#divCollationAddIndex'), '', $('#txtCollationAddIndex'));
     Helper.setCodeMirrorValue($('#divPartial'), '', $('#txtPartial'));
@@ -25,12 +73,11 @@ export const clearForm = function () {
     $('#inputUnique').iCheck('uncheck');
     $('#inputBackground').iCheck('uncheck');
     $('#inputSparse').iCheck('uncheck');
+    $('#addIndexModalTitle').html('Add Index');
     $('#cmbTextIndexVersion, #cmbTextIndexDefaultLanguage').find('option').prop('selected', false).trigger('chosen:updated');
-
-    addField();
 };
 
-const addField = function () {
+const addField = function (fieldName, fieldType) {
     const divField = $('.divField:hidden');
     const cloned = divField.clone();
 
@@ -38,6 +85,12 @@ const addField = function () {
 
     cloned.show();
     cloned.find('.cmbIndexTypes').chosen();
+    if (fieldName) {
+        cloned.find('.txtFieldName').val(fieldName);
+    }
+    if (fieldType) {
+        cloned.find('.cmbIndexTypes').val(fieldType).trigger('chosen:updated');
+    }
 };
 
 const prepareFieldWeights = function () {
