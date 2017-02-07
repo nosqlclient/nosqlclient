@@ -33,7 +33,7 @@
                                         <div class="form-group">
                                             <div class="col-lg-12">
                                                 <input id="inputIndexName" type="text"
-                                                       placeholder="Index name (optional)"
+                                                       placeholder="Index name"
                                                        class="form-control">
                                             </div>
                                         </div>
@@ -170,7 +170,59 @@
                                             </div>
                                         </div>
 
-                                        <!--TODO-->
+                                        <div class="form-group">
+                                            <label class="col-lg-2 control-label">Default Language</label>
+                                            <div class="col-lg-10">
+                                                <select id="cmbTextIndexDefaultLanguage"
+                                                        data-placeholder="Leave empty for no version"
+                                                        class="chosen-select form-control"
+                                                        tabindex="-1">
+                                                    <option></option>
+                                                    <option value="danish">Danish</option>
+                                                    <option value="dutch">Dutch</option>
+                                                    <option value="english">English</option>
+                                                    <option value="finnish">Finnish</option>
+                                                    <option value="french">French</option>
+                                                    <option value="german">German</option>
+                                                    <option value="hungarian">Hungarian</option>
+                                                    <option value="italian">Italian</option>
+                                                    <option value="norwegian">Norwegian</option>
+                                                    <option value="portuguese">Portuguese</option>
+                                                    <option value="romanian">Romanian</option>
+                                                    <option value="russian">Russian</option>
+                                                    <option value="spanish">Spanish</option>
+                                                    <option value="swedish">Swedish</option>
+                                                    <option value="turkish">Turkish</option>
+                                                    <option value="arabic">Arabic</option>
+                                                    <option value="iranian persian">Iranian Persian</option>
+                                                    <option value="urdu">Urdu</option>
+                                                    <option value="hans">Simplified Chinese</option>
+                                                    <option value="hant">Traditional Chinese</option>
+                                                    <option value="none">None</option>
+                                                </select>
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label class="col-lg-2 control-label">Language Override</label>
+                                            <div class="col-lg-10"><input id="inputTextLanguageOverride"
+                                                                          type="text"
+                                                                          placeholder="Leave empty for no override"
+                                                                          class="form-control">
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group divFieldWeight" style="display: none">
+                                            <div class="col-lg-4 col-lg-offset-2">
+                                                <input type="text" placeholder="Field name" disabled
+                                                       class="form-control txtFieldWeightName">
+                                            </div>
+                                            <div class="col-lg-6">
+                                                <input type="number" min="1"
+                                                       placeholder="Weight (Leave empty for no weight)"
+                                                       class="form-control txtFieldWeight">
+                                            </div>
+                                        </div>
                                     </form>
                                 </div>
                             </div>
@@ -178,9 +230,97 @@
                             <!--TAB 3 -->
                             <div id="tab-3-geo-options" class="tab-pane">
                                 <div class="panel-body no-borders modal-background">
-                                    <form class="form-horizontal">
+                                    <div class="panel panel-default">
+                                        <div class="panel-heading">
+                                            <h5 class="panel-title">
+                                                <a data-toggle="collapse" href="#div2dOptions" aria-expanded="false">2D
+                                                    Options</a>
+                                            </h5>
+                                        </div>
+                                        <div id="div2dOptions" class="panel-collapse collapse" aria-expanded="false"
+                                             style="height: 0px;">
+                                            <div class="panel-body">
+                                                <form class="form-horizontal">
+                                                    <div class="form-group">
+                                                        <label class="col-lg-2 control-label">Min</label>
+                                                        <div class="col-lg-10"><input id="input2DMin"
+                                                                                      type="number"
+                                                                                      placeholder="Lower bound"
+                                                                                      class="form-control">
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label class="col-lg-2 control-label">Max</label>
+                                                        <div class="col-lg-10"><input id="input2DMax"
+                                                                                      type="number"
+                                                                                      placeholder="Upper bound"
+                                                                                      class="form-control">
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label class="col-lg-2 control-label">Bit</label>
+                                                        <div class="col-lg-10"><input id="input2DBit"
+                                                                                      type="number"
+                                                                                      placeholder="Bit Precision"
+                                                                                      class="form-control">
+                                                        </div>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
 
-                                    </form>
+                                    <div class="panel panel-default">
+                                        <div class="panel-heading">
+                                            <h5 class="panel-title">
+                                                <a data-toggle="collapse" href="#div2dSphereOptions"
+                                                   aria-expanded="false">2D Sphere Options</a>
+                                            </h5>
+                                        </div>
+                                        <div id="div2dSphereOptions" class="panel-collapse collapse"
+                                             aria-expanded="false"
+                                             style="height: 0px;">
+                                            <div class="panel-body">
+                                                <form class="form-horizontal">
+                                                    <div class="form-group">
+                                                        <label class="col-lg-2 control-label">Version</label>
+                                                        <div class="col-lg-10"><input id="input2DSphereVersion"
+                                                                                      type="number"
+                                                                                      placeholder="Index Version"
+                                                                                      class="form-control">
+                                                        </div>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="panel panel-default">
+                                        <div class="panel-heading">
+                                            <h5 class="panel-title">
+                                                <a data-toggle="collapse" href="#divGeoHaystackOptions"
+                                                   aria-expanded="false">Geo Haystack
+                                                    Options</a>
+                                            </h5>
+                                        </div>
+                                        <div id="divGeoHaystackOptions" class="panel-collapse collapse"
+                                             aria-expanded="false"
+                                             style="height: 0px;">
+                                            <div class="panel-body">
+                                                <form class="form-horizontal">
+                                                    <div class="form-group">
+                                                        <label class="col-lg-2 control-label">Bucket Size</label>
+                                                        <div class="col-lg-10"><input id="inputBucketSize"
+                                                                                      type="number"
+                                                                                      placeholder="Bucket Size"
+                                                                                      class="form-control">
+                                                        </div>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+
                                 </div>
                             </div>
 
@@ -188,6 +328,16 @@
                             <div id="tab-4-indexes-collation" class="tab-pane">
                                 <div class="panel-body no-borders modal-background">
                                     <form class="form-horizontal">
+                                        <form class="form-horizontal">
+                                            <div class="form-group">
+                                                <label class="col-lg-2 control-label">Collation</label>
+                                                <div id="divCollationAddIndex" class="col-lg-10">
+                                                <textarea id="txtCollationAddIndex"
+                                                          class="form-control"></textarea>
+                                                    <span class="help-block m-b-none">Valid for <b>Mongodb 3.4</b> and higher</span>
+                                                </div>
+                                            </div>
+                                        </form>
                                     </form>
                                 </div>
                             </div>

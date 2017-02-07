@@ -230,10 +230,11 @@ Template.indexManagement.events({
         }
 
         const addIndexModal = $('#addIndexModal');
-        addIndexModal.modal('show');
         addIndexModal.on('shown.bs.modal', function () {
             clearForm();
         });
+
+        addIndexModal.modal('show');
     },
 
     'click #btnRefreshIndexes'(){
