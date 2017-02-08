@@ -36,7 +36,6 @@ export const prepareFormForView = function () {
                 toastr.error("Couldn't find index: " + indexName);
             }
         }
-
     });
 };
 
@@ -51,8 +50,34 @@ const proceedPreparingFormForView = function (index) {
         }
         addField(key, index.key[key] + '');
     }
+    for (let weight in index.weights) {
+        if (!index.weights.hasOwnProperty(weight)) {
+            continue;
+        }
 
-    //TODO
+        addFieldWeight(weight, index.weights[weight] + '');
+        addField(weight, 'text');
+    }
+
+    if (index.collation) {
+        Helper.setCodeMirrorValue($('#divCollationAddIndex'), JSON.stringify(index.collation), $('#txtCollationAddIndex'));
+    }
+    if (index.partialFilterExpression) {
+        Helper.setCodeMirrorValue($('#divPartial'), JSON.stringify(index.partialFilterExpression), $('#txtPartial'));
+    }
+    $('#input2DMin').val(index.min);
+    $('#input2DMax').val(index.max);
+    $('#input2DBit').val(index.bits);
+    $('#input2DSphereVersion').val(index["2dsphereIndexVersion"]);
+    $('#inputBucketSize').val(index.bucketSize);
+    $('#inputTTL').val(index.expireAfterSeconds);
+    $('#inputTextLanguageOverride').val(index.language_override);
+    $('#inputUnique').iCheck(index.unique ? 'check' : 'uncheck');
+    $('#inputBackground').iCheck(index.background ? 'check' : 'uncheck');
+    $('#inputSparse').iCheck(index.sparse ? 'check' : 'uncheck');
+    $('#cmbTextIndexVersion').val(index.textIndexVersion).trigger('chosen:updated');
+    $('#cmbTextIndexDefaultLanguage').val(index.default_language).trigger('chosen:updated');
+
 };
 
 const clearForm = function () {
@@ -74,6 +99,7 @@ const clearForm = function () {
     $('#inputBackground').iCheck('uncheck');
     $('#inputSparse').iCheck('uncheck');
     $('#addIndexModalTitle').html('Add Index');
+    $('#btnSaveIndex').prop('disabled', false);
     $('#cmbTextIndexVersion, #cmbTextIndexDefaultLanguage').find('option').prop('selected', false).trigger('chosen:updated');
 };
 
@@ -93,6 +119,22 @@ const addField = function (fieldName, fieldType) {
     }
 };
 
+const addFieldWeight = function (fieldName, val) {
+    const divFieldWeight = $('.divFieldWeight:hidden');
+    const cloned = divFieldWeight.clone();
+
+    $('.divFieldWeight:last').after(cloned);
+
+    cloned.show();
+    if (fieldName) {
+        cloned.find('.txtFieldWeightName').val(fieldName);
+    }
+    if (val) {
+        cloned.find('.txtFieldWeight').val(val);
+    }
+
+};
+
 const prepareFieldWeights = function () {
     const divFieldWeight = $('.divFieldWeight:visible');
 
@@ -110,13 +152,7 @@ const prepareFieldWeights = function () {
                 }
             }
             if (!found && fieldName) {
-                const divFieldWeight = $('.divFieldWeight:hidden');
-                const cloned = divFieldWeight.clone();
-
-                $('.divFieldWeight:last').after(cloned);
-
-                cloned.show();
-                cloned.find('.txtFieldWeightName').val(fieldName);
+                addFieldWeight(fieldName);
             }
         }
     }
@@ -279,7 +315,7 @@ Template.addIndex.events({
             }
         }
 
-        let collation = Helper.getCodeMirrorValue($('#divCollation'));
+        let collation = Helper.getCodeMirrorValue($('#divCollationAddIndex'));
         if (collation) {
             collation = Helper.convertAndCheckJSON(collation);
             if (collation["ERROR"]) {

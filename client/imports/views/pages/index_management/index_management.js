@@ -5,6 +5,7 @@ import Helper from "/client/imports/helper";
 import "./index_management.html";
 import {FlowRouter} from "meteor/kadira:flow-router";
 import {prepareFormForView} from "./add_index/add_index";
+import {initialize} from "./view_raw/view_raw";
 import {Settings} from "/lib/imports/collections/settings";
 
 /*global moment*/
@@ -195,6 +196,7 @@ const initializeIndexesTable = function (data) {
         row += "</td>";
 
         row += "<td><a href='' title='Show Details' id='" + index.name + "' class='editor_view'><i class='fa fa-book text-navy'></i></a>";
+        row += "<td><a href='' title='Show Raw Json' id='" + index.name + "' class='editor_raw'><i class='fa fa-leaf text-navy'></i></a>";
         row += "</td><td><a href='' title='Drop' id='" + index.name + "' class='editor_remove'><i class='fa fa-remove text-navy'></i></a></td></tr>";
         tbody.append(row);
     }
@@ -208,6 +210,9 @@ Template.indexManagement.onRendered(function () {
 
     $('#addIndexModal').on('shown.bs.modal', function () {
         prepareFormForView();
+    });
+    $('#viewRawModal').on('shown.bs.modal', function () {
+        initialize();
     });
 
     let settings = this.subscribe('settings');
@@ -234,6 +239,13 @@ Template.indexManagement.events({
         addIndexModal.data('collection', '');
         addIndexModal.data('index', '');
         addIndexModal.modal('show');
+    },
+
+    'click .editor_raw'(e){
+        const rawModal = $('#viewRawModal');
+        rawModal.data('collection', $('#cmbCollections').val());
+        rawModal.data('index', e.currentTarget.id);
+        rawModal.modal('show');
     },
 
     'click #btnRefreshIndexes'(){

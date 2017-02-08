@@ -352,8 +352,6 @@ Template.navigation.onRendered(function () {
                     }
                 },
 
-                sep1: {"type": "cm_separator"},
-
                 add_collection: {
                     name: "Add Collection/View",
                     icon: "fa-plus",
