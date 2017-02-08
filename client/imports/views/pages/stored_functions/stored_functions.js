@@ -8,16 +8,8 @@ import "./stored_functions.html";
 const toastr = require('toastr');
 const Ladda = require('ladda');
 
-//TODO test with:
-/*
- { "_id" : "new_func_1", "value" : { "code" : "function () {\n\treturn 123;\n}" } }
- { "_id" : "bok5", "value" : { "code" : "function (x){return x+233333;}" } }
- { "_id" : "myAddFunction", "value" : { "code" : "function (x, y){ return x + y; }" } }
- * */
-
-
 /*global swal*/
-const init = function () {
+const init = function (isRefresh) {
     Ladda.create(document.querySelector('#btnAddNewStoredFunction')).start();
 
     Meteor.call("find", "system.js", {}, {}, false, function (err, result) {
@@ -29,22 +21,8 @@ const init = function () {
             if ($.fn.dataTable.isDataTable('#tblStoredFunctions')) {
                 tblStoredFunctions.DataTable().destroy();
             }
-
-            //merge value.$code and value
-            let arr = [];
-            for (let obj of result.result) {
-                let changedObj = {_id: obj._id, value: {}};
-                if (!obj.value.$code) {
-                    changedObj.value.$code = obj.value;
-                } else {
-                    changedObj.value.$code = obj.value.$code;
-                }
-
-                arr.push(changedObj);
-            }
-
             tblStoredFunctions.DataTable({
-                data: arr,
+                data: result.result,
                 columns: [
                     {data: "_id"},
                     {data: "value.$code", sClass: "hide_column"}
@@ -64,6 +42,9 @@ const init = function () {
                     }
                 ]
             });
+            if (isRefresh) {
+                toastr.success('Successfully refreshed !');
+            }
         }
 
         Ladda.stopAll();
@@ -103,6 +84,10 @@ Template.storedFunctions.onRendered(function () {
 
 
 Template.storedFunctions.events({
+    'click #btnRefreshStoredFunctions'(){
+        init(true);
+    },
+
     'click #btnSaveStoredFunction'(){
         const modal = $('#editStoredFunctionModal');
 

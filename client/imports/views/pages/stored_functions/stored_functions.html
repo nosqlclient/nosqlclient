@@ -1,5 +1,5 @@
 <template name="storedFunctions">
-    {{> pageHeading title='File Management' }}
+    {{> pageHeading title='Stored Functions' }}
     {{#if isConnected}}
         <div class="wrapper wrapper-content animated fadeInRight">
             <div class="row">
@@ -7,6 +7,11 @@
                     <div class="ibox float-e-margins">
                         <div class="ibox-title">
                             <h5>Stored Functions {{getConnection.databaseName}}</h5>
+                            <div class="ibox-tools">
+                                <button id="btnRefreshStoredFunctions" type="button" class="btn btn-sm btn-primary">
+                                    Refresh
+                                </button>
+                            </div>
                         </div>
                         <div class="ibox-content">
                             <table id="tblStoredFunctions"
