@@ -1,0 +1,82 @@
+<template name="storedFunctions">
+    {{> pageHeading title='File Management' }}
+    {{#if isConnected}}
+        <div class="wrapper wrapper-content animated fadeInRight">
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="ibox float-e-margins">
+                        <div class="ibox-title">
+                            <h5>Stored Functions {{getConnection.databaseName}}</h5>
+                        </div>
+                        <div class="ibox-content">
+                            <table id="tblStoredFunctions"
+                                   class="table table-striped table-bordered table-hover dataTables-example dataTable"
+                                   style="width: 100%">
+                                <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Function</th>
+                                    <th>Edit</th>
+                                    <th>Delete</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="ibox-footer">
+                            <div class="row">
+                                <div class="col-lg-12">
+                                    <button id="btnAddNewStoredFunction"
+                                            class="btn btn-block btn-outline btn-primary ladda-button"
+                                            type="button"
+                                            data-style="contract">
+                                        <strong>Add Stored Function</strong></button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal inmodal" id="editStoredFunctionModal" tabindex="-1" role="dialog" aria-hidden="true"
+             style="display: none;">
+            <div class="modal-dialog">
+                <div class="modal-content animated bounceInRight">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal">
+                            <span aria-hidden="true">×</span>
+                            <span class="sr-only">Close</span></button>
+                        <h4 id="storedFunctionModalTitle" class="modal-title">Function Name</h4>
+                    </div>
+                    <div class="modal-body">
+                        <form class="form-horizontal">
+                            <div class="form-group">
+                                <div class="col-lg-12">
+                                    <input class="form-control" type="text" placeholder="Stored Function Name"
+                                           id="inputStoredFunctionName"
+                                           data-buttonName="btn-primary">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div id="divStoredFunction" class="col-lg-12">
+                                                <textarea id="txtStoredFunction" placeholder="Function"
+                                                          class="form-control"></textarea>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <div class="pull-left">
+                            <button type="button" class="btn btn-white" data-dismiss="modal">Close</button>
+                        </div>
+                        <button id="btnSaveStoredFunction" type="button" data-style="contract"
+                                class="btn btn-primary ladda-button">Save
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {{/if}}
+</template>
