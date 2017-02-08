@@ -1,7 +1,3 @@
-/**
- * Created by Sercan on 26.10.2016.
- */
-
 // main layout
 import '/client/imports/views/layouts/not_found/not_found.html';
 import '/client/imports/views/layouts/main/main';
@@ -16,6 +12,7 @@ import '/client/imports/views/pages/admin_queries/admin_queries';
 import '/client/imports/views/pages/aggregate_pipeline/aggregate_pipeline';
 import '/client/imports/views/pages/mc_shell/mc_shell';
 import '/client/imports/views/pages/schema_analyzer/schema_analyzer';
+import '/client/imports/views/pages/stored_functions/stored_functions';
 import '/client/imports/views/pages/database_dump_restore/database_dump_restore';
 import '/client/imports/views/pages/file_management/file_management';
 import '/client/imports/views/pages/index_management/index_management';
