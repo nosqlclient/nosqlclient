@@ -37,7 +37,8 @@
                                                 <th>Index Name/Info</th>
                                                 <th>Size</th>
                                                 <th>Properties</th>
-                                                <th>Partial</th>
+                                                <th>View</th>
+                                                <th>View Raw</th>
                                                 <th>Delete</th>
                                             </tr>
                                             </thead>
@@ -57,6 +58,7 @@
                                     <button class="btn btn-info btn-xs">2dsphere</button>
                                     <button class="btn btn-primary btn-xs">2d</button>
                                     <button class="btn btn-success btn-xs">Text</button>
+                                    <button class="btn index-button btn-xs">GeoHaystack</button>
                                 </div>
                             </div>
 
@@ -77,7 +79,7 @@
             </div>
         </div>
 
-        {{>partialFilterExpression}}
         {{>addIndex}}
+        {{>viewRaw}}
     {{/if}}
 </template>

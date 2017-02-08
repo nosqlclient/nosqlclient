@@ -4,8 +4,8 @@ import {Session} from "meteor/session";
 import Helper from "/client/imports/helper";
 import "./index_management.html";
 import {FlowRouter} from "meteor/kadira:flow-router";
-import "./partial_filter_expression/partial_filter_expression";
-import {clearForm} from "./add_index/add_index";
+import {prepareFormForView} from "./add_index/add_index";
+import {initialize} from "./view_raw/view_raw";
 import {Settings} from "/lib/imports/collections/settings";
 
 /*global moment*/
@@ -79,6 +79,7 @@ const populateTableData = function (indexInfo, stats, indexStats) {
             asc_fields: [],
             desc_fields: [],
             sphere_fields: [],
+            geo_haystack_fields: [],
             twod_fields: [],
             hashed: [],
             text: [],
@@ -107,6 +108,9 @@ const populateTableData = function (indexInfo, stats, indexStats) {
 
         if (obj.key && Object.prototype.toString.call(obj.key) === '[object Object]') {
             for (let field in obj.key) {
+                if (field === '_fts' || field === '_ftsx') {
+                    continue;
+                }
                 if (obj.key[field] === 1) {
                     index.asc_fields.push(field);
                 } else if (obj.key[field] === -1) {
@@ -115,8 +119,9 @@ const populateTableData = function (indexInfo, stats, indexStats) {
                     index.sphere_fields.push(field);
                 } else if (obj.key[field] === "2d") {
                     index.twod_fields.push(field);
-                }
-                else if (obj.key[field] === "hashed") {
+                } else if (obj.key[field] === "geoHaystack") {
+                    index.geo_haystack_fields.push(field);
+                } else if (obj.key[field] === "hashed") {
                     index.hashed.push(field);
                 }
             }
@@ -165,6 +170,9 @@ const initializeIndexesTable = function (data) {
         for (let field of index.twod_fields) {
             row += "<button class='btn btn-primary btn-xs'>" + field + "</button>  "
         }
+        for (let field of index.geo_haystack_fields) {
+            row += "<button class='btn index-button btn-xs'>" + field + "</button>  "
+        }
         for (let field of index.text) {
             row += "<button class='btn btn-success btn-xs'>" + field + "</button>  "
         }
@@ -187,12 +195,8 @@ const initializeIndexesTable = function (data) {
         }
         row += "</td>";
 
-        // start of partial
-        row += "<td>";
-        if (index.partial) {
-            row += "<a href='' title='Show Partial Filter Expression' data-partial='" + JSON.stringify(index.partial) + "' class='editor_partial'><i class='fa fa-book text-navy'></i></a>";
-        }
-
+        row += "<td><a href='' title='Show Details' id='" + index.name + "' class='editor_view'><i class='fa fa-book text-navy'></i></a>";
+        row += "<td><a href='' title='Show Raw Json' id='" + index.name + "' class='editor_raw'><i class='fa fa-leaf text-navy'></i></a>";
         row += "</td><td><a href='' title='Drop' id='" + index.name + "' class='editor_remove'><i class='fa fa-remove text-navy'></i></a></td></tr>";
         tbody.append(row);
     }
@@ -203,6 +207,13 @@ Template.indexManagement.onRendered(function () {
         FlowRouter.go('/databaseStats');
         return;
     }
+
+    $('#addIndexModal').on('shown.bs.modal', function () {
+        prepareFormForView();
+    });
+    $('#viewRawModal').on('shown.bs.modal', function () {
+        initialize();
+    });
 
     let settings = this.subscribe('settings');
     let connections = this.subscribe('connections');
@@ -224,8 +235,17 @@ Template.indexManagement.events({
             return;
         }
 
-        $('#addIndexModal').modal('show');
-        clearForm();
+        const addIndexModal = $('#addIndexModal');
+        addIndexModal.data('collection', '');
+        addIndexModal.data('index', '');
+        addIndexModal.modal('show');
+    },
+
+    'click .editor_raw'(e){
+        const rawModal = $('#viewRawModal');
+        rawModal.data('collection', $('#cmbCollections').val());
+        rawModal.data('index', e.currentTarget.id);
+        rawModal.modal('show');
     },
 
     'click #btnRefreshIndexes'(){
@@ -236,14 +256,11 @@ Template.indexManagement.events({
         initIndexes();
     },
 
-    'click .editor_partial'(e){
-        let modal = $('#partialFilterExpressionModal');
-        modal.on('shown.bs.modal', function () {
-            const divSelector = $('#divPartialFilterExpression');
-            Helper.initializeCodeMirror(divSelector, 'txtPartialFilterExpression');
-            Helper.setCodeMirrorValue(divSelector, JSON.stringify($(e.currentTarget).data('partial')));
-        });
-        modal.modal('show');
+    'click .editor_view'(e){
+        const addIndexModal = $('#addIndexModal');
+        addIndexModal.data('collection', $('#cmbCollections').val());
+        addIndexModal.data('index', e.currentTarget.id);
+        addIndexModal.modal('show');
     },
 
     'click .editor_remove'  (e) {
