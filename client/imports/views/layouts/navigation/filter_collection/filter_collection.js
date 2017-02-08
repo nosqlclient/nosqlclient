@@ -21,6 +21,12 @@ export const initializeFilterTable = function () {
         selector.DataTable().destroy();
     }
 
+    for (let obj of collectionNames) {
+        if (!obj.type) {
+            obj.type = "collection";
+        }
+    }
+
     selector.DataTable({
         data: collectionNames,
         columns: [
