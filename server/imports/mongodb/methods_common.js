@@ -214,13 +214,20 @@ Meteor.methods({
                     config.password = connection.sshPassword;
                 }
 
-                tunnelSsh(config, function (error) {
-                    if (error) {
-                        done(new Meteor.Error(error.message), null);
-                        return;
-                    }
-                    proceedConnectingMongodb(connectionUrl, connectionOptions, done);
-                });
+                try {
+                    tunnelSsh(config, function (error) {
+                        if (error) {
+                            done(new Meteor.Error(error.message), null);
+                            return;
+                        }
+                        proceedConnectingMongodb(connectionUrl, connectionOptions, done);
+                    });
+                }
+                catch (ex) {
+                    LOGGER.error('[connect]', ex);
+                    done(new Meteor.Error(ex.message), null);
+                }
+
             } else {
                 proceedConnectingMongodb(connectionUrl, connectionOptions, done);
             }
