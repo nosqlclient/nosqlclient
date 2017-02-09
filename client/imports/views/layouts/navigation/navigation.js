@@ -128,7 +128,6 @@ Template.navigation.events({
     },
 
     'click #anchorDatabaseDumpRestore'(e) {
-
         e.preventDefault();
         let connection = Connections.findOne({_id: Session.get(Helper.strSessionConnection)});
 
