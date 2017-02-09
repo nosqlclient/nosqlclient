@@ -10,7 +10,7 @@ import ShellCommands from "/lib/imports/collections/shell";
 import "./mc_shell.html";
 
 const CodeMirror = require("codemirror");
-let connected, lastRegex;
+let lastRegex;
 
 require("/node_modules/codemirror/mode/javascript/javascript.js");
 require("/node_modules/codemirror/addon/fold/brace-fold.js");
@@ -75,7 +75,7 @@ const gatherCommandAutoCompletions = function (editorValue, curWord) {
                 'distinct(', 'drop(', 'dropIndex(', 'dropIndexes(', 'ensureIndex(', 'explain(', 'find(',
                 'findAndModify(', 'findOne(', 'findOneAndDelete(', 'findOneAndReplace(',
                 'findOneAndUpdate(', 'getIndexes(', 'getPlanCache(', 'getShardDistribution(', 'getShardVersion(',
-                'group(', 'insert(', 'insertOne(', 'insertMany(', 'isCapped(','latencyStats(', 'mapReduce(',
+                'group(', 'insert(', 'insertOne(', 'insertMany(', 'isCapped(', 'latencyStats(', 'mapReduce(',
                 'reIndex(', 'replaceOne(', 'remove(', 'renameCollection(', 'save(', 'stats(',
                 'storageSize(', 'totalSize(', 'totalIndexSize(', 'update(', 'updateOne(', 'updateMany(', 'validate('];
         case 'cursor':
@@ -178,41 +178,7 @@ Template.mcShell.events({
     'click #btnClearShell': function () {
         Helper.setCodeMirrorValue($('#divShellResult'), '');
         Meteor.call('clearShell');
-    },
-
-    'click #btnCloseShell': function () {
-        if (connected) {
-            Meteor.call("closeShell", (err) => {
-                if (err) {
-                    Helper.showMeteorFuncError(err, null, "Couldn't close shell");
-                } else {
-                    $('#btnCloseShell').text('Re-connect');
-                    connected = false;
-                }
-            });
-        } else {
-            Meteor.call("connectToShell", Session.get(Helper.strSessionConnection), (err) => {
-                if (err) {
-                    Helper.showMeteorFuncError(err, null, "Couldn't connect via shell");
-                } else {
-                    $('#btnCloseShell').text('Close Shell');
-                    connected = true;
-                }
-            });
-        }
     }
-});
-
-Template.mcShell.onDestroyed(function () {
-    if (!connected) {
-        return;
-    }
-
-    Meteor.call("closeShell", (err) => {
-        if (err) {
-            Helper.showMeteorFuncError(err, null, "Couldn't close shell");
-        }
-    });
 });
 
 Template.mcShell.onRendered(function () {
@@ -256,8 +222,6 @@ Template.mcShell.onRendered(function () {
     Meteor.call("connectToShell", Session.get(Helper.strSessionConnection), (err) => {
         if (err) {
             Helper.showMeteorFuncError(err, null, "Couldn't connect via shell");
-        } else {
-            connected = true;
         }
     });
 });

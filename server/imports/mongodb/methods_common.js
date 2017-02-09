@@ -81,6 +81,40 @@ const proceedConnectingMongodb = function (connectionUrl, connectionOptions, don
     });
 };
 
+const setEventsToShell = function (connectionId) {
+    spawnedShell.stdout.on('data', Meteor.bindEnvironment(function (data) {
+        if (data.toString()) {
+            ShellCommands.insert({
+                'date': Date.now(),
+                'connectionId': connectionId,
+                'message': data.toString()
+            });
+        }
+    }));
+
+    spawnedShell.stderr.on('data', Meteor.bindEnvironment(function (data) {
+        if (data.toString()) {
+            ShellCommands.insert({
+                'date': Date.now(),
+                'connectionId': connectionId,
+                'message': data.toString()
+            });
+        }
+    }));
+
+    spawnedShell.on('close', Meteor.bindEnvironment(function (code) {
+        // show ended message in codemirror
+        ShellCommands.insert({
+            'date': Date.now(),
+            'connectionId': connectionId,
+            'message': 'shell closed ' + code.toString()
+        });
+
+        // remove all for further
+        ShellCommands.remove({});
+    }));
+};
+
 Meteor.methods({
     importMongoclient(file)  {
         LOGGER.info('[importMongoclient]', file);
@@ -215,12 +249,20 @@ Meteor.methods({
                 }
 
                 try {
-                    tunnelSsh(config, function (error) {
+                    const tunnel = tunnelSsh(config, Meteor.bindEnvironment(function (error) {
                         if (error) {
                             done(new Meteor.Error(error.message), null);
                             return;
                         }
                         proceedConnectingMongodb(connectionUrl, connectionOptions, done);
+                        spawnedShell = spawn(getProperMongo(), [connectionUrl]);
+                        setEventsToShell(connectionId);
+                    }));
+
+                    tunnel.on('error', function (err) {
+                        if (err) {
+                            done(new Meteor.Error(err.message), null);
+                        }
                     });
                 }
                 catch (ex) {
@@ -310,20 +352,6 @@ Meteor.methods({
         ShellCommands.remove({});
     },
 
-    closeShell(){
-        LOGGER.info('[closeShell]');
-        try {
-            if (spawnedShell) {
-                spawnedShell.stdin.end();
-                spawnedShell = null;
-            }
-        }
-        catch (ex) {
-            LOGGER.error('[closeShell]', ex);
-            return {err: new Meteor.Error(ex.message), result: null};
-        }
-    },
-
     executeShellCommand(command){
         LOGGER.info('[shellCommand]', command);
         if (!spawnedShell) {
@@ -334,44 +362,16 @@ Meteor.methods({
     },
 
     connectToShell(connectionId){
-        const connectionUrl = Helper.getConnectionUrl(Connections.findOne({_id: connectionId}));
-        const mongoPath = getProperMongo();
-
-        LOGGER.info('[shell]', mongoPath, connectionUrl);
-
         try {
-            spawnedShell = spawn(mongoPath, [connectionUrl]);
-            spawnedShell.stdout.on('data', Meteor.bindEnvironment(function (data) {
-                if (data.toString()) {
-                    ShellCommands.insert({
-                        'date': Date.now(),
-                        'connectionId': connectionId,
-                        'message': data.toString()
-                    });
-                }
-            }));
+            if (!spawnedShell) {
+                const connection = Connections.findOne({_id: connectionId});
+                const connectionUrl = Helper.getConnectionUrl(connection);
+                const mongoPath = getProperMongo();
 
-            spawnedShell.stderr.on('data', Meteor.bindEnvironment(function (data) {
-                if (data.toString()) {
-                    ShellCommands.insert({
-                        'date': Date.now(),
-                        'connectionId': connectionId,
-                        'message': data.toString()
-                    });
-                }
-            }));
-
-            spawnedShell.on('close', Meteor.bindEnvironment(function (code) {
-                // show ended message in codemirror
-                ShellCommands.insert({
-                    'date': Date.now(),
-                    'connectionId': connectionId,
-                    'message': 'shell closed ' + code.toString()
-                });
-
-                // remove all for further
-                ShellCommands.remove({});
-            }));
+                LOGGER.info('[shell]', mongoPath, connectionUrl);
+                spawnedShell = spawn(mongoPath, [connectionUrl]);
+                setEventsToShell(connectionId);
+            }
         }
         catch (ex) {
             LOGGER.error('[shell]', ex);
