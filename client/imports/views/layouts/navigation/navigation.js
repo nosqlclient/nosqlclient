@@ -24,6 +24,14 @@ export const setFilterRegex = function (regex) {
     filterRegex.set(regex);
 };
 
+const isFiltered = function () {
+    if (filterRegex.get() || excludedCollectionsByFilter.get().length !== 0) {
+        return true;
+    }
+
+    return false;
+};
+
 const dropAllCollections = function () {
     swal({
         title: "Are you sure?",
@@ -364,6 +372,14 @@ Template.navigation.onRendered(function () {
                         filterModal.modal('show');
                     }
                 },
+                clear_filter: {
+                    name: "Clear Filter",
+                    icon: "fa-minus-circle",
+                    callback: function () {
+                        setExcludedCollectionsByFilter([]);
+                        setFilterRegex("");
+                    }
+                },
                 refresh_collections: {
                     name: "Refresh Collections",
                     icon: "fa-refresh",
@@ -383,6 +399,10 @@ Template.navigation.onRendered(function () {
             if (trigger.hasClass('navCollectionTop')) {
                 delete items.manage_collection;
                 delete items.sep1;
+            }
+
+            if (!isFiltered()) {
+                delete items.clear_filter;
             }
 
             return {
@@ -407,9 +427,7 @@ Template.navigation.helpers({
     },
 
     filtered (){
-        if (filterRegex.get() || excludedCollectionsByFilter.get().length !== 0) {
-            return true;
-        }
+        return isFiltered();
     },
 
     getCollectionNames () {
