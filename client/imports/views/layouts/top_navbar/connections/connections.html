@@ -146,24 +146,100 @@
                                                                               value="test"
                                                                               placeholder="Database Name"
                                                                               class="form-control">
+                                                    <span class="help-block m-b-none">You can use <b>More - Switch Database</b> afterwards</span>
                                                 </div>
                                             </div>
 
                                             <!--Read Preference-->
-                                            <div class="form-group"><label class="col-lg-2 control-label">Read
-                                                Preference
-                                            </label>
-                                                <div id="divReadFromSecondary" class="col-lg-10">
+                                            <div class="form-group">
+                                                <label class="col-lg-2 control-label">Read
+                                                    Preference
+                                                </label>
+                                                <div class="col-lg-10">
                                                     <select id="cmbReadPreference"
                                                             data-placeholder="Read preference"
                                                             class="chosen-select form-control"
                                                             tabindex="-1">
                                                         <option></option>
+                                                        <option value="PRIMARY">Primary</option>
+                                                        <option value="PRIMARY_PREFERRED">Primary Preferred</option>
+                                                        <option value="SECONDARY">Secondary</option>
+                                                        <option value="SECONDARY_PREFERRED">Secondary Preferred</option>
+                                                        <option value="NEAREST">Nearest</option>
                                                     </select>
-                                                    <span class="help-block m-b-none">Valid for <b>replica sets or sharded clusters</b></span>
+                                                    <span class="help-block m-b-none">Use for <b>replica sets or sharded clusters</b></span>
                                                 </div>
                                             </div>
                                         </form>
+                                    </div>
+                                </div>
+
+                                <!-- TAB 2-->
+                                <div id="tab-2-authentication" class="tab-pane">
+                                    <div class="panel-body no-borders modal-background">
+
+                                        <!--Authentication Type-->
+                                        <form class="form-horizontal">
+                                            <div class="form-group">
+                                                <label class="col-lg-2 control-label">Authentication Type
+                                                </label>
+                                                <div class="col-lg-10">
+                                                    <select id="cmbAuthenticationType"
+                                                            data-placeholder="Leave empty for no authentication"
+                                                            class="chosen-select form-control"
+                                                            tabindex="-1">
+                                                        <option></option>
+                                                        <option value="SCRAM-SHA-1">Scram-Sha-1</option>
+                                                        <option value="MONGODB-CR">Mongodb-CR</option>
+                                                        <option value="MONGODB-X509">X509</option>
+                                                        <option value="GSSAPI">Kerberos (GSSAPI)</option>
+                                                        <option value="PLAIN">LDAP (Plain)</option>
+                                                    </select>
+                                                    <span class="help-block m-b-none"><b>Mongodb-CR</b> is for prior MongoDB 3.0 versions, select <b>Scram-Sha-1</b> if you don't know what to do</span>
+                                                </div>
+                                            </div>
+                                        </form>
+
+                                        <div class="hr-line-dashed"></div>
+
+                                        <!--MONGODB-CR/SCRAM-SHA-1 Type-->
+                                        <form id="formBasicAuthentication" class="form-horizontal"
+                                              style="display: none;">
+                                            <div class="form-group">
+                                                <label class="col-lg-2 control-label">Username
+                                                </label>
+                                                <div class="col-lg-10">
+                                                    <input id="inputUser" type="text"
+                                                           placeholder="Username"
+                                                           class="form-control">
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <label class="col-lg-2 control-label">Password
+                                                </label>
+                                                <div class="col-lg-10">
+                                                    <input id="inputPassword" type="password"
+                                                           placeholder="Password"
+                                                           class="form-control">
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <label class="col-lg-2 control-label">Authentication DB
+                                                </label>
+                                                <div class="col-lg-10">
+                                                    <input id="inputAuthenticationDB" type="text"
+                                                           placeholder="Specify if user is defined in a different DB"
+                                                           class="form-control">
+                                                </div>
+                                            </div>
+                                        </form>
+
+                                        <!--X509 Form-->
+                                        <form id="formX509Authentication" class="form-horizontal"
+                                              style="display: none;">
+                                          <!--TODO-->
+                                        </form>
+
                                     </div>
                                 </div>
 
@@ -172,6 +248,15 @@
                         <!--END OF TABS CONTAINER-->
                     </form>
 
+                </div>
+
+                <div class="modal-footer">
+                    <div class="pull-left">
+                        <button type="button" class="btn btn-white" data-dismiss="modal">Close</button>
+                    </div>
+                    <button id="btnSaveConnection" type="button" class="btn btn-primary ladda-button"
+                            data-style="contract">Save changes
+                    </button>
                 </div>
             </div>
 
