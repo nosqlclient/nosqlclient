@@ -33,9 +33,8 @@
                         </tbody>
                     </table>
 
-                    <button id="btnCreateNewConnection" type="button" class="btn btn-block btn-outline btn-primary"
-                            data-toggle="modal"
-                            data-target="#addEditConnectionModal">Create New
+                    <button id="btnCreateNewConnection" type="button" class="btn btn-block btn-outline btn-primary">
+                        Create New
                     </button>
                 </div>
                 <div class="modal-footer">
@@ -77,10 +76,12 @@
                             <div class="col-lg-12"><input id="inputUrl"
                                                           data-required="true"
                                                           type="text"
-                                                          placeholder="Connection URL (if provided, overrides below configuration)"
+                                                          placeholder="Connection URL (if provided, overrides everything except SSH and options)"
                                                           class="form-control">
                             </div>
                         </div>
+
+                        <div class="hr-line-dashed"></div>
                         <!--TABS CONTAINER-->
                         <div class="tabs-container">
                             <ul class="nav nav-tabs">
@@ -88,10 +89,11 @@
                                                       aria-expanded="true">
                                     Connection</a>
                                 </li>
-                                <li class=""><a id="anchorTab2" data-toggle="tab" href="#tab-2-authentication"
+                                <li class=""><a data-toggle="tab" href="#tab-2-authentication"
                                                 aria-expanded="false">Authentication</a>
                                 </li>
-                                <li class=""><a data-toggle="tab" href="#tab-3-url" aria-expanded="false">SSL</a>
+                                <li class=""><a id="anchorConnectionSsl" data-toggle="tab" href="#tab-3-ssl"
+                                                aria-expanded="false">SSL</a>
                                 </li>
                                 <li class=""><a data-toggle="tab" href="#tab-4-ssh"
                                                 aria-expanded="false">SSH</a>
@@ -101,76 +103,10 @@
                                 </li>
                             </ul>
                             <div class="tab-content">
-
                                 <!-- TAB 1 -->
                                 <div id="tab-1-connection" class="tab-pane active">
                                     <div class="panel-body no-borders modal-background">
-                                        <form class="form-horizontal">
-                                            <!-- Hosts to connect -->
-                                            <div class="form-group divHostField" style="display: none">
-                                                <div class="col-lg-10">
-                                                    <div class="input-group"><input type="text"
-                                                                                    placeholder="Host Name / IP Address"
-                                                                                    class="form-control txtFieldName">
-                                                        <div class="input-group-btn">
-                                                            <button data-toggle="dropdown"
-                                                                    class="btn btn-white dropdown-toggle"
-                                                                    type="button"><span class="caret"></span></button>
-                                                            <ul class="dropdown-menu pull-right">
-                                                                <li><a class="addHost" href="#"><i
-                                                                        class="fa fa-plus"></i>
-                                                                    Add Another</a>
-                                                                </li>
-                                                                <li><a class="deleteHost" href="#"><i
-                                                                        class="fa fa-remove"></i> Delete</a>
-                                                                </li>
-                                                            </ul>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class="col-lg-2"><input id="inputPort" value="27017"
-                                                                             data-required="true"
-                                                                             min="1"
-                                                                             type="number"
-                                                                             placeholder="Port"
-                                                                             class="form-control">
-                                                </div>
-                                            </div>
-
-                                            <!--DB Name to connect-->
-                                            <div class="form-group"><label class="col-lg-2 control-label">DB
-                                                Name</label>
-                                                <div class="col-lg-10"><input id="inputDatabaseName"
-                                                                              data-required="true"
-                                                                              type="text"
-                                                                              value="test"
-                                                                              placeholder="Database Name"
-                                                                              class="form-control">
-                                                    <span class="help-block m-b-none">You can use <b>More - Switch Database</b> afterwards</span>
-                                                </div>
-                                            </div>
-
-                                            <!--Read Preference-->
-                                            <div class="form-group">
-                                                <label class="col-lg-2 control-label">Read
-                                                    Preference
-                                                </label>
-                                                <div class="col-lg-10">
-                                                    <select id="cmbReadPreference"
-                                                            data-placeholder="Read preference"
-                                                            class="chosen-select form-control"
-                                                            tabindex="-1">
-                                                        <option></option>
-                                                        <option value="PRIMARY">Primary</option>
-                                                        <option value="PRIMARY_PREFERRED">Primary Preferred</option>
-                                                        <option value="SECONDARY">Secondary</option>
-                                                        <option value="SECONDARY_PREFERRED">Secondary Preferred</option>
-                                                        <option value="NEAREST">Nearest</option>
-                                                    </select>
-                                                    <span class="help-block m-b-none">Use for <b>replica sets or sharded clusters</b></span>
-                                                </div>
-                                            </div>
-                                        </form>
+                                        {{>serverTemplate}}
                                     </div>
                                 </div>
 
@@ -189,11 +125,11 @@
                                                             class="chosen-select form-control"
                                                             tabindex="-1">
                                                         <option></option>
-                                                        <option value="SCRAM-SHA-1">Scram-Sha-1</option>
-                                                        <option value="MONGODB-CR">Mongodb-CR</option>
-                                                        <option value="MONGODB-X509">X509</option>
-                                                        <option value="GSSAPI">Kerberos (GSSAPI)</option>
-                                                        <option value="PLAIN">LDAP (Plain)</option>
+                                                        <option value="scram_sha_1">Scram-Sha-1</option>
+                                                        <option value="mongodb_cr">Mongodb-CR</option>
+                                                        <option value="mongodb_x509">X509</option>
+                                                        <option value="gssapi">Kerberos (GSSAPI)</option>
+                                                        <option value="plain">LDAP (Plain)</option>
                                                     </select>
                                                     <span class="help-block m-b-none"><b>Mongodb-CR</b> is for prior MongoDB 3.0 versions, select <b>Scram-Sha-1</b> if you don't know what to do</span>
                                                 </div>
@@ -202,44 +138,63 @@
 
                                         <div class="hr-line-dashed"></div>
 
-                                        <!--MONGODB-CR/SCRAM-SHA-1 Type-->
-                                        <form id="formBasicAuthentication" class="form-horizontal"
-                                              style="display: none;">
-                                            <div class="form-group">
-                                                <label class="col-lg-2 control-label">Username
-                                                </label>
-                                                <div class="col-lg-10">
-                                                    <input id="inputUser" type="text"
-                                                           placeholder="Username"
-                                                           class="form-control">
-                                                </div>
-                                            </div>
-                                            <div class="form-group">
-                                                <label class="col-lg-2 control-label">Password
-                                                </label>
-                                                <div class="col-lg-10">
-                                                    <input id="inputPassword" type="password"
-                                                           placeholder="Password"
-                                                           class="form-control">
-                                                </div>
-                                            </div>
-                                            <div class="form-group">
-                                                <label class="col-lg-2 control-label">Authentication DB
-                                                </label>
-                                                <div class="col-lg-10">
-                                                    <input id="inputAuthenticationDB" type="text"
-                                                           placeholder="Specify if user is defined in a different DB"
-                                                           class="form-control">
-                                                </div>
-                                            </div>
-                                        </form>
+                                        <!--MONGODB-CR/SCRAM-SHA-1 Form-->
+                                        {{#if authenticationMethod "scram_sha_1" "mongodb_cr"}}
+                                            {{> basicAuthTemplate}}
+                                        {{/if}}
 
                                         <!--X509 Form-->
-                                        <form id="formX509Authentication" class="form-horizontal"
-                                              style="display: none;">
-                                          <!--TODO-->
-                                        </form>
+                                        {{#if authenticationMethod "mongodb_x509"}}
+                                            {{> sslTemplate}}
+                                        {{/if}}
 
+                                        <!--Kerberos Form-->
+                                        {{#if authenticationMethod "gssapi"}}
+                                            {{> kerberosTemplate}}
+                                        {{/if}}
+
+                                        <!--LDAP Form-->
+                                        {{#if authenticationMethod "plain"}}
+                                            {{> ldapTemplate}}
+                                        {{/if}}
+                                    </div>
+                                </div>
+
+                                <!-- TAB 3-->
+                                <div id="tab-3-ssl" class="tab-pane">
+                                    <div class="panel-body no-borders modal-background">
+                                        <div class="form-group"><label class="col-lg-2 control-label">Use SSL</label>
+                                            <div id="divUseSSL" class="col-lg-10">
+                                                <input id="inputUseSSL" type="checkbox"
+                                                       class="form-control"
+                                                       checked=""
+                                                       style="position: absolute; opacity: 0;"/>
+                                            </div>
+                                        </div>
+                                        {{> sslTemplate}}
+                                    </div>
+                                </div>
+
+                                <!-- TAB 4-->
+                                <div id="tab-4-ssh" class="tab-pane">
+                                    <div class="panel-body no-borders modal-background">
+                                        <div class="form-group"><label class="col-lg-2 control-label">Use
+                                            SSH</label>
+                                            <div id="divUseSSH" class="col-lg-10">
+                                                <input id="inputUseSSH" type="checkbox"
+                                                       class="form-control"
+                                                       checked=""
+                                                       style="position: absolute; opacity: 0;"/>
+                                            </div>
+                                        </div>
+                                        {{> sshTemplate}}
+                                    </div>
+                                </div>
+
+                                <!-- TAB 5-->
+                                <div id="tab-5-connection-options" class="tab-pane">
+                                    <div class="panel-body no-borders modal-background">
+                                        {{> connectionOptions}}
                                     </div>
                                 </div>
 
@@ -262,5 +217,334 @@
 
         </div>
     </div>
+</template>
 
+<template name="kerberosTemplate">
+    <form class="form-horizontal">
+        <div class="form-group"><label
+                class="col-lg-2 control-label">Username</label>
+            <div class="col-lg-10"><input id="inputKerberosUsername"
+                                          data-required="true"
+                                          type="text"
+                                          placeholder="Username"
+                                          class="form-control">
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-lg-2 control-label">Password</label>
+            <div class="col-lg-10"><input id="inputKerberosPassword" type="password"
+                                          placeholder="Password (optional)"
+                                          class="form-control">
+            </div>
+        </div>
+
+        <div class="hr-line-dashed"></div>
+
+        <div class="form-group"><label
+                class="col-lg-2 control-label">Service Name</label>
+            <div class="col-lg-10"><input id="inputKerberosServiceName"
+                                          data-required="true"
+                                          type="text"
+                                          value="mongodb"
+                                          placeholder="Service Name"
+                                          class="form-control">
+            </div>
+        </div>
+    </form>
+</template>
+
+<template name="ldapTemplate">
+    <form class="form-horizontal">
+        <div class="form-group"><label
+                class="col-lg-2 control-label">Username</label>
+            <div class="col-lg-10"><input id="inputLdapUsername"
+                                          data-required="true"
+                                          type="text"
+                                          placeholder="Username"
+                                          class="form-control">
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-lg-2 control-label">Password</label>
+            <div class="col-lg-10"><input id="inputLdapPassword" type="password"
+                                          placeholder="Password"
+                                          class="form-control">
+            </div>
+        </div>
+    </form>
+</template>
+
+<template name="connectionOptions">
+    <div class="form-group"><label class="col-lg-2 control-label">Connection Timeout</label>
+        <div class="col-lg-10">
+            <input id="inputConnectionTimeoutOverride"
+                   data-required="true"
+                   min="1"
+                   type="number"
+                   placeholder="Connection Timeout"
+                   class="form-control">
+            <span class="help-block m-b-none">Enter to override <b>default</b> connection timeout <b>from settings</b></span>
+        </div>
+    </div>
+
+    <div class="form-group"><label class="col-lg-2 control-label">Socket Timeout</label>
+        <div class="col-lg-10">
+            <input id="inputSocketTimeoutOverride"
+                   data-required="true"
+                   min="1"
+                   type="number"
+                   placeholder="Socket Timeout"
+                   class="form-control">
+            <span class="help-block m-b-none">Enter to override <b>default</b> socket timeout <b>from settings</b></span>
+        </div>
+    </div>
+
+    <!--Read Preference-->
+    <div class="form-group">
+        <label class="col-lg-2 control-label">Read Preference</label>
+        <div class="col-lg-10">
+            <select id="cmbReadPreference"
+                    data-placeholder="Read preference"
+                    class="chosen-select form-control"
+                    tabindex="-1">
+                <option></option>
+                <option value="PRIMARY">Primary</option>
+                <option value="PRIMARY_PREFERRED">Primary Preferred</option>
+                <option value="SECONDARY">Secondary</option>
+                <option value="SECONDARY_PREFERRED">Secondary Preferred</option>
+                <option value="NEAREST">Nearest</option>
+            </select>
+            <span class="help-block m-b-none">Use for <b>replica sets or sharded clusters</b></span>
+        </div>
+    </div>
+
+    <!--Connect with no primary-->
+    <div class="form-group"><label class="col-lg-2 control-label">Connect With No Primary</label>
+        <div id="divConnectWithNoPrimary" class="col-lg-10">
+            <input id="inputConnectWithNoPrimary" type="checkbox"
+                   class="form-control"
+                   checked=""
+                   style="position: absolute; opacity: 0;"/>
+            <span class="help-block m-b-none">Even if there's no primary, you can check this to connect your replica set.</span>
+        </div>
+    </div>
+
+</template>
+
+<template name="sshTemplate">
+    <form class="form-horizontal">
+        <div class="form-group"><label
+                class="col-lg-2 control-label">Hostname</label>
+            <div class="col-lg-10"><input id="inputSshHostname"
+                                          data-required="true"
+                                          type="text"
+                                          placeholder="Hostname"
+                                          class="form-control">
+                <span class="help-block m-b-none">Leave empty for no <b>SSH tunnel</b></span>
+            </div>
+        </div>
+        <div class="form-group"><label class="col-lg-2 control-label">Port</label>
+            <div class="col-lg-10"><input id="inputSshPort"
+                                          data-required="true"
+                                          min="1"
+                                          type="number"
+                                          placeholder="Port"
+                                          class="form-control">
+            </div>
+        </div>
+        <div class="form-group"><label
+                class="col-lg-2 control-label">Username</label>
+            <div class="col-lg-10"><input id="inputSshUsername"
+                                          data-required="true"
+                                          type="text"
+                                          placeholder="Username"
+                                          class="form-control">
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-lg-2 control-label">Authentication</label>
+            <div class="col-lg-10">
+                <select id="cmbSshAuthType"
+                        data-placeholder="Authentication type.."
+                        class="chosen-select form-control"
+                        tabindex="-1">
+                    <option></option>
+                    <option value="Certificate">Certificate</option>
+                    <option value="Password">Password</option>
+                </select>
+            </div>
+        </div>
+    </form>
+
+    <!-- CERTIFICATE AUTH FORM FOR SSH -->
+    <form id="formSshCertificateAuth" class="form-horizontal"
+          style="display: none;">
+        <div class="form-group">
+            <label class="col-lg-2 control-label">Certificate </label>
+            <div class="col-lg-10">
+                <input class="form-control filestyle" type="file"
+                       id="inputSshCertificate"
+                       data-buttonName="btn-primary">
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-lg-2 control-label">PassPhrase</label>
+            <div class="col-lg-10"><input id="inputSshPassPhrase" type="password"
+                                          placeholder="PassPhrase"
+                                          class="form-control">
+            </div>
+        </div>
+    </form>
+
+    <!-- PASSWORD AUTH FORM FOR SSH-->
+    <form id="formSshPasswordAuth" class="form-horizontal" style="display: none;">
+        <div class="form-group">
+            <label class="col-lg-2 control-label">Password</label>
+            <div class="col-lg-10"><input id="inputSshPassword" type="password"
+                                          placeholder="Password"
+                                          class="form-control">
+            </div>
+        </div>
+    </form>
+</template>
+
+<template name="serverTemplate">
+    <form class="form-horizontal">
+        <!-- Hosts to connect -->
+        <div class="form-group divHostField" style="display: none">
+            <label class="col-lg-2 control-label">Host/Port</label>
+            <div class="col-lg-8">
+                <div class="input-group"><input type="text"
+                                                placeholder="Host Name / IP Address"
+                                                class="form-control txtHostName">
+                    <div class="input-group-btn">
+                        <button data-toggle="dropdown"
+                                class="btn btn-white dropdown-toggle"
+                                type="button"><span class="caret"></span></button>
+                        <ul class="dropdown-menu pull-right">
+                            <li><a class="addHost" href="#"><i
+                                    class="fa fa-plus"></i>
+                                Add Another</a>
+                            </li>
+                            <li><a class="deleteHost" href="#"><i
+                                    class="fa fa-remove"></i> Delete</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-2"><input value="27017"
+                                         data-required="true"
+                                         min="1"
+                                         type="number"
+                                         placeholder="Port"
+                                         class="form-control txtPort">
+            </div>
+        </div>
+
+        <!--DB Name to connect-->
+        <div class="form-group">
+            <label class="col-lg-2 control-label">Database Name</label>
+            <div class="col-lg-10"><input id="inputDatabaseName"
+                                          data-required="true"
+                                          type="text"
+                                          value="test"
+                                          placeholder="Database Name"
+                                          class="form-control">
+                <span class="help-block m-b-none">You can use <b>More - Switch Database</b> afterwards</span>
+            </div>
+        </div>
+    </form>
+</template>
+
+<template name="basicAuthTemplate">
+    <form id="formBasicAuthentication" class="form-horizontal">
+        <div class="form-group">
+            <label class="col-lg-2 control-label">Username
+            </label>
+            <div class="col-lg-10">
+                <input id="inputUser" type="text"
+                       placeholder="Username"
+                       class="form-control">
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-lg-2 control-label">Password
+            </label>
+            <div class="col-lg-10">
+                <input id="inputPassword" type="password"
+                       placeholder="Password"
+                       class="form-control">
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-lg-2 control-label">Authentication DB
+            </label>
+            <div class="col-lg-10">
+                <input id="inputAuthenticationDB" type="text"
+                       placeholder="Specify if user is defined in a different DB"
+                       class="form-control">
+            </div>
+        </div>
+    </form>
+</template>
+
+<template name="sslTemplate">
+    <form class="form-horizontal">
+        <!-- Certificate Validation -->
+        <div class="form-group">
+            <label class="col-lg-2 control-label">Root CA File
+            </label>
+            <div class="col-lg-10">
+                <input class="form-control filestyle" type="file"
+                       id="inputRootCA" placeholder="Leave empty for no validation"
+                       data-buttonName="btn-primary">
+                <span class="help-block m-b-none">Leave empty for <b>no validation</b></span>
+            </div>
+        </div>
+
+        <!-- Certificate -->
+        <div class="form-group">
+            <label class="col-lg-2 control-label">Certificate
+            </label>
+            <div class="col-lg-10">
+                <input class="form-control filestyle" type="file"
+                       id="inputCertificate" placeholder="Leave empty for no certificate"
+                       data-buttonName="btn-primary">
+            </div>
+        </div>
+
+        <!-- Certificate Passphrase-->
+        <div class="form-group"><label class="col-lg-2 control-label">Passphrase
+        </label>
+            <div class="col-lg-10"><input id="inputPassPhrase" type="password"
+
+                                          placeholder="Leave empty for no passphrase"
+                                          class="form-control">
+                <span class="help-block m-b-none">Leave empty for <b>no passphrase</b></span>
+            </div>
+        </div>
+
+        <!-- Certificate Key File-->
+        <div class="form-group">
+            <label class="col-lg-2 control-label">Certificate Key File
+            </label>
+            <div class="col-lg-10">
+                <input class="form-control filestyle" type="file"
+                       id="inputCertificateKey"
+                       data-buttonName="btn-primary">
+            </div>
+        </div>
+
+        <!-- Allow invalid hostnames -->
+        <div class="form-group"><label class="col-lg-2 control-label">Disable hostname verification</label>
+            <div id="divDisableHostnameVerification" class="col-lg-10">
+                <input id="inputDisableHostnameVerification" type="checkbox"
+                       class="form-control"
+                       checked=""
+                       style="position: absolute; opacity: 0;"/>
+            </div>
+        </div>
+
+    </form>
 </template>
