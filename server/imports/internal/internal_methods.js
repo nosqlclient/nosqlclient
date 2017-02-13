@@ -11,6 +11,45 @@ import SchemaAnalyzeResult from "/lib/imports/collections/schema_analyze_result"
 import {HTTP} from "meteor/http";
 
 const packageJson = require('/package.json');
+const mongodbUrlParser = require('parse-mongo-url');
+
+const checkUsernamePassword = function (obj) {
+    if (!obj.username) throw new Meteor.Error('Username is required for this authentication type !');
+    if (!obj.password) throw new Meteor.Error('Password is required for this authentication type !');
+};
+
+const checkConnection = function (connection) {
+    if (connection.servers.length === 0) {
+        throw new Meteor.Error('At least one server is required !');
+    }
+    else {
+        for (let server of connection.servers) {
+            if (!server.host || !server.port) {
+                throw new Meteor.Error('Host and port is required for each server !');
+            }
+        }
+    }
+    if (connection.authenticationType !== 'scram_sha_1') delete connection.scram_sha_1;
+    if (connection.authenticationType !== 'mongodb_cr') delete connection.mongodb_cr;
+    if (connection.authenticationType !== 'mongodb_x509') delete connection.mongodb_x509;
+    if (connection.authenticationType !== 'gssapi') delete connection.gssapi;
+    if (connection.authenticationType !== 'plain') delete connection.plain;
+
+    if (connection.scram_sha_1) checkUsernamePassword(connection.scram_sha_1);
+    if (connection.mongodb_cr) checkUsernamePassword(connection.mongodb_cr);
+    if (connection.mongodb_x509) {
+     //TODO
+    }
+
+};
+
+const saveConnectionToDB = function (connection) {
+    if (connection._id) {
+        Connections.remove({_id: connection._id});
+    }
+
+    Connections.insert(connection);
+};
 
 Meteor.methods({
     checkMongoclientVersion(){
@@ -80,11 +119,31 @@ Meteor.methods({
     },
 
     saveConnection(connection) {
-        if (connection._id) {
-            Connections.remove({_id: connection._id});
+        saveConnectionToDB(connection)
+    },
+
+    checkAndSaveConnection(connection){
+        if (connection.url) {
+            const parsedUrl = mongodbUrlParser(connection.url);
+            connection.databaseName = parsedUrl.databaseName;
+            delete connection.servers;
+            delete connection.authenticationType;
+            delete connection.scram_sha_1;
+            delete connection.mongodb_cr;
+            delete connection.mongodb_x509;
+            delete connection.gssapi;
+            delete connection.plain;
+            delete connection.ssl;
+            delete connection.options;
         }
 
-        Connections.insert(connection);
+        checkConnection(connection);
+
+        if (!connection.databaseName) {
+            connection.databaseName = 'admin';
+        }
+
+        saveConnectionToDB(connection);
     },
 
     removeConnection(connectionId) {

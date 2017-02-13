@@ -475,7 +475,6 @@ Template.connections.onRendered(function () {
         } else {
             addField('', '27017');
         }
-
     });
 });
 
@@ -486,6 +485,32 @@ Template.connections.helpers({
 });
 
 Template.connections.events({
+    'change #inputUrl'(){
+        const hostFields = $(".divHostField:visible");
+        const fieldsToDisable = $('#inputDatabaseName, #cmbAuthenticationType, #inputPassPhrase, #inputConnectionTimeoutOverride, #inputSocketTimeoutOverride, #cmbReadPreference');
+        const iChecks = $('#inputUseSSL, #inputConnectWithNoPrimary, #inputDisableHostnameVerification');
+        const formSsl = $('#formSSL');
+        if ($('#inputUrl').val()) {
+            hostFields.find('input, button').prop('disabled', true).parent('div').attr('data-original-title', 'Clear URL to activate here');
+            fieldsToDisable.prop('disabled', true).trigger('chosen:updated').parent('div').attr('data-original-title', 'Clear URL to activate here');
+            iChecks.prop('disabled', true);
+            selectedAuthType.set('');
+            formSsl.find(':file').filestyle('disabled', true);
+            formSsl.find(':file').parent('div').attr('data-original-title', 'Clear URL to activate here');
+
+            $('[data-toggle="tooltip"]').tooltip({trigger: 'hover'});
+        }
+        else {
+            hostFields.find('input, button').prop('disabled', false).parent('div').attr('data-original-title', '');
+            fieldsToDisable.prop('disabled', false).trigger('chosen:updated').parent('div').attr('data-original-title', '');
+            iChecks.prop('disabled', false);
+            selectedAuthType.set($('#cmbAuthenticationType').val());
+            formSsl.find(':file').filestyle('disabled', false);
+            formSsl.find(':file').parent('div').attr('data-original-title', '');
+
+        }
+    },
+
     'click #anchorConnectionSsl'(){
         if (!$('#anchorConnectionSsl').attr('data-toggle')) {
             toastr.warning('SSL already set via Mongodb-X509');
@@ -600,6 +625,15 @@ Template.connections.events({
             else {
                 //clone or insert new
             }
+            Meteor.call('checkAndSaveConnection', connection, function (err) {
+                if (err) {
+                    Helper.showMeteorFuncError(err, null, "Couldn't save connection")
+                } else {
+                    toastr.success('Successfully saved connection');
+                }
+
+                Ladda.stopAll();
+            });
 
             //TODO checkConnection before save at server side
         });

@@ -119,7 +119,8 @@
                                             <div class="form-group">
                                                 <label class="col-lg-2 control-label">Authentication Type
                                                 </label>
-                                                <div class="col-lg-10">
+                                                <div data-placement="top"
+                                                     data-toggle="tooltip" class="col-lg-10">
                                                     <select id="cmbAuthenticationType"
                                                             data-placeholder="Leave empty for no authentication"
                                                             class="chosen-select form-control"
@@ -163,15 +164,19 @@
                                 <!-- TAB 3-->
                                 <div id="tab-3-ssl" class="tab-pane">
                                     <div class="panel-body no-borders modal-background">
-                                        <div class="form-group"><label class="col-lg-2 control-label">Use SSL</label>
-                                            <div id="divUseSSL" class="col-lg-10">
-                                                <input id="inputUseSSL" type="checkbox"
-                                                       class="form-control"
-                                                       checked=""
-                                                       style="position: absolute; opacity: 0;"/>
+                                        <form id="formSSL" class="form-horizontal">
+                                            <div class="form-group"><label class="col-lg-2 control-label">Use
+                                                SSL</label>
+                                                <div data-placement="top"
+                                                     data-toggle="tooltip" id="divUseSSL" class="col-lg-1">
+                                                    <input id="inputUseSSL" type="checkbox"
+                                                           class="form-control"
+                                                           checked=""
+                                                           style="position: absolute; opacity: 0;"/>
+                                                </div>
                                             </div>
-                                        </div>
-                                        {{> sslTemplate}}
+                                            {{> sslTemplate}}
+                                        </form>
                                     </div>
                                 </div>
 
@@ -276,7 +281,8 @@
 
 <template name="connectionOptions">
     <div class="form-group"><label class="col-lg-2 control-label">Connection Timeout</label>
-        <div class="col-lg-10">
+        <div data-placement="top"
+             data-toggle="tooltip" class="col-lg-10">
             <input id="inputConnectionTimeoutOverride"
                    data-required="true"
                    min="1"
@@ -288,7 +294,8 @@
     </div>
 
     <div class="form-group"><label class="col-lg-2 control-label">Socket Timeout</label>
-        <div class="col-lg-10">
+        <div data-placement="top"
+             data-toggle="tooltip" class="col-lg-10">
             <input id="inputSocketTimeoutOverride"
                    data-required="true"
                    min="1"
@@ -302,7 +309,8 @@
     <!--Read Preference-->
     <div class="form-group">
         <label class="col-lg-2 control-label">Read Preference</label>
-        <div class="col-lg-10">
+        <div data-placement="top"
+             data-toggle="tooltip" class="col-lg-10">
             <select id="cmbReadPreference"
                     data-placeholder="Read preference"
                     class="chosen-select form-control"
@@ -321,11 +329,11 @@
     <!--Connect with no primary-->
     <div class="form-group"><label class="col-lg-2 control-label">Connect With No Primary</label>
         <div id="divConnectWithNoPrimary" class="col-lg-10">
-            <input id="inputConnectWithNoPrimary" type="checkbox"
+            <input data-placement="top"
+                   data-toggle="tooltip" id="inputConnectWithNoPrimary" type="checkbox"
                    class="form-control"
                    checked=""
                    style="position: absolute; opacity: 0;"/>
-            <span class="help-block m-b-none">Even if there's no primary, you can check this to connect your replica set.</span>
         </div>
     </div>
 
@@ -414,9 +422,10 @@
         <div class="form-group divHostField" style="display: none">
             <label class="col-lg-2 control-label">Host/Port</label>
             <div class="col-lg-8">
-                <div class="input-group"><input type="text"
-                                                placeholder="Host Name / IP Address"
-                                                class="form-control txtHostName">
+                <div data-placement="top"
+                     data-toggle="tooltip" class="input-group"><input type="text"
+                                                                      placeholder="Host Name / IP Address"
+                                                                      class="form-control txtHostName">
                     <div class="input-group-btn">
                         <button data-toggle="dropdown"
                                 class="btn btn-white dropdown-toggle"
@@ -433,24 +442,26 @@
                     </div>
                 </div>
             </div>
-            <div class="col-lg-2"><input value="27017"
-                                         data-required="true"
-                                         min="1"
-                                         type="number"
-                                         placeholder="Port"
-                                         class="form-control txtPort">
+            <div data-placement="top"
+                 data-toggle="tooltip" class="col-lg-2"><input value="27017"
+                                                               data-required="true"
+                                                               min="1"
+                                                               type="number"
+                                                               placeholder="Port"
+                                                               class="form-control txtPort">
             </div>
         </div>
 
         <!--DB Name to connect-->
         <div class="form-group">
             <label class="col-lg-2 control-label">Database Name</label>
-            <div class="col-lg-10"><input id="inputDatabaseName"
-                                          data-required="true"
-                                          type="text"
-                                          value="test"
-                                          placeholder="Database Name"
-                                          class="form-control">
+            <div data-placement="top"
+                 data-toggle="tooltip" class="col-lg-10"><input id="inputDatabaseName"
+                                                                data-required="true"
+                                                                type="text"
+                                                                value="test"
+                                                                placeholder="Uses admin, if not provided"
+                                                                class="form-control">
                 <span class="help-block m-b-none">You can use <b>More - Switch Database</b> afterwards</span>
             </div>
         </div>
@@ -495,7 +506,8 @@
         <div class="form-group">
             <label class="col-lg-2 control-label">Root CA File
             </label>
-            <div class="col-lg-10">
+            <div data-placement="top"
+                 data-toggle="tooltip" class="col-lg-10">
                 <input class="form-control filestyle" type="file"
                        id="inputRootCA" placeholder="Leave empty for no validation"
                        data-buttonName="btn-primary">
@@ -507,7 +519,8 @@
         <div class="form-group">
             <label class="col-lg-2 control-label">Certificate
             </label>
-            <div class="col-lg-10">
+            <div data-placement="top"
+                 data-toggle="tooltip" class="col-lg-10">
                 <input class="form-control filestyle" type="file"
                        id="inputCertificate" placeholder="Leave empty for no certificate"
                        data-buttonName="btn-primary">
@@ -517,10 +530,11 @@
         <!-- Certificate Passphrase-->
         <div class="form-group"><label class="col-lg-2 control-label">Passphrase
         </label>
-            <div class="col-lg-10"><input id="inputPassPhrase" type="password"
+            <div data-placement="top"
+                 data-toggle="tooltip" class="col-lg-10"><input id="inputPassPhrase" type="password"
 
-                                          placeholder="Leave empty for no passphrase"
-                                          class="form-control">
+                                                                placeholder="Leave empty for no passphrase"
+                                                                class="form-control">
                 <span class="help-block m-b-none">Leave empty for <b>no passphrase</b></span>
             </div>
         </div>
@@ -529,7 +543,8 @@
         <div class="form-group">
             <label class="col-lg-2 control-label">Certificate Key File
             </label>
-            <div class="col-lg-10">
+            <div data-placement="top"
+                 data-toggle="tooltip" class="col-lg-10">
                 <input class="form-control filestyle" type="file"
                        id="inputCertificateKey"
                        data-buttonName="btn-primary">
@@ -537,8 +552,9 @@
         </div>
 
         <!-- Allow invalid hostnames -->
-        <div class="form-group"><label class="col-lg-2 control-label">Disable hostname verification</label>
-            <div id="divDisableHostnameVerification" class="col-lg-10">
+        <div class="form-group"><label class="col-lg-2 control-label">Disable Hostname Verification</label>
+            <div data-placement="top"
+                 data-toggle="tooltip" id="divDisableHostnameVerification" class="col-lg-1">
                 <input id="inputDisableHostnameVerification" type="checkbox"
                        class="form-control"
                        checked=""
