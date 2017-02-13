@@ -134,6 +134,104 @@ export const connect = function (isRefresh) {
     });
 };
 
+const fillFormSsl = function (obj) {
+    if (obj.rootCAFileName) {
+        $('#inputRootCA').siblings('.bootstrap-filestyle').children('input').val(obj.rootCAFileName);
+    }
+    if (obj.certificateFileName) {
+        $('#inputCertificate').siblings('.bootstrap-filestyle').children('input').val(obj.certificateFileName);
+    }
+    if (obj.certificateKeyFileName) {
+        $('#inputCertificateKey').siblings('.bootstrap-filestyle').children('input').val(obj.certificateKeyFileName);
+    }
+
+    $('#inputPassPhrase').val(obj.passPhrase);
+    $('#inputDisableHostnameVerification').iCheck(!obj.disableHostnameVerification ? 'uncheck' : 'check');
+};
+
+const fillFormBasicAuth = function (obj) {
+    $('#inputUser').val(obj.username);
+    $('#inputPassword').val(obj.password);
+    $('#inputAuthenticationDB').val(obj.authSource);
+};
+
+const fillFormSsh = function (connection) {
+    $('#inputSshHostname').val(connection.ssh.host);
+    $('#inputSshPort').val(connection.ssh.port);
+    $('#inputSshUsername').val(connection.ssh.username);
+
+    const certificateForm = $('#formSshCertificateAuth');
+    const passwordForm = $('#formSshPasswordAuth');
+    if (connection.ssh.certificateFileName) {
+        certificateForm.show();
+        passwordForm.hide();
+        $('#cmbSshAuthType').val('Certificate');
+        $('#inputSshCertificate').siblings('.bootstrap-filestyle').children('input').val(connection.ssh.certificateFileName);
+        $('#inputSshPassPhrase').val(connection.ssh.passPhrase);
+    } else {
+        certificateForm.hide();
+        passwordForm.show();
+        $('#cmbSshAuthType').val('Password');
+        $('#inputSshPassword').val(connection.ssh.password);
+    }
+};
+
+const fillFormAuthentication = function (connection) {
+    if (connection.authenticationType === 'mongodb_cr') {
+        fillFormBasicAuth(connection.mongodb_cr);
+    }
+    else if (connection.authenticationType === 'scram_sha_1') {
+        fillFormBasicAuth(connection.scram_sha_1);
+    }
+    else if (connection.authenticationType === 'plain') {
+        $('#inputLdapUsername').val(connection.plain.username);
+        $('#inputLdapPassword').val(connection.plain.password);
+    }
+    else if (connection.authenticationType === 'gssapi') {
+        $('#inputKerberosUsername').val(connection.gssapi.username);
+        $('#inputKerberosPassword').val(connection.gssapi.password);
+        $('#inputKerberosServiceName').val(connection.gssapi.serviceName);
+    }
+    else if (connection.authenticationType === 'mongodb_x509') {
+        fillFormSsl(connection.mongodb_x509);
+    }
+};
+
+const fillFormConnection = function (connection) {
+    if (connection.servers) {
+        for (let server of connection.servers) {
+            addField(server.host, server.port);
+        }
+    }
+    selectedAuthType.set(connection.authenticationType);
+    $('#inputConnectionName').val(connection.connectionName);
+    $('#inputUrl').val(connection.url);
+    $('#inputDatabaseName').val(connection.databaseName);
+};
+
+const prepareFormForEdit = function () {
+    const connection = Connections.findOne({_id: Session.get(Helper.strSessionConnection)});
+    $('.nav-tabs a[href="#tab-1-connection"]').tab('show');
+    $('#addEditModalSmall').html(connection.connectionName);
+    fillFormConnection(connection);
+    fillFormAuthentication(connection);
+
+    if (connection.ssl) {
+        $('#inputUseSSL').iCheck(connection.ssl.enabled ? 'check' : 'uncheck');
+        fillFormSsl(connection.ssl);
+    }
+    if (connection.ssh) {
+        $('#inputUseSSH').iCheck(connection.ssh.enabled ? 'check' : 'uncheck');
+        fillFormSsh(connection);
+    }
+    if (connection.options) {
+        $('#inputConnectionTimeoutOverride').val(connection.options.connectionTimeout);
+        $('#inputSocketTimeoutOverride').val(connection.options.socketTimeout);
+        $('#cmbReadPreference').val(connection.options.readPreference);
+        $('#inputConnectWithNoPrimary').iCheck(!connection.options.connectWithNoPrimary ? 'uncheck' : 'check');
+    }
+};
+
 const loadSSHCertificate = function (connection, currentConnection, done) {
     if (connection.ssh) {
         if (connection.ssh.certificateFileName) {
@@ -309,10 +407,6 @@ const fillCorrectAuthenticationType = function (connection) {
     }
 };
 
-const checkConnection = function (connection) {
-//TODO
-};
-
 const resetForm = function () {
     $('.nav-tabs a[href="#tab-1-connection"]').tab('show');
     $(":file").filestyle('clear');
@@ -372,10 +466,16 @@ Template.connections.onRendered(function () {
 
     });
 
-    $('#addEditConnectionModal').on('shown.bs.modal', function () {
+    const addEditModal = $('#addEditConnectionModal');
+    addEditModal.on('shown.bs.modal', function () {
         initializeUI();
         resetForm();
-        addField('', '27017');
+        if (addEditModal.data('edit') || addEditModal.data('clone')) {
+            prepareFormForEdit();
+        } else {
+            addField('', '27017');
+        }
+
     });
 });
 
@@ -445,7 +545,10 @@ Template.connections.events({
 
     'click #btnCreateNewConnection' () {
         $('#addEditConnectionModalTitle').text('Add Connection');
-        $('#addEditConnectionModal').modal('show');
+        const modal = $('#addEditConnectionModal');
+        modal.data('edit', null);
+        modal.data('clone', null);
+        modal.modal('show');
     },
 
     'click .editor_remove'  (e) {
@@ -464,14 +567,41 @@ Template.connections.events({
 
             Ladda.stopAll();
         });
+    },
 
+    'click .editor_edit' () {
+        $('#addEditConnectionModalTitle').text('Edit Connection');
+        const modal = $('#addEditConnectionModal');
+        modal.data('edit', Session.get(Helper.strSessionConnection));
+        modal.modal('show');
+    },
+
+    'click .editor_duplicate' () {
+        $('#addEditConnectionModalTitle').text('Clone Connection');
+        const modal = $('#addEditConnectionModal');
+        modal.data('clone', Session.get(Helper.strSessionConnection));
+        modal.modal('show');
     },
 
     'click #btnSaveConnection' (e) {
         e.preventDefault();
         Ladda.create(document.querySelector('#btnSaveConnection')).start();
-        populateConnection({}, function (connection) {
-            checkConnection(connection);
+
+        const modal = $('#addEditConnectionModal');
+        const oldCollectionId = modal.data('edit') ? modal.data('edit') : modal.data('clone');
+        let currentConnection = {};
+        if (oldCollectionId) {
+            currentConnection = Connections.findOne({_id: oldCollectionId});
+        }
+        populateConnection(currentConnection, function (connection) {
+            if (modal.data('edit')) {
+                //edit
+            }
+            else {
+                //clone or insert new
+            }
+
+            //TODO checkConnection before save at server side
         });
     }
 });

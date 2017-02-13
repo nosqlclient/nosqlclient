@@ -233,8 +233,6 @@ const checkConnection = function (connection) {
     return true;
 };
 
-
-
 const parseDatabaseNameFromUrl = function (url) {
     try {
         let lastIndex = url.length;

@@ -6,6 +6,7 @@
     "eslint": "^3.12.2"
   },
   "dependencies": {
+    "parse-mongo-url": "^1.1.1",
     "typed.js": "1.1.1",
     "babel-runtime": "^6.18.0",
     "bootstrap-filestyle": "^1.2.1",

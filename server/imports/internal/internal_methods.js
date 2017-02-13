@@ -80,16 +80,11 @@ Meteor.methods({
     },
 
     saveConnection(connection) {
-        if (Connections.findOne({name: connection.name}) != null) {
-            throw new Meteor.Error('Connection name already exist: ' + connection.name);
+        if (connection._id) {
+            Connections.remove({_id: connection._id});
         }
 
-        Connections._collection.insert(connection);
-    },
-
-    updateConnection(connection) {
-        Connections.remove({_id: connection._id});
-        Connections._collection.insert(connection);
+        Connections.insert(connection);
     },
 
     removeConnection(connectionId) {
