@@ -33,6 +33,7 @@ let Helper = function () {
 };
 Helper.prototype = {
     getConnectionUrl (connection) {
+        //TODO fix here
         if (connection.url) {
             return connection.url;
         }
