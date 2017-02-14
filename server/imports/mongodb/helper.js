@@ -1,9 +1,15 @@
 /**
  * Created by RSercan on 30.12.2015.
  */
+import {Settings} from "/lib/imports/collections/settings";
+import {serialize, deserialize} from "./extended_json";
 
-import {Settings} from '/lib/imports/collections/settings';
-import {serialize, deserialize} from './extended_json';
+const addOptionToUrl = function (url, option, value) {
+    if (!value) return url;
+    if (url.substring(url.lastIndexOf('/')).indexOf('?') === -1)
+        return url + '?' + option + '=' + value;
+    return url + '&' + option + '=' + value;
+};
 
 const addConnectionParamsToOptions = function (connection, result) {
     if (connection.useSsl || connection.sslCertificate) {
@@ -33,39 +39,24 @@ let Helper = function () {
 };
 Helper.prototype = {
     getConnectionUrl (connection) {
-        //TODO fix here
         if (connection.url) {
             return connection.url;
         }
 
         let connectionUrl = 'mongodb://';
-        if (connection.user && connection.password) {
-            connectionUrl += connection.user + ':' + encodeURIComponent(connection.password) + '@';
-        } else if (connection.x509Username) {
-            connectionUrl += encodeURIComponent(connection.x509Username) + '@'
+        if (connection.authenticationType === 'mongodb_cr' || connection.authenticationType === 'scram_sha_1' || connection.authenticationType === 'gssapi' || connection.authenticationType === 'plain') {
+            connectionUrl += connection[connection.authenticationType].user + ':' + encodeURIComponent(connection[connection.authenticationType].password) + '@';
         }
-
-
-        connectionUrl += connection.host + ':' + connection.port + '/' + connection.databaseName;
-
-        if (connection.readFromSecondary) {
-            connectionUrl += '?readPreference=secondary';
+        for (let server of connection.servers) {
+            connectionUrl += server.host + ':' + server.port + ',';
         }
+        if (connectionUrl.endsWith(',')) connectionUrl += connectionUrl.substring(0, connectionUrl.length - 1);
+        connectionUrl += '/' + connection.databaseName;
 
-        if (connection.x509Username) {
-            if (connectionUrl.indexOf('?') != -1) {
-                connectionUrl += '&authMechanism=MONGODB-X509';
-            } else {
-                connectionUrl += '?authMechanism=MONGODB-X509';
-            }
-        }
-
-        if (connection.authDatabaseName) {
-            if (connectionUrl.indexOf('?') != -1) {
-                connectionUrl += '&authSource=' + connection.authDatabaseName;
-            } else {
-                connectionUrl += '?authSource=' + connection.authDatabaseName;
-            }
+        if (connection.authenticationType) addOptionToUrl(connectionUrl, 'authMechanism', connection.toUpperCase().replace(new RegExp("_", 'g'), "-"));
+        if (connection.authenticationType === 'mongodb_cr' || connection.authenticationType === 'scram_sha_1') addOptionToUrl(connectionUrl, 'authSource', connection[connection.authenticationType].authSource);
+        if (connection.authenticationType === 'mongodb_x509') {
+            //TODO
         }
 
         return connectionUrl;
