@@ -418,6 +418,16 @@ Template.navigation.helpers({
         return a === b;
     },
 
+    getServerList(){
+        let result = '';
+        let connection = Connections.findOne({_id: Session.get(Helper.strSessionConnection)});
+        for (let server of connection.servers) {
+            result += server.host + ':' + server.port + '<br/>';
+        }
+
+        return result;
+    },
+
     initializeMetisMenu() {
         Meteor.setTimeout(function () {
             const sideMenu = $('#side-menu');

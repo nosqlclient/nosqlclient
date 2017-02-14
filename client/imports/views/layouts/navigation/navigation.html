@@ -8,12 +8,10 @@
                             <span class="clear">
                                 {{#if isConnected}}
                                     <span class="block m-t-xs"> <strong
-                                            class="font-bold">{{getConnection.name}}</strong>
+                                            class="font-bold">{{getConnection.connectionName}}</strong>
                                 </span>
                                 <span class="block m-t-xs">
-                                    {{#if getConnection.host}}
-                                        {{getConnection.host}} : {{getConnection.port}}
-                                    {{/if}}
+                                    {{getServerList}}
                                 </span>
                                     <span class="text-muted text-xs block">{{getConnection.databaseName}} <b
                                             class="caret"></b>
