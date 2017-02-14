@@ -42,20 +42,17 @@ const parseUrl = function (connection) {
         connection.databaseName = parsedUrl.dbName || 'admin';
         connection.servers = parsedUrl.servers;
         if (parsedUrl.server_options) {
-            if (parsedUrl.server_options.socketOptions) {
-                connection.options.connectionTimeout = parsedUrl.server_options.socketOptions.connectTimeoutMS || "";
-                connection.options.socketTimeout = parsedUrl.server_options.socketOptions.socketTimeoutMS || "";
-            }
-
+            connection.options.connectionTimeout = (parsedUrl.server_options.socketOptions && parsedUrl.server_options.socketOptions.connectTimeoutMS) ? parsedUrl.server_options.socketOptions.connectTimeoutMS : "";
+            connection.options.socketTimeout = (parsedUrl.server_options.socketOptions && parsedUrl.server_options.socketOptions.socketTimeoutMS) ? parsedUrl.server_options.socketOptions.socketTimeoutMS : "";
             connection.ssl.enabled = !!parsedUrl.server_options.ssl;
         }
-        if (parsedUrl.db_options) {
-            connection.options.readPreference = parsedUrl.db_options.read_preference;
-            connection.authenticationType = parsedUrl.db_options.authMechanism ? parsedUrl.db_options.authMechanism.toLowerCase().replace(new RegExp("-", 'g'), "_") : '';
-            if (connection.authenticationType) connection[connection.authenticationType] = {};
-            if (parsedUrl.db_options.gssapiServiceName && connection.authenticationType === 'gssapi') connection.gssapi.serviceName = parsedUrl.db_options.gssapiServiceName;
-            if (connection.authenticationType === 'mongodb_x509') delete connection.ssl;
-        }
+        connection.options.replicaSetName = (parsedUrl.rs_options && parsedUrl.rs_options.rs_name) ? parsedUrl.rs_options.rs_name : '';
+        connection.options.readPreference = parsedUrl.db_options.read_preference;
+        connection.authenticationType = parsedUrl.db_options.authMechanism ? parsedUrl.db_options.authMechanism.toLowerCase().replace(new RegExp("-", 'g'), "_") : '';
+        if (connection.authenticationType) connection[connection.authenticationType] = {};
+        if (parsedUrl.db_options.gssapiServiceName && connection.authenticationType === 'gssapi') connection.gssapi.serviceName = parsedUrl.db_options.gssapiServiceName;
+        if (connection.authenticationType === 'mongodb_x509') delete connection.ssl;
+
         if (parsedUrl.auth) {
             // if auth exists there should be an authentication, even there's no authMechanism set
             connection.authenticationType = connection.authenticationType || 'scram_sha_1';
@@ -63,7 +60,7 @@ const parseUrl = function (connection) {
             connection[connection.authenticationType].username = (parsedUrl.auth && parsedUrl.auth.user) ? parsedUrl.auth.user : '';
             connection[connection.authenticationType].password = (parsedUrl.auth && parsedUrl.auth.password) ? parsedUrl.auth.password : '';
         }
-        if (parsedUrl.db_options && parsedUrl.db_options.authSource && (connection.authenticationType === 'mongodb_cr' || connection.authenticationType === 'scram_sha_1')) {
+        if (parsedUrl.db_options.authSource && (connection.authenticationType === 'mongodb_cr' || connection.authenticationType === 'scram_sha_1')) {
             connection[connection.authenticationType].authSource = parsedUrl.db_options.authSource;
         }
 

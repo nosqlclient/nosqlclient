@@ -186,6 +186,7 @@ const fillFormAuthentication = function (connection) {
         }
         else if (connection.authenticationType === 'mongodb_x509') {
             fillFormSsl(connection.mongodb_x509);
+            $('#anchorConnectionSsl').removeAttr('data-toggle');
         }
     }, 150);
 };
@@ -212,12 +213,14 @@ const prepareFormForUrlParse = function (connection) {
     else sslTab.attr('data-toggle', 'tab');
 
     if (connection.ssl) $('#inputUseSSL').iCheck(connection.ssl.enabled ? 'check' : 'uncheck');
+    if (connection.options) fillFormOptionsExceptConnectWithNoPrimary(connection);
+};
 
-    if (connection.options) {
-        $('#inputConnectionTimeoutOverride').val(connection.options.connectionTimeout);
-        $('#inputSocketTimeoutOverride').val(connection.options.socketTimeout);
-        $('#cmbReadPreference').val(connection.options.readPreference).trigger('chosen:updated');
-    }
+const fillFormOptionsExceptConnectWithNoPrimary = function (connection) {
+    $('#inputConnectionTimeoutOverride').val(connection.options.connectionTimeout);
+    $('#inputReplicaSetName').val(connection.options.replicaSetName);
+    $('#inputSocketTimeoutOverride').val(connection.options.socketTimeout);
+    $('#cmbReadPreference').val(connection.options.readPreference).trigger('chosen:updated');
 };
 
 const prepareFormForEdit = function () {
@@ -237,9 +240,7 @@ const prepareFormForEdit = function () {
         fillFormSsh(connection);
     }
     if (connection.options) {
-        $('#inputConnectionTimeoutOverride').val(connection.options.connectionTimeout);
-        $('#inputSocketTimeoutOverride').val(connection.options.socketTimeout);
-        $('#cmbReadPreference').val(connection.options.readPreference).trigger('chosen:updated');
+        fillFormOptionsExceptConnectWithNoPrimary(connection);
         $('#inputConnectWithNoPrimary').iCheck(!connection.options.connectWithNoPrimary ? 'uncheck' : 'check');
     }
     if (connection.url) {
@@ -369,7 +370,8 @@ const fillOptions = function (connection) {
         connectionTimeout: connectionTimeot ? parseInt(connectionTimeot) : '',
         socketTimeout: socketTimeout ? parseInt(socketTimeout) : '',
         readPreference: $('#cmbReadPreference').val(),
-        connectWithNoPrimary: $('#inputConnectWithNoPrimary').iCheck('update')[0].checked
+        connectWithNoPrimary: $('#inputConnectWithNoPrimary').iCheck('update')[0].checked,
+        replicaSetName: $('#inputReplicaSetName').val()
     };
 };
 
@@ -427,6 +429,7 @@ const resetForm = function () {
     $(":file").filestyle('clear');
     $('#addEditModalSmall').html('');
     $('#inputConnectWithNoPrimary, #inputDisableHostnameVerification, #inputUseSSL, #inputUseSSH').iCheck('uncheck');
+    $('#spanUseSSL').hide();
     $(".divHostField:visible").remove();
     selectedAuthType.set('');
 
@@ -465,13 +468,13 @@ const initializeUI = function () {
     $('#divConnectWithNoPrimary, #divUseSSL, #divUseSSH').iCheck({
         checkboxClass: 'icheckbox_square-green'
     });
-    $('#divUseSSH').on('ifToggled', function(){
+    $('#divUseSSH').on('ifToggled', function () {
         const divTemplate = $('#divSshTemplate');
         if ($('#inputUseSSH').iCheck('update')[0].checked) divTemplate.show();
         else divTemplate.hide();
     });
 
-    $('#divUseSSL').on('ifToggled', function(){
+    $('#divUseSSL').on('ifToggled', function () {
         const divTemplate = $('#divSslTemplate');
         if ($('#inputUseSSL').iCheck('update')[0].checked) divTemplate.show();
         else divTemplate.hide();
@@ -518,18 +521,20 @@ Template.connections.helpers({
 
 const disableFormsForUri = function () {
     $(".divHostField:visible").find('input, button').prop('disabled', true).parent('div').attr('data-original-title', 'Clear URL to activate here');
-    $('#inputDatabaseName, #cmbAuthenticationType, #inputConnectionTimeoutOverride, #inputSocketTimeoutOverride, #cmbReadPreference, #inputUser, #inputPassword, #inputAuthenticationDB, #inputLdapUsername, #inputLdapPassword, #inputKerberosUsername, #inputKerberosPassword, #inputKerberosServiceName')
+    $('#inputDatabaseName, #cmbAuthenticationType, #inputConnectionTimeoutOverride, #inputReplicaSetName, #inputSocketTimeoutOverride, #cmbReadPreference, #inputUser, #inputPassword, #inputAuthenticationDB, #inputLdapUsername, #inputLdapPassword, #inputKerberosUsername, #inputKerberosPassword, #inputKerberosServiceName')
         .prop('disabled', true).trigger('chosen:updated').parent('div').attr('data-original-title', 'Clear URL to activate here');
     $('#inputUseSSL').iCheck('disable');
+    $('#spanUseSSL').show();
 
     $('[data-toggle="tooltip"]').tooltip({trigger: 'hover'});
 };
 
 const enableFormsForUri = function () {
     $(".divHostField:visible").find('input, button').prop('disabled', false).parent('div').attr('data-original-title', '');
-    $('#inputDatabaseName, #cmbAuthenticationType, #inputConnectionTimeoutOverride, #inputSocketTimeoutOverride, #cmbReadPreference, #inputUser, #inputPassword, #inputAuthenticationDB, #inputLdapUsername, #inputLdapPassword, #inputKerberosUsername, #inputKerberosPassword, #inputKerberosServiceName')
+    $('#inputDatabaseName, #cmbAuthenticationType, #inputConnectionTimeoutOverride, #inputReplicaSetName, #inputSocketTimeoutOverride, #cmbReadPreference, #inputUser, #inputPassword, #inputAuthenticationDB, #inputLdapUsername, #inputLdapPassword, #inputKerberosUsername, #inputKerberosPassword, #inputKerberosServiceName')
         .prop('disabled', false).trigger('chosen:updated').parent('div').attr('data-original-title', '');
     $('#inputUseSSL').iCheck('enable');
+    $('#spanUseSSL').hide();
     selectedAuthType.set($('#cmbAuthenticationType').val());
 };
 

@@ -166,11 +166,12 @@
                                             <div class="form-group"><label class="col-lg-2 control-label">Use
                                                 SSL</label>
                                                 <div data-placement="top"
-                                                     data-toggle="tooltip" id="divUseSSL" class="col-lg-1">
+                                                     data-toggle="tooltip" id="divUseSSL" class="col-lg-10">
                                                     <input id="inputUseSSL" type="checkbox"
                                                            class="form-control"
                                                            checked=""
                                                            style="position: absolute; opacity: 0;"/>
+                                                    <span id="spanUseSSL" style="display: none;" class="help-block m-b-none"><b>Clear URL</b> to activate here</span>
                                                 </div>
                                             </div>
 
@@ -327,6 +328,21 @@
                    placeholder="Socket Timeout"
                    class="form-control">
             <span class="help-block m-b-none">Enter to override <b>default</b> socket timeout <b>from settings</b></span>
+        </div>
+    </div>
+
+    <div class="hr-line-dashed"></div>
+
+    <div class="form-group"><label class="col-lg-2 control-label">Replica Name</label>
+        <div data-placement="top"
+             data-toggle="tooltip" class="col-lg-10">
+            <input id="inputReplicaSetName"
+                   data-required="true"
+                   min="1"
+                   type="text"
+                   placeholder="Replica Set Name"
+                   class="form-control">
+            <span class="help-block m-b-none">Use for <b>replica sets</b></span>
         </div>
     </div>
 
