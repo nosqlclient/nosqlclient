@@ -127,8 +127,8 @@ Template.navigation.events({
         e.preventDefault();
         let connection = Connections.findOne({_id: Session.get(Helper.strSessionConnection)});
 
-        if (connection.sslCertificatePath) {
-            toastr.info('Unfortunately, this feature is not usable in SSL connections');
+        if (connection.ssl && connection.ssl.enable) {
+            toastr.info('Unfortunately, this feature is not usable in SSL connections yet');
             return;
         }
 
@@ -139,8 +139,8 @@ Template.navigation.events({
         e.preventDefault();
         let connection = Connections.findOne({_id: Session.get(Helper.strSessionConnection)});
 
-        if (connection.sshAddress) {
-            toastr.info('Unfortunately, this feature is not usable in SSH connections');
+        if (connection.ssh && connection.ssh.enable) {
+            toastr.info('Unfortunately, this feature is not usable in SSH connections yet');
             return;
         }
 
