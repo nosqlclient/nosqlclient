@@ -20,10 +20,8 @@
                         <tr>
                             <th>_id</th>
                             <th>Connection Name</th>
-                            <th>Use Url</th>
-                            <th>Use Ssl</th>
-                            <th>Certificate Auth</th>
-                            <th>Use Ssh</th>
+                            <th>Servers</th>
+                            <th>Properties</th>
                             <th>Edit</th>
                             <th>Clone</th>
                             <th>Delete</th>
@@ -175,7 +173,12 @@
                                                            style="position: absolute; opacity: 0;"/>
                                                 </div>
                                             </div>
-                                            {{> sslTemplate}}
+
+                                            <div class="hr-line-dashed"></div>
+
+                                            <div id="divSslTemplate">
+                                                {{> sslTemplate}}
+                                            </div>
                                         </form>
                                     </div>
                                 </div>
@@ -192,7 +195,12 @@
                                                        style="position: absolute; opacity: 0;"/>
                                             </div>
                                         </div>
-                                        {{> sshTemplate}}
+
+                                        <div class="hr-line-dashed"></div>
+
+                                        <div id="divSshTemplate">
+                                            {{> sshTemplate}}
+                                        </div>
                                     </div>
                                 </div>
 
@@ -228,18 +236,26 @@
     <form class="form-horizontal">
         <div class="form-group"><label
                 class="col-lg-2 control-label">Username</label>
-            <div class="col-lg-10"><input id="inputKerberosUsername"
-                                          data-required="true"
-                                          type="text"
-                                          placeholder="Username"
-                                          class="form-control">
+            <div data-placement="top"
+                 data-toggle="tooltip" class="col-lg-10"><input id="inputKerberosUsername"
+                                                                data-required="true"
+                                                                type="text"
+                                                                placeholder="Username"
+                                                                class="form-control">
             </div>
         </div>
         <div class="form-group">
             <label class="col-lg-2 control-label">Password</label>
-            <div class="col-lg-10"><input id="inputKerberosPassword" type="password"
-                                          placeholder="Password (optional)"
-                                          class="form-control">
+            <div class="col-lg-10">
+                <div data-placement="top"
+                     data-toggle="tooltip" class="input-group">
+                    <input id="inputKerberosPassword" type="password"
+                           placeholder="Password (optional)"
+                           class="form-control">
+                    <span class="input-group-btn"> <button type="button" class="btn btn-white showpass"><span
+                            class="glyphicon glyphicon-eye-open"></span>
+                                        </button> </span>
+                </div>
             </div>
         </div>
 
@@ -247,12 +263,13 @@
 
         <div class="form-group"><label
                 class="col-lg-2 control-label">Service Name</label>
-            <div class="col-lg-10"><input id="inputKerberosServiceName"
-                                          data-required="true"
-                                          type="text"
-                                          value="mongodb"
-                                          placeholder="Service Name"
-                                          class="form-control">
+            <div data-placement="top"
+                 data-toggle="tooltip" class="col-lg-10"><input id="inputKerberosServiceName"
+                                                                data-required="true"
+                                                                type="text"
+                                                                value="mongodb"
+                                                                placeholder="Service Name"
+                                                                class="form-control">
             </div>
         </div>
     </form>
@@ -262,18 +279,25 @@
     <form class="form-horizontal">
         <div class="form-group"><label
                 class="col-lg-2 control-label">Username</label>
-            <div class="col-lg-10"><input id="inputLdapUsername"
-                                          data-required="true"
-                                          type="text"
-                                          placeholder="Username"
-                                          class="form-control">
+            <div data-placement="top"
+                 data-toggle="tooltip" class="col-lg-10"><input id="inputLdapUsername"
+                                                                data-required="true"
+                                                                type="text"
+                                                                placeholder="Username"
+                                                                class="form-control">
             </div>
         </div>
         <div class="form-group">
             <label class="col-lg-2 control-label">Password</label>
-            <div class="col-lg-10"><input id="inputLdapPassword" type="password"
-                                          placeholder="Password"
-                                          class="form-control">
+            <div data-placement="top"
+                 data-toggle="tooltip" class="col-lg-10">
+                <div class="input-group"><input id="inputLdapPassword" type="password"
+                                                placeholder="Password"
+                                                class="form-control">
+                    <span class="input-group-btn"> <button type="button" class="btn btn-white showpass"><span
+                            class="glyphicon glyphicon-eye-open"></span>
+                                        </button> </span>
+                </div>
             </div>
         </div>
     </form>
@@ -316,11 +340,11 @@
                     class="chosen-select form-control"
                     tabindex="-1">
                 <option></option>
-                <option value="PRIMARY">Primary</option>
-                <option value="PRIMARY_PREFERRED">Primary Preferred</option>
-                <option value="SECONDARY">Secondary</option>
-                <option value="SECONDARY_PREFERRED">Secondary Preferred</option>
-                <option value="NEAREST">Nearest</option>
+                <option value="primary">Primary</option>
+                <option value="primaryPreferred">Primary Preferred</option>
+                <option value="secondary">Secondary</option>
+                <option value="secondaryPreferred">Secondary Preferred</option>
+                <option value="nearest">Nearest</option>
             </select>
             <span class="help-block m-b-none">Use for <b>replica sets or sharded clusters</b></span>
         </div>
@@ -348,7 +372,6 @@
                                           type="text"
                                           placeholder="Hostname"
                                           class="form-control">
-                <span class="help-block m-b-none">Leave empty for no <b>SSH tunnel</b></span>
             </div>
         </div>
         <div class="form-group"><label class="col-lg-2 control-label">Port</label>
@@ -397,9 +420,14 @@
         </div>
         <div class="form-group">
             <label class="col-lg-2 control-label">PassPhrase</label>
-            <div class="col-lg-10"><input id="inputSshPassPhrase" type="password"
-                                          placeholder="PassPhrase"
-                                          class="form-control">
+            <div class="col-lg-10">
+                <div class="input-group"><input id="inputSshPassPhrase" type="password"
+                                                placeholder="PassPhrase"
+                                                class="form-control">
+                    <span class="input-group-btn"> <button type="button" class="btn btn-white showpass"><span
+                            class="glyphicon glyphicon-eye-open"></span>
+                                        </button> </span>
+                </div>
             </div>
         </div>
     </form>
@@ -408,9 +436,15 @@
     <form id="formSshPasswordAuth" class="form-horizontal" style="display: none;">
         <div class="form-group">
             <label class="col-lg-2 control-label">Password</label>
-            <div class="col-lg-10"><input id="inputSshPassword" type="password"
-                                          placeholder="Password"
-                                          class="form-control">
+            <div class="col-lg-10">
+                <div class="input-group">
+                    <input id="inputSshPassword" type="password"
+                           placeholder="Password"
+                           class="form-control">
+                    <span class="input-group-btn"> <button type="button" class="btn btn-white showpass"><span
+                            class="glyphicon glyphicon-eye-open"></span>
+                                        </button> </span>
+                </div>
             </div>
         </div>
     </form>
@@ -473,7 +507,8 @@
         <div class="form-group">
             <label class="col-lg-2 control-label">Username
             </label>
-            <div class="col-lg-10">
+            <div data-placement="top"
+                 data-toggle="tooltip" class="col-lg-10">
                 <input id="inputUser" type="text"
                        placeholder="Username"
                        class="form-control">
@@ -482,17 +517,22 @@
         <div class="form-group">
             <label class="col-lg-2 control-label">Password
             </label>
-            <div class="col-lg-10">
-                <input id="inputPassword" type="password"
-                       placeholder="Password"
-                       class="form-control">
+            <div data-placement="top"
+                 data-toggle="tooltip" class="col-lg-10">
+                <div class="input-group"><input id="inputPassword" type="password"
+                                                placeholder="Password"
+                                                class="form-control">
+                    <span class="input-group-btn"> <button type="button" class="btn btn-white showpass"><span
+                            class="glyphicon glyphicon-eye-open"></span>
+                                        </button> </span></div>
             </div>
         </div>
         <div class="form-group">
             <label class="col-lg-2 control-label">Authentication DB
             </label>
             <div class="col-lg-10">
-                <input id="inputAuthenticationDB" type="text"
+                <input data-placement="top"
+                       data-toggle="tooltip" id="inputAuthenticationDB" type="text"
                        placeholder="Specify if user is defined in a different DB"
                        class="form-control">
             </div>
@@ -506,12 +546,11 @@
         <div class="form-group">
             <label class="col-lg-2 control-label">Root CA File
             </label>
-            <div data-placement="top"
-                 data-toggle="tooltip" class="col-lg-10">
+            <div class="col-lg-10">
                 <input class="form-control filestyle" type="file"
-                       id="inputRootCA" placeholder="Leave empty for no validation"
+                       id="inputRootCA"
                        data-buttonName="btn-primary">
-                <span class="help-block m-b-none">Leave empty for <b>no validation</b></span>
+                <span class="help-block m-b-none">Leave empty for no validation</span>
             </div>
         </div>
 
@@ -519,10 +558,9 @@
         <div class="form-group">
             <label class="col-lg-2 control-label">Certificate
             </label>
-            <div data-placement="top"
-                 data-toggle="tooltip" class="col-lg-10">
+            <div class="col-lg-10">
                 <input class="form-control filestyle" type="file"
-                       id="inputCertificate" placeholder="Leave empty for no certificate"
+                       id="inputCertificate"
                        data-buttonName="btn-primary">
             </div>
         </div>
@@ -531,11 +569,15 @@
         <div class="form-group"><label class="col-lg-2 control-label">Passphrase
         </label>
             <div data-placement="top"
-                 data-toggle="tooltip" class="col-lg-10"><input id="inputPassPhrase" type="password"
-
-                                                                placeholder="Leave empty for no passphrase"
-                                                                class="form-control">
-                <span class="help-block m-b-none">Leave empty for <b>no passphrase</b></span>
+                 data-toggle="tooltip" class="col-lg-10">
+                <div class="input-group">
+                    <input id="inputPassPhrase" type="password"
+                           placeholder="Leave empty for no passphrase"
+                           class="form-control">
+                    <span class="input-group-btn"> <button type="button" class="btn btn-white showpass"><span
+                            class="glyphicon glyphicon-eye-open"></span>
+                                        </button> </span>
+                </div>
             </div>
         </div>
 
@@ -543,8 +585,7 @@
         <div class="form-group">
             <label class="col-lg-2 control-label">Certificate Key File
             </label>
-            <div data-placement="top"
-                 data-toggle="tooltip" class="col-lg-10">
+            <div class="col-lg-10">
                 <input class="form-control filestyle" type="file"
                        id="inputCertificateKey"
                        data-buttonName="btn-primary">

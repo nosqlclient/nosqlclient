@@ -32,63 +32,50 @@ export const populateConnectionsTable = function () {
         data: Connections.find().fetch(),
         columns: [
             {data: "_id", sClass: "hide_column"},
-            {data: "name"},
-            {data: "url"},
-            {data: "useSsl"},
-            {data: "sslCertificatePath"},
-            {data: "sshAddress"}
+            {data: "connectionName"},
+            {data: "servers"}
         ],
         columnDefs: [
             {
                 targets: [2],
                 render: function (data) {
-                    if (!data) {
-                        return 'false';
+                    let result = '';
+                    if (data) {
+                        for (let server of data) {
+                            result += '<b>' + server.host + '</b>:' + server.port + '<br/> ';
+                        }
                     }
-                    return 'true';
+                    if (result.endsWith(', ')) return result.substr(0, result.length - 2);
+                    return result;
                 }
             },
             {
                 targets: [3],
-                render: function (data) {
-                    if (!data) {
-                        return 'false';
-                    }
-                    return 'true';
+                render: function (data, type, row) {
+                    let result = '<small>';
+                    if (row.authenticationType) result += row.authenticationType.toUpperCase() + "<br/>";
+                    if (row.ssl && row.ssl.enabled) result += "SSL<br/>";
+                    if (row.ssh && row.ssh.enabled) result += "SSH<br/>";
+                    if (row.url) result += 'URL<br/>';
+                    result += '</small> ';
+
+                    return result;
                 }
             },
             {
                 targets: [4],
-                render: function (data) {
-                    if (!data) {
-                        return 'false';
-                    }
-                    return 'true';
-                }
-            },
-            {
-                targets: [5],
-                render: function (data) {
-                    if (!data) {
-                        return 'false';
-                    }
-                    return 'true';
-                }
-            },
-            {
-                targets: [6],
                 data: null,
                 bSortable: false,
                 defaultContent: '<a href="" title="Edit" class="editor_edit"><i class="fa fa-edit text-navy"></i></a>'
             },
             {
-                targets: [7],
+                targets: [5],
                 data: null,
                 bSortable: false,
                 defaultContent: '<a href="" title="Duplicate" class="editor_duplicate"><i class="fa fa-clone text-navy"></i></a>'
             },
             {
-                targets: [8],
+                targets: [6],
                 data: null,
                 bSortable: false,
                 defaultContent: '<a href="" title="Delete" class="editor_remove"><i class="fa fa-remove text-navy"></i></a>'
@@ -165,36 +152,42 @@ const fillFormSsh = function (connection) {
     if (connection.ssh.certificateFileName) {
         certificateForm.show();
         passwordForm.hide();
-        $('#cmbSshAuthType').val('Certificate');
+        $('#cmbSshAuthType').val('Certificate').trigger('chosen:updated');
         $('#inputSshCertificate').siblings('.bootstrap-filestyle').children('input').val(connection.ssh.certificateFileName);
         $('#inputSshPassPhrase').val(connection.ssh.passPhrase);
     } else {
         certificateForm.hide();
         passwordForm.show();
-        $('#cmbSshAuthType').val('Password');
+        $('#cmbSshAuthType').val('Password').trigger('chosen:updated');
         $('#inputSshPassword').val(connection.ssh.password);
     }
 };
 
 const fillFormAuthentication = function (connection) {
-    if (connection.authenticationType === 'mongodb_cr') {
-        fillFormBasicAuth(connection.mongodb_cr);
-    }
-    else if (connection.authenticationType === 'scram_sha_1') {
-        fillFormBasicAuth(connection.scram_sha_1);
-    }
-    else if (connection.authenticationType === 'plain') {
-        $('#inputLdapUsername').val(connection.plain.username);
-        $('#inputLdapPassword').val(connection.plain.password);
-    }
-    else if (connection.authenticationType === 'gssapi') {
-        $('#inputKerberosUsername').val(connection.gssapi.username);
-        $('#inputKerberosPassword').val(connection.gssapi.password);
-        $('#inputKerberosServiceName').val(connection.gssapi.serviceName);
-    }
-    else if (connection.authenticationType === 'mongodb_x509') {
-        fillFormSsl(connection.mongodb_x509);
-    }
+    $('#cmbAuthenticationType').val(connection.authenticationType).trigger('chosen:updated');
+    selectedAuthType.set(connection.authenticationType);
+
+    // let blaze render
+    Meteor.setTimeout(function () {
+        if (connection.authenticationType === 'mongodb_cr') {
+            fillFormBasicAuth(connection.mongodb_cr);
+        }
+        else if (connection.authenticationType === 'scram_sha_1') {
+            fillFormBasicAuth(connection.scram_sha_1);
+        }
+        else if (connection.authenticationType === 'plain') {
+            $('#inputLdapUsername').val(connection.plain.username);
+            $('#inputLdapPassword').val(connection.plain.password);
+        }
+        else if (connection.authenticationType === 'gssapi') {
+            $('#inputKerberosUsername').val(connection.gssapi.username);
+            $('#inputKerberosPassword').val(connection.gssapi.password);
+            $('#inputKerberosServiceName').val(connection.gssapi.serviceName);
+        }
+        else if (connection.authenticationType === 'mongodb_x509') {
+            fillFormSsl(connection.mongodb_x509);
+        }
+    }, 150);
 };
 
 const fillFormConnection = function (connection) {
@@ -204,15 +197,34 @@ const fillFormConnection = function (connection) {
         }
     }
     selectedAuthType.set(connection.authenticationType);
-    $('#inputConnectionName').val(connection.connectionName);
     $('#inputUrl').val(connection.url);
     $('#inputDatabaseName').val(connection.databaseName);
 };
 
-const prepareFormForEdit = function () {
-    const connection = Connections.findOne({_id: Session.get(Helper.strSessionConnection)});
+const prepareFormForUrlParse = function (connection) {
     $('.nav-tabs a[href="#tab-1-connection"]').tab('show');
+    $(".divHostField:visible").remove();
+    fillFormConnection(connection);
+    fillFormAuthentication(connection);
+
+    const sslTab = $('#anchorConnectionSsl');
+    if (connection.authenticationType === 'mongodb_x509') sslTab.removeAttr('data-toggle');
+    else sslTab.attr('data-toggle', 'tab');
+
+    if (connection.ssl) $('#inputUseSSL').iCheck(connection.ssl.enabled ? 'check' : 'uncheck');
+
+    if (connection.options) {
+        $('#inputConnectionTimeoutOverride').val(connection.options.connectionTimeout);
+        $('#inputSocketTimeoutOverride').val(connection.options.socketTimeout);
+        $('#cmbReadPreference').val(connection.options.readPreference).trigger('chosen:updated');
+    }
+};
+
+const prepareFormForEdit = function () {
+    let connection = Connections.findOne({_id: Session.get(Helper.strSessionConnection)});
+
     $('#addEditModalSmall').html(connection.connectionName);
+    $('#inputConnectionName').val(connection.connectionName);
     fillFormConnection(connection);
     fillFormAuthentication(connection);
 
@@ -227,8 +239,11 @@ const prepareFormForEdit = function () {
     if (connection.options) {
         $('#inputConnectionTimeoutOverride').val(connection.options.connectionTimeout);
         $('#inputSocketTimeoutOverride').val(connection.options.socketTimeout);
-        $('#cmbReadPreference').val(connection.options.readPreference);
+        $('#cmbReadPreference').val(connection.options.readPreference).trigger('chosen:updated');
         $('#inputConnectWithNoPrimary').iCheck(!connection.options.connectWithNoPrimary ? 'uncheck' : 'check');
+    }
+    if (connection.url) {
+        disableFormsForUri();
     }
 };
 
@@ -412,7 +427,7 @@ const resetForm = function () {
     $(":file").filestyle('clear');
     $('#addEditModalSmall').html('');
     $('#inputConnectWithNoPrimary, #inputDisableHostnameVerification, #inputUseSSL, #inputUseSSH').iCheck('uncheck');
-    $('.divHostField:visible').remove();
+    $(".divHostField:visible").remove();
     selectedAuthType.set('');
 
     $('#inputConnectionName, #inputUrl, #inputKerberosUsername, #inputKerberosPassword, #inputKerberosServiceName, ' +
@@ -421,6 +436,10 @@ const resetForm = function () {
         '#inputAuthenticationDB, #inputPassPhrase').val('');
     $('#inputDatabaseName').val('test');
     $('#cmbAuthenticationType, #cmbSshAuthType, #cmbReadPreference').find('option').prop('selected', false).trigger('chosen:updated');
+    $('#anchorConnectionSsl').attr('data-toggle', 'tab');
+    $('#divSshTemplate').hide();
+    $('#divSslTemplate').hide();
+    enableFormsForUri();
 };
 
 const addField = function (host, port) {
@@ -440,9 +459,22 @@ const addField = function (host, port) {
 
 const initializeUI = function () {
     $(".filestyle").filestyle({});
-    $('#cmbAuthenticationType, #cmbSshAuthType, #cmbReadPreference').chosen();
+    $('#cmbAuthenticationType, #cmbSshAuthType, #cmbReadPreference').chosen({
+        allow_single_deselect: true
+    });
     $('#divConnectWithNoPrimary, #divUseSSL, #divUseSSH').iCheck({
         checkboxClass: 'icheckbox_square-green'
+    });
+    $('#divUseSSH').on('ifToggled', function(){
+        const divTemplate = $('#divSshTemplate');
+        if ($('#inputUseSSH').iCheck('update')[0].checked) divTemplate.show();
+        else divTemplate.hide();
+    });
+
+    $('#divUseSSL').on('ifToggled', function(){
+        const divTemplate = $('#divSslTemplate');
+        if ($('#inputUseSSL').iCheck('update')[0].checked) divTemplate.show();
+        else divTemplate.hide();
     });
 };
 
@@ -484,30 +516,53 @@ Template.connections.helpers({
     }
 });
 
-Template.connections.events({
-    'change #inputUrl'(){
-        const hostFields = $(".divHostField:visible");
-        const fieldsToDisable = $('#inputDatabaseName, #cmbAuthenticationType, #inputPassPhrase, #inputConnectionTimeoutOverride, #inputSocketTimeoutOverride, #cmbReadPreference');
-        const iChecks = $('#inputUseSSL, #inputConnectWithNoPrimary, #inputDisableHostnameVerification');
-        const formSsl = $('#formSSL');
-        if ($('#inputUrl').val()) {
-            hostFields.find('input, button').prop('disabled', true).parent('div').attr('data-original-title', 'Clear URL to activate here');
-            fieldsToDisable.prop('disabled', true).trigger('chosen:updated').parent('div').attr('data-original-title', 'Clear URL to activate here');
-            iChecks.prop('disabled', true);
-            selectedAuthType.set('');
-            formSsl.find(':file').filestyle('disabled', true);
-            formSsl.find(':file').parent('div').attr('data-original-title', 'Clear URL to activate here');
+const disableFormsForUri = function () {
+    $(".divHostField:visible").find('input, button').prop('disabled', true).parent('div').attr('data-original-title', 'Clear URL to activate here');
+    $('#inputDatabaseName, #cmbAuthenticationType, #inputConnectionTimeoutOverride, #inputSocketTimeoutOverride, #cmbReadPreference, #inputUser, #inputPassword, #inputAuthenticationDB, #inputLdapUsername, #inputLdapPassword, #inputKerberosUsername, #inputKerberosPassword, #inputKerberosServiceName')
+        .prop('disabled', true).trigger('chosen:updated').parent('div').attr('data-original-title', 'Clear URL to activate here');
+    $('#inputUseSSL').iCheck('disable');
 
-            $('[data-toggle="tooltip"]').tooltip({trigger: 'hover'});
+    $('[data-toggle="tooltip"]').tooltip({trigger: 'hover'});
+};
+
+const enableFormsForUri = function () {
+    $(".divHostField:visible").find('input, button').prop('disabled', false).parent('div').attr('data-original-title', '');
+    $('#inputDatabaseName, #cmbAuthenticationType, #inputConnectionTimeoutOverride, #inputSocketTimeoutOverride, #cmbReadPreference, #inputUser, #inputPassword, #inputAuthenticationDB, #inputLdapUsername, #inputLdapPassword, #inputKerberosUsername, #inputKerberosPassword, #inputKerberosServiceName')
+        .prop('disabled', false).trigger('chosen:updated').parent('div').attr('data-original-title', '');
+    $('#inputUseSSL').iCheck('enable');
+    selectedAuthType.set($('#cmbAuthenticationType').val());
+};
+
+
+Template.connections.events({
+    'mousedown .showpass'(e){
+        $(e.currentTarget).parent('span').siblings('input').attr('type', 'text');
+    },
+    'mouseup .showpass' (e){
+        $(e.currentTarget).parent('span').siblings('input').attr('type', 'password');
+    },
+    'mouseout .showpass'(e){
+        $(e.currentTarget).parent('span').siblings('input').attr('type', 'password');
+    },
+
+    'change #inputUrl'(){
+        const url = $('#inputUrl').val();
+        if (url) {
+            Meteor.call('parseUrl', {url: url}, function (err, res) {
+                if (!err) {
+                    prepareFormForUrlParse(res);
+                } else {
+                    toastr.error(err.message);
+                }
+
+                // let blaze initialize
+                Meteor.setTimeout(function () {
+                    disableFormsForUri();
+                }, 150);
+            });
         }
         else {
-            hostFields.find('input, button').prop('disabled', false).parent('div').attr('data-original-title', '');
-            fieldsToDisable.prop('disabled', false).trigger('chosen:updated').parent('div').attr('data-original-title', '');
-            iChecks.prop('disabled', false);
-            selectedAuthType.set($('#cmbAuthenticationType').val());
-            formSsl.find(':file').filestyle('disabled', false);
-            formSsl.find(':file').parent('div').attr('data-original-title', '');
-
+            enableFormsForUri();
         }
     },
 
@@ -598,6 +653,7 @@ Template.connections.events({
         $('#addEditConnectionModalTitle').text('Edit Connection');
         const modal = $('#addEditConnectionModal');
         modal.data('edit', Session.get(Helper.strSessionConnection));
+        modal.data('clone', '');
         modal.modal('show');
     },
 
@@ -605,6 +661,7 @@ Template.connections.events({
         $('#addEditConnectionModalTitle').text('Clone Connection');
         const modal = $('#addEditConnectionModal');
         modal.data('clone', Session.get(Helper.strSessionConnection));
+        modal.data('edit', '');
         modal.modal('show');
     },
 
@@ -620,22 +677,20 @@ Template.connections.events({
         }
         populateConnection(currentConnection, function (connection) {
             if (modal.data('edit')) {
-                //edit
+                connection._id = currentConnection._id;
             }
-            else {
-                //clone or insert new
-            }
+
             Meteor.call('checkAndSaveConnection', connection, function (err) {
                 if (err) {
-                    Helper.showMeteorFuncError(err, null, "Couldn't save connection")
+                    toastr.error(err.error);
                 } else {
                     toastr.success('Successfully saved connection');
+                    populateConnectionsTable();
+                    modal.modal('hide');
                 }
 
                 Ladda.stopAll();
             });
-
-            //TODO checkConnection before save at server side
         });
     }
 });

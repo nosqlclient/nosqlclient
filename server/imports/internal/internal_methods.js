@@ -9,36 +9,97 @@ import {Settings} from "/lib/imports/collections/settings";
 import {Connections} from "/lib/imports/collections/connections";
 import SchemaAnalyzeResult from "/lib/imports/collections/schema_analyze_result";
 import {HTTP} from "meteor/http";
+import LOGGER from "../internal/logger";
+
 
 const packageJson = require('/package.json');
 const mongodbUrlParser = require('parse-mongo-url');
 
-const checkUsernamePassword = function (obj) {
-    if (!obj.username) throw new Meteor.Error('Username is required for this authentication type !');
-    if (!obj.password) throw new Meteor.Error('Password is required for this authentication type !');
+const checkSSLOptions = function (obj) {
+    if (!obj.certificateFileName) delete obj.certificateFile;
+    if (!obj.certificateKeyFileName) delete obj.certificateKeyFile;
 };
 
-const checkConnection = function (connection) {
-    if (connection.servers.length === 0) {
-        throw new Meteor.Error('At least one server is required !');
-    }
-    else {
-        for (let server of connection.servers) {
-            if (!server.host || !server.port) {
-                throw new Meteor.Error('Host and port is required for each server !');
-            }
-        }
-    }
+const checkAuthenticationOfConnection = function (connection) {
     if (connection.authenticationType !== 'scram_sha_1') delete connection.scram_sha_1;
     if (connection.authenticationType !== 'mongodb_cr') delete connection.mongodb_cr;
     if (connection.authenticationType !== 'mongodb_x509') delete connection.mongodb_x509;
     if (connection.authenticationType !== 'gssapi') delete connection.gssapi;
     if (connection.authenticationType !== 'plain') delete connection.plain;
 
-    if (connection.scram_sha_1) checkUsernamePassword(connection.scram_sha_1);
-    if (connection.mongodb_cr) checkUsernamePassword(connection.mongodb_cr);
     if (connection.mongodb_x509) {
-     //TODO
+        checkSSLOptions(connection.mongodb_x509);
+        delete connection.ssl;
+    }
+    if (connection.gssapi && !connection.gssapi.serviceName) throw new Meteor.Error('Service name is required for this authentication type !');
+};
+
+const parseUrl = function (connection) {
+    try {
+        let parsedUrl = mongodbUrlParser(connection.url);
+        connection.options = connection.options || {};
+        connection.ssl = connection.ssl || {};
+        connection.databaseName = parsedUrl.dbName || 'admin';
+        connection.servers = parsedUrl.servers;
+        if (parsedUrl.server_options) {
+            if (parsedUrl.server_options.socketOptions) {
+                connection.options.connectionTimeout = parsedUrl.server_options.socketOptions.connectTimeoutMS || "";
+                connection.options.socketTimeout = parsedUrl.server_options.socketOptions.socketTimeoutMS || "";
+            }
+
+            connection.ssl.enabled = !!parsedUrl.server_options.ssl;
+        }
+        if (parsedUrl.db_options) {
+            connection.options.readPreference = parsedUrl.db_options.read_preference;
+            connection.authenticationType = parsedUrl.db_options.authMechanism ? parsedUrl.db_options.authMechanism.toLowerCase().replace(new RegExp("-", 'g'), "_") : '';
+            if (connection.authenticationType) connection[connection.authenticationType] = {};
+            if (parsedUrl.db_options.gssapiServiceName && connection.authenticationType === 'gssapi') connection.gssapi.serviceName = parsedUrl.db_options.gssapiServiceName;
+            if (connection.authenticationType === 'mongodb_x509') delete connection.ssl;
+        }
+        if (parsedUrl.auth) {
+            // if auth exists there should be an authentication, even there's no authMechanism set
+            connection.authenticationType = connection.authenticationType || 'scram_sha_1';
+            connection[connection.authenticationType] = connection[connection.authenticationType] || {};
+            connection[connection.authenticationType].username = (parsedUrl.auth && parsedUrl.auth.user) ? parsedUrl.auth.user : '';
+            connection[connection.authenticationType].password = (parsedUrl.auth && parsedUrl.auth.password) ? parsedUrl.auth.password : '';
+        }
+        if (parsedUrl.db_options && parsedUrl.db_options.authSource && (connection.authenticationType === 'mongodb_cr' || connection.authenticationType === 'scram_sha_1')) {
+            connection[connection.authenticationType].authSource = parsedUrl.db_options.authSource;
+        }
+
+        return connection;
+    }
+    catch (ex) {
+        LOGGER.error('[parseUrl]', connection.url, ex);
+        throw new Meteor.Error(ex.message);
+    }
+};
+
+const checkConnection = function (connection) {
+    if (connection.url) {
+        connection = parseUrl(connection);
+    }
+
+    if (connection.servers.length === 0) {
+        throw new Meteor.Error('At least one server is required !');
+    }
+    else {
+        for (let server of connection.servers) {
+            if (!server.host || !server.port) throw new Meteor.Error('Host and port is required for each server !');
+        }
+    }
+    checkAuthenticationOfConnection(connection);
+
+    if (connection.ssl) {
+        if (!connection.ssl.enabled) delete connection.ssl;
+        else checkSSLOptions(connection.ssl);
+    }
+    if (connection.ssh) {
+        if (!connection.ssh.enabled) delete connection.ssh;
+        if (!connection.ssh.username) throw new Meteor.Error('Username is required for SSH !');
+        if (!connection.ssh.host) throw new Meteor.Error('Host is required for SSH !');
+        if (!connection.ssh.port) throw new Meteor.Error('Port is required for SSH !');
+        if (!connection.ssh.certificateFileName && !connection.ssh.password) throw new Meteor.Error('Either certificate or password is required for SSH !');
     }
 
 };
@@ -123,20 +184,6 @@ Meteor.methods({
     },
 
     checkAndSaveConnection(connection){
-        if (connection.url) {
-            const parsedUrl = mongodbUrlParser(connection.url);
-            connection.databaseName = parsedUrl.databaseName;
-            delete connection.servers;
-            delete connection.authenticationType;
-            delete connection.scram_sha_1;
-            delete connection.mongodb_cr;
-            delete connection.mongodb_x509;
-            delete connection.gssapi;
-            delete connection.plain;
-            delete connection.ssl;
-            delete connection.options;
-        }
-
         checkConnection(connection);
 
         if (!connection.databaseName) {
@@ -144,6 +191,10 @@ Meteor.methods({
         }
 
         saveConnectionToDB(connection);
+    },
+
+    parseUrl(connection){
+        return parseUrl(connection);
     },
 
     removeConnection(connectionId) {
