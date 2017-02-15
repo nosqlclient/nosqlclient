@@ -54,8 +54,6 @@ const proceedConnectingMongodb = function (connectionUrl, connectionOptions, don
         connectionOptions = {};
     }
 
-    connectionOptions.uri_decode_auth = true;
-
     mongodbApi.MongoClient.connect(connectionUrl, connectionOptions, function (mainError, db) {
         if (mainError || db == null || db == undefined) {
             LOGGER.error(mainError, db);
