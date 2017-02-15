@@ -144,6 +144,19 @@
 
                                         <!--X509 Form-->
                                         {{#if authenticationMethod "mongodb_x509"}}
+                                            <form class="form-horizontal">
+                                                <div class="form-group"><label
+                                                        class="col-lg-2 control-label">Username</label>
+                                                    <div data-placement="top"
+                                                         data-toggle="tooltip" class="col-lg-10"><input
+                                                            id="inputX509Username"
+                                                            data-required="true"
+                                                            type="text"
+                                                            placeholder="Subject from certificate"
+                                                            class="form-control">
+                                                    </div>
+                                                </div>
+                                            </form>
                                             {{> sslTemplate}}
                                         {{/if}}
 
@@ -171,7 +184,8 @@
                                                            class="form-control"
                                                            checked=""
                                                            style="position: absolute; opacity: 0;"/>
-                                                    <span id="spanUseSSL" style="display: none;" class="help-block m-b-none"><b>Clear URL</b> to activate here</span>
+                                                    <span id="spanUseSSL" style="display: none;"
+                                                          class="help-block m-b-none"><b>Clear URL</b> to activate here</span>
                                                 </div>
                                             </div>
 

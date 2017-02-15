@@ -11,6 +11,11 @@ const addOptionToUrl = function (url, option, value) {
     return url + '&' + option + '=' + value;
 };
 
+const getRoundedMilisecondsFromSeconds = function (sec) {
+    if (sec) return Math.round(sec * 100 * 1000) / 100;
+    return '30000';
+};
+
 const addConnectionParamsToOptions = function (connection, result) {
     if (connection.useSsl || connection.sslCertificate) {
         result.server.ssl = true;
@@ -43,9 +48,14 @@ Helper.prototype = {
             return connection.url;
         }
 
+        const settings = Settings.findOne();
+
         let connectionUrl = 'mongodb://';
         if (connection.authenticationType === 'mongodb_cr' || connection.authenticationType === 'scram_sha_1' || connection.authenticationType === 'gssapi' || connection.authenticationType === 'plain') {
             connectionUrl += connection[connection.authenticationType].user + ':' + encodeURIComponent(connection[connection.authenticationType].password) + '@';
+        }
+        else if (connection.authenticationType === 'mongodb_x509' && connection.mongodb_x509.username) {
+            connectionUrl += encodeURIComponent(connection.mongodb_x509.username) + '@';
         }
         for (let server of connection.servers) {
             connectionUrl += server.host + ':' + server.port + ',';
@@ -53,11 +63,20 @@ Helper.prototype = {
         if (connectionUrl.endsWith(',')) connectionUrl += connectionUrl.substring(0, connectionUrl.length - 1);
         connectionUrl += '/' + connection.databaseName;
 
-        if (connection.authenticationType) addOptionToUrl(connectionUrl, 'authMechanism', connection.toUpperCase().replace(new RegExp("_", 'g'), "-"));
-        if (connection.authenticationType === 'mongodb_cr' || connection.authenticationType === 'scram_sha_1') addOptionToUrl(connectionUrl, 'authSource', connection[connection.authenticationType].authSource);
-        if (connection.authenticationType === 'mongodb_x509') {
-            //TODO
+        if (connection.authenticationType) connectionUrl = addOptionToUrl(connectionUrl, 'authMechanism', connection.toUpperCase().replace(new RegExp("_", 'g'), "-"));
+        if (connection.authenticationType === 'mongodb_cr' || connection.authenticationType === 'scram_sha_1') connectionUrl = addOptionToUrl(connectionUrl, 'authSource', connection[connection.authenticationType].authSource);
+        else if (connection.authenticationType === 'mongodb_x509') connectionUrl = addOptionToUrl(connectionUrl, 'ssl', 'true');
+        else if (connection.authenticationType === 'gssapi' || connection.authenticationType === 'plain') {
+            if (connection.authenticationType === 'gssapi') connectionUrl = addOptionToUrl(connectionUrl, 'gssapiServiceName', connection.gssapi.serviceName);
+            connectionUrl = addOptionToUrl(connectionUrl, 'authSource', '$external');
         }
+
+        if (connection.options.readPreference) connectionUrl = addOptionToUrl(connectionUrl, 'readPreference', connection.options.readPreference);
+        if (connection.options.connectionTimeout) connectionUrl = addOptionToUrl(connectionUrl, 'connectTimeoutMS', connection.options.connectionTimeout);
+        else connectionUrl = addOptionToUrl(connectionUrl, 'connectTimeoutMS', getRoundedMilisecondsFromSeconds(settings.connectionTimeoutInSeconds));
+        if (connection.options.socketTimeout) connectionUrl = addOptionToUrl(connectionUrl, 'socketTimeoutMS', connection.options.socketTimeout);
+        else connectionUrl = addOptionToUrl(connectionUrl, 'socketTimeoutMS', getRoundedMilisecondsFromSeconds(settings.socketTimeoutInSeconds));
+        if (connection.options.replicaSetName) connectionUrl = addOptionToUrl(connectionUrl, 'replicaSet', connection.options.replicaSetName);
 
         return connectionUrl;
     },
@@ -66,21 +85,9 @@ Helper.prototype = {
         let result = {
             server: {socketOptions: {}}
         };
-
+        //TODO
         addConnectionParamsToOptions(connection, result);
 
-        const settings = Settings.findOne();
-        let connectionTimeout = settings.connectionTimeoutInSeconds;
-        if (connectionTimeout) {
-            connectionTimeout = Math.round(connectionTimeout * 100 * 1000) / 100;
-            result.server.socketOptions.connectTimeoutMS = connectionTimeout;
-        }
-
-        let socketTimeout = settings.socketTimeoutInSeconds;
-        if (socketTimeout) {
-            socketTimeout = Math.round(socketTimeout * 100 * 1000) / 100;
-            result.server.socketOptions.socketTimeoutMS = socketTimeout;
-        }
 
         return result;
     },

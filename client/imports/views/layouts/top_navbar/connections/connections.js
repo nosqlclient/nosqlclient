@@ -187,6 +187,7 @@ const fillFormAuthentication = function (connection) {
         else if (connection.authenticationType === 'mongodb_x509') {
             fillFormSsl(connection.mongodb_x509);
             $('#anchorConnectionSsl').removeAttr('data-toggle');
+            $('#inputX509Username').val(connection.mongodb_x509.username);
         }
     }, 150);
 };
@@ -273,6 +274,7 @@ const loadSSLCertificates = function (connection, currentConnection, done) {
         loadSSHCertificate(connection, currentConnection, done);
     }
 };
+
 const populateConnection = function (currentConnection, done) {
     let connection = {servers: []};
     let connectionName = $('#inputConnectionName').val();
@@ -408,6 +410,7 @@ const fillCorrectAuthenticationType = function (connection) {
     }
     else if (connection.authenticationType === 'mongodb_x509') {
         connection.mongodb_x509 = getSSLProps();
+        connection.mongodb_x509.username = $('#inputX509Username').val();
     }
     else if (connection.authenticationType === 'gssapi') {
         connection.gssapi = {
@@ -436,7 +439,7 @@ const resetForm = function () {
     $('#inputConnectionName, #inputUrl, #inputKerberosUsername, #inputKerberosPassword, #inputKerberosServiceName, ' +
         '#inputLdapUsername, #inputLdapPassword, #inputConnectionTimeout, #inputSocketTimeout, #inputSshHostname, ' +
         '#inputSshPort, #inputSshUsername, #inputSshPassPhrase, #inputSshPassword, #inputUser, #inputPassword, ' +
-        '#inputAuthenticationDB, #inputPassPhrase').val('');
+        '#inputAuthenticationDB, #inputPassPhrase, #inputX509Username').val('');
     $('#inputDatabaseName').val('test');
     $('#cmbAuthenticationType, #cmbSshAuthType, #cmbReadPreference').find('option').prop('selected', false).trigger('chosen:updated');
     $('#anchorConnectionSsl').attr('data-toggle', 'tab');
@@ -521,7 +524,7 @@ Template.connections.helpers({
 
 const disableFormsForUri = function () {
     $(".divHostField:visible").find('input, button').prop('disabled', true).parent('div').attr('data-original-title', 'Clear URL to activate here');
-    $('#inputDatabaseName, #cmbAuthenticationType, #inputConnectionTimeoutOverride, #inputReplicaSetName, #inputSocketTimeoutOverride, #cmbReadPreference, #inputUser, #inputPassword, #inputAuthenticationDB, #inputLdapUsername, #inputLdapPassword, #inputKerberosUsername, #inputKerberosPassword, #inputKerberosServiceName')
+    $('#inputDatabaseName, #cmbAuthenticationType, #inputConnectionTimeoutOverride, #inputReplicaSetName, #inputSocketTimeoutOverride, #cmbReadPreference, #inputUser, #inputPassword, #inputAuthenticationDB, #inputLdapUsername, #inputLdapPassword, #inputKerberosUsername, #inputKerberosPassword, #inputKerberosServiceName, #inputX509Username')
         .prop('disabled', true).trigger('chosen:updated').parent('div').attr('data-original-title', 'Clear URL to activate here');
     $('#inputUseSSL').iCheck('disable');
     $('#spanUseSSL').show();
@@ -531,13 +534,12 @@ const disableFormsForUri = function () {
 
 const enableFormsForUri = function () {
     $(".divHostField:visible").find('input, button').prop('disabled', false).parent('div').attr('data-original-title', '');
-    $('#inputDatabaseName, #cmbAuthenticationType, #inputConnectionTimeoutOverride, #inputReplicaSetName, #inputSocketTimeoutOverride, #cmbReadPreference, #inputUser, #inputPassword, #inputAuthenticationDB, #inputLdapUsername, #inputLdapPassword, #inputKerberosUsername, #inputKerberosPassword, #inputKerberosServiceName')
+    $('#inputDatabaseName, #cmbAuthenticationType, #inputConnectionTimeoutOverride, #inputReplicaSetName, #inputSocketTimeoutOverride, #cmbReadPreference, #inputUser, #inputPassword, #inputAuthenticationDB, #inputLdapUsername, #inputLdapPassword, #inputKerberosUsername, #inputKerberosPassword, #inputKerberosServiceName, #inputX509Username')
         .prop('disabled', false).trigger('chosen:updated').parent('div').attr('data-original-title', '');
     $('#inputUseSSL').iCheck('enable');
     $('#spanUseSSL').hide();
     selectedAuthType.set($('#cmbAuthenticationType').val());
 };
-
 
 Template.connections.events({
     'mousedown .showpass'(e){
