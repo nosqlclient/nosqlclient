@@ -63,7 +63,7 @@ Helper.prototype = {
         if (connectionUrl.endsWith(',')) connectionUrl += connectionUrl.substring(0, connectionUrl.length - 1);
         connectionUrl += '/' + connection.databaseName;
 
-        if (connection.authenticationType) connectionUrl = addOptionToUrl(connectionUrl, 'authMechanism', connection.toUpperCase().replace(new RegExp("_", 'g'), "-"));
+        if (connection.authenticationType) connectionUrl = addOptionToUrl(connectionUrl, 'authMechanism', connection.authenticationType.toUpperCase().replace(new RegExp("_", 'g'), "-"));
         if (connection.authenticationType === 'mongodb_cr' || connection.authenticationType === 'scram_sha_1') connectionUrl = addOptionToUrl(connectionUrl, 'authSource', connection[connection.authenticationType].authSource);
         else if (connection.authenticationType === 'mongodb_x509') connectionUrl = addOptionToUrl(connectionUrl, 'ssl', 'true');
         else if (connection.authenticationType === 'gssapi' || connection.authenticationType === 'plain') {
