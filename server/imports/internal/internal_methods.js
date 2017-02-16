@@ -15,11 +15,6 @@ import LOGGER from "../internal/logger";
 const packageJson = require('/package.json');
 const mongodbUrlParser = require('parse-mongo-url');
 
-const checkSSLOptions = function (obj) {
-    if (!obj.certificateFileName) delete obj.certificateFile;
-    if (!obj.certificateKeyFileName) delete obj.certificateKeyFile;
-};
-
 const checkAuthenticationOfConnection = function (connection) {
     if (connection.authenticationType !== 'scram_sha_1') delete connection.scram_sha_1;
     if (connection.authenticationType !== 'mongodb_cr') delete connection.mongodb_cr;
@@ -27,11 +22,10 @@ const checkAuthenticationOfConnection = function (connection) {
     if (connection.authenticationType !== 'gssapi') delete connection.gssapi;
     if (connection.authenticationType !== 'plain') delete connection.plain;
 
-    if (connection.mongodb_x509) {
-        checkSSLOptions(connection.mongodb_x509);
-        delete connection.ssl;
-    }
-    if (connection.gssapi && !connection.gssapi.serviceName) throw new Meteor.Error('Service name is required for this authentication type !');
+    if (connection.mongodb_x509) delete connection.ssl;
+    if (connection.gssapi && !connection.gssapi.serviceName) throw new Meteor.Error('Service name is required for GSSAPI !');
+    if (connection.authenticationType && !connection[connection.authenticationType].username) throw new Meteor.Error('Username is required for this authentication type !');
+
 };
 
 const parseUrl = function (connection) {
@@ -89,7 +83,6 @@ const checkConnection = function (connection) {
 
     if (connection.ssl) {
         if (!connection.ssl.enabled) delete connection.ssl;
-        else checkSSLOptions(connection.ssl);
     }
     if (connection.ssh) {
         if (!connection.ssh.enabled) delete connection.ssh;

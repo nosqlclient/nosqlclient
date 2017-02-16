@@ -16,32 +16,20 @@ const getRoundedMilisecondsFromSeconds = function (sec) {
     return '30000';
 };
 
-const addConnectionParamsToOptions = function (connection, result) {
-    if (connection.useSsl || connection.sslCertificate) {
-        result.server.ssl = true;
+const addSSLOptions = function (obj, result) {
+    if (obj.rootCAFile) {
+        result.sslValidate = true;
+        result.sslCA = new Buffer(obj.rootCAFile);
     }
-
-    if (connection.sslCertificate) {
-        result.server.sslCert = new Buffer(connection.sslCertificate);
-        if (connection.passPhrase) {
-            result.server.sslPass = connection.passPhrase;
-        }
-    }
-
-    if (connection.rootCACertificate) {
-        result.server.sslCA = new Buffer(connection.rootCACertificate);
-        result.server.sslValidate = true;
-    } else {
-        result.server.sslValidate = false;
-    }
-
-    if (connection.certificateKey) {
-        result.server.sslKey = new Buffer(connection.certificateKey);
-    }
+    if (obj.certificateFile) result.sslCert = new Buffer(obj.certificateFile);
+    if (obj.certificateKeyFile) result.sslKey = new Buffer(obj.certificateKeyFile);
+    if (obj.passPhrase) result.sslPass = obj.passPhrase;
+    if (obj.disableHostnameVerification) result.checkServerIdentity = false;
 };
 
 let Helper = function () {
 };
+
 Helper.prototype = {
     getConnectionUrl (connection) {
         if (connection.url) {
@@ -50,12 +38,12 @@ Helper.prototype = {
 
         const settings = Settings.findOne();
 
+        // url
         let connectionUrl = 'mongodb://';
-        if (connection.authenticationType === 'mongodb_cr' || connection.authenticationType === 'scram_sha_1' || connection.authenticationType === 'gssapi' || connection.authenticationType === 'plain') {
-            connectionUrl += connection[connection.authenticationType].username + ':' + encodeURIComponent(connection[connection.authenticationType].password) + '@';
-        }
-        else if (connection.authenticationType === 'mongodb_x509' && connection.mongodb_x509.username) {
-            connectionUrl += encodeURIComponent(connection.mongodb_x509.username) + '@';
+        if (connection.authenticationType) {
+            if (connection[connection.authenticationType].username) connectionUrl += encodeURIComponent(connection[connection.authenticationType].username);
+            if (connection[connection.authenticationType].password) connectionUrl += ':' + encodeURIComponent(connection[connection.authenticationType].password);
+            connectionUrl += "@";
         }
         for (let server of connection.servers) {
             connectionUrl += server.host + ':' + server.port + ',';
@@ -63,6 +51,7 @@ Helper.prototype = {
         if (connectionUrl.endsWith(',')) connectionUrl = connectionUrl.substring(0, connectionUrl.length - 1);
         connectionUrl += '/' + connection.databaseName;
 
+        // options
         if (connection.authenticationType) connectionUrl += addOptionToUrl(connectionUrl, 'authMechanism', connection.authenticationType.toUpperCase().replace(new RegExp("_", 'g'), "-"));
         if (connection.authenticationType === 'mongodb_cr' || connection.authenticationType === 'scram_sha_1') connectionUrl += addOptionToUrl(connectionUrl, 'authSource', connection[connection.authenticationType].authSource);
         else if (connection.authenticationType === 'mongodb_x509') connectionUrl += addOptionToUrl(connectionUrl, 'ssl', 'true');
@@ -71,32 +60,37 @@ Helper.prototype = {
             connectionUrl += addOptionToUrl(connectionUrl, 'authSource', '$external');
         }
 
-        if (connection.options.readPreference) connectionUrl += addOptionToUrl(connectionUrl, 'readPreference', connection.options.readPreference);
-        if (connection.options.connectionTimeout) connectionUrl += addOptionToUrl(connectionUrl, 'connectTimeoutMS', connection.options.connectionTimeout);
-        else connectionUrl += addOptionToUrl(connectionUrl, 'connectTimeoutMS', getRoundedMilisecondsFromSeconds(settings.connectionTimeoutInSeconds));
-        if (connection.options.socketTimeout) connectionUrl += addOptionToUrl(connectionUrl, 'socketTimeoutMS', connection.options.socketTimeout);
-        else connectionUrl += addOptionToUrl(connectionUrl, 'socketTimeoutMS', getRoundedMilisecondsFromSeconds(settings.socketTimeoutInSeconds));
-        if (connection.options.replicaSetName) connectionUrl += addOptionToUrl(connectionUrl, 'replicaSet', connection.options.replicaSetName);
+        if (connection.options) {
+            if (connection.options.readPreference) connectionUrl += addOptionToUrl(connectionUrl, 'readPreference', connection.options.readPreference);
+
+            if (connection.options.connectionTimeout) connectionUrl += addOptionToUrl(connectionUrl, 'connectTimeoutMS', connection.options.connectionTimeout);
+            else connectionUrl += addOptionToUrl(connectionUrl, 'connectTimeoutMS', getRoundedMilisecondsFromSeconds(settings.connectionTimeoutInSeconds));
+
+            if (connection.options.socketTimeout) connectionUrl += addOptionToUrl(connectionUrl, 'socketTimeoutMS', connection.options.socketTimeout);
+            else connectionUrl += addOptionToUrl(connectionUrl, 'socketTimeoutMS', getRoundedMilisecondsFromSeconds(settings.socketTimeoutInSeconds));
+
+            if (connection.options.replicaSetName) connectionUrl += addOptionToUrl(connectionUrl, 'replicaSet', connection.options.replicaSetName);
+        }
+
+        if (connection.ssl && connection.ssl.enabled) connectionUrl += addOptionToUrl(connectionUrl, 'ssl', 'true');
 
         return connectionUrl;
     },
 
     getConnectionOptions (connection) {
-        let result = {
-            server: {socketOptions: {}}
-        };
-        //TODO
-        addConnectionParamsToOptions(connection, result);
-
+        let result = {};
+        if (connection.authenticationType === 'mongodb_x509') addSSLOptions(connection.mongodb_x509, result);
+        if (connection.ssl && connection.ssl.enabled) addSSLOptions(connection.ssl, result);
+        if (connection.options && connection.options.connectWithNoPrimary) result.connectWithNoPrimary = true;
 
         return result;
     },
 
     clearConnectionOptionsForLog (connectionOptions) {
         let result = JSON.parse(JSON.stringify(connectionOptions));
-        delete result.server.sslCert;
-        delete result.server.sslCA;
-        delete result.server.sslKey;
+        delete result.sslCert;
+        delete result.sslCA;
+        delete result.sslKey;
 
         return result;
     },
