@@ -281,6 +281,7 @@ const populateConnection = function (currentConnection, done) {
     connection.connectionName = connectionName ? connectionName : "unnamed_connection";
     connection.url = $('#inputUrl').val();
     connection.authenticationType = $('#cmbAuthenticationType').val();
+    connection.databaseName = $('#inputDatabaseName').val();
     if (connection.authenticationType !== 'mongodb_x509' && $('#inputUseSSL').iCheck('update')[0].checked) {
         connection.ssl = getSSLProps();
     }
