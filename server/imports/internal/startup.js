@@ -22,12 +22,13 @@ const migrateConnectionsIfExist = function () {
 
     for (let oldConnection of Connections.find().fetch()) {
         let connection = {options: {}};
-        connection._id = oldConnection._id;
-        connection.connectionName = oldConnection.name;
         if (oldConnection.url) {
             connection = parseUrl({url: oldConnection.url});
             connection.url = oldConnection.url;
         }
+
+        connection._id = oldConnection._id;
+        connection.connectionName = oldConnection.name;
 
         migrateSSHPart(oldConnection, connection);
         if (oldConnection.host && oldConnection.port) {
@@ -36,7 +37,7 @@ const migrateConnectionsIfExist = function () {
                 port: oldConnection.port
             }];
         }
-        if (oldConnection.readFromSecondary) connection.options.readPreference = "secondary"
+        if (oldConnection.readFromSecondary) connection.options.readPreference = "secondary";
         else connection.options.readPreference = "primary";
 
         if (oldConnection.databaseName) connection.databaseName = oldConnection.databaseName;
@@ -55,6 +56,7 @@ const migrateConnectionsIfExist = function () {
         if (oldConnection.x509Username) {
             connection.authenticationType = "mongodb_x509";
             connection.mongodb_x509 = {username: oldConnection.x509Username};
+            delete connection.ssl;
         }
 
         if (oldConnection.sslCertificatePath) {
