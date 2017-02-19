@@ -225,6 +225,17 @@ Template.navigation.onRendered(function () {
         height: '100%',
         railOpacity: 0.9
     });
+    const nav = $('.navbar-static-side');
+    const pageWrapper = $('#page-wrapper');
+
+    nav.resizable();
+    nav.on('resize', function () {
+        if (!window.matchMedia('(max-width: 768px)').matches) {
+            pageWrapper.css('margin', '0 0 0 ' + nav.width() + 'px');
+        } else {
+            pageWrapper.css('margin', '0');
+        }
+    });
 
     const filterModal = $('#collectionFilterModal');
     filterModal.on('shown.bs.modal', function () {
