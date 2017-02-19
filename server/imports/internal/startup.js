@@ -14,13 +14,14 @@ import {parseUrl} from "./internal_methods";
  */
 const migrateConnectionsIfExist = function () {
     let settings = Settings.findOne();
-    if (settings.isMigrationDone) {
-        return;
-    }
+    if (settings.isMigrationDone) return;
 
     let connectionsAfterMigration = [];
 
     for (let oldConnection of Connections.find().fetch()) {
+        // if there's a name (was mandatory) property it's old.
+        if (!oldConnection.name)continue;
+
         let connection = {options: {}};
         if (oldConnection.url) {
             connection = parseUrl({url: oldConnection.url});
@@ -81,12 +82,11 @@ const migrateConnectionsIfExist = function () {
     Connections.remove({});
     for (let conn of connectionsAfterMigration) Connections.insert(conn);
 
-    /* Settings.update({}, {
-     $set: {
-     isMigrationDone: true,
-     }
-     });
-     */
+    Settings.update({}, {
+        $set: {
+            isMigrationDone: true,
+        }
+    });
 };
 
 const migrateSSHPart = function (oldConnection, connection) {
