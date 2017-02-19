@@ -51,8 +51,8 @@ const parseUrl = function (connection) {
             // if auth exists there should be an authentication, even there's no authMechanism set
             connection.authenticationType = connection.authenticationType || 'scram_sha_1';
             connection[connection.authenticationType] = connection[connection.authenticationType] || {};
-            connection[connection.authenticationType].username = (parsedUrl.auth && parsedUrl.auth.user) ? parsedUrl.auth.user : '';
-            connection[connection.authenticationType].password = (parsedUrl.auth && parsedUrl.auth.password) ? parsedUrl.auth.password : '';
+            connection[connection.authenticationType].username = parsedUrl.auth.user ? parsedUrl.auth.user : '';
+            connection[connection.authenticationType].password = parsedUrl.auth.password ? parsedUrl.auth.password : '';
         }
         if (parsedUrl.db_options.authSource && (connection.authenticationType === 'mongodb_cr' || connection.authenticationType === 'scram_sha_1')) {
             connection[connection.authenticationType].authSource = parsedUrl.db_options.authSource;

@@ -74,7 +74,6 @@ Helper.prototype = {
 
         if (connection.ssl && connection.ssl.enabled) connectionUrl += addOptionToUrl(connectionUrl, 'ssl', 'true');
 
-        //TODO test x509, LDAP, KERBEROS
         return connectionUrl;
     },
 
