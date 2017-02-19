@@ -21,11 +21,12 @@ const getSettingsFromForm = function () {
     settings.showDBStats = $('#divShowDBStats').iCheck('update')[0].checked;
     settings.showLiveChat = $('#divShowLiveChat').iCheck('update')[0].checked;
     settings.dumpPath = $('#inputDumpPath').val();
+    settings.singleTabResultSets = $('#divUseSingleTab').iCheck('update')[0].checked;
     return settings;
 };
 
 Template.settings.onRendered(function () {
-    $('#divAutoCompleteFields, #divShowDBStats, #divShowLiveChat').iCheck({
+    $('#divAutoCompleteFields, #divShowDBStats, #divShowLiveChat, #divUseSingleTab').iCheck({
         checkboxClass: 'icheckbox_square-green'
     });
 
@@ -68,6 +69,7 @@ const load = function () {
     const inputShowLiveChat = $('#inputShowLiveChat');
     const inputShowDBStats = $('#inputShowDBStats');
     const inputDumpPath = $('#inputDumpPath');
+    const inputUseSingleTab = $('#inputUseSingleTab');
 
     cmbScale.val(settings.scale);
     cmbScale.trigger("chosen:updated");
@@ -75,49 +77,30 @@ const load = function () {
     cmbResultView.val(settings.defaultResultView);
     cmbResultView.trigger("chosen:updated");
 
-    if (settings.dumpPath) {
-        inputDumpPath.val(settings.dumpPath);
-    }
+    if (settings.dumpPath) inputDumpPath.val(settings.dumpPath);
 
-    if (settings.maxAllowedFetchSize) {
-        inputMaxAllowedFetchSize.val(settings.maxAllowedFetchSize);
-    } else {
-        inputMaxAllowedFetchSize.val(0);
-    }
+    if (settings.maxAllowedFetchSize) inputMaxAllowedFetchSize.val(settings.maxAllowedFetchSize);
+    else inputMaxAllowedFetchSize.val(0);
 
-    if (settings.socketTimeoutInSeconds) {
-        inputSocketTimeout.val(settings.socketTimeoutInSeconds);
-    } else {
-        inputSocketTimeout.val(0);
-    }
+    if (settings.socketTimeoutInSeconds) inputSocketTimeout.val(settings.socketTimeoutInSeconds);
+    else inputSocketTimeout.val(0);
 
-    if (settings.connectionTimeoutInSeconds) {
-        inputConnectionTimeout.val(settings.connectionTimeoutInSeconds);
-    } else {
-        inputConnectionTimeout.val(0);
-    }
+    if (settings.connectionTimeoutInSeconds) inputConnectionTimeout.val(settings.connectionTimeoutInSeconds);
+    else inputConnectionTimeout.val(0);
 
-    if (settings.dbStatsScheduler) {
-        inputDBStatsScheduler.val(settings.dbStatsScheduler);
-    } else {
-        inputDBStatsScheduler.val(3000);
-    }
+    if (settings.dbStatsScheduler) inputDBStatsScheduler.val(settings.dbStatsScheduler);
+    else inputDBStatsScheduler.val(3000);
 
-    if (settings.autoCompleteFields) {
-        inputAutoCompleteFields.iCheck('check');
-    } else {
-        inputAutoCompleteFields.iCheck('uncheck');
-    }
+    if (settings.autoCompleteFields) inputAutoCompleteFields.iCheck('check');
+    else inputAutoCompleteFields.iCheck('uncheck');
 
-    if (settings.showLiveChat) {
-        inputShowLiveChat.iCheck('check');
-    } else {
-        inputShowLiveChat.iCheck('uncheck');
-    }
+    if (settings.showLiveChat) inputShowLiveChat.iCheck('check');
+    else inputShowLiveChat.iCheck('uncheck');
 
-    if (settings.showDBStats) {
-        inputShowDBStats.iCheck('check');
-    } else {
-        inputShowDBStats.iCheck('uncheck');
-    }
+    if (settings.singleTabResultSets) inputUseSingleTab.iCheck('check');
+    else inputUseSingleTab.iCheck('uncheck');
+
+    if (settings.showDBStats) inputShowDBStats.iCheck('check');
+    else inputShowDBStats.iCheck('uncheck');
+
 };

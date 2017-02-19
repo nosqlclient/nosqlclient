@@ -179,12 +179,24 @@ export const setQueryResult = function (result, queryInfo, queryParams, saveHist
         setResultToEditors(1, result, queryParams, queryInfo);
     }
     else {
+        // close all if setting for single tab is enabled
+        const resultTabs = $('#resultTabs');
+        if (settings.singleTabResultSets) {
+            resultTabs.find('li').each(function (idx, li) {
+                let select = $(li);
+                $(select.children('a').attr('href')).remove();
+                select.remove();
+            });
+
+            $('#divBrowseCollectionFooter').hide();
+            $('#divBrowseCollectionFindFooter').hide();
+        }
+
         // open a new tab
         const tabID = clarifyTabID();
         const tabContent = getResultTabContent(tabID, settings.defaultResultView, queryInfo);
         const tabTitle = queryInfo + " - " + Session.get(Helper.strSessionSelectedCollection);
         setAllTabsInactive();
-        const resultTabs = $('#resultTabs');
 
         // set tab href
         resultTabs.append(
@@ -201,9 +213,7 @@ export const setQueryResult = function (result, queryInfo, queryParams, saveHist
         setResultToEditors(tabID, result, queryParams, queryInfo);
     }
 
-    if (saveHistory) {
-        saveQueryHistory(queryInfo, queryParams);
-    }
+    if (saveHistory) saveQueryHistory(queryInfo, queryParams);
 
 };
 

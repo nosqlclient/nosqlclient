@@ -121,6 +121,7 @@ Meteor.startup(function () {
             dbStatsScheduler: 3000,
             showDBStats: true,
             showLiveChat: false,
+            singleTabResultSets: false,
             dumpPath: home + "/myDumps/"
         });
     }
