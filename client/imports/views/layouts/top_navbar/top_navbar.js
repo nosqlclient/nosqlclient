@@ -176,7 +176,7 @@ Template.topNavbar.events({
         Ladda.create(document.querySelector('#btnConnectSwitchedDatabase')).start();
         let connection = Connections.findOne({_id: Session.get(Helper.strSessionConnection)});
         connection.databaseName = selector.val();
-        Meteor.call('updateConnection', connection);
+        Meteor.call('saveConnection', connection);
 
         connect(false);
     },

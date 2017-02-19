@@ -77,7 +77,7 @@ Meteor.methods({
                     Meteor.call('saveDump', {
                         filePath: fullFilePath,
                         date: date,
-                        connectionName: connection.name,
+                        connectionName: connection.connectionName,
                         connectionId: connection._id,
                         sizeInBytes: stats["size"],
                         status: Enums.DUMP_STATUS.NOT_IMPORTED

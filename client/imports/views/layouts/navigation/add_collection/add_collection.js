@@ -58,7 +58,7 @@ export const resetForm = function () {
     $('#cmbCollectionOrView, #cmbCollectionsAddCollection, #cmbAddCollectionViewOptions, #cmbValidationActionAddCollection, #cmbValidationLevelAddCollection')
         .find('option').prop('selected', false).trigger('chosen:updated');
     $('#collectionAddModalTitle').text('Create Collection/View');
-    $('#spanColName').text(Connections.findOne({_id: Session.get(Helper.strSessionConnection)}).name);
+    $('#spanColName').text(Connections.findOne({_id: Session.get(Helper.strSessionConnection)}).connectionName);
     $('#btnCreateCollection').prop('disabled', false);
 
     Session.set(Helper.strSessionSelectedAddCollectionOptions, []);

@@ -54,18 +54,14 @@ const proceedConnectingMongodb = function (connectionUrl, connectionOptions, don
         connectionOptions = {};
     }
 
-    connectionOptions.uri_decode_auth = true;
-
     mongodbApi.MongoClient.connect(connectionUrl, connectionOptions, function (mainError, db) {
-        if (mainError || db == null || db == undefined) {
-            LOGGER.error(mainError, db);
-            done(mainError, db);
-            if (db) {
-                db.close();
-            }
-            return;
-        }
         try {
+            if (mainError || !db) {
+                LOGGER.error(mainError, db);
+                done(mainError, db);
+                if (db) db.close();
+                return;
+            }
             database = db;
             database.listCollections().toArray(function (err, collections) {
                 done(err, collections);
@@ -228,27 +224,19 @@ Meteor.methods({
         LOGGER.info('[connect]', connectionUrl, Helper.clearConnectionOptionsForLog(connectionOptions));
 
         return Async.runSync(function (done) {
-            if (connection.sshAddress) {
-                let config = {
-                    dstPort: connection.port,
-                    host: connection.sshAddress,
-                    port: connection.sshPort,
-                    username: connection.sshUser
-                };
+            try {
+                if (connection.ssh && connection.ssh.enabled) {
+                    let config = {
+                        dstPort: connection.port,
+                        host: connection.ssh.host,
+                        port: connection.ssh.port,
+                        username: connection.ssh.username
+                    };
 
-                if (connection.sshCertificate) {
-                    config.privateKey = new Buffer(connection.sshCertificate);
-                }
+                    if (connection.ssh.certificateFile) config.privateKey = new Buffer(connection.ssh.certificateFile);
+                    if (connection.ssh.passPhrase) config.passphrase = connection.ssh.passPhrase;
+                    if (connection.ssh.password) config.password = connection.ssh.password;
 
-                if (connection.sshPassPhrase) {
-                    config.passphrase = connection.sshPassPhrase;
-                }
-
-                if (connection.sshPassword) {
-                    config.password = connection.sshPassword;
-                }
-
-                try {
                     const tunnel = tunnelSsh(config, Meteor.bindEnvironment(function (error) {
                         if (error) {
                             done(new Meteor.Error(error.message), null);
@@ -265,13 +253,13 @@ Meteor.methods({
                         }
                     });
                 }
-                catch (ex) {
-                    LOGGER.error('[connect]', ex);
-                    done(new Meteor.Error(ex.message), null);
+                else {
+                    proceedConnectingMongodb(connectionUrl, connectionOptions, done);
                 }
-
-            } else {
-                proceedConnectingMongodb(connectionUrl, connectionOptions, done);
+            }
+            catch (ex) {
+                LOGGER.error('[connect]', ex);
+                done(new Meteor.Error(ex.message), null);
             }
         });
     },

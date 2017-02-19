@@ -1,17 +1,15 @@
-/**
- * Created by sercan on 23.11.2016.
- */
-import {Template} from 'meteor/templating';
-import {Meteor} from 'meteor/meteor';
-import {Session} from 'meteor/session';
-import {FlowRouter} from 'meteor/kadira:flow-router';
-import Helper from '/client/imports/helper';
-import {Connections} from '/lib/imports/collections/connections';
-
-import './connections.html';
+import {Template} from "meteor/templating";
+import {Meteor} from "meteor/meteor";
+import {Session} from "meteor/session";
+import {ReactiveVar} from "meteor/reactive-var";
+import {FlowRouter} from "meteor/kadira:flow-router";
+import Helper from "/client/imports/helper";
+import {Connections} from "/lib/imports/collections/connections";
+import "./connections.html";
 
 const toastr = require('toastr');
 const Ladda = require('ladda');
+
 require('datatables.net')(window, $);
 require('datatables.net-buttons')(window, $);
 require('datatables.net-responsive')(window, $);
@@ -21,219 +19,7 @@ require('datatables.net-buttons-bs')(window, $);
 require('datatables.net-responsive-bs')(window, $);
 require('bootstrap-filestyle');
 
-const clearAllFieldsOfConnectionModal = function () {
-    $('#inputConnectionName').val('');
-    $('#inputConnectionNameForUrl').val('');
-    $('#inputUrl').val('');
-    $('#inputHost').val('');
-    $('#inputPort').val('27017');
-    $('#inputDatabaseName').val('test');
-    $('#inputUser').val('');
-    $('#inputPassword').val('');
-    $('#inputAuthenticationDB').val('');
-    $("#inputPassPhrase").val('');
-    $("#inputSshHostname").val('');
-    $("#inputSshPort").val('22');
-    $("#inputSshUsername").val('');
-    $("#cmbSshAuthType").val('').trigger('chosen:updated');
-    $("#inputSshPassPhrase").val('');
-    $("#inputSshPassword").val('');
-    $('#inputX509Username').val('');
-    $('#divX509Username').hide();
-    $('#inputUseX509').iCheck('uncheck');
-    $('#inputUseUrl').iCheck('uncheck');
-    $('#inputUseSsh').iCheck('uncheck');
-    $('#inputUseSSL').iCheck('uncheck');
-    $('#inputReadFromSecondary').iCheck('uncheck');
-    $('#inputAuthStandard').iCheck('check');
-    $(":file").filestyle('clear');
-    $('#addEditModalSmall').html('');
-};
-
-const proceedSavingConnection = function (saveMethodName, connection) {
-    Meteor.call(saveMethodName, connection, function (err) {
-        if (err) {
-            toastr.warning("Couldn't save connection: " + err.message);
-        }
-        else {
-            populateConnectionsTable();
-            toastr.success('Successfuly saved connection');
-            $('#addEditConnectionModal').modal('hide');
-        }
-
-        Ladda.stopAll();
-    });
-};
-
-const proceedCertificateLoading = function (saveMethodName, connection, currentConnection) {
-    let certificateKeySelector = $('#inputCertificateKey');
-    let fileInput = certificateKeySelector.siblings('.bootstrap-filestyle').children('input');
-    if (certificateKeySelector.get(0).files.length == 0 && currentConnection && currentConnection.certificateKey && fileInput.val()) {
-        connection.certificateKey = currentConnection.certificateKey;
-        proceedSavingConnection(saveMethodName, connection);
-    } else {
-        if (certificateKeySelector.get(0).files.length != 0) {
-            loadFile(function (file) {
-                connection.certificateKey = convertToBuffer(file.target.result);
-                proceedSavingConnection(saveMethodName, connection);
-            }, certificateKeySelector[0].files[0]);
-        }
-        else {
-            proceedSavingConnection(saveMethodName, connection);
-        }
-    }
-};
-
-const proceedRootCertificateLoading = function (saveMethodName, connection, currentConnection) {
-    let rootCaSelector = $('#inputRootCa');
-    let fileInput = rootCaSelector.siblings('.bootstrap-filestyle').children('input');
-
-    if (rootCaSelector.get(0).files.length == 0 && currentConnection && currentConnection.rootCACertificate && fileInput.val()) {
-        connection.rootCACertificate = currentConnection.rootCACertificate;
-        proceedCertificateLoading(saveMethodName, connection, currentConnection);
-    } else {
-        if (rootCaSelector.get(0).files.length != 0) {
-            loadFile(function (file) {
-                connection.rootCACertificate = convertToBuffer(file.target.result);
-                proceedCertificateLoading(saveMethodName, connection, currentConnection);
-            }, rootCaSelector[0].files[0]);
-
-        } else {
-            proceedCertificateLoading(saveMethodName, connection, currentConnection);
-        }
-    }
-};
-
-const loadCertificatesAndSave = function (saveMethodName, connection, currentConnection) {
-    let sshCertificateSelector = $('#inputSshCertificate');
-    let fileInput = sshCertificateSelector.siblings('.bootstrap-filestyle').children('input');
-
-    if (sshCertificateSelector.get(0).files.length == 0 && currentConnection && currentConnection.sshCertificate && fileInput.val()) {
-        connection.sshCertificate = currentConnection.sshCertificate;
-        proceedLoadingCertificates(saveMethodName, connection, currentConnection);
-    } else {
-        if (sshCertificateSelector.get(0).files.length != 0) {
-            loadFile(function (file) {
-                connection.sshCertificate = convertToBuffer(file.target.result);
-                proceedLoadingCertificates(saveMethodName, connection, currentConnection);
-            }, sshCertificateSelector[0].files[0]);
-
-        } else {
-            proceedLoadingCertificates(saveMethodName, connection, currentConnection);
-        }
-    }
-};
-
-const proceedLoadingCertificates = function (saveMethodName, connection, currentConnection) {
-    let certificateSelector = $('#inputCertificate');
-    let fileInput = certificateSelector.siblings('.bootstrap-filestyle').children('input');
-
-    if ($('#inputAuthCertificate').iCheck('update')[0].checked && !$('#inputUseUrl').iCheck('update')[0].checked) {
-        if (certificateSelector.get(0).files.length == 0 && currentConnection && currentConnection.sslCertificate && fileInput.val()) {
-            connection.sslCertificate = currentConnection.sslCertificate;
-            proceedRootCertificateLoading(saveMethodName, connection, currentConnection);
-        }
-        else {
-            if (certificateSelector.get(0).files.length != 0) {
-                loadFile(function (file) {
-                    connection.sslCertificate = convertToBuffer(file.target.result);
-                    proceedRootCertificateLoading(saveMethodName, connection, currentConnection);
-                }, certificateSelector[0].files[0]);
-
-            } else {
-                proceedRootCertificateLoading(saveMethodName, connection, currentConnection);
-            }
-        }
-    } else {
-        proceedSavingConnection(saveMethodName, connection);
-    }
-};
-
-const loadFile = function (callback, blob) {
-    let fileReader = new FileReader();
-    fileReader.onload = callback;
-    fileReader.readAsArrayBuffer(blob);
-};
-
-const checkConnection = function (connection) {
-
-    let sshAuthTypeSelector = $('#cmbSshAuthType');
-
-    if (!connection.name) {
-        toastr.error("Connection name can't be empty");
-        return false;
-    }
-
-    if ($('#inputUseSsh').iCheck('update')[0].checked) {
-        if (!connection.sshAddress) {
-            toastr.error("Ssh hostname can't be empty");
-            return false;
-        }
-
-        if (!connection.sshPort) {
-            toastr.error("Ssh port can't be empty");
-            return false;
-        }
-
-        if (!connection.sshUser) {
-            toastr.error("Ssh user can't be empty");
-            return false;
-        }
-
-        if (!sshAuthTypeSelector.find(":selected").text()) {
-            toastr.error("Ssh authentication type can't be empty");
-            return false;
-        }
-
-        if (sshAuthTypeSelector.find(":selected").text() == 'Password') {
-            if (!connection.sshPassword) {
-                toastr.error("Ssh password can't be empty");
-                return false;
-            }
-        } else {
-            if (!connection.sshCertificatePath) {
-                toastr.error("Ssh certificate path can't be empty");
-                return false;
-            }
-        }
-    }
-
-
-    if ($('#inputUseUrl').iCheck('update')[0].checked) {
-        if (!connection.url) {
-            toastr.error("Url can't be empty");
-            return false;
-        }
-
-        if (!parseDatabaseNameFromUrl(connection.url)) {
-            toastr.error("Url should include db name");
-            return false;
-        }
-
-    } else {
-        if (!connection.host) {
-            toastr.error("Host can't be empty");
-            return false;
-        }
-        if (!connection.port) {
-            toastr.error("Port can't be empty");
-            return false;
-        }
-        if (!connection.databaseName) {
-            toastr.error("Database name can't be empty");
-            return false;
-        }
-
-        if (!$('#inputAuthCertificate').iCheck('update')[0].checked) {
-            if (connection.passPhrase) {
-                connection.passPhrase = "";
-                toastr.warning('Removed passPhrase, since there is no certificate');
-            }
-        }
-    }
-
-    return true;
-};
+let selectedAuthType = new ReactiveVar("");
 
 export const populateConnectionsTable = function () {
     let tblConnections = $('#tblConnection');
@@ -246,205 +32,55 @@ export const populateConnectionsTable = function () {
         data: Connections.find().fetch(),
         columns: [
             {data: "_id", sClass: "hide_column"},
-            {data: "name"},
-            {data: "url"},
-            {data: "useSsl"},
-            {data: "sslCertificatePath"},
-            {data: "sshAddress"}
+            {data: "connectionName"},
+            {data: "servers"}
         ],
         columnDefs: [
             {
                 targets: [2],
                 render: function (data) {
-                    if (!data) {
-                        return 'false';
+                    let result = '';
+                    if (data) {
+                        for (let server of data) {
+                            result += '<b>' + server.host + '</b>:' + server.port + '<br/> ';
+                        }
                     }
-                    return 'true';
+                    if (result.endsWith(', ')) return result.substr(0, result.length - 2);
+                    return result;
                 }
             },
             {
                 targets: [3],
-                render: function (data) {
-                    if (!data) {
-                        return 'false';
-                    }
-                    return 'true';
+                render: function (data, type, row) {
+                    let result = '<small>';
+                    if (row.authenticationType) result += row.authenticationType.toUpperCase() + "<br/>";
+                    if (row.ssl && row.ssl.enabled) result += "SSL<br/>";
+                    if (row.ssh && row.ssh.enabled) result += "SSH<br/>";
+                    if (row.url) result += 'URL<br/>';
+                    result += '</small> ';
+
+                    return result;
                 }
             },
             {
                 targets: [4],
-                render: function (data) {
-                    if (!data) {
-                        return 'false';
-                    }
-                    return 'true';
-                }
-            },
-            {
-                targets: [5],
-                render: function (data) {
-                    if (!data) {
-                        return 'false';
-                    }
-                    return 'true';
-                }
-            },
-            {
-                targets: [6],
                 data: null,
                 bSortable: false,
                 defaultContent: '<a href="" title="Edit" class="editor_edit"><i class="fa fa-edit text-navy"></i></a>'
             },
             {
-                targets: [7],
+                targets: [5],
                 data: null,
                 bSortable: false,
                 defaultContent: '<a href="" title="Duplicate" class="editor_duplicate"><i class="fa fa-clone text-navy"></i></a>'
             },
             {
-                targets: [8],
+                targets: [6],
                 data: null,
                 bSortable: false,
                 defaultContent: '<a href="" title="Delete" class="editor_remove"><i class="fa fa-remove text-navy"></i></a>'
             }
         ]
-    });
-};
-
-const parseDatabaseNameFromUrl = function (url) {
-    try {
-        let lastIndex = url.length;
-        if (url.indexOf('?') != -1) {
-            lastIndex = url.indexOf('?');
-        }
-
-        let urlSplit = url.split('//');
-
-        if (urlSplit[1].lastIndexOf("/") == -1) {
-            return "admin";
-        }
-
-        return url.substring(urlSplit[0].length + urlSplit[1].lastIndexOf("/") + 3, lastIndex);
-    } catch (e) {
-        return "admin";
-    }
-};
-
-const convertToBuffer = function (buffer) {
-    return new Uint8Array(buffer);
-};
-
-const initChosen = function () {
-    let cmb = $('#cmbSshAuthType');
-
-    cmb.append($("<option></option>")
-        .attr("value", "Password")
-        .text("Password"));
-    cmb.append($("<option></option>")
-        .attr("value", "Key File")
-        .text("Key File"));
-
-    cmb.chosen({width: '100%'});
-};
-
-const initIChecks = function () {
-    let selector = $('#divAuthType');
-    selector.iCheck({
-        radioClass: 'iradio_square-green'
-    });
-
-    let inputAuthStandardSelector = $('#inputAuthStandard');
-    let formStandardAuthSelector = $('#formStandardAuth');
-    let formCertificateAuthSelector = $('#formCertificateAuth');
-    let anchorTab1Selector = $('#anchorTab1');
-    let anchorTab2Selector = $('#anchorTab2');
-    let inputUseUriSelector = $("#inputUseUrl");
-    let inputUseSshSelector = $("#inputUseSsh");
-    let inputUseX509Username = $("#inputUseX509");
-    let inputReadFromSecondary = $("#inputReadFromSecondary");
-
-    inputAuthStandardSelector.iCheck('check');
-
-    $('#divUseSSL, #divUseSsh, #divUseUrl, #divReadFromSecondary, #divUseX509').iCheck({
-        checkboxClass: 'icheckbox_square-green'
-    });
-
-    inputAuthStandardSelector.on('ifChecked', function () {
-        formStandardAuthSelector.show();
-        formCertificateAuthSelector.hide();
-    });
-
-    $('#inputAuthCertificate').on('ifChecked', function () {
-        formStandardAuthSelector.hide();
-        formCertificateAuthSelector.show();
-    });
-
-    inputReadFromSecondary.iCheck('uncheck');
-
-    inputUseX509Username.iCheck('uncheck');
-    inputUseX509Username.on('ifChanged', function (event) {
-        let divX509UsernameSelector = $('#divX509Username');
-
-        let isChecked = event.currentTarget.checked;
-        if (isChecked) {
-            divX509UsernameSelector.show();
-        } else {
-            divX509UsernameSelector.hide();
-        }
-    });
-
-    inputUseUriSelector.iCheck('uncheck');
-    inputUseUriSelector.on('ifChanged', function (event) {
-        let inputUriSelector = $('#inputUrl');
-        let inputConnectionNameForUrl = $('#inputConnectionNameForUrl');
-
-        let isChecked = event.currentTarget.checked;
-        if (isChecked) {
-            inputUriSelector.prop('disabled', false);
-            inputConnectionNameForUrl.prop('disabled', false);
-            anchorTab1Selector.removeAttr("data-toggle");
-            anchorTab2Selector.removeAttr("data-toggle");
-        } else {
-            inputUriSelector.prop('disabled', true);
-            inputConnectionNameForUrl.prop('disabled', true);
-            anchorTab1Selector.attr('data-toggle', 'tab');
-            anchorTab2Selector.attr('data-toggle', 'tab');
-        }
-    });
-
-    inputUseSshSelector.iCheck('uncheck');
-    inputUseSshSelector.on('ifChanged', function (event) {
-        let inputSshHostnameSelector = $('#inputSshHostname');
-        let inputSshPortSelector = $('#inputSshPort');
-        let inputSshUsernameSelector = $('#inputSshUsername');
-        let comboSshAuthTypeSelector = $('#cmbSshAuthType');
-        let inputSshPasswordSelector = $('#inputSshPassword');
-        let inputSshCertificatePathSelector = $('#inputSshCertificatePath');
-        let inputSshCertificateSelector = $('#inputSshCertificate');
-        let inputSshPassPhrase = $('#inputSshPassPhrase');
-
-
-        let isChecked = event.currentTarget.checked;
-        if (isChecked) {
-            inputSshHostnameSelector.prop('disabled', false);
-            inputSshPortSelector.prop('disabled', false);
-            inputSshUsernameSelector.prop('disabled', false);
-            comboSshAuthTypeSelector.prop('disabled', false).trigger("chosen:updated");
-            inputSshCertificatePathSelector.prop('disabled', false);
-            inputSshCertificateSelector.prop('disabled', false);
-            inputSshPassPhrase.prop('disabled', false);
-            inputSshPasswordSelector.prop('disabled', false);
-        } else {
-            inputSshHostnameSelector.prop('disabled', true);
-            inputSshPortSelector.prop('disabled', true);
-            inputSshUsernameSelector.prop('disabled', true);
-            comboSshAuthTypeSelector.prop('disabled', true).trigger("chosen:updated");
-            inputSshCertificatePathSelector.prop('disabled', true);
-            inputSshCertificateSelector.prop('disabled', true);
-            inputSshPassPhrase.prop('disabled', true);
-            inputSshPasswordSelector.prop('disabled', true);
-        }
-
     });
 };
 
@@ -485,101 +121,382 @@ export const connect = function (isRefresh) {
     });
 };
 
-const populateConnectionModal = function () {
+const fillFormSsl = function (obj) {
+    if (obj.rootCAFileName) {
+        $('#inputRootCA').siblings('.bootstrap-filestyle').children('input').val(obj.rootCAFileName);
+    }
+    if (obj.certificateFileName) {
+        $('#inputCertificate').siblings('.bootstrap-filestyle').children('input').val(obj.certificateFileName);
+    }
+    if (obj.certificateKeyFileName) {
+        $('#inputCertificateKey').siblings('.bootstrap-filestyle').children('input').val(obj.certificateKeyFileName);
+    }
+
+    $('#inputPassPhrase').val(obj.passPhrase);
+    $('#inputDisableHostnameVerification').iCheck(!obj.disableHostnameVerification ? 'uncheck' : 'check');
+};
+
+const fillFormBasicAuth = function (obj) {
+    $('#inputUser').val(obj.username);
+    $('#inputPassword').val(obj.password);
+    $('#inputAuthenticationDB').val(obj.authSource);
+};
+
+const fillFormSsh = function (connection) {
+    $('#inputSshHostname').val(connection.ssh.host);
+    $('#inputSshPort').val(connection.ssh.port);
+    $('#inputSshUsername').val(connection.ssh.username);
+
+    const certificateForm = $('#formSshCertificateAuth');
+    const passwordForm = $('#formSshPasswordAuth');
+    if (connection.ssh.certificateFileName) {
+        certificateForm.show();
+        passwordForm.hide();
+        $('#cmbSshAuthType').val('Certificate').trigger('chosen:updated');
+        $('#inputSshCertificate').siblings('.bootstrap-filestyle').children('input').val(connection.ssh.certificateFileName);
+        $('#inputSshPassPhrase').val(connection.ssh.passPhrase);
+    } else {
+        certificateForm.hide();
+        passwordForm.show();
+        $('#cmbSshAuthType').val('Password').trigger('chosen:updated');
+        $('#inputSshPassword').val(connection.ssh.password);
+    }
+};
+
+const fillFormAuthentication = function (connection) {
+    $('#cmbAuthenticationType').val(connection.authenticationType).trigger('chosen:updated');
+    selectedAuthType.set(connection.authenticationType);
+
+    // let blaze render
+    Meteor.setTimeout(function () {
+        if (connection.authenticationType === 'mongodb_cr') {
+            fillFormBasicAuth(connection.mongodb_cr);
+        }
+        else if (connection.authenticationType === 'scram_sha_1') {
+            fillFormBasicAuth(connection.scram_sha_1);
+        }
+        else if (connection.authenticationType === 'plain') {
+            $('#inputLdapUsername').val(connection.plain.username);
+            $('#inputLdapPassword').val(connection.plain.password);
+        }
+        else if (connection.authenticationType === 'gssapi') {
+            $('#inputKerberosUsername').val(connection.gssapi.username);
+            $('#inputKerberosPassword').val(connection.gssapi.password);
+            $('#inputKerberosServiceName').val(connection.gssapi.serviceName);
+        }
+        else if (connection.authenticationType === 'mongodb_x509') {
+            fillFormSsl(connection.mongodb_x509);
+            $('#anchorConnectionSsl').removeAttr('data-toggle');
+            $('#inputX509Username').val(connection.mongodb_x509.username);
+        }
+    }, 150);
+};
+
+const fillFormConnection = function (connection) {
+    if (connection.servers) {
+        for (let server of connection.servers) {
+            addField(server.host, server.port);
+        }
+    }
+    selectedAuthType.set(connection.authenticationType);
+    $('#inputUrl').val(connection.url);
+    $('#inputDatabaseName').val(connection.databaseName);
+};
+
+const prepareFormForUrlParse = function (connection) {
+    $('.nav-tabs a[href="#tab-1-connection"]').tab('show');
+    $(".divHostField:visible").remove();
+    fillFormConnection(connection);
+    fillFormAuthentication(connection);
+
+    const sslTab = $('#anchorConnectionSsl');
+    if (connection.authenticationType === 'mongodb_x509') sslTab.removeAttr('data-toggle');
+    else sslTab.attr('data-toggle', 'tab');
+
+    if (connection.ssl) $('#inputUseSSL').iCheck(connection.ssl.enabled ? 'check' : 'uncheck');
+    if (connection.options) fillFormOptionsExceptConnectWithNoPrimary(connection);
+};
+
+const fillFormOptionsExceptConnectWithNoPrimary = function (connection) {
+    $('#inputConnectionTimeoutOverride').val(connection.options.connectionTimeout);
+    $('#inputReplicaSetName').val(connection.options.replicaSetName);
+    $('#inputSocketTimeoutOverride').val(connection.options.socketTimeout);
+    $('#cmbReadPreference').val(connection.options.readPreference).trigger('chosen:updated');
+};
+
+const prepareFormForEdit = function () {
     let connection = Connections.findOne({_id: Session.get(Helper.strSessionConnection)});
-    clearAllFieldsOfConnectionModal();
 
-    $('#addEditModalSmall').html(connection.name);
-    if (connection.x509Username) {
-        $('#divX509Username').show();
-        $('#inputUseX509').iCheck('check');
-        $('#inputX509Username').val(connection.x509Username);
-    } else {
-        $('#inputUseX509').iCheck('uncheck');
-        $('#divX509Username').hide();
+    $('#addEditModalSmall').html(connection.connectionName);
+    $('#inputConnectionName').val(connection.connectionName);
+    fillFormConnection(connection);
+    fillFormAuthentication(connection);
+
+    if (connection.ssl) {
+        $('#inputUseSSL').iCheck(connection.ssl.enabled ? 'check' : 'uncheck');
+        fillFormSsl(connection.ssl);
     }
-
-    if (connection.readFromSecondary) {
-        $('#inputReadFromSecondary').iCheck('check');
-    } else {
-        $('#inputReadFromSecondary').iCheck('uncheck');
+    if (connection.ssh) {
+        $('#inputUseSSH').iCheck(connection.ssh.enabled ? 'check' : 'uncheck');
+        fillFormSsh(connection);
     }
-
-    if (connection.sshAddress) {
-        $('#inputUseSsh').iCheck('check');
-        $('#inputSshHostname').val(connection.sshAddress);
-        $('#inputSshPort').val(connection.sshPort);
-        $('#inputSshUsername').val(connection.sshUser);
-
-        if (connection.sshPassword) {
-            $("#cmbSshAuthType").val('Password').trigger('chosen:updated');
-            $('#inputSshPassword').val(connection.sshPassword);
-            $('#formSshPasswordAuth').show();
-            $('#formSshCertificateAuth').hide();
-        }
-        if (connection.sshCertificatePath) {
-            $("#cmbSshAuthType").val('Key File').trigger('chosen:updated');
-            $('#inputSshCertificate').siblings('.bootstrap-filestyle').children('input').val(connection.sshCertificatePath);
-            $('#formSshPasswordAuth').hide();
-            $('#formSshCertificateAuth').show();
-        }
-        if (connection.sshPassPhrase) {
-            $('#inputSshPassPhrase').val(connection.sshPassPhrase);
-        }
-    } else {
-        $('#inputUseSsh').iCheck('uncheck');
+    if (connection.options) {
+        fillFormOptionsExceptConnectWithNoPrimary(connection);
+        $('#inputConnectWithNoPrimary').iCheck(!connection.options.connectWithNoPrimary ? 'uncheck' : 'check');
     }
-
     if (connection.url) {
-        $('#inputUseUrl').iCheck('check');
-        $('#inputUrl').val(connection.url);
-        $('#inputConnectionNameForUrl').val(connection.name);
-        $('.nav-tabs a[href="#tab-3-url"]').tab('show');
+        disableFormsForUri();
+    }
+};
+
+const loadSSHCertificate = function (connection, currentConnection, done) {
+    if (connection.ssh) {
+        if (connection.ssh.certificateFileName) {
+            loadCertificate(currentConnection.ssh ? currentConnection.ssh.certificateFile : null, $('#inputSshCertificate'), function (val) {
+                connection.ssh.certificateFile = val;
+                done(connection);
+            });
+        }
+        else {
+            done(connection);
+        }
     } else {
-        $('#inputUseUrl').iCheck('uncheck');
-        $('#inputConnectionName').val(connection.name);
-        $('#inputHost').val(connection.host);
-        $('#inputPort').val(connection.port);
-        $('#inputDatabaseName').val(connection.databaseName);
+        done(connection);
+    }
+};
 
-        if (connection.sslCertificatePath || connection.rootCACertificatePath || connection.certificateKeyPath) {
-            $('#inputAuthStandard').iCheck('uncheck');
-            $('#inputAuthCertificate').iCheck('check');
-            $('#inputPassPhrase').val(connection.passPhrase);
+const loadSSLCertificates = function (connection, currentConnection, done) {
+    if (connection.ssl) {
+        loadRootCa(connection, 'ssl', currentConnection, function () {
+            loadSSHCertificate(connection, currentConnection, done);
+        });
+    } else {
+        loadSSHCertificate(connection, currentConnection, done);
+    }
+};
 
-            if (connection.sslCertificatePath) {
-                $('#inputCertificate').siblings('.bootstrap-filestyle').children('input').val(connection.sslCertificatePath);
-            }
+const populateConnection = function (currentConnection, done) {
+    let connection = {servers: []};
+    let connectionName = $('#inputConnectionName').val();
+    connection.connectionName = connectionName ? connectionName : "unnamed_connection";
+    connection.url = $('#inputUrl').val();
+    connection.authenticationType = $('#cmbAuthenticationType').val();
+    connection.databaseName = $('#inputDatabaseName').val();
+    if (connection.authenticationType !== 'mongodb_x509' && $('#inputUseSSL').iCheck('update')[0].checked) {
+        connection.ssl = getSSLProps();
+    }
+    fillHostFields(connection);
+    fillCorrectAuthenticationType(connection);
+    if ($('#inputUseSSH').iCheck('update')[0].checked) {
+        fillSsh(connection);
+    }
+    fillOptions(connection);
 
-            if (connection.rootCACertificatePath) {
-                $('#inputRootCa').siblings('.bootstrap-filestyle').children('input').val(connection.rootCACertificatePath);
-            }
+    if (connection.mongodb_x509) {
+        loadRootCa(connection, 'mongodb_x509', currentConnection, function () {
+            loadSSLCertificates(connection, currentConnection, done);
+        });
+    } else {
+        loadSSLCertificates(connection, currentConnection, done);
+    }
+};
 
-            if (connection.certificateKeyPath) {
-                $('#inputCertificateKey').siblings('.bootstrap-filestyle').children('input').val(connection.certificateKeyPath);
-            }
+const loadCertificateKeyFile = function (connection, prop, currentConnection, done) {
+    if (connection[prop].certificateKeyFileName) {
+        loadCertificate(currentConnection[prop] ? currentConnection[prop].certificateKeyFile : null, $('#inputCertificateKey'), function (val) {
+            connection[prop].certificateKeyFile = val;
+            done();
+        });
+    } else {
+        done();
+    }
+};
 
-        } else {
-            $('#inputAuthStandard').iCheck('check');
-            $('#inputAuthCertificate').iCheck('uncheck');
-            $('#inputUser').val(connection.user);
-            $('#inputPassword').val(connection.password);
-            $('#inputAuthenticationDB').val(connection.authDatabaseName);
+const loadsslCertificate = function (connection, prop, currentConnection, done) {
+    if (connection[prop].certificateFileName) {
+        loadCertificate(currentConnection[prop] ? currentConnection[prop].certificateFile : null, $('#inputCertificate'), function (val) {
+            connection[prop].certificateFile = val;
+            loadCertificateKeyFile(connection, prop, currentConnection, done);
+        });
+    }
+    else {
+        loadCertificateKeyFile(connection, prop, currentConnection, done);
+    }
+};
 
-            if (connection.useSsl) {
-                $('#inputUseSSL').iCheck('check');
-            } else {
-                $('#inputUseSSL').iCheck('uncheck');
-            }
+const loadRootCa = function (connection, prop, currentConnection, done) {
+    if (connection[prop].rootCAFileName) {
+        loadCertificate(currentConnection[prop] ? currentConnection[prop].rootCAFile : null, $('#inputRootCA'), function (val) {
+            connection[prop].rootCAFile = val;
+            loadsslCertificate(connection, prop, currentConnection, done);
+        });
+    }
+    else {
+        loadsslCertificate(connection, prop, currentConnection, done);
+    }
+};
+
+const loadCertificate = function (currentVal, input, done) {
+    let fileInput = input.siblings('.bootstrap-filestyle').children('input');
+    if (input[0].files.length == 0 && currentVal && fileInput.val()) {
+        done(currentVal);
+    }
+    else if (input[0].files.length != 0) {
+        const fileReader = new FileReader();
+        fileReader.onload = function (file) {
+            done(new Uint8Array(file.target.result));
+        };
+        fileReader.readAsArrayBuffer(input[0].files[0]);
+    } else {
+        done([]);
+    }
+};
+
+const fillSsh = function (connection) {
+    const port = $('#inputSshPort').val();
+
+    connection.ssh = {
+        enabled: $('#inputUseSSH').iCheck('update')[0].checked,
+        host: $('#inputSshHostname').val(),
+        port: port ? parseInt(port) : '',
+        username: $('#inputSshUsername').val(),
+        certificateFileName: $('#inputSshCertificate').siblings('.bootstrap-filestyle').children('input').val(),
+        passPhrase: $('#inputSshPassPhrase').val(),
+        password: $('#inputSshPassword').val()
+    };
+};
+
+const fillOptions = function (connection) {
+    const connectionTimeot = $('#inputConnectionTimeoutOverride').val();
+    const socketTimeout = $('#inputSocketTimeoutOverride').val();
+    connection.options = {
+        connectionTimeout: connectionTimeot ? parseInt(connectionTimeot) : '',
+        socketTimeout: socketTimeout ? parseInt(socketTimeout) : '',
+        readPreference: $('#cmbReadPreference').val(),
+        connectWithNoPrimary: $('#inputConnectWithNoPrimary').iCheck('update')[0].checked,
+        replicaSetName: $('#inputReplicaSetName').val()
+    };
+};
+
+const fillHostFields = function (connection) {
+    for (let divField of $('.divHostField')) {
+        divField = $(divField);
+        const host = divField.find('.txtHostName').val();
+        let port = divField.find('.txtPort').val();
+        port = port ? parseInt(port) : '';
+        if (host && port) {
+            connection.servers.push({host: host, port: port});
         }
     }
 };
+
+const getSSLProps = function () {
+    return {
+        enabled: $('#inputUseSSL').iCheck('update')[0].checked,
+        rootCAFileName: $('#inputRootCA').siblings('.bootstrap-filestyle').children('input').val(),
+        certificateFileName: $('#inputCertificate').siblings('.bootstrap-filestyle').children('input').val(),
+        passPhrase: $('#inputPassPhrase').val(),
+        certificateKeyFileName: $('#inputCertificateKey').siblings('.bootstrap-filestyle').children('input').val(),
+        disableHostnameVerification: $('#inputDisableHostnameVerification').iCheck('update')[0].checked
+    };
+};
+
+const fillCorrectAuthenticationType = function (connection) {
+    if (connection.authenticationType === 'scram_sha_1' || connection.authenticationType === 'mongodb_cr') {
+        connection[connection.authenticationType] = {
+            username: $('#inputUser').val(),
+            password: $('#inputPassword').val(),
+            authSource: $('#inputAuthenticationDB').val()
+        };
+    }
+    else if (connection.authenticationType === 'mongodb_x509') {
+        connection.mongodb_x509 = getSSLProps();
+        connection.mongodb_x509.username = $('#inputX509Username').val();
+    }
+    else if (connection.authenticationType === 'gssapi') {
+        connection.gssapi = {
+            username: $('#inputKerberosUsername').val(),
+            password: $('#inputKerberosPassword').val(),
+            serviceName: $('#inputKerberosServiceName').val()
+        };
+    }
+    else if (connection.authenticationType === 'plain') {
+        connection.plain = {
+            username: $('#inputLdapUsername').val(),
+            password: $('#inputLdapPassword').val(),
+        };
+    }
+};
+
+const resetForm = function () {
+    $('.nav-tabs a[href="#tab-1-connection"]').tab('show');
+    $(":file").filestyle('clear');
+    $('#addEditModalSmall').html('');
+    $('#inputConnectWithNoPrimary, #inputDisableHostnameVerification, #inputUseSSL, #inputUseSSH').iCheck('uncheck');
+    $('#spanUseSSL').hide();
+    $(".divHostField:visible").remove();
+    selectedAuthType.set('');
+
+    $('#inputConnectionName, #inputUrl, #inputKerberosUsername, #inputKerberosPassword, #inputKerberosServiceName, ' +
+        '#inputLdapUsername, #inputLdapPassword, #inputConnectionTimeout, #inputSocketTimeout, #inputSshHostname, ' +
+        '#inputSshPort, #inputSshUsername, #inputSshPassPhrase, #inputSshPassword, #inputUser, #inputPassword, ' +
+        '#inputAuthenticationDB, #inputPassPhrase, #inputX509Username').val('');
+    $('#inputDatabaseName').val('test');
+    $('#cmbAuthenticationType, #cmbSshAuthType, #cmbReadPreference').find('option').prop('selected', false).trigger('chosen:updated');
+    $('#anchorConnectionSsl').attr('data-toggle', 'tab');
+    $('#divSshTemplate').hide();
+    $('#divSslTemplate').hide();
+    enableFormsForUri();
+};
+
+const addField = function (host, port) {
+    const divField = $('.divHostField:hidden');
+    const cloned = divField.clone();
+
+    $('.divHostField:last').after(cloned);
+
+    cloned.show();
+    if (host) {
+        cloned.find('.txtHostName').val(host);
+    }
+    if (port) {
+        cloned.find('.txtPort').val(port);
+    }
+};
+
+const initializeUI = function () {
+    $(".filestyle").filestyle({});
+    $('#cmbAuthenticationType, #cmbSshAuthType, #cmbReadPreference').chosen({
+        allow_single_deselect: true
+    });
+    $('#divConnectWithNoPrimary, #divUseSSL, #divUseSSH').iCheck({
+        checkboxClass: 'icheckbox_square-green'
+    });
+    $('#divUseSSH').on('ifToggled', function () {
+        const divTemplate = $('#divSshTemplate');
+        if ($('#inputUseSSH').iCheck('update')[0].checked) divTemplate.show();
+        else divTemplate.hide();
+    });
+
+    $('#divUseSSL').on('ifToggled', function () {
+        const divTemplate = $('#divSslTemplate');
+        if ($('#inputUseSSL').iCheck('update')[0].checked) divTemplate.show();
+        else divTemplate.hide();
+    });
+};
+
+Template.sslTemplate.onRendered(function () {
+    $('.filestyle').filestyle({});
+    $('#inputDisableHostnameVerification').iCheck({
+        checkboxClass: 'icheckbox_square-green'
+    });
+});
 
 Template.connections.onRendered(function () {
     let selector = $('#tblConnection');
     selector.find('tbody').on('click', 'tr', function () {
         const table = selector.DataTable();
-        Helper.doTableRowSelectable(table,$(this));
+        Helper.doTableRowSelectable(table, $(this));
 
         if (table.row(this).data()) {
             Session.set(Helper.strSessionConnection, table.row(this).data()._id);
@@ -588,78 +505,138 @@ Template.connections.onRendered(function () {
 
     });
 
-    $(".filestyle").filestyle({});
-
-    initIChecks();
-    initChosen();
+    const addEditModal = $('#addEditConnectionModal');
+    addEditModal.on('shown.bs.modal', function () {
+        initializeUI();
+        resetForm();
+        if (addEditModal.data('edit') || addEditModal.data('clone')) {
+            prepareFormForEdit();
+        } else {
+            addField('', '27017');
+        }
+    });
 });
 
+Template.connections.helpers({
+    authenticationMethod(...methods) {
+        return methods.indexOf(selectedAuthType.get()) != -1;
+    }
+});
+
+const disableFormsForUri = function () {
+    $(".divHostField:visible").find('input, button').prop('disabled', true).parent('div').attr('data-original-title', 'Clear URL to activate here');
+    $('#inputDatabaseName, #cmbAuthenticationType, #inputConnectionTimeoutOverride, #inputReplicaSetName, #inputSocketTimeoutOverride, #cmbReadPreference, #inputUser, #inputPassword, #inputAuthenticationDB, #inputLdapUsername, #inputLdapPassword, #inputKerberosUsername, #inputKerberosPassword, #inputKerberosServiceName, #inputX509Username')
+        .prop('disabled', true).trigger('chosen:updated').parent('div').attr('data-original-title', 'Clear URL to activate here');
+    $('#inputUseSSL').iCheck('disable');
+    $('#spanUseSSL').show();
+
+    $('[data-toggle="tooltip"]').tooltip({trigger: 'hover'});
+};
+
+const enableFormsForUri = function () {
+    $(".divHostField:visible").find('input, button').prop('disabled', false).parent('div').attr('data-original-title', '');
+    $('#inputDatabaseName, #cmbAuthenticationType, #inputConnectionTimeoutOverride, #inputReplicaSetName, #inputSocketTimeoutOverride, #cmbReadPreference, #inputUser, #inputPassword, #inputAuthenticationDB, #inputLdapUsername, #inputLdapPassword, #inputKerberosUsername, #inputKerberosPassword, #inputKerberosServiceName, #inputX509Username')
+        .prop('disabled', false).trigger('chosen:updated').parent('div').attr('data-original-title', '');
+    $('#inputUseSSL').iCheck('enable');
+    $('#spanUseSSL').hide();
+    selectedAuthType.set($('#cmbAuthenticationType').val());
+};
+
 Template.connections.events({
-    'change #inputCertificate'() {
-        let inputSelector = $('#inputCertificate');
-        let blob = inputSelector[0].files[0];
-        let fileInput = inputSelector.siblings('.bootstrap-filestyle').children('input');
-
-        if (blob) {
-            fileInput.val(blob.name);
-        } else {
-            fileInput.val('');
-        }
+    'mousedown .showpass'(e){
+        $(e.currentTarget).parent('span').siblings('input').attr('type', 'text');
+    },
+    'mouseup .showpass' (e){
+        $(e.currentTarget).parent('span').siblings('input').attr('type', 'password');
+    },
+    'mouseout .showpass'(e){
+        $(e.currentTarget).parent('span').siblings('input').attr('type', 'password');
     },
 
-    'change #inputSshCertificate' () {
-        let inputSelector = $('#inputSshCertificate');
-        let blob = inputSelector[0].files[0];
-        let fileInput = inputSelector.siblings('.bootstrap-filestyle').children('input');
+    'change #inputUrl'(){
+        const url = $('#inputUrl').val();
+        if (url) {
+            Meteor.call('parseUrl', {url: url}, function (err, res) {
+                if (!err) {
+                    prepareFormForUrlParse(res);
+                } else {
+                    toastr.error(err.message);
+                }
 
-        if (blob) {
-            fileInput.val(blob.name);
-        } else {
-            fileInput.val('');
-        }
-    },
-
-    'change #inputRootCa' () {
-        let inputSelector = $('#inputRootCa');
-        let blob = inputSelector[0].files[0];
-        let fileInput = inputSelector.siblings('.bootstrap-filestyle').children('input');
-
-        if (blob) {
-            fileInput.val(blob.name);
-        } else {
-            fileInput.val('');
-        }
-    },
-
-    'change #inputCertificateKey' () {
-        let inputSelector = $('#inputCertificateKey');
-        let blob = inputSelector[0].files[0];
-        let fileInput = inputSelector.siblings('.bootstrap-filestyle').children('input');
-
-        if (blob) {
-            fileInput.val(blob.name);
-        } else {
-            fileInput.val('');
-        }
-    },
-
-    'change #cmbSshAuthType' () {
-        let value = $('#cmbSshAuthType').find(":selected").text();
-        let passAuth = $('#formSshPasswordAuth');
-        let certificateAuth = $('#formSshCertificateAuth');
-        if (value == 'Password') {
-            passAuth.show();
-            certificateAuth.hide();
+                // let blaze initialize
+                Meteor.setTimeout(function () {
+                    disableFormsForUri();
+                }, 150);
+            });
         }
         else {
-            certificateAuth.show();
-            passAuth.hide();
+            enableFormsForUri();
+        }
+    },
+
+    'click #anchorConnectionSsl'(){
+        if (!$('#anchorConnectionSsl').attr('data-toggle')) {
+            toastr.warning('SSL already set via Mongodb-X509');
+        }
+    },
+
+    'change #cmbSshAuthType'(){
+        const authType = $('#cmbSshAuthType').val();
+        const certificateForm = $('#formSshCertificateAuth');
+        const passwordForm = $('#formSshPasswordAuth');
+        if (authType === 'Certificate') {
+            certificateForm.show();
+            passwordForm.hide();
+        } else if (authType === 'Password') {
+            certificateForm.hide();
+            passwordForm.show();
+        } else {
+            certificateForm.hide();
+            passwordForm.hide();
+        }
+    },
+
+    'change #cmbAuthenticationType'(){
+        const authType = $('#cmbAuthenticationType').val();
+        const sslTab = $('#anchorConnectionSsl');
+        selectedAuthType.set(authType);
+        if (authType === 'mongodb_x509') {
+            sslTab.removeAttr('data-toggle');
+        } else {
+            sslTab.attr('data-toggle', 'tab');
+        }
+    },
+
+    'click .addHost' (){
+        addField();
+    },
+
+    'click .deleteHost'(e){
+        if ($('.divHostField:visible').length === 1) {
+            toastr.warning('At least one host is required !');
+            return;
+        }
+        $(e.currentTarget).parents('.divHostField').remove();
+    },
+
+    'change .filestyle'(e){
+        let inputSelector = $('#' + e.currentTarget.id);
+        let blob = inputSelector[0].files[0];
+        let fileInput = inputSelector.siblings('.bootstrap-filestyle').children('input');
+
+        if (blob) {
+            fileInput.val(blob.name);
+        } else {
+            fileInput.val('');
         }
     },
 
     'click #btnCreateNewConnection' () {
         $('#addEditConnectionModalTitle').text('Add Connection');
-        clearAllFieldsOfConnectionModal();
+        const modal = $('#addEditConnectionModal');
+        modal.data('edit', null);
+        modal.data('clone', null);
+        modal.modal('show');
     },
 
     'click .editor_remove'  (e) {
@@ -678,108 +655,50 @@ Template.connections.events({
 
             Ladda.stopAll();
         });
-
     },
 
-    'click .editor_edit' (e) {
+    'click .editor_edit' () {
         $('#addEditConnectionModalTitle').text('Edit Connection');
-        e.preventDefault();
-        populateConnectionModal();
-        $('#addEditConnectionModal').modal('show');
+        const modal = $('#addEditConnectionModal');
+        modal.data('edit', Session.get(Helper.strSessionConnection));
+        modal.data('clone', '');
+        modal.modal('show');
     },
 
-    'click .editor_duplicate' (e) {
+    'click .editor_duplicate' () {
         $('#addEditConnectionModalTitle').text('Clone Connection');
-        e.preventDefault();
-        populateConnectionModal();
-        $('#addEditConnectionModal').modal('show');
+        const modal = $('#addEditConnectionModal');
+        modal.data('clone', Session.get(Helper.strSessionConnection));
+        modal.data('edit', '');
+        modal.modal('show');
     },
 
     'click #btnSaveConnection' (e) {
         e.preventDefault();
-        let inputCertificatePathSelector = $('#inputCertificate').siblings('.bootstrap-filestyle').children('input');
-        let rootCertificatePathSelector = $('#inputRootCa').siblings('.bootstrap-filestyle').children('input');
-        let inputCertificateKeyPathSelector = $('#inputCertificateKey').siblings('.bootstrap-filestyle').children('input');
-        let cmbSShAuthTypeSelector = $('#cmbSshAuthType');
-        let inputSShPassPhraseSelector = $('#inputSshPassPhrase');
-        let inputSshCertificatePathSelector = $('#inputSshCertificate').siblings('.bootstrap-filestyle').children('input');
-        let connection = {};
-
-        connection.readFromSecondary = $('#inputReadFromSecondary').iCheck('update')[0].checked;
-
-        if ($('#inputUseSsh').iCheck('update')[0].checked) {
-            connection.sshAddress = $('#inputSshHostname').val();
-            connection.sshPort = $('#inputSshPort').val();
-            connection.sshUser = $('#inputSshUsername').val();
-
-            if (cmbSShAuthTypeSelector.val() == 'Password') {
-                connection.sshPassword = $('#inputSshPassword').val();
-            }
-            else if (cmbSShAuthTypeSelector.val() == 'Key File') {
-                if (inputSshCertificatePathSelector.val()) {
-                    connection.sshCertificatePath = inputSshCertificatePathSelector.val();
-                }
-                if (inputSShPassPhraseSelector.val()) {
-                    connection.sshPassPhrase = inputSShPassPhraseSelector.val();
-                }
-            }
-        }
-
-        if ($('#inputUseUrl').iCheck('update')[0].checked) {
-            connection.url = $('#inputUrl').val();
-            connection.databaseName = parseDatabaseNameFromUrl(connection.url);
-            connection.name = $('#inputConnectionNameForUrl').val();
-        } else {
-            connection.name = $('#inputConnectionName').val();
-            connection.host = $('#inputHost').val();
-            connection.port = $('#inputPort').val();
-            connection.databaseName = $('#inputDatabaseName').val();
-
-            if ($('#inputAuthCertificate').iCheck('update')[0].checked) {
-                let x509 = $('#inputX509Username');
-                if ($('#inputUseX509').iCheck('update')[0].checked && x509.val()) {
-                    connection.x509Username = x509.val();
-                }
-
-                if (inputCertificatePathSelector.val()) {
-                    connection.sslCertificatePath = inputCertificatePathSelector.val();
-                    connection.passPhrase = $("#inputPassPhrase").val();
-                }
-
-                if (rootCertificatePathSelector.val()) {
-                    connection.rootCACertificatePath = rootCertificatePathSelector.val();
-                }
-
-                if (inputCertificateKeyPathSelector.val()) {
-                    connection.certificateKeyPath = inputCertificateKeyPathSelector.val();
-                }
-
-            } else {
-                connection.user = $('#inputUser').val();
-                connection.password = $('#inputPassword').val();
-                connection.authDatabaseName = $('#inputAuthenticationDB').val();
-                connection.useSsl = $('#inputUseSSL').iCheck('update')[0].checked;
-            }
-        }
-
-        if (!checkConnection(connection)) {
-            return;
-        }
-
-
         Ladda.create(document.querySelector('#btnSaveConnection')).start();
 
-        let isEdit = $('#addEditConnectionModalTitle').text() == 'Edit Connection';
-        let currentConnection;
-        if (isEdit) {
-            currentConnection = Connections.findOne({_id: Session.get(Helper.strSessionConnection)});
+        const modal = $('#addEditConnectionModal');
+        const oldCollectionId = modal.data('edit') ? modal.data('edit') : modal.data('clone');
+        let currentConnection = {};
+        if (oldCollectionId) {
+            currentConnection = Connections.findOne({_id: oldCollectionId});
         }
-        if (isEdit) {
-            connection._id = Session.get(Helper.strSessionConnection);
-            loadCertificatesAndSave('updateConnection', connection, currentConnection);
-        }
-        else {
-            loadCertificatesAndSave('saveConnection', connection, currentConnection);
-        }
+        populateConnection(currentConnection, function (connection) {
+            if (modal.data('edit')) {
+                connection._id = currentConnection._id;
+            }
+
+            Meteor.call('checkAndSaveConnection', connection, function (err) {
+                if (err) {
+                    toastr.error(err.error);
+                } else {
+                    toastr.success('Successfully saved connection');
+                    populateConnectionsTable();
+                    modal.modal('hide');
+                }
+
+                Ladda.stopAll();
+            });
+        });
     }
 });
