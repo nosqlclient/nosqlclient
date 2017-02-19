@@ -22,7 +22,10 @@ export let database;
 let spawnedShell;
 
 const keepDroppingCollections = function (collections, i, done) {
-    if (i >= collections.length) done(null, {});
+    if (collections.length === 0 || i >= collections.length) {
+        done(null, {});
+        return;
+    }
 
     if (!collections[i].collectionName.startsWith('system')) {
         collections[i].drop().then(function () {
