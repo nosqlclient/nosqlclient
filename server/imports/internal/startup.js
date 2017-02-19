@@ -24,7 +24,11 @@ const migrateConnectionsIfExist = function () {
         let connection = {options: {}};
         connection._id = oldConnection._id;
         connection.connectionName = oldConnection.name;
-        if (oldConnection.url) connection = parseUrl({url: oldConnection.url});
+        if (oldConnection.url) {
+            connection = parseUrl({url: oldConnection.url});
+            connection.url = oldConnection.url;
+        }
+
         migrateSSHPart(oldConnection, connection);
         if (oldConnection.host && oldConnection.port) {
             connection.servers = [{
