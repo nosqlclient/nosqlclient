@@ -28,7 +28,7 @@ const checkAuthenticationOfConnection = function (connection) {
 
 };
 
-const parseUrl = function (connection) {
+export const parseUrl = function (connection) {
     try {
         let parsedUrl = mongodbUrlParser(connection.url);
         connection.options = connection.options || {};
@@ -67,13 +67,9 @@ const parseUrl = function (connection) {
 };
 
 const checkConnection = function (connection) {
-    if (connection.url) {
-        connection = parseUrl(connection);
-    }
+    if (connection.url) connection = parseUrl(connection);
 
-    if (connection.servers.length === 0) {
-        throw new Meteor.Error('At least one server is required !');
-    }
+    if (connection.servers.length === 0) throw new Meteor.Error('At least one server is required !');
     else {
         for (let server of connection.servers) {
             if (!server.host || !server.port) throw new Meteor.Error('Host and port is required for each server !');
@@ -81,9 +77,7 @@ const checkConnection = function (connection) {
     }
     checkAuthenticationOfConnection(connection);
 
-    if (connection.ssl) {
-        if (!connection.ssl.enabled) delete connection.ssl;
-    }
+    if (connection.ssl && !connection.ssl.enabled) delete connection.ssl;
     if (connection.ssh) {
         if (!connection.ssh.enabled) delete connection.ssh;
         if (!connection.ssh.username) throw new Meteor.Error('Username is required for SSH !');
@@ -153,20 +147,8 @@ Meteor.methods({
     },
 
     updateSettings(settings) {
-        Settings.update({}, {
-            $set: {
-                scale: settings.scale,
-                maxAllowedFetchSize: settings.maxAllowedFetchSize,
-                defaultResultView: settings.defaultResultView,
-                autoCompleteFields: settings.autoCompleteFields,
-                socketTimeoutInSeconds: settings.socketTimeoutInSeconds,
-                connectionTimeoutInSeconds: settings.connectionTimeoutInSeconds,
-                showDBStats: settings.showDBStats,
-                showLiveChat: settings.showLiveChat,
-                dbStatsScheduler: settings.dbStatsScheduler,
-                dumpPath: settings.dumpPath
-            }
-        });
+        Settings.remove({});
+        Settings.insert(settings);
     },
 
     saveConnection(connection) {
