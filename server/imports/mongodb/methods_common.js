@@ -21,6 +21,19 @@ const os = require('os');
 export let database;
 let spawnedShell;
 
+const keepDroppingCollections = function (collections, i, done) {
+    if (i >= collections.length) done(null, {});
+
+    if (!collections[i].collectionName.startsWith('system')) {
+        collections[i].drop().then(function () {
+            keepDroppingCollections(collections, ++i, done);
+        });
+    }
+    else {
+        keepDroppingCollections(collections, ++i, done);
+    }
+};
+
 const getMongoExternalsPath = function () {
     let currentDir = process.cwd().replace(/\\/g, '/');
     currentDir = currentDir.substring(0, currentDir.lastIndexOf("/")) + '/web.browser/app/mongo/';
@@ -298,18 +311,10 @@ Meteor.methods({
     },
 
     dropAllCollections() {
-
         return Async.runSync(function (done) {
             try {
                 database.collections(function (err, collections) {
-                    collections.forEach(function (collection) {
-                        if (!collection.collectionName.startsWith('system')) {
-                            collection.drop(function () {
-                            });
-                        }
-                    });
-
-                    done(err, {});
+                    keepDroppingCollections(collections, 0, done);
                 });
             }
             catch (ex) {

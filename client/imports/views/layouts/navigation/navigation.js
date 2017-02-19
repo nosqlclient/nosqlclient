@@ -221,6 +221,11 @@ Template.navigation.events({
 });
 
 Template.navigation.onRendered(function () {
+    $('.sidebar-collapse').slimScroll({
+        height: '100%',
+        railOpacity: 0.9
+    });
+
     const filterModal = $('#collectionFilterModal');
     filterModal.on('shown.bs.modal', function () {
         initializeFilterTable();
@@ -409,7 +414,6 @@ Template.navigation.onRendered(function () {
                 items: items
             };
         }
-
     });
 });
 
