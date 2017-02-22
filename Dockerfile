@@ -1,4 +1,4 @@
-FROM debian:jessie
+FROM debian
 MAINTAINER R.Sercan Özdemir <info@mongoclient.com>
 
 RUN groupadd -r node && useradd -m -g node node
