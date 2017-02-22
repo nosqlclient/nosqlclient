@@ -1,4 +1,4 @@
-FROM debian
+FROM ubuntu:16.04
 MAINTAINER R.Sercan Özdemir <info@mongoclient.com>
 
 RUN groupadd -r node && useradd -m -g node node
