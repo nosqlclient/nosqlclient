@@ -4,6 +4,8 @@ Cross-platform, easy to use, MongoDB 3.4+ support and more features!
 [![Build Status](https://travis-ci.org/rsercano/mongoclient.svg?branch=master)](https://travis-ci.org/rsercano/mongoclient)
 [![Code Climate](https://codeclimate.com/github/rsercano/mongoclient/badges/gpa.svg)](https://codeclimate.com/github/rsercano/mongoclient)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/6a75fc4e1d3f480f811b5339202400b5)](https://www.codacy.com/app/ozdemirsercan27/mongoclient?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=rsercano/mongoclient&amp;utm_campaign=Badge_Grade)
+[![Siftery](https://img.shields.io/badge/We%20use-Mongoclient-green.svg)]
+(https://siftery.com/mongoclient?recommend)
 [![GitHub release](https://img.shields.io/github/release/rsercano/mongoclient.svg)](https://github.com/rsercano/mongoclient)
 [![Github All Releases](https://img.shields.io/github/downloads/rsercano/mongoclient/total.svg)](https://github.com/rsercano/mongoclient)
 [![Docker Pulls](https://img.shields.io/docker/pulls/mongoclient/mongoclient.svg)](https://hub.docker.com/r/mongoclient/mongoclient/)
