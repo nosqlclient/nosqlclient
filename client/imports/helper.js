@@ -70,7 +70,7 @@ const convertToExtendedJson = function (str) {
     str = replaceShellStuff(str, /objectid\("[A-Z0-9]*"\)/gmi, "$oid");
 
     // replace ISODate|date variations with $date
-    str = replaceShellStuff(str, /isodate\("[A-Z0-9-:.]*"\)|date\("[A-Z0-9-:.]*"\)|newdate\("[A-Z0-9-:.]*"\)|newisodate\("[A-Z0-9-:.]*"\)/gmi, "$date");
+    str = replaceShellStuff(str, /isodate\("[A-Z0-9- :.]*"\)|date\("[A-Z0-9- :.]*"\)|newdate\("[A-Z0-9- :.]*"\)|newisodate\("[A-Z0-9 -:.]*"\)/gmi, "$date");
 
     return str;
 };
