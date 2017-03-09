@@ -107,6 +107,25 @@ const migrateSSHPart = function (oldConnection, connection) {
     }
 };
 
+function tryInjectDefaultConnection() {
+    const DEFAULT_CONNECTION_NAME = "Default (preconfigured)";
+    let defaultConnection = process.env.MONGOCLIENT_DEFAULT_CONNECTION_URL;
+    if (!defaultConnection) return;
+
+    let connection = parseUrl({url: defaultConnection});
+    connection.url = defaultConnection;
+    connection.connectionName = DEFAULT_CONNECTION_NAME;
+
+    // delete existing connection after we parsed the new one
+    let existingConnection = Connections.findOne({ connectionName: DEFAULT_CONNECTION_NAME });
+    if (existingConnection) {
+        Connections.remove(existingConnection._id);
+        connection._id = existingConnection._id;
+    }
+
+    Connections.insert(connection);
+}
+
 Meteor.startup(function () {
     let home = process.env.HOME || process.env.USERPROFILE;
     home = home.replace(/\\/g, "/");
@@ -136,4 +155,5 @@ Meteor.startup(function () {
     ShellCommands.remove({});
     SchemaAnalyzeResult.remove({});
     migrateConnectionsIfExist();
+    tryInjectDefaultConnection();    
 });
