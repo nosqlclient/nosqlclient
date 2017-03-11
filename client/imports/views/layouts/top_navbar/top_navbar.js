@@ -37,6 +37,7 @@ const populateSwitchDatabaseTable = function (data) {
     let tblSwitchDatabases = $('#tblSwitchDatabases');
 
     tblSwitchDatabases.DataTable({
+        responsive: true,
         destroy: true,
         data: data,
         columns: [

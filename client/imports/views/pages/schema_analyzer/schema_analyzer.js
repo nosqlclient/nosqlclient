@@ -52,6 +52,7 @@ const populateFieldsTable = function (data) {
 
     ensureFieldsDataForDatatable(data);
     tblFields.DataTable({
+        responsive: true,
         destroy: true,
         data: data,
         columns: [

@@ -67,6 +67,7 @@ const populateUserRolesTable = function (roles, dataArray) {
         tblUserRoles.DataTable().destroy();
     }
     tblUserRoles.DataTable({
+        responsive: true,
         data: dataArray ? dataArray : roles,
         columns: [
             {data: "role", "width": "50%"},
@@ -151,6 +152,7 @@ export const initUsers = function () {
                 tblUsers.DataTable().destroy();
             }
             tblUsers.DataTable({
+                responsive: true,
                 data: populateTableData(result.result.users),
                 columns: [
                     {data: "user", "width": "20%"},
@@ -427,6 +429,7 @@ Template.manageUsers.events({
                     tblCurrentRoles.DataTable().destroy();
                 }
                 tblCurrentRoles.DataTable({
+                    responsive: true,
                     data: result.result.roles,
                     columns: [
                         {data: "role", "width": "35%"},

@@ -59,6 +59,7 @@ const populateDatatable = function () {
         tblDumps.DataTable().destroy();
     }
     tblDumps.DataTable({
+        responsive: true,
         destroy: true,
         data: Dumps.find().fetch(),
         columns: [

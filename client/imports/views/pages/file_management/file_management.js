@@ -67,6 +67,7 @@ export const initFilesInformation = function () {
 
             convertObjectIdAndDateToString(result.result);
             tblFiles.DataTable({
+                responsive: true,
                 data: result.result,
                 columns: [
                     {data: "_id", "width": "15%"},

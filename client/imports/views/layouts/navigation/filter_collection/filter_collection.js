@@ -28,6 +28,7 @@ export const initializeFilterTable = function () {
     }
 
     selector.DataTable({
+        responsive: true,
         data: collectionNames,
         columns: [
             {data: "name"},

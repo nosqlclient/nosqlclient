@@ -143,6 +143,7 @@ const initCollectionsReadWriteTable = function (collectionReadWriteData) {
     }
 
     table.DataTable({
+        responsive: true,
         stateSave: true,
         lengthMenu: [[5, 10, 25, -1], [5, 10, 25, "All"]],
         data: collectionReadWriteData,

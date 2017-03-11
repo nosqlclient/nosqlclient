@@ -56,6 +56,7 @@ const populateRolesToInheritTable = function (role, dataArray) {
         tblRolesToInherit.DataTable().destroy();
     }
     tblRolesToInherit.DataTable({
+        responsive: true,
         data: dataArray ? dataArray : role.inheritedRoles,
         columns: [
             {data: "role", "width": "50%"},
@@ -85,6 +86,7 @@ const populateRolePrivilegesTable = function (role, dataArray) {
     }
 
     tblRolePrivileges.DataTable({
+        responsive: true,
         data: dataArray ? dataArray : populateTableDataForRole(role),
         columns: [
             {data: "privilege[, ]", "width": "50%"},
@@ -460,6 +462,7 @@ export const initRoles = function () {
                 tblRoles.DataTable().destroy();
             }
             tblRoles.DataTable({
+                responsive: true,
                 data: result.result.roles,
                 columns: [
                     {data: "role", "width": "35%"},

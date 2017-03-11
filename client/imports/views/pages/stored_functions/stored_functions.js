@@ -22,6 +22,7 @@ const init = function (isRefresh) {
                 tblStoredFunctions.DataTable().destroy();
             }
             tblStoredFunctions.DataTable({
+                responsive: true,
                 data: result.result,
                 columns: [
                     {data: "_id"},

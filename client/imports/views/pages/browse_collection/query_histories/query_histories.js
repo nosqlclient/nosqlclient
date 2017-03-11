@@ -65,6 +65,7 @@ export const initQueryHistories = function () {
 
 
     tblQueryHistories.DataTable({
+        responsive: true,
         lengthMenu: [3, 5, 10, 20],
         data: queryHistories,
         autoWidth: false,

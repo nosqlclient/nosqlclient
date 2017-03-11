@@ -29,6 +29,7 @@ export const populateConnectionsTable = function () {
     }
 
     tblConnections.DataTable({
+        responsive: true,
         data: Connections.find().fetch(),
         columns: [
             {data: "_id", sClass: "hide_column"},
