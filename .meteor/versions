@@ -46,7 +46,7 @@ meteor@1.6.1
 meteor-base@1.0.4
 meteorhacks:async@1.0.0
 minifier-css@1.2.16
-minifier-js@1.2.17
+minifier-js@1.2.18
 minimongo@1.0.20
 mobile-experience@1.0.4
 mobile-status-bar@1.0.14
@@ -67,11 +67,11 @@ reload@1.1.11
 retry@1.0.9
 routepolicy@1.0.12
 session@1.1.7
-shell-server@0.2.2
+shell-server@0.2.3
 spacebars@1.0.13
 spacebars-compiler@1.1.0
-standard-minifier-css@1.3.3
-standard-minifier-js@1.2.2
+standard-minifier-css@1.3.4
+standard-minifier-js@1.2.3
 templating@1.3.0
 templating-compiler@1.3.0
 templating-runtime@1.3.0
