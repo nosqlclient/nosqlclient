@@ -31,8 +31,24 @@ let Helper = function () {
 };
 
 Helper.prototype = {
-    getConnectionUrl (connection) {
+    getConnectionUrl (connection, addDB) {
         if (connection.url) {
+            if (!addDB) {
+                let options = "";
+                if (connection.url.indexOf('?') !== -1) {
+                    options = "?" + connection.url.split('?')[1];
+                }
+
+                const splited = connection.url.split('/');
+                if (splited.length <= 3) {
+                    return connection.url += "/" + options;
+                }
+                else {
+                    splited[3] = '';
+                    return splited.join('/') + options;
+                }
+            }
+
             return connection.url;
         }
 
@@ -49,7 +65,8 @@ Helper.prototype = {
             connectionUrl += server.host + ':' + server.port + ',';
         }
         if (connectionUrl.endsWith(',')) connectionUrl = connectionUrl.substring(0, connectionUrl.length - 1);
-        connectionUrl += '/' + connection.databaseName;
+        connectionUrl += "/";
+        if (addDB) connectionUrl += connection.databaseName;
 
         // options
         if (connection.authenticationType) connectionUrl += addOptionToUrl(connectionUrl, 'authMechanism', connection.authenticationType.toUpperCase().replace(new RegExp("_", 'g'), "-"));

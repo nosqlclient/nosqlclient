@@ -33,7 +33,7 @@ Meteor.methods({
 
     restoreDump(connectionId, dumpInfo) {
         const connection = Connections.findOne({_id: connectionId});
-        const connectionUrl = Helper.getConnectionUrl(connection);
+        const connectionUrl = Helper.getConnectionUrl(connection, true);
         const path = dumpInfo.filePath.substring(0, dumpInfo.filePath.lastIndexOf('/'));
         const fileName = dumpInfo.filePath.substring(dumpInfo.filePath.lastIndexOf('/') + 1);
 
@@ -60,7 +60,7 @@ Meteor.methods({
     takeDump(connectionId, path) {
         const connection = Connections.findOne({_id: connectionId});
         const date = new Date();
-        const connectionUrl = Helper.getConnectionUrl(connection);
+        const connectionUrl = Helper.getConnectionUrl(connection, true);
         const fileName = connection.databaseName + "_" + date.getTime() + ".tar";
         const fullFilePath = path.trim() + "/" + fileName;
 

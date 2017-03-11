@@ -170,23 +170,6 @@ Template.topNavbar.events({
 
         Ladda.create(document.querySelector('#btnConnectSwitchedDatabase')).start();
         let connection = Connections.findOne({_id: Session.get(Helper.strSessionConnection)});
-        if (connection.url) {
-            const splited = connection.url.split('/');
-            if (connection.url.indexOf('?') !== -1) {
-                for (let i = 0; i < splited.length; i++) {
-                    if (splited[i].endsWith('?')) {
-                        connection.url = connection.url.replace(splited[i], selector.val() + '?');
-                    }
-                }
-            }
-            else if (splited.length <= 3) {
-                connection.url = connection.url += "/" + selector.val();
-            }
-            else {
-                splited[3] = selector.val();
-                connection.url = splited.join('/');
-            }
-        }
         connection.databaseName = selector.val();
         Meteor.call('saveConnection', connection);
 

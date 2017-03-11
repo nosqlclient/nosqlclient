@@ -65,7 +65,7 @@ const getProperMongo = function () {
     }
 };
 
-const proceedConnectingMongodb = function (connectionUrl, connectionOptions, done) {
+const proceedConnectingMongodb = function (dbName, connectionUrl, connectionOptions, done) {
     if (!connectionOptions) {
         connectionOptions = {};
     }
@@ -78,7 +78,7 @@ const proceedConnectingMongodb = function (connectionUrl, connectionOptions, don
                 if (db) db.close();
                 return;
             }
-            database = db;
+            database = db.db(dbName);
             database.listCollections().toArray(function (err, collections) {
                 done(err, collections);
             });
@@ -89,6 +89,7 @@ const proceedConnectingMongodb = function (connectionUrl, connectionOptions, don
             if (db) {
                 db.close();
             }
+
         }
     });
 };
@@ -258,7 +259,7 @@ Meteor.methods({
                             done(new Meteor.Error(error.message), null);
                             return;
                         }
-                        proceedConnectingMongodb(connectionUrl, connectionOptions, done);
+                        proceedConnectingMongodb(connection.databaseName, connectionUrl, connectionOptions, done);
                         spawnedShell = spawn(getProperMongo(), [connectionUrl]);
                         setEventsToShell(connectionId);
                     }));
@@ -270,7 +271,7 @@ Meteor.methods({
                     });
                 }
                 else {
-                    proceedConnectingMongodb(connectionUrl, connectionOptions, done);
+                    proceedConnectingMongodb(connection.databaseName, connectionUrl, connectionOptions, done);
                 }
             }
             catch (ex) {
@@ -366,6 +367,7 @@ Meteor.methods({
 
                 LOGGER.info('[shell]', mongoPath, connectionUrl);
                 spawnedShell = spawn(mongoPath, [connectionUrl]);
+                spawnedShell.stdin.write('use ' + connection.databaseName + '\n');
                 setEventsToShell(connectionId);
             }
         }
@@ -376,12 +378,12 @@ Meteor.methods({
     },
 
     analyzeSchema(connectionId, collection){
-        const connectionUrl = Helper.getConnectionUrl(Connections.findOne({_id: connectionId}));
+        const connectionUrl = Helper.getConnectionUrl(Connections.findOne({_id: connectionId}), true);
         const mongoPath = getProperMongo();
 
         let args = [connectionUrl, '--quiet', '--eval', 'var collection =\"' + collection + '\", outputFormat=\"json\"', getMongoExternalsPath() + '/variety/variety.js_'];
 
-        LOGGER.info('[analyzeSchema]', args, connectionUrl, collection);
+        LOGGER.info('[analyzeSchema]', args, collection);
         try {
             let spawned = spawn(mongoPath, args);
             let message = "";
