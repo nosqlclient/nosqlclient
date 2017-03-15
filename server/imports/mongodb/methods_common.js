@@ -383,8 +383,13 @@ Meteor.methods({
                 setEventsToShell(connectionId);
             }
 
-            LOGGER.info('executing command "use ' + connection.databaseName + '" on shell');
-            spawnedShell.stdin.write('use ' + connection.databaseName + '\n');
+            if (spawnedShell) {
+                LOGGER.info('executing command "use ' + connection.databaseName + '" on shell');
+                spawnedShell.stdin.write('use ' + connection.databaseName + '\n');
+            }
+            else {
+                return {err: new Meteor.Error("Couldn't spawn shell !"), result: null};
+            }
         }
         catch (ex) {
             LOGGER.error('[shell]', ex);
