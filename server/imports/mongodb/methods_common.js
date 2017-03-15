@@ -378,8 +378,8 @@ Meteor.methods({
 
                 LOGGER.info('[shell]', mongoPath, connectionUrl);
                 spawnedShell = spawn(mongoPath, [connectionUrl]);
-                spawnedShell.stdin.write('use ' + connection.databaseName + '\n');
                 setEventsToShell(connectionId);
+                spawnedShell.stdin.write('use ' + connection.databaseName + '\n');
             }
         }
         catch (ex) {
