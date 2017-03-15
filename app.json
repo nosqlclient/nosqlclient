@@ -12,7 +12,12 @@
   ],
   "website": "http://www.mongoclient.com",
   "env": {
-    "BUILDPACK_URL": "https://github.com/rsercano/meteor-buildpack-horse"
+    "BUILDPACK_URL": "https://github.com/rsercano/meteor-buildpack-horse",
+    "ROOT_URL": {
+      "description": "A unique herokuapp subdomain",
+      "value": "http://my_unique_mongoclient.herokuapp",
+      "required": true
+    }
   },
   "addons": [
     "mongolab",
