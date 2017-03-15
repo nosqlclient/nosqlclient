@@ -384,7 +384,7 @@ Meteor.methods({
             }
 
             if (spawnedShell) {
-                LOGGER.info('executing command "use ' + connection.databaseName + '" on shell');
+                LOGGER.info('[shell]', 'executing command "use ' + connection.databaseName + '" on shell');
                 spawnedShell.stdin.write('use ' + connection.databaseName + '\n');
             }
             else {
