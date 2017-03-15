@@ -96,7 +96,7 @@ const proceedConnectingMongodb = function (dbName, connectionUrl, connectionOpti
 
 const setEventsToShell = function (connectionId) {
     spawnedShell.stdout.on('data', Meteor.bindEnvironment(function (data) {
-        if (data.toString()) {
+        if (data && data.toString()) {
             ShellCommands.insert({
                 'date': Date.now(),
                 'connectionId': connectionId,
@@ -106,7 +106,7 @@ const setEventsToShell = function (connectionId) {
     }));
 
     spawnedShell.stderr.on('data', Meteor.bindEnvironment(function (data) {
-        if (data.toString()) {
+        if (data && data.toString()) {
             ShellCommands.insert({
                 'date': Date.now(),
                 'connectionId': connectionId,
@@ -128,6 +128,7 @@ const setEventsToShell = function (connectionId) {
     }));
 
     spawnedShell.on('error', Meteor.bindEnvironment(function (err) {
+        LOGGER.error('unexpected error on spawned shell: ' + err);
         if (err) {
             ShellCommands.insert({
                 'date': Date.now(),
