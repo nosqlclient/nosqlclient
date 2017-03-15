@@ -19,6 +19,7 @@
       "required": true
     }
   },
+  "stack": "heroku-16",
   "addons": [
     "mongolab",
     "logentries"
