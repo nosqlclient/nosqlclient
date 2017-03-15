@@ -95,6 +95,19 @@ const proceedConnectingMongodb = function (dbName, connectionUrl, connectionOpti
 };
 
 const setEventsToShell = function (connectionId) {
+    LOGGER.info('[shell]', 'binding events to shell');
+
+    spawnedShell.on('error', Meteor.bindEnvironment(function (err) {
+        LOGGER.error('unexpected error on spawned shell: ' + err);
+        if (err) {
+            ShellCommands.insert({
+                'date': Date.now(),
+                'connectionId': connectionId,
+                'message': 'unexpected error ' + err.message
+            });
+        }
+    }));
+
     spawnedShell.stdout.on('data', Meteor.bindEnvironment(function (data) {
         if (data && data.toString()) {
             ShellCommands.insert({
@@ -367,19 +380,10 @@ Meteor.methods({
 
                 LOGGER.info('[shell]', mongoPath, connectionUrl);
                 spawnedShell = spawn(mongoPath, [connectionUrl]);
-                LOGGER.info('[shell]', 'binding error event to shell');
-                spawnedShell.on('error', Meteor.bindEnvironment(function (err) {
-                    LOGGER.error('unexpected error on spawned shell: ' + err);
-                    if (err) {
-                        ShellCommands.insert({
-                            'date': Date.now(),
-                            'connectionId': connectionId,
-                            'message': 'unexpected error ' + err.message
-                        });
-                    }
-                }));
+                setEventsToShell(connectionId);
             }
 
+            LOGGER.info('executing command "use ' + connection.databaseName + '" on shell');
             spawnedShell.stdin.write('use ' + connection.databaseName + '\n');
         }
         catch (ex) {
