@@ -1,5 +1,5 @@
-@import url(fonts/roboto.css);
-@import url(fonts/open_sans.css);
+@import url(http://fonts.googleapis.com/css?family=Roboto:400,300,500,700);
+@import url(http://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700);
 
 .chat-element, .chat-photo, .fc-button, .media-body {
     overflow: hidden
