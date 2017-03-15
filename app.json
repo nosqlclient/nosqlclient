@@ -15,7 +15,7 @@
     "BUILDPACK_URL": "https://github.com/rsercano/meteor-buildpack-horse",
     "ROOT_URL": {
       "description": "A unique herokuapp subdomain",
-      "value": "http://my_unique_mongoclient.herokuapp",
+      "value": "http://my_unique_mongoclient.herokuapp.com",
       "required": true
     }
   },
