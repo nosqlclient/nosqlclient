@@ -126,6 +126,16 @@ const setEventsToShell = function (connectionId) {
         // remove all for further
         ShellCommands.remove({});
     }));
+
+    spawnedShell.on('error', Meteor.bindEnvironment(function (err) {
+        if (err) {
+            ShellCommands.insert({
+                'date': Date.now(),
+                'connectionId': connectionId,
+                'message': 'unexpected error ' + err.message
+            });
+        }
+    }));
 };
 
 Meteor.methods({
