@@ -367,6 +367,7 @@ Meteor.methods({
 
                 LOGGER.info('[shell]', mongoPath, connectionUrl);
                 spawnedShell = spawn(mongoPath, [connectionUrl]);
+                LOGGER.info('[shell]', 'binding error event to shell');
                 spawnedShell.on('error', Meteor.bindEnvironment(function (err) {
                     LOGGER.error('unexpected error on spawned shell: ' + err);
                     if (err) {
