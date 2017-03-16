@@ -1,0 +1,10 @@
+{
+  "name": "Mongoclient",
+  "repository": "https://github.com/rsercano/mongoclient",
+  "description": "MongoDB Management Tool",
+  "logo": "http://mongoclient.com/img/logo/head_only_big.png",
+  "website": "http://www.mongoclient.com",
+  "addons": [
+    "scalingo-mongodb"
+  ]
+}
