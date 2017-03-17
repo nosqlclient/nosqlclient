@@ -23,7 +23,7 @@
     "jsoneditor": "^5.5.6",
     "ladda": "^1.0.0",
     "meteor-node-stubs": "^0.2.3",
-    "mongodb": "2.2.24",
+    "mongodb": "2.2.25",
     "mongodb-backup": "~1.6.9",
     "mongodb-restore": "~1.6.2",
     "parse-mongo-url": "^1.1.1",
