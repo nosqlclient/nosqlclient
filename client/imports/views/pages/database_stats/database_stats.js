@@ -648,11 +648,9 @@ Template.databaseStats.onRendered(function () {
             const fetchedSettings = Settings.findOne();
             if (fetchedSettings.showDBStats && !interval) {
                 interval = Meteor.setInterval(function () {
+                    fetchStats();
                     fetchStatus();
                 }, fetchedSettings.dbStatsScheduler ? fetchedSettings.dbStatsScheduler : 3000);
-
-                // fetch stats only once.
-                fetchStats();
             }
         }
     });
