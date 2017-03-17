@@ -11,6 +11,7 @@ ENV MONGO_VERSION 3.4.0
 ENV MONGO_MAJOR 3.4
 ENV MONGO_PACKAGE mongodb-org
 
+
 # default values for Meteor environment variables
 ENV ROOT_URL http://localhost
 ENV MONGO_URL mongodb://127.0.0.1:27017/meteor
