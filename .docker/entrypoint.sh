@@ -5,11 +5,12 @@ set -e
 # try to start local MongoDB if no external MONGO_URL was set
 if [[ "${MONGO_URL}" == *"127.0.0.1"* ]]; then
   if hash mongod 2>/dev/null; then
-    mkdir -p /data/{db,configdb}
     printf "\n[-] External MONGO_URL not found. Starting local MongoDB...\n\n"
-    mongod --storageEngine=wiredTiger &
+    chown -R mongodb:mongodb /data/{db,configdb}
+    exec gosu mongodb mongod --storageEngine=wiredTiger > /dev/null 2>&1 &
   else
-    echo "ERROR: Mongo not installed inside the container, try to set MONGO_URL env variable"
+    echo "ERROR: Mongo not installed inside the container."
+    echo "Please supply a MONGO_URL environment variable."
     exit 1
   fi
 fi
