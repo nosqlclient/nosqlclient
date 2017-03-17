@@ -1,16 +1,15 @@
-FROM debian:jessie
+FROM ubuntu:16.04
 MAINTAINER R.Sercan Özdemir <info@mongoclient.com>
 
 RUN groupadd -r node && useradd -m -g node node
 
-ENV NODE_VERSION 4.7.3
+ENV NODE_VERSION 4.7.0
 ENV GOSU_VERSION 1.10
 
 # install MongoDB
-ENV MONGO_VERSION 3.4.2
+ENV MONGO_VERSION 3.4.0
 ENV MONGO_MAJOR 3.4
 ENV MONGO_PACKAGE mongodb-org
-
 
 # default values for Meteor environment variables
 ENV ROOT_URL http://localhost
