@@ -3,7 +3,7 @@ MAINTAINER R.Sercan Özdemir <info@mongoclient.com>
 
 RUN groupadd -r node && useradd -m -g node node
 
-ENV NODE_VERSION 4.7.0
+ENV NODE_VERSION 4.7.3
 ENV GOSU_VERSION 1.10
 
 # install MongoDB
