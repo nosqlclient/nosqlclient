@@ -6,11 +6,6 @@ RUN groupadd -r node && useradd -m -g node node
 ENV NODE_VERSION 4.7.3
 ENV GOSU_VERSION 1.10
 
-# install MongoDB
-ENV MONGO_VERSION 3.4.2
-ENV MONGO_MAJOR 3.4
-ENV MONGO_PACKAGE mongodb-org
-
 # default values for Meteor environment variables
 ENV ROOT_URL http://localhost
 ENV MONGO_URL mongodb://127.0.0.1:27017/meteor
@@ -45,7 +40,7 @@ RUN cd $APP_SOURCE_DIR && \
 RUN cp -R $APP_BUNDLE_DIR/bundle/programs/server/npm/node_modules/tunnel-ssh $APP_BUNDLE_DIR/bundle/programs/server/npm/node_modules/meteor/modules-runtime/node_modules/
 
 EXPOSE 3000
-
+USER node
 WORKDIR $APP_BUNDLE_DIR/bundle
 
 # start the app

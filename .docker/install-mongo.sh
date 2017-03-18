@@ -2,24 +2,20 @@
 
 set -e
 
-  printf "\n[-] Installing MongoDB ${MONGO_VERSION}...\n\n"
+  printf "\n[-] Installing MongoDB 3.4.2...\n\n"
 
-	apt-key adv --keyserver ha.pool.sks-keyservers.net --recv-keys 0C49F3730359A14518585931BC711F9BA15703C6
+  cd /tmp
+  curl -O -L https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-debian81-3.4.2.tgz
+  tar xvzf mongodb-linux-x86_64-debian81-3.4.2.tgz
+  rm mongodb-linux-x86_64-debian81-3.4.2.tgz
 
-  echo "deb http://repo.mongodb.org/apt/debian jessie/mongodb-org/$MONGO_MAJOR main" > /etc/apt/sources.list.d/mongodb-org.list
+  rm -rf /opt/mongodb
+  mv mongodb-linux-x86_64-debian81-3.4.2 /opt/mongodb
 
-	apt-get update
+  ln -sf /opt/mongodb/bin/mongo /usr/bin/mongo
+  ln -sf /opt/mongodb/bin/mongod /usr/bin/mongod
 
-  apt-get install -y \
-    ${MONGO_PACKAGE}=$MONGO_VERSION \
-    ${MONGO_PACKAGE}-server=$MONGO_VERSION \
-    ${MONGO_PACKAGE}-shell=$MONGO_VERSION \
-    ${MONGO_PACKAGE}-mongos=$MONGO_VERSION \
-    ${MONGO_PACKAGE}-tools=$MONGO_VERSION
-
-  mkdir -p /data/{db,configdb}
+  mkdir -p /data/db
   chown -R node:node /data
 
-	rm -rf /var/lib/apt/lists/*
-	rm -rf /var/lib/mongodb
-  mv /etc/mongod.conf /etc/mongod.conf.orig
+  printf "\n[-] MongoDB installed successfully\n\n"
