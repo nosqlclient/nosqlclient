@@ -44,6 +44,5 @@ USER node
 WORKDIR $APP_BUNDLE_DIR/bundle
 
 # start the app
-RUN ["chmod", "+x", "/entrypoint.sh"]
 ENTRYPOINT ["./entrypoint.sh"]
 CMD ["node", "main.js"]
