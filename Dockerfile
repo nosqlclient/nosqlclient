@@ -1,4 +1,4 @@
-FROM ubuntu:16.04
+FROM debian:jessie
 MAINTAINER R.Sercan Özdemir <info@mongoclient.com>
 
 RUN groupadd -r node && useradd -m -g node node
@@ -7,7 +7,7 @@ ENV NODE_VERSION 4.7.3
 ENV GOSU_VERSION 1.10
 
 # install MongoDB
-ENV MONGO_VERSION 3.4.0
+ENV MONGO_VERSION 3.4.2
 ENV MONGO_MAJOR 3.4
 ENV MONGO_PACKAGE mongodb-org
 
@@ -34,7 +34,6 @@ RUN cd $BUILD_SCRIPTS_DIR && \
 
 # copy the app to the container
 COPY . $APP_SOURCE_DIR
-RUN chmod -R 770 $BUILD_SCRIPTS_DIR
 
 # install Meteor, build app, clean up
 RUN cd $APP_SOURCE_DIR && \
