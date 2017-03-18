@@ -18,7 +18,7 @@ set -e
     ${MONGO_PACKAGE}-tools=$MONGO_VERSION
 
   mkdir -p /data/{db,configdb}
-  chown -R mongodb:mongodb /data/{db,configdb}
+  chown -R node:node /data/{db,configdb}
 
 	rm -rf /var/lib/apt/lists/*
 	rm -rf /var/lib/mongodb
