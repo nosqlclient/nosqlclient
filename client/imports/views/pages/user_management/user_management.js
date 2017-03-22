@@ -422,6 +422,7 @@ Template.userManagement.onRendered(function () {
     let connections = this.subscribe('connections');
     let actions = this.subscribe('actions');
 
+    let initialized = false;
     this.autorun(() => {
         if (settings.ready() && connections.ready() && actions.ready()) {
             Ladda.create(document.querySelector('#btnRefreshUsers')).start();
@@ -433,7 +434,10 @@ Template.userManagement.onRendered(function () {
 
             chckRunOnAdminDB.iCheck('uncheck');
 
-            initUserTree();
+            if (!initialized) {
+                initialized = true;
+                initUserTree();
+            }
             //new Clipboard('.reference');
         }
     });
