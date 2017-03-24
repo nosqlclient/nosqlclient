@@ -18,7 +18,7 @@ Meteor.methods({
                 let filesCollection = database.collection(bucketName + ".files");
                 let chunksCollection = database.collection(bucketName + ".chunks");
 
-                filesCollection.find(selector).toArray(function (err, docs) {
+                filesCollection.find(selector, {_id: 1}).toArray(function (err, docs) {
                     if (err) {
                         done(err, docs);
                         return;
