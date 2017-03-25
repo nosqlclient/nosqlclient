@@ -50,11 +50,11 @@ const populateCollectionInfo = function (result, settings) {
     switch (settings.scale) {
         case "MegaBytes":
             scale = 1024 * 1024;
-            text = "MBs";
+            text = "MB";
             break;
         case "KiloBytes":
             scale = 1024;
-            text = "KBs";
+            text = "KB";
             break;
         default:
             scale = 1;
