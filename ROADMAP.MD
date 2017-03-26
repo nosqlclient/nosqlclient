@@ -16,6 +16,6 @@ The roadmap is likely that priorities will change, but the list below gives an i
 - SQL Queries
 - Improving dump/restore section to make it more usable. Currently it's experimental.
 - [x] A migration tool for version transitions of mongoclient. (Import connections, dumps, settings from an older version)
-- Writing a brief documentation about contributing and using mongoclient and more. 
+- [x] Writing a brief documentation about contributing and using mongoclient and more. 
 
 Apart from these, all open issues, include upcoming enhancements or bug-fixes to be implemented
