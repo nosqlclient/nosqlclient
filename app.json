@@ -1,7 +1,7 @@
 {
   "name": "Mongoclient",
   "description": "MongoDB Management Tool",
-  "repository": "https://github.com/rsercano/mongoclient",
+  "repository": "https://github.com/mongoclient/mongoclient",
   "logo": "http://mongoclient.com/img/logo/head_only_big.png",
   "keywords": [
     "meteor",

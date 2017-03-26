@@ -5,7 +5,6 @@ import {FlowRouter} from "meteor/kadira:flow-router";
 import Helper from "/client/imports/helper";
 import {Connections} from "/lib/imports/collections/connections";
 import {connect, populateConnectionsTable} from "/client/imports/views/layouts/top_navbar/connections/connections";
-import "/client/imports/views/layouts/breaking_changes/breaking_changes";
 import "/client/imports/views/layouts/top_navbar/connections/connections";
 import "./top_navbar.html";
 
