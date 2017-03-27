@@ -139,7 +139,7 @@ Meteor.startup(function () {
             connectionTimeoutInSeconds: 3,
             dbStatsScheduler: 3000,
             showDBStats: true,
-            showLiveChat: false,
+            showLiveChat: true,
             singleTabResultSets: false,
             dumpPath: home + "/myDumps/"
         });

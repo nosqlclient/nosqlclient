@@ -80,6 +80,7 @@ tracker@1.1.2
 twbs:bootstrap@3.3.6
 ui@1.0.12
 underscore@1.0.10
+universe:mailchimp-v3-api@1.0.2
 url@1.1.0
 webapp@1.3.14
 webapp-hashing@1.0.9

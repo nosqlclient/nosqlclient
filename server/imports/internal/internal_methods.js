@@ -7,6 +7,7 @@ import {QueryHistory} from "/lib/imports/collections/query_history";
 import {Dumps} from "/lib/imports/collections/dumps";
 import {Settings} from "/lib/imports/collections/settings";
 import {Connections} from "/lib/imports/collections/connections";
+import mailchimpAPI from "meteor/universe:mailchimp-v3-api";
 import SchemaAnalyzeResult from "/lib/imports/collections/schema_analyze_result";
 import {HTTP} from "meteor/http";
 import LOGGER from "../internal/logger";
@@ -97,6 +98,26 @@ const saveConnectionToDB = function (connection) {
 };
 
 Meteor.methods({
+    handleSubscriber(email){
+        LOGGER.info('[subscriber]', email);
+        const regex = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+        if (!regex.test(email)) {
+            LOGGER.error('[subscriber]', 'not valid email: ' + email);
+            throw new Meteor.Error(400, 'Not a valid email address !');
+        }
+        return mailchimpAPI.setApiKey('96b3d560f7ce4cdf78a65383375ee73b-us15').addANewListMember({
+            list_id: 'ff8b28a54d',
+            body: {
+                email_address: email,
+                status: 'subscribed'
+            }
+        }).then(null, function (reason) {
+            LOGGER.error('[subscribe]', reason.response.statusCode, JSON.parse(reason.response.content).title);
+            throw new Meteor.Error(reason.response.statusCode, JSON.parse(reason.response.content).title);
+        });
+
+    },
+
     checkMongoclientVersion(){
         try {
             const response = HTTP.get('https://api.github.com/repos/mongoclient/mongoclient/releases/latest', {headers: {"User-Agent": "Mongoclient"}});

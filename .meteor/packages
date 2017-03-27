@@ -33,3 +33,4 @@ kadira:flow-router
 kadira:blaze-layout
 arillo:flow-router-helpers
 reactive-var@1.0.11
+universe:mailchimp-v3-api

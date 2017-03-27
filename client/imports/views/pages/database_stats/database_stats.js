@@ -14,6 +14,8 @@ require('datatables.net-buttons-bs')(window, $);
 require('datatables.net-responsive-bs')(window, $);
 require('bootstrap-filestyle');
 
+const toastr = require('toastr');
+const Ladda = require('ladda');
 /**
  * Created by RSercan on 26.12.2015.
  */
@@ -633,6 +635,23 @@ const initMemoryChart = function (data, text) {
         }
     }
 };
+
+Template.databaseStats.events({
+    'click #btnSubscribe'(){
+        Ladda.create(document.querySelector('#btnSubscribe')).start();
+
+        Meteor.call("handleSubscriber", $('#txtEmailToSubscribe').val(), function (err) {
+            if (err) {
+                toastr.error("Failed: " + err.message);
+            }
+            else {
+                toastr.success("Thank you for subscription !");
+            }
+
+            Ladda.stopAll();
+        });
+    }
+});
 
 Template.databaseStats.onRendered(function () {
     let settings = this.subscribe('settings');
