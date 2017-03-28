@@ -1,8 +1,8 @@
 {
   "name": "Mongoclient",
   "main": "index.js",
-  "electronVersion": "1.6.0",
+  "version": "2.0.0",
   "dependencies": {
-    "electrify": "2.1.4"
+    "shelljs": "^0.7.7"
   }
 }

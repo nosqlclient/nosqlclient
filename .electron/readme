@@ -1,0 +1,9 @@
+- Bundle mongoclient with command: meteor build --server --directory <output> and put contents into app folder
+- Copy contents of C:\Users\Sercan\AppData\Local\.meteor\packages\meteor-tool\1.4.3_2\mt-os.windows.x86_32\dev_bundle\server-lib\node_modules to app\programs\server\node_modules
+- Copy Node (4.2.7) to bin folder
+- Copy Mongod (>=3.2.6) to bin folder
+
+# Steps to RUN directly
+- Run npm install -g electron
+- Run electron .
+
