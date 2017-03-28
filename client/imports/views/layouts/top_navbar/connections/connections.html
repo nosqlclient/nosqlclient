@@ -322,12 +322,15 @@
     <div class="form-group"><label class="col-lg-2 control-label">Connection Timeout</label>
         <div data-placement="top"
              data-toggle="tooltip" class="col-lg-10">
-            <input id="inputConnectionTimeoutOverride"
-                   data-required="true"
-                   min="1"
-                   type="number"
-                   placeholder="Connection Timeout"
-                   class="form-control">
+            <div class="input-group m-b">
+                <input id="inputConnectionTimeoutOverride"
+                       data-required="true"
+                       min="1"
+                       type="number"
+                       placeholder="Connection Timeout"
+                       class="form-control">
+                <span class="input-group-addon"> Seconds</span>
+            </div>
             <span class="help-block m-b-none">Enter to override <b>default</b> connection timeout <b>from settings</b></span>
         </div>
     </div>
@@ -335,12 +338,15 @@
     <div class="form-group"><label class="col-lg-2 control-label">Socket Timeout</label>
         <div data-placement="top"
              data-toggle="tooltip" class="col-lg-10">
-            <input id="inputSocketTimeoutOverride"
-                   data-required="true"
-                   min="1"
-                   type="number"
-                   placeholder="Socket Timeout"
-                   class="form-control">
+            <div class="input-group m-b">
+                <input id="inputSocketTimeoutOverride"
+                       data-required="true"
+                       min="1"
+                       type="number"
+                       placeholder="Socket Timeout"
+                       class="form-control">
+                <span class="input-group-addon"> Seconds</span>
+            </div>
             <span class="help-block m-b-none">Enter to override <b>default</b> socket timeout <b>from settings</b></span>
         </div>
     </div>
