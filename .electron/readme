@@ -4,6 +4,10 @@
 - Copy Mongod (>=3.2.6) to bin folder
 
 # Steps to RUN directly
-- Run npm install -g electron
-- Run electron .
+- Run: npm install -g electron
+- Run: electron .
+
+# Steps to package
+- Run: npm install -g electron-packager
+- Run: electron-packager . Mongoclient --app-version=2.0.0 --build-version=2.0.0 --icon=D:\git\mongoclient_packaged\app\programs\web.browser\app\logo\head.ico --overwrite --out=D:\git\mongoclient_packaged\packaged --electronVersion=1.6.2
 
