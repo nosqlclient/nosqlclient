@@ -13,6 +13,8 @@ Meteor.methods({
     deleteFiles(bucketName, selector){
         LOGGER.info('[deleteFiles]', bucketName, selector);
 
+        selector = Helper.convertJSONtoBSON(selector);
+
         let result = Async.runSync(function (done) {
             try {
                 let filesCollection = database.collection(bucketName + ".files");
@@ -74,6 +76,8 @@ Meteor.methods({
     getFileInfos(bucketName, selector, limit) {
         limit = parseInt(limit) || 100;
         selector = selector || {};
+        selector = Helper.convertJSONtoBSON(selector);
+
         LOGGER.info('[getFileInfos]', bucketName, JSON.stringify(selector), limit);
 
         let result = Async.runSync(function (done) {
