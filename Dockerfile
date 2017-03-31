@@ -10,6 +10,7 @@ ENV GOSU_VERSION 1.10
 ENV ROOT_URL http://localhost
 ENV MONGO_URL mongodb://127.0.0.1:27017/meteor
 ENV PORT 3000
+ENV INSTALL_MONGO true
 
 # build directories
 ENV APP_SOURCE_DIR /opt/meteor/src
