@@ -54,10 +54,12 @@ Template.mainLayout.rendered = function () {
 
     let settings = this.subscribe('settings');
 
+    let initializedLiveChat = false;
     this.autorun(() => {
         if (settings.ready()) {
             const foundSettings = Settings.findOne();
-            if (foundSettings && foundSettings.showLiveChat) {
+            if (foundSettings && foundSettings.showLiveChat && !initializedLiveChat) {
+                initializedLiveChat = true;
                 liveChatFunc(window, window.nudgespot || []);
                 window.nudgespot.init("748ae792d632f6c5e14ad610e53ef745");
             }
