@@ -472,8 +472,9 @@ const saveFindEditor = function () {
 
     swal({
         title: "Are you sure ?",
-        text: deletedObjectIds.length + ' documents will be deleted, ' + updateObjects.length + ' documents will be updated and ' + addedObjects.length + ' documents will be inserted, are you sure ?',
+        text: deletedObjectIds.length + ' documents will be deleted, ' + updateObjects.length + ' documents will be updated and ' + addedObjects.length + ' documents will be inserted into <b>' + Session.get(Helper.strSessionSelectedCollection) + '</b>, are you sure ?',
         type: "info",
+        html: true,
         showCancelButton: true,
         confirmButtonColor: "#DD6B55",
         confirmButtonText: "Yes!",
