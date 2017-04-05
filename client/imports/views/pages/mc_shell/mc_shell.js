@@ -136,7 +136,7 @@ const initializeCommandCodeMirror = function () {
                 },
                 "Ctrl-Space": "autocomplete",
                 "Enter": function (cm) {
-                    Meteor.call("executeShellCommand", cm.getValue(), (err) => {
+                    Meteor.call("executeShellCommand", cm.getValue(), Session.get(Helper.strSessionConnection), (err) => {
                         if (err) {
                             Helper.showMeteorFuncError(err, null, "Couldn't execute shell command");
                         }
@@ -160,8 +160,8 @@ const initializeCommandCodeMirror = function () {
             let regex = new RegExp('^' + curWord, 'i');
             return {
                 list: (!curWord ? list : list.filter(function (item) {
-                        return item.match(regex);
-                    })),
+                    return item.match(regex);
+                })),
                 from: CodeMirror.Pos(cursor.line, start),
                 to: CodeMirror.Pos(cursor.line, end)
             };

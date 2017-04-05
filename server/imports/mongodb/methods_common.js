@@ -21,6 +21,33 @@ const os = require('os');
 export let database;
 let spawnedShell;
 
+const connectToShell = function (connectionId) {
+    try {
+        const connection = Connections.findOne({_id: connectionId});
+        if (!spawnedShell) {
+            const connectionUrl = Helper.getConnectionUrl(connection);
+            const mongoPath = getProperMongo();
+
+            LOGGER.info('[shell]', mongoPath, connectionUrl);
+            spawnedShell = spawn(mongoPath, [connectionUrl]);
+            setEventsToShell(connectionId);
+        }
+
+        if (spawnedShell) {
+            LOGGER.info('[shell]', 'executing command "use ' + connection.databaseName + '" on shell');
+            spawnedShell.stdin.write('use ' + connection.databaseName + '\n');
+        }
+        else {
+            return {err: new Meteor.Error("Couldn't spawn shell !"), result: null};
+        }
+    }
+    catch (ex) {
+        spawnedShell = null;
+        LOGGER.error('[shell]', ex);
+        return {err: new Meteor.Error(ex.message), result: null};
+    }
+};
+
 const keepDroppingCollections = function (collections, i, done) {
     if (collections.length === 0 || i >= collections.length) {
         done(null, {});
@@ -99,6 +126,7 @@ const setEventsToShell = function (connectionId) {
 
     spawnedShell.on('error', Meteor.bindEnvironment(function (err) {
         LOGGER.error('unexpected error on spawned shell: ' + err);
+        spawnedShell = null;
         if (err) {
             ShellCommands.insert({
                 'date': Date.now(),
@@ -136,8 +164,11 @@ const setEventsToShell = function (connectionId) {
             'message': 'shell closed ' + code.toString()
         });
 
-        // remove all for further
-        ShellCommands.remove({});
+        spawnedShell = null;
+        Meteor.setTimeout(function () {
+            // remove all for further
+            ShellCommands.remove({});
+        }, 500);
     }));
 };
 
@@ -362,39 +393,14 @@ Meteor.methods({
         ShellCommands.remove({});
     },
 
-    executeShellCommand(command){
-        LOGGER.info('[shellCommand]', command);
-        if (!spawnedShell) {
-            return {err: new Meteor.Error('Could not connect to shell !'), result: null};
-        }
-
-        spawnedShell.stdin.write(command + '\n');
+    executeShellCommand(command, connectionId){
+        LOGGER.info('[shellCommand]', command, connectionId);
+        if (!spawnedShell) connectToShell(connectionId);
+        if (spawnedShell) spawnedShell.stdin.write(command + '\n');
     },
 
     connectToShell(connectionId){
-        try {
-            const connection = Connections.findOne({_id: connectionId});
-            if (!spawnedShell) {
-                const connectionUrl = Helper.getConnectionUrl(connection);
-                const mongoPath = getProperMongo();
-
-                LOGGER.info('[shell]', mongoPath, connectionUrl);
-                spawnedShell = spawn(mongoPath, [connectionUrl]);
-                setEventsToShell(connectionId);
-            }
-
-            if (spawnedShell) {
-                LOGGER.info('[shell]', 'executing command "use ' + connection.databaseName + '" on shell');
-                spawnedShell.stdin.write('use ' + connection.databaseName + '\n');
-            }
-            else {
-                return {err: new Meteor.Error("Couldn't spawn shell !"), result: null};
-            }
-        }
-        catch (ex) {
-            LOGGER.error('[shell]', ex);
-            return {err: new Meteor.Error(ex.message), result: null};
-        }
+        connectToShell(connectionId);
     },
 
     analyzeSchema(connectionId, collection){
