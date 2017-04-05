@@ -520,7 +520,7 @@ Template.connections.onRendered(function () {
 
 Template.connections.helpers({
     authenticationMethod(...methods) {
-        return methods.indexOf(selectedAuthType.get()) != -1;
+        return methods.indexOf(selectedAuthType.get()) !== -1;
     }
 });
 
@@ -535,6 +535,7 @@ const disableFormsForUri = function () {
 };
 
 const enableFormsForUri = function () {
+    $('.nav-tabs a[href="#tab-1-connection"]').tab('show');
     $(".divHostField:visible").find('input, button').prop('disabled', false).parent('div').attr('data-original-title', '');
     $('#inputDatabaseName, #cmbAuthenticationType, #inputConnectionTimeoutOverride, #inputReplicaSetName, #inputSocketTimeoutOverride, #cmbReadPreference, #inputUser, #inputPassword, #inputAuthenticationDB, #inputLdapUsername, #inputLdapPassword, #inputKerberosUsername, #inputKerberosPassword, #inputKerberosServiceName, #inputX509Username')
         .prop('disabled', false).trigger('chosen:updated').parent('div').attr('data-original-title', '');
