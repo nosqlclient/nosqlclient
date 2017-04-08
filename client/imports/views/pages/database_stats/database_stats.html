@@ -219,33 +219,22 @@
                             <h1>
                                 <img width="225" height="150" src="/logo/new/image_with_text2.png"/>
                             </h1>
-                            {{#if isSubscribed}}
-                                <small>
-                                    Connect to your database, by clicking <b>Connect</b> button.
-                                </small>
-                                <br/>
-                                <br/>
-                                <button type="button" class="btn btn-primary ladda-button" disabled
-                                        data-style="contract">Thanks for subscription
-                                </button>
-                            {{else}}
-                                <small>
-                                    Subscribe to Mongoclient Newsletter by filling your e-mail address to below
-                                    input,
-                                    and pressing <b>Subscribe</b>
-                                </small>
-                                <div class="row">
-                                    <div class="col-lg-offset-4 col-lg-4">
-                                        <input id="txtEmailToSubscribe" type="email"
-                                               placeholder="E-mail, don't worry we hate spam !"
-                                               class="form-control required"/>
-                                    </div>
+                            <small>
+                                Subscribe to Mongoclient Newsletter by filling your e-mail address to below
+                                input,
+                                and pressing <b>Subscribe</b>
+                            </small>
+                            <div class="row">
+                                <div class="col-lg-offset-4 col-lg-4">
+                                    <input id="txtEmailToSubscribe" type="email"
+                                           placeholder="E-mail, don't worry we hate spam !"
+                                           class="form-control required"/>
                                 </div>
-                                <br/>
-                                <button id="btnSubscribe" type="button" class="btn btn-primary ladda-button"
-                                        data-style="contract">Subscribe
-                                </button>
-                            {{/if}}
+                            </div>
+                            <br/>
+                            <button id="btnSubscribe" type="button" class="btn btn-primary ladda-button"
+                                    data-style="contract">Subscribe
+                            </button>
                         </div>
                     </div>
                 </div>

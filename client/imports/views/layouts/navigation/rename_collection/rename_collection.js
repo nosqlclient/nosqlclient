@@ -15,8 +15,6 @@ export const resetForm = function () {
 
 Template.renameCollection.events({
     'click #btnRenameCollection'(){
-        Ladda.create(document.querySelector('#btnRenameCollection')).start();
-
         const newName = $('#inputRenameName').val();
         const collection = $('#renameCollectionModal').data('collection');
 

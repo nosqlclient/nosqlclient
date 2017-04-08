@@ -686,10 +686,6 @@ Template.databaseStats.onDestroyed(function () {
 });
 
 Template.databaseStats.helpers({
-    isSubscribed (){
-        return Settings.findOne().subscribed;
-    },
-
     getServerStatus  () {
         if (Settings.findOne().showDBStats) {
             if (Session.get(Helper.strSessionServerStatus) == undefined) {
