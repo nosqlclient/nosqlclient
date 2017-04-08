@@ -98,6 +98,12 @@ const saveConnectionToDB = function (connection) {
 };
 
 Meteor.methods({
+    subscribed(){
+        Settings.update({}, {
+            $set: {subscribed: true}
+        });
+    },
+
     handleSubscriber(email){
         LOGGER.info('[subscriber]', email);
         const regex = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
@@ -122,7 +128,7 @@ Meteor.methods({
         try {
             const response = HTTP.get('https://api.github.com/repos/mongoclient/mongoclient/releases/latest', {headers: {"User-Agent": "Mongoclient"}});
             if (response && response.data && response.data.name && response.data.name !== packageJson.version) {
-                return "There's a new version of mongoclient: " + response.data.name + ", <a href='https://github.com/mongoclient/mongoclient/releases/latest'>download here</a>";
+                return "There's a new version of mongoclient: " + response.data.name + ", <a href='https://github.com/mongoclient/mongoclient/releases/latest' target='_blank'>download here</a>, if you're using docker just use pull !";
             }
         } catch (e) {
             return null;

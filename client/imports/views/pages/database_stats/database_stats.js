@@ -21,7 +21,8 @@ const Ladda = require('ladda');
  */
 /*global moment*/
 let interval = null;
-let memoryChart = null, connectionsChart = null, networkChart = null, opCountersChart = null, queuedReadWriteChart = null, activeReadWriteChart = null;
+let memoryChart = null, connectionsChart = null, networkChart = null, opCountersChart = null,
+    queuedReadWriteChart = null, activeReadWriteChart = null;
 let previousTopData = {};
 
 const lineOptions = {
@@ -110,7 +111,8 @@ const fetchStatus = function () {
                 }
                 else {
                     Session.set(Helper.strSessionServerStatus, result.result);
-                    const memoryData = [], connectionsData = [], networkData = [], opCountersData = [], queuedReadWriteData = [], activeReadWriteData = [];
+                    const memoryData = [], connectionsData = [], networkData = [], opCountersData = [],
+                        queuedReadWriteData = [], activeReadWriteData = [];
                     const memoryText = populateMemoryData(result.result, memoryData, settings);
                     const availableConnections = populateConnectionData(result.result, connectionsData);
                     const totalRequests = populateNetworkData(result.result, networkData, settings);
@@ -645,6 +647,7 @@ Template.databaseStats.events({
                 toastr.error("Failed: " + err.message);
             }
             else {
+                Meteor.call("subscribed");
                 toastr.success("Thank you for subscription !");
             }
 
@@ -683,6 +686,10 @@ Template.databaseStats.onDestroyed(function () {
 });
 
 Template.databaseStats.helpers({
+    isSubscribed (){
+        return Settings.findOne().subscribed;
+    },
+
     getServerStatus  () {
         if (Settings.findOne().showDBStats) {
             if (Session.get(Helper.strSessionServerStatus) == undefined) {
