@@ -65,36 +65,6 @@ const initRules = function () {
 
 Template.validationRules.events({
     'click #btnSaveValidationRules'(){
-        Ladda.create(document.querySelector('#btnSaveValidationRules')).start();
-
-        const validationAction = $('#cmbValidationAction').val();
-        const validationLevel = $('#cmbValidationLevel').val();
-        const selectedCollection = $('#validationRulesModal').data('collection');
-
-        let validator = Helper.getCodeMirrorValue($('#divValidator'));
-        validator = Helper.convertAndCheckJSON(validator);
-        if (validator["ERROR"]) {
-            toastr.error("Syntax Error on validator: " + validator["ERROR"]);
-            Ladda.stopAll();
-            return;
-        }
-
-
-        const command = {};
-        command.collMod = selectedCollection;
-        command.validator = validator;
-        command.validationLevel = validationLevel;
-        command.validationAction = validationAction;
-
-        Meteor.call('command', command, false, {}, function (err, result) {
-            if (err || result.error) {
-                Helper.showMeteorFuncError(err, result, "Couldn't save rule");
-            } else {
-                toastr.success("Successfully saved");
-                $('#validationRulesModal').modal('hide');
-            }
-
-            Ladda.stopAll();
-        });
+        Helper.warnDemoApp();
     }
 });
