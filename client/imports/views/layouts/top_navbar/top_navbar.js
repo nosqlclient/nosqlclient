@@ -3,7 +3,6 @@ import {Meteor} from "meteor/meteor";
 import {Session} from "meteor/session";
 import {FlowRouter} from "meteor/kadira:flow-router";
 import Helper from "/client/imports/helper";
-import {Connections} from "/lib/imports/collections/connections";
 import {connect, populateConnectionsTable} from "/client/imports/views/layouts/top_navbar/connections/connections";
 import "/client/imports/views/layouts/top_navbar/connections/connections";
 import "./top_navbar.html";
@@ -58,38 +57,7 @@ Template.topNavbar.onRendered(function () {
 Template.topNavbar.events({
     'click #btnProceedImportExport'(e) {
         e.preventDefault();
-        let laddaButton = Ladda.create(document.querySelector('#btnProceedImportExport'));
-        let isImport = $('#importExportMongoclientTitle').text() == 'Import Mongoclient Data';
-        let importInput = $('#inputImportBackupFile');
-        let exportInput = $('#inputExportBackupDir');
-
-        if (isImport && importInput.val()) {
-            laddaButton.start();
-            Meteor.call('importMongoclient', importInput.val(), function (err) {
-                if (err) {
-                    toastr.error("Couldn't import: " + err.message);
-                } else {
-                    toastr.success("Successfully imported from " + importInput.val());
-                    $('#importExportMongoclientModal').modal('hide');
-                }
-
-                Ladda.stopAll();
-            });
-        }
-        else if (!isImport && exportInput.val()) {
-            laddaButton.start();
-            Meteor.call('exportMongoclient', exportInput.val(), function (err, path) {
-                if (err) {
-                    toastr.error("Couldn't export: " + err.message);
-                } else {
-                    toastr.success("Successfully exported to " + path.result);
-                    $('#importExportMongoclientModal').modal('hide');
-                }
-
-                Ladda.stopAll();
-            });
-        }
-
+        Helper.warnDemoApp();
     },
 
     'click #btnRefreshCollections2'() {
@@ -167,13 +135,7 @@ Template.topNavbar.events({
             toastr.error('Please enter a database name or choose one from the list');
             return;
         }
-
-        Ladda.create(document.querySelector('#btnConnectSwitchedDatabase')).start();
-        let connection = Connections.findOne({_id: Session.get(Helper.strSessionConnection)});
-        connection.databaseName = selector.val();
-        Meteor.call('saveConnection', connection);
-
-        connect(false);
+        Helper.warnDemoApp();
     },
 
     // Toggle left navigation

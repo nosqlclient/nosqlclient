@@ -6,7 +6,6 @@ import {Connections} from "/lib/imports/collections/connections";
 import Helper from "/client/imports/helper";
 import "./add_collection.html";
 import {getOptions} from "./options/add_collection_options";
-import {renderCollectionNames} from "../navigation";
 
 const toastr = require('toastr');
 const Ladda = require('ladda');
@@ -327,23 +326,6 @@ Template.addCollection.events({
             return;
         }
 
-        const options = gatherOptions();
-        if (!options) {
-            return;
-        }
-
-        Ladda.create(document.querySelector('#btnCreateCollection')).start();
-
-        Meteor.call('createCollection', name, options, function (err, res) {
-            if (err || (res && res.error)) {
-                Helper.showMeteorFuncError(err, res, "Couldn't create");
-            } else {
-                renderCollectionNames();
-                $('#collectionAddModal').modal('hide');
-                toastr.success('Successfuly created collection: ' + name);
-            }
-
-            Ladda.stopAll();
-        });
+        Helper.warnDemoApp();
     }
 });

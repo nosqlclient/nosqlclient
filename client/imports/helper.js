@@ -100,6 +100,10 @@ let Helper = function () {
 };
 
 Helper.prototype = {
+    warnDemoApp(){
+        toastr.info('This feature is not usable in demo application !');
+    },
+
     initializeCollectionsCombobox () {
         const cmb = $('#cmbCollections');
         cmb.append($("<optgroup id='optGroupCollections' label='Collections'></optgroup>"));
@@ -322,7 +326,6 @@ Helper.prototype = {
 
                 Ladda.stopAll();
             }
-
         });
     },
 
@@ -373,8 +376,8 @@ Helper.prototype = {
                 const regex = new RegExp('^' + curWord, 'i');
                 return {
                     list: (!curWord ? list : list.filter(function (item) {
-                            return item.match(regex);
-                        })).sort(),
+                        return item.match(regex);
+                    })).sort(),
                     from: CodeMirror.Pos(cursor.line, start),
                     to: CodeMirror.Pos(cursor.line, end)
                 };

@@ -25,14 +25,14 @@ const initUserTree = function () {
 
 
     const connection = Connections.findOne({_id: Session.get(Helper.strSessionConnection)});
-    const command = {
+    const getUsersCommand = {
         usersInfo: 1,
         showCredentials: true
     };
 
     const runOnAdminDB = $('#aRunOnAdminDBToFetchUsers').iCheck('update')[0].checked;
 
-    Meteor.call('command', command, runOnAdminDB, function (err, result) {
+    Meteor.call('command', getUsersCommand, runOnAdminDB, function (err, result) {
         if (err || result.error) {
             Helper.showMeteorFuncError(err, result, "Couldn't fetch users");
         }

@@ -174,23 +174,7 @@ Template.databaseDumpRestore.events({
             return;
         }
 
-        Ladda.create(document.querySelector('#btnProceedMongoimport')).start();
-
-        const fileReader = new FileReader();
-        fileReader.onload = function (file) {
-            let fileContent = new Uint8Array(file.target.result);
-            Meteor.call('mongoimport', fileContent, selectedCollection, function (err, result) {
-                if (err || result.error) {
-                    Helper.showMeteorFuncError(err, result, "Couldn't import data");
-                }
-                else {
-                    toastr.success('Successfully imported extended json file !');
-                }
-
-                Ladda.stopAll();
-            });
-        };
-        fileReader.readAsArrayBuffer(inputSelector[0].files[0]);
+        Helper.warnDemoApp();
     },
 
     'change #inputImportJsonFile'() {
@@ -214,20 +198,7 @@ Template.databaseDumpRestore.events({
 
     'click #btnTakeDump'(e) {
         e.preventDefault();
-        const settings = Settings.findOne();
-
-        Ladda.create(document.querySelector('#btnTakeDump')).start();
-
-        Meteor.call('takeDump', Session.get(Helper.strSessionConnection), settings.dumpPath, function (err) {
-            if (err) {
-                toastr.error("Couldn't take dump, " + err.message);
-            }
-            else {
-                toastr.success('A background process to take a dump has started, whenever it finishes you can see the dump on this page');
-            }
-
-            Ladda.stopAll();
-        });
+        Helper.warnDemoApp();
     },
 
     'click .editor_import'(e) {
@@ -242,22 +213,7 @@ Template.databaseDumpRestore.events({
                 confirmButtonText: "Yes, do it!",
                 closeOnConfirm: true
             }, function () {
-
-                Ladda.create(document.querySelector('#btnTakeDump')).start();
-
-                const dumpInfo = Session.get(Helper.strSessionSelectedDump);
-                dumpInfo.status = Enums.DUMP_STATUS.IN_PROGRESS;
-                Meteor.call('updateDump', dumpInfo); // this is a simple update to notify user on UI
-                Meteor.call('restoreDump', Session.get(Helper.strSessionConnection), dumpInfo, function (err) {
-                    if (err) {
-                        toastr.error("Couldn't restore dump, " + err.message);
-                    }
-                    else {
-                        toastr.success('A background process to restore the dump(' + dumpInfo.filePath + ') has started, whenever it finishes you can see the result on this page');
-                    }
-
-                    Ladda.stopAll();
-                });
+                Helper.warnDemoApp();
             });
         }
     }

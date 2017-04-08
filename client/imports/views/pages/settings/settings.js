@@ -1,29 +1,9 @@
 import {Template} from "meteor/templating";
-import {Meteor} from "meteor/meteor";
+import Helper from "/client/imports/helper";
 import {Settings} from "/lib/imports/collections/settings";
 import "./settings.html";
 
 const toastr = require('toastr');
-const Ladda = require('ladda');
-/**
- * Created by RSercan on 9.1.2016.
- */
-
-const getSettingsFromForm = function () {
-    const settings = {};
-    settings.autoCompleteFields = $('#divAutoCompleteFields').iCheck('update')[0].checked;
-    settings.scale = $("#cmbScale").chosen().val();
-    settings.defaultResultView = $("#cmbResultView").chosen().val();
-    settings.maxAllowedFetchSize = $("#inputMaxAllowedFetchSize").val();
-    settings.socketTimeoutInSeconds = $("#inputSocketTimeout").val();
-    settings.connectionTimeoutInSeconds = $("#inputConnectionTimeout").val();
-    settings.dbStatsScheduler = $("#inputDBStatsScheduler").val();
-    settings.showDBStats = $('#divShowDBStats').iCheck('update')[0].checked;
-    settings.showLiveChat = $('#divShowLiveChat').iCheck('update')[0].checked;
-    settings.dumpPath = $('#inputDumpPath').val();
-    settings.singleTabResultSets = $('#divUseSingleTab').iCheck('update')[0].checked;
-    return settings;
-};
 
 Template.settings.onRendered(function () {
     $('#divAutoCompleteFields, #divShowDBStats, #divShowLiveChat, #divUseSingleTab').iCheck({
@@ -45,14 +25,7 @@ Template.settings.onRendered(function () {
 Template.settings.events({
     'click #btnSaveSettings' (e) {
         e.preventDefault();
-
-        Ladda.create(document.querySelector('#btnSaveSettings')).start();
-
-        Meteor.call('updateSettings', getSettingsFromForm());
-        toastr.success('Successfuly saved !');
-
-
-        Ladda.stopAll();
+        Helper.warnDemoApp();
     }
 });
 

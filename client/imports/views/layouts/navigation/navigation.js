@@ -7,7 +7,7 @@ import {FlowRouter} from "meteor/kadira:flow-router";
 import {Connections} from "/lib/imports/collections/connections";
 import Helper from "/client/imports/helper";
 import {connect} from "/client/imports/views/layouts/top_navbar/connections/connections";
-import {resetForm, initializeForm} from "./add_collection/add_collection";
+import {initializeForm, resetForm} from "./add_collection/add_collection";
 import {resetForm as resetCappedForm} from "./convert_capped_collection/convert_to_capped";
 import {resetForm as resetRenameForm} from "./rename_collection/rename_collection";
 import {resetForm as resetValidationRulesForm} from "./validation_rules/validation_rules";
@@ -43,15 +43,7 @@ const dropAllCollections = function () {
         closeOnConfirm: true
     }, function (isConfirm) {
         if (isConfirm) {
-            Meteor.call('dropAllCollections', function (err, result) {
-                if (err || result.error) {
-                    Helper.showMeteorFuncError(err, result, "Couldn't drop all collections");
-                }
-                else {
-                    renderCollectionNames();
-                    toastr.success('Successfully dropped all collections/views except system');
-                }
-            });
+            Helper.warnDemoApp();
         }
     });
 };
@@ -73,27 +65,12 @@ const handleNavigationAndSessions = function () {
     $('#cmbAdminQueries').val('').trigger('chosen:updated');
 };
 
-const clearCollection = function (collectionName) {
-    Meteor.call('delete', collectionName, {}, function (err, result) {
-        if (err || result.error) {
-            Helper.showMeteorFuncError(err, result, "Couldn't clear collection");
-        }
-        else {
-            toastr.success('Successfuly cleared collection: ' + collectionName);
-        }
-    });
+const clearCollection = function () {
+    Helper.warnDemoApp();
 };
 
-const dropCollection = function (collectionName) {
-    Meteor.call('dropCollection', collectionName, function (err, result) {
-        if (err || result.error) {
-            Helper.showMeteorFuncError(err, result, "Couldn't drop collection");
-        }
-        else {
-            renderCollectionNames();
-            toastr.success('Successfuly dropped collection: ' + collectionName);
-        }
-    });
+const dropCollection = function () {
+    Helper.warnDemoApp();
 };
 
 export const renderCollectionNames = function () {
@@ -168,19 +145,7 @@ Template.navigation.events({
             confirmButtonText: "Yes, drop it!",
             closeOnConfirm: false
         }, function () {
-            Meteor.call('dropDB', function (err, result) {
-                if (err || result.error) {
-                    Helper.showMeteorFuncError(err, result, "Couldn't drop database");
-                }
-                else {
-                    Helper.clearSessions();
-                    swal({
-                        title: "Dropped!",
-                        text: "Successfuly dropped database ",
-                        type: "success"
-                    });
-                }
-            });
+            Helper.warnDemoApp();
         });
     },
 

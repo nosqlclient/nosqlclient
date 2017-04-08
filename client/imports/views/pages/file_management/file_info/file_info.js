@@ -30,8 +30,6 @@ Template.fileInfo.events({
 
     'click #btnKeepUploading' (e)  {
         e.preventDefault();
-        const contentType = $('#inputContentType').val();
-        const blob = $('#inputFile')[0].files[0];
         let metaData = Helper.getCodeMirrorValue($('#divMetadata'));
         metaData = Helper.convertAndCheckJSON(metaData);
         if (metaData["ERROR"]) {
@@ -39,12 +37,7 @@ Template.fileInfo.events({
             return;
         }
 
-        const aliases = [];
-        $("#selectAliases").find("option").each(function () {
-            aliases.push($(this).val());
-        });
-
         $('#fileInfoModal').modal('hide');
-        proceedUploading(blob, contentType, metaData, aliases);
+        Helper.warnDemoApp();
     }
 });

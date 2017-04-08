@@ -643,20 +643,7 @@ Template.connections.events({
 
     'click .editor_remove'  (e) {
         e.preventDefault();
-
-        Ladda.create(document.querySelector('#btnConnect')).start();
-
-        $('#tblConnection').DataTable().$('tr.selected').removeClass('selected');
-        Meteor.call('removeConnection', Session.get(Helper.strSessionConnection), function (err) {
-            if (!err) {
-                Helper.clearSessions();
-                populateConnectionsTable();
-            } else {
-                toastr.error("unexpected error during connection remove: " + err.message);
-            }
-
-            Ladda.stopAll();
-        });
+        Helper.warnDemoApp();
     },
 
     'click .editor_edit' () {
@@ -677,30 +664,6 @@ Template.connections.events({
 
     'click #btnSaveConnection' (e) {
         e.preventDefault();
-        Ladda.create(document.querySelector('#btnSaveConnection')).start();
-
-        const modal = $('#addEditConnectionModal');
-        const oldCollectionId = modal.data('edit') ? modal.data('edit') : modal.data('clone');
-        let currentConnection = {};
-        if (oldCollectionId) {
-            currentConnection = Connections.findOne({_id: oldCollectionId});
-        }
-        populateConnection(currentConnection, function (connection) {
-            if (modal.data('edit')) {
-                connection._id = currentConnection._id;
-            }
-
-            Meteor.call('checkAndSaveConnection', connection, function (err) {
-                if (err) {
-                    toastr.error(err.error);
-                } else {
-                    toastr.success('Successfully saved connection');
-                    populateConnectionsTable();
-                    modal.modal('hide');
-                }
-
-                Ladda.stopAll();
-            });
-        });
+        Helper.warnDemoApp();
     }
 });

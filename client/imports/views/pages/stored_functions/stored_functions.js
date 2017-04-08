@@ -90,53 +90,7 @@ Template.storedFunctions.events({
     },
 
     'click #btnSaveStoredFunction'(){
-        const modal = $('#editStoredFunctionModal');
-
-        let functionVal = Helper.getCodeMirrorValue($('#divStoredFunction'));
-        if (functionVal.parseFunction() == null) {
-            toastr.error("Syntax error on function value, not a valid function");
-            return;
-        }
-        let name = $('#inputStoredFunctionName').val();
-        if (!name) {
-            toastr.error("Name is required !");
-            return;
-        }
-        const data = modal.data('selected');
-
-        const objectToSave = {value: {}};
-        objectToSave._id = name;
-        objectToSave.value.$code = functionVal;
-
-        Ladda.create(document.querySelector('#btnSaveStoredFunction')).start();
-        if (modal.data('selected')) {
-            //edit
-            Meteor.call('updateOne', "system.js", {_id: data._id}, objectToSave, function (err, result) {
-                if (err || result.error) {
-                    Helper.showMeteorFuncError(err, result, "Couldn't save");
-                } else {
-                    toastr.success('Successfuly updated !');
-                    modal.modal('hide');
-                    init();
-                }
-
-                Ladda.stopAll();
-            });
-        }
-        else {
-            //add
-            Meteor.call('insertMany', "system.js", [objectToSave], {}, function (err, result) {
-                if (err || result.error) {
-                    Helper.showMeteorFuncError(err, result, "Couldn't insert");
-                } else {
-                    toastr.success('Successfuly added new function !');
-                    modal.modal('hide');
-                    init();
-                }
-
-                Ladda.stopAll();
-            });
-        }
+        Helper.warnDemoApp();
     },
 
     'click #btnAddNewStoredFunction'(){
@@ -168,17 +122,7 @@ Template.storedFunctions.events({
                 cancelButtonText: "No"
             }, function (isConfirm) {
                 if (isConfirm) {
-                    Ladda.create(document.querySelector('#btnAddNewStoredFunction')).start();
-                    Meteor.call('delete', "system.js", {_id: name}, function (err, result) {
-                        if (err || result.error) {
-                            Helper.showMeteorFuncError(err, result, "Couldn't delete");
-                        } else {
-                            toastr.success('Successfuly deleted !');
-                            init();
-                        }
-
-                        Ladda.stopAll();
-                    });
+                    Helper.warnDemoApp();
                 }
             });
         }

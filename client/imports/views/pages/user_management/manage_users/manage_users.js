@@ -227,20 +227,7 @@ Template.manageUsers.events({
             cancelButtonText: "No"
         }, function (isConfirm) {
             if (isConfirm) {
-
-                Ladda.create(document.querySelector('#btnCloseUMDB')).start();
-                const command = {dropUser: Session.get(Helper.strSessionUsermanagementUser).user};
-                const runOnAdminDB = $('#aRunOnAdminDBToFetchUsers').iCheck('update')[0].checked;
-
-                Meteor.call('command', command, runOnAdminDB, function (err, result) {
-                    if (err || result.error) {
-                        Helper.showMeteorFuncError(err, result, "Couldn't drop user");
-                    }
-                    else {
-                        initUsers();
-                        toastr.success('Successfuly dropped user !');
-                    }
-                });
+                Helper.warnDemoApp();
             }
         });
 
@@ -290,71 +277,8 @@ Template.manageUsers.events({
         }
     },
 
-    'click #btnApplyAddEditUser'  (e) {
-        e.preventDefault();
-
-        const usernameSelector = $('#inputUsernameUM');
-        const passwordSelector = $('#inputPasswordUM');
-        const titleSelector = $('#addEditUserModalTitle');
-
-        if (!usernameSelector.val()) {
-            toastr.warning('Username is required !');
-            return;
-        }
-
-        if (!passwordSelector.val() && titleSelector.text() == 'Add User') {
-            toastr.warning('Password is required !');
-            return;
-        }
-
-        let customData = Helper.getCodeMirrorValue($('#divCustomData'));
-        if (customData) {
-            customData = Helper.convertAndCheckJSON(customData);
-
-            if (customData["ERROR"]) {
-                toastr.error("Syntax Error on customData: " + customData["ERROR"]);
-                return;
-            }
-        }
-
-        const command = {};
-        if (titleSelector.text() == 'Edit User') {
-            command.updateUser = usernameSelector.val();
-        } else {
-            command.createUser = usernameSelector.val();
-        }
-
-        command.roles = populateUserRolesToSave();
-
-        if (customData) {
-            command.customData = customData;
-        }
-
-        if (passwordSelector.val()) {
-            command.pwd = passwordSelector.val();
-        }
-
-
-        Ladda.create(document.querySelector('#btnApplyAddEditUser')).start();
-        const runOnAdminDB = $('#aRunOnAdminDBToFetchUsers').iCheck('update')[0].checked;
-
-        Meteor.call('command', command, runOnAdminDB, function (err, result) {
-            if (err || result.error) {
-                Helper.showMeteorFuncError(err, result, "Couldn't update user");
-            }
-            else {
-                initUsers();
-                if (titleSelector.text() == 'Edit User') {
-                    toastr.success('Successfuly updated user !');
-                }
-                else {
-                    toastr.success('Successfuly added user !');
-                }
-                $('#editUserModal').modal('hide');
-            }
-
-            Ladda.stopAll();
-        });
+    'click #btnApplyAddEditUser'  () {
+        Helper.warnDemoApp();
     },
 
     'click #btnApplyAddRoleToUser' (e) {

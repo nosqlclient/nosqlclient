@@ -19,7 +19,6 @@ Template.renameCollection.events({
 
         const newName = $('#inputRenameName').val();
         const collection = $('#renameCollectionModal').data('collection');
-        const options = {dropTarget: $('#divDropTarget').iCheck('update')[0].checked};
 
         if (!newName) {
             toastr.warning('Name is required !');
@@ -32,16 +31,6 @@ Template.renameCollection.events({
             return;
         }
 
-        Meteor.call("rename", collection, newName, options, function (err, result) {
-            if (err || result.error) {
-                Helper.showMeteorFuncError(err, result, "Couldn't rename");
-            } else {
-                toastr.success("Successfully renamed to: " + newName);
-                $('#renameCollectionModal').modal('hide');
-                renderCollectionNames();
-            }
-
-            Ladda.stopAll();
-        });
+        Helper.warnDemoApp();
     }
 });

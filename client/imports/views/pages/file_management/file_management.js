@@ -132,25 +132,7 @@ Template.fileManagement.events({
             cancelButtonText: "No"
         }, function (isConfirm) {
             if (isConfirm) {
-                Ladda.create(document.querySelector('#btnDeleteFiles')).start();
-
-                let selector = getSelectorValue();
-                selector = Helper.convertAndCheckJSON(selector);
-                if (selector["ERROR"]) {
-                    toastr.error("Syntax error on selector: " + selector["ERROR"]);
-                    Ladda.stopAll();
-                    return;
-                }
-
-                Meteor.call('deleteFiles', $('#txtBucketName').val(), selector, function (err, result) {
-                    if (err || result.err) {
-                        Helper.showMeteorFuncError(err, result, "Couldn't delete files");
-                    } else {
-                        toastr.success('Successfuly deleted !');
-                        initFilesInformation();
-                    }
-                    Ladda.stopAll();
-                });
+                Helper.warnDemoApp();
             }
         });
     },
@@ -181,16 +163,7 @@ Template.fileManagement.events({
                 cancelButtonText: "No"
             }, function (isConfirm) {
                 if (isConfirm) {
-
-                    Ladda.create(document.querySelector('#btnReloadFiles')).start();
-                    Meteor.call('deleteFile', $('#txtBucketName').val(), fileRow._id, function (err) {
-                        if (err) {
-                            toastr.error("Couldn't delete: " + err.message);
-                        } else {
-                            toastr.success('Successfuly deleted !');
-                            initFilesInformation();
-                        }
-                    });
+                    Helper.warnDemoApp();
                 }
             });
         }
@@ -209,24 +182,7 @@ Template.fileManagement.events({
             cancelButtonText: "No"
         }, function (isConfirm) {
             if (isConfirm) {
-
-                Ladda.create(document.querySelector('#btnUpdateMetadata')).start();
-                const jsonEditor = $('#jsonEditorOfMetadata').data('jsoneditor');
-                const setValue = jsonEditor.get();
-                delete setValue._id;
-
-                Meteor.call('updateOne', $('#txtBucketName').val() + '.files',
-                    {'_id': {"$oid": Session.get(Helper.strSessionSelectedFile)._id}}, {"$set": setValue}, {}, function (err) {
-                        if (err) {
-                            toastr.error("Couldn't update file info: " + err.message);
-                        } else {
-                            toastr.success('Successfully updated file information !');
-                            proceedShowingMetadata(Session.get(Helper.strSessionSelectedFile)._id, jsonEditor);
-                        }
-
-
-                        Ladda.stopAll();
-                    });
+                Helper.warnDemoApp();
             }
         });
     },

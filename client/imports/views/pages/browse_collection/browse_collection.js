@@ -481,20 +481,7 @@ const saveFindEditor = function () {
         cancelButtonText: "No"
     }, function (isConfirm) {
         if (isConfirm) {
-            Ladda.create(document.querySelector('#btnSaveFind')).start();
-
-            const selectedCollection = Session.get(Helper.strSessionSelectedCollection);
-
-            Meteor.call("saveFindResult", selectedCollection, updateObjects, deletedObjectIds, addedObjects, function (err) {
-                if (err) {
-                    Helper.showMeteorFuncError(err, null, "Couldn't proceed saving find result");
-                } else {
-                    toastr.success('Successfully saved !');
-                    $(activeTab).data('findData', activeEditorValue);
-                }
-
-                Ladda.stopAll();
-            });
+            Helper.warnDemoApp();
         }
     });
 };
@@ -516,23 +503,7 @@ const saveEditor = function () {
         cancelButtonText: "No"
     }, function (isConfirm) {
         if (isConfirm) {
-
-            Ladda.create(document.querySelector('#btnSaveFindOne')).start();
-
-            const selectedCollection = Session.get(Helper.strSessionSelectedCollection);
-            if (doc._id) {
-                Meteor.call("updateOne", selectedCollection, {_id: doc._id}, doc, {}, function (err, result) {
-                    if (err || result.error) {
-                        Helper.showMeteorFuncError(err, result, "Couldn't update document");
-                    } else {
-                        toastr.success('Successfully updated document');
-                    }
-
-                    Ladda.stopAll();
-                });
-            } else {
-                toastr.error('Could not find _id of document, save failed !');
-            }
+            Helper.warnDemoApp();
         }
     });
 };
@@ -554,28 +525,7 @@ const deleteDocument = function () {
         cancelButtonText: "No"
     }, function (isConfirm) {
         if (isConfirm) {
-
-            Ladda.create(document.querySelector('#btnDelFindOne')).start();
-
-            const selectedCollection = Session.get(Helper.strSessionSelectedCollection);
-            if (doc._id) {
-                Meteor.call("delete", selectedCollection, {_id: doc._id}, function (err, result) {
-                    if (err || result.error) {
-                        Helper.showMeteorFuncError(err, result, "Couldn't delete document");
-                    } else {
-                        toastr.success('Successfully deleted document');
-                        const tabToRemove = $('#resultTabs').find('li.active');
-                        tabToRemove.remove();
-                        $(tabToRemove.find('a').attr('href')).remove();
-
-                        $('#divBrowseCollectionFooter').hide();
-                    }
-
-                    Ladda.stopAll();
-                });
-            } else {
-                toastr.error('Could not find _id of document, delete failed !');
-            }
+            Helper.warnDemoApp();
         }
     });
 };
@@ -623,12 +573,6 @@ Template.browseCollection.onRendered(function () {
     this.subscribe('connections');
     this.subscribe('queryHistories');
     this.subscribe('mongoclient_update');
-
-    Meteor.call("checkMongoclientVersion", function (err, res) {
-        if (res) {
-            toastr.info(res, 'Update', {timeOut: 0, extendedTimeOut: 0, preventDuplicates: true});
-        }
-    });
 
     init();
 });

@@ -279,17 +279,7 @@ Template.indexManagement.events({
                 cancelButtonText: "No"
             }, function (isConfirm) {
                 if (isConfirm) {
-                    Ladda.create(document.querySelector('#btnAddIndex')).start();
-                    Meteor.call("dropIndex", selectedCollection, indexName, function (err, result) {
-                        if (err || result.error) {
-                            Helper.showMeteorFuncError(err, result, "Couldn't drop index");
-                        } else {
-                            toastr.success("Successfully dropped index: " + indexName);
-                            initIndexes();
-                        }
-
-                        Ladda.stopAll();
-                    });
+                    Helper.warnDemoApp();
                 }
             });
         }

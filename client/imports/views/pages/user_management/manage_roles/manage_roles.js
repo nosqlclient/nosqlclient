@@ -535,21 +535,7 @@ Template.manageRoles.events({
             cancelButtonText: "No"
         }, function (isConfirm) {
             if (isConfirm) {
-
-                Ladda.create(document.querySelector('#btnCloseUMRoles')).start();
-
-                const command = {dropRole: Session.get(Helper.strSessionUsermanagementRole).role};
-                const runOnAdminDB = $('#aRunOnAdminDBToFetchUsers').iCheck('update')[0].checked;
-
-                Meteor.call('command', command, runOnAdminDB, function (err, result) {
-                    if (err || result.error) {
-                        Helper.showMeteorFuncError(err, result, "Couldn't drop role");
-                    }
-                    else {
-                        initRoles();
-                        toastr.success('Successfuly dropped role !');
-                    }
-                });
+                Helper.warnDemoApp();
             }
         });
     },
@@ -629,58 +615,8 @@ Template.manageRoles.events({
         $('#addRoleToInherit').modal('show');
     },
 
-    'click #btnApplyAddEditRole' (e) {
-        e.preventDefault();
-        const titleSelector = $('#addEditRoleModalTitle');
-        const roleNameSelector = $('#inputRoleUM');
-
-        if (Session.get(Helper.strSessionUsermanagementRole) && Session.get(Helper.strSessionUsermanagementRole).isBuiltin && titleSelector.text() == 'Edit Role') {
-            toastr.warning('Cannot change builtin roles !');
-            return;
-        }
-
-        if ($('#tblRolePrivileges').DataTable().rows().data().length == 0) {
-            toastr.warning('At least one privilege is required !');
-            return;
-        }
-
-        if (!roleNameSelector.val()) {
-            toastr.warning('Role name is required !');
-            return;
-        }
-
-        const command = {};
-        if (titleSelector.text() == 'Edit Role') {
-            command.updateRole = roleNameSelector.val();
-        } else {
-            command.createRole = roleNameSelector.val();
-        }
-
-        command.privileges = populatePrivilegesToSave();
-        command.roles = populateInheritRolesToSave();
-
-
-        Ladda.create(document.querySelector('#btnApplyAddEditRole')).start();
-
-        const runOnAdminDB = $('#aRunOnAdminDBToFetchUsers').iCheck('update')[0].checked;
-
-        Meteor.call('command', command, runOnAdminDB, function (err, result) {
-            if (err || result.error) {
-                Helper.showMeteorFuncError(err, result, "Couldn't update role");
-            }
-            else {
-                initRoles();
-                if ($('#addEditRoleModalTitle').text() == 'Edit Role') {
-                    toastr.success('Successfuly updated role !');
-                }
-                else {
-                    toastr.success('Successfuly added role !');
-                }
-                $('#editRoleModal').modal('hide');
-            }
-
-            Ladda.stopAll();
-        });
+    'click #btnApplyAddEditRole' () {
+        Helper.warnDemoApp();
     },
 
     'click #btnAddNewRole' (e) {

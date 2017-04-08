@@ -647,7 +647,7 @@ Template.databaseStats.events({
                 toastr.error("Failed: " + err.message);
             }
             else {
-                Meteor.call("subscribed");
+                //Meteor.call("subscribed"); remove on demo
                 toastr.success("Thank you for subscription !");
             }
 
