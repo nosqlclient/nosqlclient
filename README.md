@@ -9,6 +9,9 @@ Cross-platform, easy to use, MongoDB 3.4+ support and more features!
 [![Docker Pulls](https://img.shields.io/docker/pulls/mongoclient/mongoclient.svg)](https://hub.docker.com/r/mongoclient/mongoclient/)
 [![MIT License](https://img.shields.io/badge/license-MIT-blue.svg?style=flat)](https://github.com/mongoclient/mongoclient/blob/master/LICENSE)
 
+-<img src="https://www.mongoclient.com/img/logo/mongoclient_logo_black.png">
+
+## Demo
 [Try Demo Application](https://www.mongoclient.com:5000)
 
 ## Documentation
@@ -33,7 +36,7 @@ To persist your connections and settings simply bind ```/data/db``` directory to
 ```docker run -d -p 3000:3000 -v <your_path>:/data/db mongoclient/mongoclient```
 
 
-### Distributions
+## Distributions
 
 * [Linux x64](https://github.com/mongoclient/mongoclient/releases/download/1.5.0/linux-portable-x64.zip)
 * [Windows x64](https://github.com/mongoclient/mongoclient/releases/download/1.5.0/windows-portable-x64.zip)
