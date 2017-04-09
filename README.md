@@ -23,7 +23,7 @@ All documentation can be found in https://www.mongoclient.com/docs
 
 To install latest stable release:
 
-```docker pull mongoclient/mongoclient:1.5.0```
+```docker pull mongoclient/mongoclient:2.0.0```
 
 Then you can run it as a daemon:
 
