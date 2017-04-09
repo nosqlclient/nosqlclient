@@ -38,10 +38,10 @@ To persist your connections and settings simply bind ```/data/db``` directory to
 
 ## Distributions
 
-* [Linux x64](https://github.com/mongoclient/mongoclient/releases/download/1.5.0/linux-portable-x64.zip)
-* [Windows x64](https://github.com/mongoclient/mongoclient/releases/download/1.5.0/windows-portable-x64.zip)
-* [OSx](https://github.com/mongoclient/mongoclient/releases/download/1.5.0/osx-portable.zip)
-* [Web Application](https://github.com/mongoclient/mongoclient/wiki#31-compile-from-source-browser-edition)
+* [Linux x64](https://github.com/mongoclient/mongoclient/releases/download/2.0.0/linux-portable-x64.zip)
+* [Windows x64](https://github.com/mongoclient/mongoclient/releases/download/2.0.0/windows-portable-x64.zip)
+* [OSx](https://github.com/mongoclient/mongoclient/releases/download/2.0.0/osx-portable.zip)
+* [More](https://mongoclient.com/docs/start.html)
 
 
 ## History
