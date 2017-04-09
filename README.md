@@ -12,7 +12,7 @@ Cross-platform, easy to use, MongoDB 3.4+ support and more features!
 <img src="https://www.mongoclient.com/img/logo/mongoclient_logo_black.png">
 
 ## Demo
-[Try Demo Application](https://www.mongoclient.com:5000)
+[Try Demo Application](https://www.mongoclient.com/demo)
 
 ## Documentation
 All documentation can be found in https://www.mongoclient.com/docs
