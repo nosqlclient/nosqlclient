@@ -9,37 +9,12 @@ Cross-platform, easy to use, MongoDB 3.4+ support and more features!
 [![Docker Pulls](https://img.shields.io/docker/pulls/mongoclient/mongoclient.svg)](https://hub.docker.com/r/mongoclient/mongoclient/)
 [![MIT License](https://img.shields.io/badge/license-MIT-blue.svg?style=flat)](https://github.com/mongoclient/mongoclient/blob/master/LICENSE)
 
-[![Paypal](https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=Y5VD95E96NU6S)
+[Try Demo Application](https://www.mongoclient.com:5000)
 
-*Mongoclient is in need of you to buy [INSPINA](https://wrapbootstrap.com/theme/inspinia-responsive-admin-theme-WB0R5L90S) theme's extended licence ($1000) to live longer. Thank you so much ! [Here's the list of donators, helpful people](https://github.com/mongoclient/mongoclient/wiki/Donators) Can't you donate, no worries giving a star to this repository is free  and appreciated as much as donation !*
+## Documentation
+All documentation can be found in https://www.mongoclient.com/docs
 
-[Try Demo Application](http://www.mongoclient.com:3000)
-
-   Database Monitoring     | Easy GridFS, Dump/Restore Management
--------------------------|-------------------------
-<img src="http://mongoclient.com/img/ss/main_view.png" width="400">  | <img src="http://mongoclient.com/img/ss/file.png" width="400">
-
-   Autocomplete     | User Management
--------------------------|-------------------------
-<img src="http://mongoclient.com/img/ss/auto_complete.png" width="400">  | <img src="http://mongoclient.com/img/ss/um.png" width="400">
-
-<img src="http://www.mongoclient.com/img/logo/head_only_medium.png" align="left" hspace="10" vspace="6">
-
-## Download
-Version 1.5.0 has been released !
-
-### Distributions
-
-* [Linux x64](https://github.com/mongoclient/mongoclient/releases/download/1.5.0/linux-portable-x64.zip)
-* [Windows x64](https://github.com/mongoclient/mongoclient/releases/download/1.5.0/windows-portable-x64.zip)
-* [OSx](https://github.com/mongoclient/mongoclient/releases/download/1.5.0/osx-portable.zip)
-* [Web Application](https://github.com/mongoclient/mongoclient/wiki#31-compile-from-source-browser-edition)
-
-To learn more see the [wiki](https://github.com/mongoclient/mongoclient/wiki) page.
-<br/>
-<br/>
 ## Docker
-Mongoclient now officialy has a docker hub. To install master branch:
 
 ```docker pull mongoclient/mongoclient```
 
@@ -57,43 +32,18 @@ To persist your connections and settings simply bind ```/data/db``` directory to
 
 ```docker run -d -p 3000:3000 -v <your_path>:/data/db mongoclient/mongoclient```
 
-## Cloud Foundry
-You can optionally push the Mongoclient to the CloudFoundry
 
-Cloud Foundry or CF, is a PaaS, as a developer you can trail the instance of CF, either [IBM Bluemix](https://console.ng.bluemix.net) or [Pivotal](https://console.run.pivotal.io) 
+### Distributions
 
-As the MongoClient is developed by the meteor, you need to have an mongodb instance to store the metadata info MC needed.
-[Mlab](https://mlab.com) has an experimental or sandbox offering or [compose](https://www.compose.com/) a commerical DBaaS provider you can register and try it.
+* [Linux x64](https://github.com/mongoclient/mongoclient/releases/download/1.5.0/linux-portable-x64.zip)
+* [Windows x64](https://github.com/mongoclient/mongoclient/releases/download/1.5.0/windows-portable-x64.zip)
+* [OSx](https://github.com/mongoclient/mongoclient/releases/download/1.5.0/osx-portable.zip)
+* [Web Application](https://github.com/mongoclient/mongoclient/wiki#31-compile-from-source-browser-edition)
 
-Assuming you have an mongodb instance, which something linke  
-``` mongodb://<dbuser>:<dbpassword>@ds145188.mlab.com:45188/mongodb-mc ```
-
-And installed the [command line utility](https://docs.cloudfoundry.org/cf-cli/install-go-cli.html)
-
-Get the latest MongoClient
-
-```
-git clone https://github.com/mongoclient/mongoclient.git ~/mongoclient
-cd ~/mongoclient
-```
-
-edit the manifest.yml.sample, change the corresponding values to your environment
-
-```
-mv manifest.yml.sample manifest.yml
-cf login -a api.ng.bluemix.net -u username -p password
-cf push
-```
-
-after a while, your console will output something like 
-
-![cf push mongoclient](https://cloud.githubusercontent.com/assets/3640368/21992923/117db29c-dc21-11e6-80c0-b2a246c0ae70.png)
 
 ## History
 Please check [history](https://github.com/mongoclient/mongoclient/blob/master/HISTORY.MD) file for version information.
 
-## Roadmap
-Please check [roadmap](https://github.com/mongoclient/mongoclient/blob/master/ROADMAP.MD) file for further features.
 
 ## License
-Project is licensed under [MIT](https://en.wikipedia.org/wiki/MIT_License), which means you are free to do anything with full of my work as long as you provide attribution back to me. Thanks !
+Mongoclient is licensed under [MIT](https://en.wikipedia.org/wiki/MIT_License) for prior version 2.0.0, but for 2.0.0 and higher versions are licensed under [AGPLv3](https://www.gnu.org/licenses/agpl-3.0.html).
