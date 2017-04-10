@@ -1,5 +1,9 @@
 # History
 
+## 2.0.0, 9 April 2017
+- Enterprise edition is finally here
+- More on docs - https://mongoclient.com/docs/
+
 ## 1.5.0, 28 December 2016
 - Added mongodb 3.4 support
 - Separated scrollbars for navigation and main view
