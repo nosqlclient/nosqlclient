@@ -687,7 +687,8 @@ Template.databaseStats.onDestroyed(function () {
 
 Template.databaseStats.helpers({
     isSubscribed (){
-        return Settings.findOne().subscribed;
+        const settings = Settings.findOne();
+        return settings ? settings.subscribed : false;
     },
 
     getServerStatus  () {

@@ -68,6 +68,7 @@ export const parseUrl = function (connection) {
 };
 
 const checkConnection = function (connection) {
+    LOGGER.info('[checkConnection]', JSON.stringify(connection));
     if (connection.url) connection = parseUrl(connection);
 
     if (connection.servers.length === 0) throw new Meteor.Error('At least one server is required !');
@@ -81,6 +82,7 @@ const checkConnection = function (connection) {
     if (connection.ssl && !connection.ssl.enabled) delete connection.ssl;
     if (connection.ssh) {
         if (!connection.ssh.enabled) delete connection.ssh;
+        if (!connection.ssh.destinationPort)throw new Meteor.Error('Destination port is required for SSH !');
         if (!connection.ssh.username) throw new Meteor.Error('Username is required for SSH !');
         if (!connection.ssh.host) throw new Meteor.Error('Host is required for SSH !');
         if (!connection.ssh.port) throw new Meteor.Error('Port is required for SSH !');
