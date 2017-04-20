@@ -69,8 +69,12 @@ Helper.prototype = {
         if (addDB) connectionUrl += connection.databaseName;
 
         // options
-        if (connection.authenticationType === 'mongodb_x509') connectionUrl += addOptionToUrl(connectionUrl, 'ssl', 'true');
-        else if (connection.authenticationType === 'gssapi') connectionUrl += addOptionToUrl(connectionUrl, 'gssapiServiceName', connection.gssapi.serviceName);
+        if (connection.authenticationType === 'mongodb_cr' || connection.authenticationType === 'scram_sha_1') connectionUrl += addOptionToUrl(connectionUrl, 'authSource', connection[connection.authenticationType].authSource);
+        else if (connection.authenticationType === 'mongodb_x509') connectionUrl += addOptionToUrl(connectionUrl, 'ssl', 'true');
+        else if (connection.authenticationType === 'gssapi' || connection.authenticationType === 'plain') {
+            if (connection.authenticationType === 'gssapi') connectionUrl += addOptionToUrl(connectionUrl, 'gssapiServiceName', connection.gssapi.serviceName);
+            connectionUrl += addOptionToUrl(connectionUrl, 'authSource', '$external');
+        }
 
         if (connection.options) {
             if (connection.options.readPreference) connectionUrl += addOptionToUrl(connectionUrl, 'readPreference', connection.options.readPreference);
