@@ -69,7 +69,6 @@ Helper.prototype = {
         if (addDB) connectionUrl += connection.databaseName;
 
         // options
-        if (connection.authenticationType) connectionUrl += addOptionToUrl(connectionUrl, 'authMechanism', connection.authenticationType.toUpperCase().replace(new RegExp("_", 'g'), "-"));
         if (connection.authenticationType === 'mongodb_x509') connectionUrl += addOptionToUrl(connectionUrl, 'ssl', 'true');
         else if (connection.authenticationType === 'gssapi') connectionUrl += addOptionToUrl(connectionUrl, 'gssapiServiceName', connection.gssapi.serviceName);
 
@@ -86,6 +85,7 @@ Helper.prototype = {
         }
 
         if (connection.ssl && connection.ssl.enabled) connectionUrl += addOptionToUrl(connectionUrl, 'ssl', 'true');
+        if (connection.authenticationType) connectionUrl += addOptionToUrl(connectionUrl, 'authMechanism', connection.authenticationType.toUpperCase().replace(new RegExp("_", 'g'), "-"));
 
         return connectionUrl;
     },
