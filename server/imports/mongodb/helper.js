@@ -2,7 +2,7 @@
  * Created by RSercan on 30.12.2015.
  */
 import {Settings} from "/lib/imports/collections/settings";
-import {serialize, deserialize} from "./extended_json";
+import {deserialize, serialize} from "./extended_json";
 
 const addOptionToUrl = function (url, option, value) {
     if (!value) return '';
@@ -69,12 +69,9 @@ Helper.prototype = {
         if (addDB) connectionUrl += connection.databaseName;
 
         // options
-        if (connection.authenticationType === 'mongodb_cr' || connection.authenticationType === 'scram_sha_1') connectionUrl += addOptionToUrl(connectionUrl, 'authSource', connection[connection.authenticationType].authSource);
-        else if (connection.authenticationType === 'mongodb_x509') connectionUrl += addOptionToUrl(connectionUrl, 'ssl', 'true');
-        else if (connection.authenticationType === 'gssapi' || connection.authenticationType === 'plain') {
-            if (connection.authenticationType === 'gssapi') connectionUrl += addOptionToUrl(connectionUrl, 'gssapiServiceName', connection.gssapi.serviceName);
-            connectionUrl += addOptionToUrl(connectionUrl, 'authSource', '$external');
-        }
+        if (connection.authenticationType) connectionUrl += addOptionToUrl(connectionUrl, 'authMechanism', connection.authenticationType.toUpperCase().replace(new RegExp("_", 'g'), "-"));
+        if (connection.authenticationType === 'mongodb_x509') connectionUrl += addOptionToUrl(connectionUrl, 'ssl', 'true');
+        else if (connection.authenticationType === 'gssapi') connectionUrl += addOptionToUrl(connectionUrl, 'gssapiServiceName', connection.gssapi.serviceName);
 
         if (connection.options) {
             if (connection.options.readPreference) connectionUrl += addOptionToUrl(connectionUrl, 'readPreference', connection.options.readPreference);
@@ -90,7 +87,6 @@ Helper.prototype = {
 
         if (connection.ssl && connection.ssl.enabled) connectionUrl += addOptionToUrl(connectionUrl, 'ssl', 'true');
 
-        if (connection.authenticationType) connectionUrl += addOptionToUrl(connectionUrl, 'authMechanism', connection.authenticationType.toUpperCase().replace(new RegExp("_", 'g'), "-"));
         return connectionUrl;
     },
 
@@ -100,6 +96,14 @@ Helper.prototype = {
         if (connection.ssl && connection.ssl.enabled) addSSLOptions(connection.ssl, result);
         if (connection.options && connection.options.connectWithNoPrimary) result.connectWithNoPrimary = true;
 
+        // added authSource to here to provide same authSource as DB name if it's not provided when connection is being used by URL
+        if (connection.authenticationType === 'mongodb_cr' || connection.authenticationType === 'scram_sha_1') {
+            if (connection[connection.authenticationType].authSource) result.authSource = connection[connection.authenticationType].authSource;
+            else result.authSource = connection.databaseName;
+        }
+        else if (connection.authenticationType === 'gssapi' || connection.authenticationType === 'plain') {
+            result.authSource = '$external';
+        }
         return result;
     },
 

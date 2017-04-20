@@ -55,8 +55,8 @@ export const parseUrl = function (connection) {
             connection[connection.authenticationType].username = parsedUrl.auth.user ? parsedUrl.auth.user : '';
             connection[connection.authenticationType].password = parsedUrl.auth.password ? parsedUrl.auth.password : '';
         }
-        if (parsedUrl.db_options.authSource && (connection.authenticationType === 'mongodb_cr' || connection.authenticationType === 'scram_sha_1')) {
-            connection[connection.authenticationType].authSource = parsedUrl.db_options.authSource;
+        if (connection.authenticationType === 'mongodb_cr' || connection.authenticationType === 'scram_sha_1') {
+            connection[connection.authenticationType].authSource = parsedUrl.db_options.authSource ? parsedUrl.db_options.authSource : connection.databaseName;
         }
 
         return connection;
@@ -68,6 +68,7 @@ export const parseUrl = function (connection) {
 };
 
 const checkConnection = function (connection) {
+    LOGGER.info('[checkConnection]', JSON.stringify(connection));
     if (connection.url) connection = parseUrl(connection);
 
     if (connection.servers.length === 0) throw new Meteor.Error('At least one server is required !');
@@ -81,6 +82,7 @@ const checkConnection = function (connection) {
     if (connection.ssl && !connection.ssl.enabled) delete connection.ssl;
     if (connection.ssh) {
         if (!connection.ssh.enabled) delete connection.ssh;
+        if (!connection.ssh.destinationPort)throw new Meteor.Error('Destination port is required for SSH !');
         if (!connection.ssh.username) throw new Meteor.Error('Username is required for SSH !');
         if (!connection.ssh.host) throw new Meteor.Error('Host is required for SSH !');
         if (!connection.ssh.port) throw new Meteor.Error('Port is required for SSH !');
@@ -128,9 +130,10 @@ Meteor.methods({
         try {
             const response = HTTP.get('https://api.github.com/repos/mongoclient/mongoclient/releases/latest', {headers: {"User-Agent": "Mongoclient"}});
             if (response && response.data && response.data.name && response.data.name !== packageJson.version) {
-                return "There's a new version of mongoclient: " + response.data.name + ", <a href='https://github.com/mongoclient/mongoclient/releases/latest' target='_blank'>download here</a>, if you're using docker just use pull !";
+                return "There's a new version of mongoclient: " + response.data.name + ", <a href='https://github.com/mongoclient/mongoclient/releases/latest' target='_blank'>download here</a>, if you're using docker just use pull for the <b>" + response.data.name + "</b> or <b>latest</b> tag !";
             }
         } catch (e) {
+            LOGGER.error('[checkMongoclientVersion]', e);
             return null;
         }
     },

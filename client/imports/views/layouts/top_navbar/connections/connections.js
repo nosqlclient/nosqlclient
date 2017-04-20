@@ -146,6 +146,8 @@ const fillFormBasicAuth = function (obj) {
 const fillFormSsh = function (connection) {
     $('#inputSshHostname').val(connection.ssh.host);
     $('#inputSshPort').val(connection.ssh.port);
+    $('#inputSshLocalPort').val(connection.ssh.localPort);
+    $('#inputSshDestinationPort').val(connection.ssh.destinationPort);
     $('#inputSshUsername').val(connection.ssh.username);
 
     const certificateForm = $('#formSshCertificateAuth');
@@ -355,11 +357,15 @@ const loadCertificate = function (currentVal, input, done) {
 
 const fillSsh = function (connection) {
     const port = $('#inputSshPort').val();
+    const localPort = $('#inputSshLocalPort').val();
+    const destinationPort = $('#inputSshDestinationPort').val();
 
     connection.ssh = {
         enabled: $('#inputUseSSH').iCheck('update')[0].checked,
         host: $('#inputSshHostname').val(),
         port: port ? parseInt(port) : '',
+        localPort: localPort ? parseInt(localPort) : '',
+        destinationPort: destinationPort ? parseInt(destinationPort) : '',
         username: $('#inputSshUsername').val(),
         certificateFileName: $('#inputSshCertificate').siblings('.bootstrap-filestyle').children('input').val(),
         passPhrase: $('#inputSshPassPhrase').val(),
@@ -440,7 +446,7 @@ const resetForm = function () {
 
     $('#inputConnectionName, #inputUrl, #inputKerberosUsername, #inputKerberosPassword, #inputKerberosServiceName, ' +
         '#inputLdapUsername, #inputLdapPassword, #inputConnectionTimeout, #inputSocketTimeout, #inputSshHostname, ' +
-        '#inputSshPort, #inputSshUsername, #inputSshPassPhrase, #inputSshPassword, #inputUser, #inputPassword, ' +
+        '#inputSshPort, #inputSshLocalPort, #inputSshDestinationPort, #inputSshUsername, #inputSshPassPhrase, #inputSshPassword, #inputUser, #inputPassword, ' +
         '#inputAuthenticationDB, #inputPassPhrase, #inputX509Username').val('');
     $('#inputDatabaseName').val('test');
     $('#cmbAuthenticationType, #cmbSshAuthType, #cmbReadPreference').find('option').prop('selected', false).trigger('chosen:updated');

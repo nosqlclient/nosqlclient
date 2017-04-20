@@ -20,6 +20,7 @@ const os = require('os');
 
 export let database;
 let spawnedShell;
+let tunnel;
 
 const connectToShell = function (connectionId) {
     try {
@@ -103,6 +104,10 @@ const proceedConnectingMongodb = function (dbName, connectionUrl, connectionOpti
                 LOGGER.error(mainError, db);
                 done(mainError, db);
                 if (db) db.close();
+                if (tunnel) {
+                    tunnel.close();
+                    tunnel = null;
+                }
                 return;
             }
             database = db.db(dbName);
@@ -113,10 +118,11 @@ const proceedConnectingMongodb = function (dbName, connectionUrl, connectionOpti
         catch (ex) {
             LOGGER.error('[connect]', ex);
             done(new Meteor.Error(ex.message), null);
-            if (db) {
-                db.close();
+            if (db) db.close();
+            if (tunnel) {
+                tunnel.close();
+                tunnel = null;
             }
-
         }
     });
 };
@@ -288,7 +294,8 @@ Meteor.methods({
             try {
                 if (connection.ssh && connection.ssh.enabled) {
                     let config = {
-                        dstPort: connection.port,
+                        dstPort: connection.ssh.destinationPort,
+                        localPort: connection.ssh.localPort ? connection.ssh.localPort : connection.servers[0].port,
                         host: connection.ssh.host,
                         port: connection.ssh.port,
                         username: connection.ssh.username
@@ -298,7 +305,8 @@ Meteor.methods({
                     if (connection.ssh.passPhrase) config.passphrase = connection.ssh.passPhrase;
                     if (connection.ssh.password) config.password = connection.ssh.password;
 
-                    const tunnel = tunnelSsh(config, Meteor.bindEnvironment(function (error) {
+                    LOGGER.info('[connect]', '[ssh]', 'ssh is enabled, config is ' + JSON.stringify(config));
+                    tunnel = tunnelSsh(config, Meteor.bindEnvironment(function (error) {
                         if (error) {
                             done(new Meteor.Error(error.message), null);
                             return;
@@ -309,8 +317,10 @@ Meteor.methods({
                     }));
 
                     tunnel.on('error', function (err) {
-                        if (err) {
-                            done(new Meteor.Error(err.message), null);
+                        if (err) done(new Meteor.Error(err.message), null);
+                        if (tunnel) {
+                            tunnel.close();
+                            tunnel = null;
                         }
                     });
                 }

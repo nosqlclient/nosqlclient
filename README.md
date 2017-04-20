@@ -9,7 +9,7 @@ Cross-platform, easy to use, MongoDB 3.4+ support and more features!
 [![Docker Pulls](https://img.shields.io/docker/pulls/mongoclient/mongoclient.svg)](https://hub.docker.com/r/mongoclient/mongoclient/)
 [![AGPLv3 License](https://img.shields.io/github/license/mongoclient/mongoclient.svg)](https://github.com/mongoclient/mongoclient/blob/master/LICENSE)
 
-![Mongoclient](https://www.mongoclient.com/img/logo/mongoclient_logo_black.png)
+![Mongoclient](https://www.mongoclient.com/img/logo/mongoclient_logo_black_half_size.png)
 
 ## Demo
 [Try Demo Application](https://www.mongoclient.com/demo)
