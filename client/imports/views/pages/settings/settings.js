@@ -22,6 +22,7 @@ const getSettingsFromForm = function () {
     settings.showLiveChat = $('#divShowLiveChat').iCheck('update')[0].checked;
     settings.dumpPath = $('#inputDumpPath').val();
     settings.singleTabResultSets = $('#divUseSingleTab').iCheck('update')[0].checked;
+    settings.maxLiveChartDataPoints = $('#inputMaxChartPoints').val();
     return settings;
 };
 
@@ -70,6 +71,7 @@ const load = function () {
     const inputShowDBStats = $('#inputShowDBStats');
     const inputDumpPath = $('#inputDumpPath');
     const inputUseSingleTab = $('#inputUseSingleTab');
+    const inputMaxLiveChartDataPoints = $('#inputMaxChartPoints');
 
     cmbScale.val(settings.scale);
     cmbScale.trigger("chosen:updated");
@@ -77,30 +79,14 @@ const load = function () {
     cmbResultView.val(settings.defaultResultView);
     cmbResultView.trigger("chosen:updated");
 
-    if (settings.dumpPath) inputDumpPath.val(settings.dumpPath);
-
-    if (settings.maxAllowedFetchSize) inputMaxAllowedFetchSize.val(settings.maxAllowedFetchSize);
-    else inputMaxAllowedFetchSize.val(0);
-
-    if (settings.socketTimeoutInSeconds) inputSocketTimeout.val(settings.socketTimeoutInSeconds);
-    else inputSocketTimeout.val(0);
-
-    if (settings.connectionTimeoutInSeconds) inputConnectionTimeout.val(settings.connectionTimeoutInSeconds);
-    else inputConnectionTimeout.val(0);
-
-    if (settings.dbStatsScheduler) inputDBStatsScheduler.val(settings.dbStatsScheduler);
-    else inputDBStatsScheduler.val(3000);
-
-    if (settings.autoCompleteFields) inputAutoCompleteFields.iCheck('check');
-    else inputAutoCompleteFields.iCheck('uncheck');
-
-    if (settings.showLiveChat) inputShowLiveChat.iCheck('check');
-    else inputShowLiveChat.iCheck('uncheck');
-
-    if (settings.singleTabResultSets) inputUseSingleTab.iCheck('check');
-    else inputUseSingleTab.iCheck('uncheck');
-
-    if (settings.showDBStats) inputShowDBStats.iCheck('check');
-    else inputShowDBStats.iCheck('uncheck');
-
+    inputDumpPath.val(settings.dumpPath ? settings.dumpPath : '');
+    inputMaxAllowedFetchSize.val(settings.maxAllowedFetchSize ? settings.maxAllowedFetchSize : 0);
+    inputMaxLiveChartDataPoints.val(settings.maxLiveChartDataPoints ? settings.maxLiveChartDataPoints : 15);
+    inputSocketTimeout.val(settings.socketTimeoutInSeconds ? settings.socketTimeoutInSeconds : 0);
+    inputConnectionTimeout.val(settings.connectionTimeoutInSeconds ? settings.connectionTimeoutInSeconds : 0);
+    inputDBStatsScheduler.val(settings.dbStatsScheduler ? settings.dbStatsScheduler : 3000);
+    inputAutoCompleteFields.iCheck(settings.autoCompleteFields ? 'check' : 'uncheck');
+    inputShowLiveChat.iCheck(settings.showLiveChat ? 'check' : 'uncheck');
+    inputUseSingleTab.iCheck(settings.singleTabResultSets ? 'check' : 'uncheck');
+    inputShowDBStats.iCheck(settings.showDBStats ? 'check' : 'uncheck');
 };
