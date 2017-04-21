@@ -6,7 +6,6 @@ import {Template} from "meteor/templating";
 import {Meteor} from "meteor/meteor";
 import {Session} from "meteor/session";
 import Helper from "/client/imports/helper";
-import Enums from "/lib/imports/enums";
 import {initExecuteQuery} from "/client/imports/views/pages/browse_collection/browse_collection";
 import "./group.html";
 

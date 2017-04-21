@@ -62,16 +62,17 @@ Template.storedFunctions.onRendered(function () {
     let connections = this.subscribe('connections');
     let modal = $('#editStoredFunctionModal');
     modal.on('shown.bs.modal', function () {
-        Helper.initializeCodeMirror($('#divStoredFunction'), 'txtStoredFunction');
+        const divStoredFunction = $('#divStoredFunction');
+        Helper.initializeCodeMirror(divStoredFunction, 'txtStoredFunction');
         if (modal.data('selected')) {
             const data = modal.data('selected');
             $('#storedFunctionModalTitle').html(data._id);
             $('#inputStoredFunctionName').val(data._id);
-            Helper.setCodeMirrorValue($('#divStoredFunction'), data.value.$code, $('#txtStoredFunction'))
+            Helper.setCodeMirrorValue(divStoredFunction, data.value.$code, $('#txtStoredFunction'))
         } else {
             $('#storedFunctionModalTitle').html('Add Stored Function');
             $('#inputStoredFunctionName').val('');
-            Helper.setCodeMirrorValue($('#divStoredFunction'), '', $('#txtStoredFunction'))
+            Helper.setCodeMirrorValue(divStoredFunction, '', $('#txtStoredFunction'))
         }
     });
 

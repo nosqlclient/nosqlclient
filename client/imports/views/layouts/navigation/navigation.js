@@ -13,6 +13,8 @@ import {resetForm as resetRenameForm} from "./rename_collection/rename_collectio
 import {resetForm as resetValidationRulesForm} from "./validation_rules/validation_rules";
 import {initializeFilterTable} from "./filter_collection/filter_collection";
 import "./navigation.html";
+import $ from "jquery";
+
 
 const toastr = require('toastr');
 
@@ -25,11 +27,7 @@ export const setFilterRegex = function (regex) {
 };
 
 const isFiltered = function () {
-    if (filterRegex.get() || excludedCollectionsByFilter.get().length !== 0) {
-        return true;
-    }
-
-    return false;
+    return filterRegex.get() || excludedCollectionsByFilter.get().length !== 0;
 };
 
 const dropAllCollections = function () {

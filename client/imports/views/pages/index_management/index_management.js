@@ -108,9 +108,9 @@ const populateTableData = function (indexInfo, stats, indexStats) {
 
         if (obj.key && Object.prototype.toString.call(obj.key) === '[object Object]') {
             for (let field in obj.key) {
-                if (field === '_fts' || field === '_ftsx') {
-                    continue;
-                }
+                if (field === '_fts' || field === '_ftsx') continue;
+                if (!obj.key.hasOwnProperty(field)) continue;
+
                 if (obj.key[field] === 1) {
                     index.asc_fields.push(field);
                 } else if (obj.key[field] === -1) {
