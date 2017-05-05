@@ -101,7 +101,7 @@ Template.aggregatePipeline.events({
         }
 
 
-        Meteor.call("aggregate", selectedCollection, pipeline, function (err, result) {
+        Meteor.call("aggregate", selectedCollection, pipeline,{},Meteor.default_connection._lastSessionId, function (err, result) {
                 if (err || result.error) {
                     Helper.showMeteorFuncError(err, result, "Couldn't execute ");
                 }

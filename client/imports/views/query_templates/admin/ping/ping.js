@@ -15,7 +15,7 @@ Template.ping.onRendered(function () {
 Template.ping.executeQuery = function () {
     initExecuteQuery();
 
-    Meteor.call("ping", function (err, result) {
+    Meteor.call("ping",Meteor.default_connection._lastSessionId, function (err, result) {
         Helper.renderAfterQueryExecution(err, result, true);
     });
 };

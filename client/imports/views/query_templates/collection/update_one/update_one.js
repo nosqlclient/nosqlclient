@@ -82,7 +82,7 @@ Template.updateOne.executeQuery = function (historyParams) {
         options: options
     };
 
-    Meteor.call("updateOne", selectedCollection, selector, setObject, options, function (err, result) {
+    Meteor.call("updateOne", selectedCollection, selector, setObject, options,Meteor.default_connection._lastSessionId, function (err, result) {
         Helper.renderAfterQueryExecution(err, result, false, "updateOne", params, (!historyParams));
     });
 };

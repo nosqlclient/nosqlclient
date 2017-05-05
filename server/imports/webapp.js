@@ -18,7 +18,7 @@ WebApp.connectHandlers.use('/export', function (req, res) {
 
     LOGGER.info('[export]', format, selectedCollection, selector, cursorOptions);
 
-    Meteor.call("find", selectedCollection, JSON.parse(selector), JSON.parse(cursorOptions), false, function (err, result) {
+    Meteor.call("find", selectedCollection, JSON.parse(selector), JSON.parse(cursorOptions), false,Meteor.default_connection._lastSessionId, function (err, result) {
         if (err || result.error) {
             LOGGER.error('[export]', err, result.error);
             res.writeHead(400);

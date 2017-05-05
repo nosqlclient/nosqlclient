@@ -69,7 +69,7 @@ const lineOptions = {
 const fetchStats = function () {
     if (Session.get(Helper.strSessionCollectionNames) != undefined) {
         let settings = Settings.findOne();
-        Meteor.call("dbStats", function (err, result) {
+        Meteor.call("dbStats",Meteor.default_connection._lastSessionId, function (err, result) {
             if (err || result.error) {
                 Helper.showMeteorFuncError(err, result, "Couldn't execute dbStats");
                 Session.set(Helper.strSessionDBStats, undefined);
@@ -103,7 +103,7 @@ const fetchStatus = function () {
     if (Session.get(Helper.strSessionCollectionNames) != undefined) {
         let settings = Settings.findOne();
         if (settings) {
-            Meteor.call("serverStatus", function (err, result) {
+            Meteor.call("serverStatus",Meteor.default_connection._lastSessionId, function (err, result) {
                 if (err || result.error) {
                     const errorMessage = result.error ? result.error.message : err.message;
                     $('#errorMessage').text("Successfully connected but, couldn't fetch server status: " + errorMessage);
@@ -129,7 +129,7 @@ const fetchStatus = function () {
                 }
             });
 
-            Meteor.call("top", function (err, result) {
+            Meteor.call("top",Meteor.default_connection._lastSessionId, function (err, result) {
                 if (result && result.result && result.result.totals) {
                     const collectionReadWriteData = populateTopReadWriteData(result.result.totals);
                     initCollectionsReadWriteTable(collectionReadWriteData);

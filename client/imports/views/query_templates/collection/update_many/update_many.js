@@ -82,7 +82,7 @@ Template.updateMany.executeQuery = function (historyParams) {
         options: options
     };
 
-    Meteor.call("updateMany", selectedCollection, selector, setObject, options, function (err, result) {
+    Meteor.call("updateMany", selectedCollection, selector, setObject, options,Meteor.default_connection._lastSessionId, function (err, result) {
             Helper.renderAfterQueryExecution(err, result, false, "updateMany", params, (!historyParams));
         }
     );

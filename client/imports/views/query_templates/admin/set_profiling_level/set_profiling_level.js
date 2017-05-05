@@ -18,7 +18,7 @@ Template.setProfilingLevel.executeQuery = function () {
     initExecuteQuery();
     const level = $('#cmbLevel').val();
 
-    Meteor.call("setProfilingLevel", level, function (err, result) {
+    Meteor.call("setProfilingLevel", level,Meteor.default_connection._lastSessionId, function (err, result) {
         Helper.renderAfterQueryExecution(err, result, true);
     });
 };

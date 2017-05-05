@@ -48,7 +48,7 @@ Template.rename.executeQuery = function () {
     }
 
     if (newName) {
-        Meteor.call("rename", selectedCollection, newName, options, function (err, result) {
+        Meteor.call("rename", selectedCollection, newName, options,Meteor.default_connection._lastSessionId, function (err, result) {
             Helper.renderAfterQueryExecution(err, result, false, "rename");
             if (err == undefined && result.error == undefined) {
                 renderCollectionnames(newName);
@@ -62,7 +62,7 @@ Template.rename.executeQuery = function () {
 };
 
 const renderCollectionnames = function (newName) {
-    Meteor.call('connect', Session.get(Helper.strSessionConnection), function (err, result) {
+    Meteor.call('connect', Session.get(Helper.strSessionConnection),Meteor.default_connection._lastSessionId, function (err, result) {
         if (err || result.error) {
             Helper.showMeteorFuncError(err, result, "Couldn't connect");
         } else {

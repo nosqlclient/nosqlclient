@@ -57,7 +57,7 @@ Template.findOne.executeQuery = function (historyParams) {
         cursorOptions: cursorOptions
     };
 
-    Meteor.call("findOne", selectedCollection, selector, cursorOptions, function (err, result) {
+    Meteor.call("findOne", selectedCollection, selector, cursorOptions,Meteor.default_connection._lastSessionId, function (err, result) {
             Helper.renderAfterQueryExecution(err, result, false, "findOne", params, (!historyParams));
         }
     );

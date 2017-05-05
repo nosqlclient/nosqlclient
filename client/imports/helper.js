@@ -309,7 +309,7 @@ Helper.prototype = {
             out: {inline: 1}
         };
 
-        Meteor.call("mapReduce", selectedCollection, mapFunc, reduceFunc, options, (err, result) => {
+        Meteor.call("mapReduce", selectedCollection, mapFunc, reduceFunc, options,Meteor.default_connection._lastSessionId, (err, result) => {
             if (err || result.error) {
                 this.showMeteorFuncError(err, result, "Couldn't fetch distinct fields for autocomplete");
             }

@@ -15,7 +15,7 @@ Template.listDatabases.onRendered(function () {
 Template.listDatabases.executeQuery = function () {
     initExecuteQuery();
 
-    Meteor.call("listDatabases", function (err, result) {
+    Meteor.call("listDatabases",Meteor.default_connection._lastSessionId, function (err, result) {
         Helper.renderAfterQueryExecution(err, result, true);
     });
 };

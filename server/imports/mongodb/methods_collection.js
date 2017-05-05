@@ -5,17 +5,17 @@
 import LOGGER from "../internal/logger";
 import Helper from "./helper";
 import {Meteor} from "meteor/meteor";
-import {database} from "./methods_common";
+import {databasesBySessionId} from "./methods_common";
 
 
-const proceedMapReduceExecution = function (selectedCollection, map, reduce, options) {
+const proceedMapReduceExecution = function (selectedCollection, map, reduce, options, sessionId) {
     options = Helper.convertJSONtoBSON(options);
 
     LOGGER.info('[mapReduce]', selectedCollection, map, reduce, options);
 
     let result = Async.runSync(function (done) {
         try {
-            const collection = database.collection(selectedCollection);
+            const collection = databasesBySessionId[sessionId].collection(selectedCollection);
             collection.mapReduce(map, reduce, options, function (err, resultCollection) {
                 if (err) {
                     done(err, null);
@@ -40,12 +40,12 @@ const proceedMapReduceExecution = function (selectedCollection, map, reduce, opt
     return Helper.convertBSONtoJSON(result);
 };
 
-export const proceedQueryExecution = function (selectedCollection, methodArray, removeCollectionTopology) {
+export const proceedQueryExecution = function (selectedCollection, methodArray, sessionId, removeCollectionTopology) {
     LOGGER.info(JSON.stringify(methodArray), selectedCollection);
 
     let result = Async.runSync(function (done) {
         try {
-            let execution = database.collection(selectedCollection);
+            let execution = databasesBySessionId[sessionId].collection(selectedCollection);
             for (let i = 0; i < methodArray.length; i++) {
                 let last = i == (methodArray.length - 1);
                 let entry = methodArray[i];
@@ -80,174 +80,174 @@ export const proceedQueryExecution = function (selectedCollection, methodArray, 
 };
 
 Meteor.methods({
-    saveFindResult(selectedCollection, updateObjects, deleteObjectIds, addedObjects){
+    saveFindResult(selectedCollection, updateObjects, deleteObjectIds, addedObjects, sessionId){
         for (let obj of updateObjects) {
-            proceedQueryExecution(selectedCollection, [{"updateOne": [{_id: obj._id}, obj, {}]}]);
+            proceedQueryExecution(selectedCollection, [{"updateOne": [{_id: obj._id}, obj, {}]}], sessionId);
         }
 
         if (deleteObjectIds.length > 0) {
-            proceedQueryExecution(selectedCollection, [{"deleteMany": [{_id: {$in: deleteObjectIds}}]}]);
+            proceedQueryExecution(selectedCollection, [{"deleteMany": [{_id: {$in: deleteObjectIds}}]}], sessionId);
         }
 
         if (addedObjects.length > 0) {
-            proceedQueryExecution(selectedCollection, [{"insertMany": [addedObjects]}]);
+            proceedQueryExecution(selectedCollection, [{"insertMany": [addedObjects]}], sessionId);
         }
     },
 
-    bulkWrite(selectedCollection, operations, options) {
+    bulkWrite(selectedCollection, operations, options, sessionId) {
         const methodArray = [
             {
                 "bulkWrite": [operations, options]
             }
         ];
-        return proceedQueryExecution(selectedCollection, methodArray);
+        return proceedQueryExecution(selectedCollection, methodArray, sessionId);
     },
 
-    updateOne(selectedCollection, selector, setObject, options) {
+    updateOne(selectedCollection, selector, setObject, options, sessionId) {
         const methodArray = [
             {
                 "updateOne": [selector, setObject, options]
             }
         ];
-        return proceedQueryExecution(selectedCollection, methodArray);
+        return proceedQueryExecution(selectedCollection, methodArray, sessionId);
     },
 
-    updateMany(selectedCollection, selector, setObject, options) {
+    updateMany(selectedCollection, selector, setObject, options, sessionId) {
         const methodArray = [
             {
                 "updateMany": [selector, setObject, options]
             }
         ];
-        return proceedQueryExecution(selectedCollection, methodArray);
+        return proceedQueryExecution(selectedCollection, methodArray, sessionId);
     },
 
-    stats(selectedCollection, options) {
+    stats(selectedCollection, options, sessionId) {
         const methodArray = [
             {
                 "stats": [options]
             }
         ];
-        return proceedQueryExecution(selectedCollection, methodArray);
+        return proceedQueryExecution(selectedCollection, methodArray, sessionId);
     },
 
-    rename(selectedCollection, newName, options) {
+    rename(selectedCollection, newName, options, sessionId) {
         const methodArray = [
             {
                 "rename": [newName, options]
             }
         ];
 
-        return proceedQueryExecution(selectedCollection, methodArray, true);
+        return proceedQueryExecution(selectedCollection, methodArray, sessionId, true);
     },
 
-    reIndex(selectedCollection) {
+    reIndex(selectedCollection, sessionId) {
         const methodArray = [
             {
                 "reIndex": []
             }
         ];
-        return proceedQueryExecution(selectedCollection, methodArray);
+        return proceedQueryExecution(selectedCollection, methodArray, sessionId);
     },
 
-    options(selectedCollection) {
+    options(selectedCollection, sessionId) {
         const methodArray = [
             {
                 "options": []
             }
         ];
-        return proceedQueryExecution(selectedCollection, methodArray);
+        return proceedQueryExecution(selectedCollection, methodArray, sessionId);
     },
 
-    mapReduce(selectedCollection, map, reduce, options) {
-        return proceedMapReduceExecution(selectedCollection, map, reduce, options);
+    mapReduce(selectedCollection, map, reduce, options, sessionId) {
+        return proceedMapReduceExecution(selectedCollection, map, reduce, options, sessionId);
     },
 
-    isCapped(selectedCollection) {
+    isCapped(selectedCollection, sessionId) {
         const methodArray = [
             {
                 "isCapped": []
             }
         ];
-        return proceedQueryExecution(selectedCollection, methodArray);
+        return proceedQueryExecution(selectedCollection, methodArray, sessionId);
     },
 
-    insertMany(selectedCollection, docs, options) {
+    insertMany(selectedCollection, docs, options, sessionId) {
         const methodArray = [
             {
                 "insertMany": [docs, options]
             }
         ];
-        return proceedQueryExecution(selectedCollection, methodArray);
+        return proceedQueryExecution(selectedCollection, methodArray, sessionId);
     },
 
-    indexInformation(selectedCollection, isFull) {
+    indexInformation(selectedCollection, isFull, sessionId) {
         const methodArray = [
             {
                 "indexInformation": [{'full': isFull}]
             }
         ];
-        return proceedQueryExecution(selectedCollection, methodArray);
+        return proceedQueryExecution(selectedCollection, methodArray, sessionId);
     },
 
-    geoNear(selectedCollection, xAxis, yAxis, options) {
+    geoNear(selectedCollection, xAxis, yAxis, options, sessionId) {
         const methodArray = [
             {
                 "geoNear": [xAxis, yAxis, options]
             }
         ];
-        return proceedQueryExecution(selectedCollection, methodArray);
+        return proceedQueryExecution(selectedCollection, methodArray, sessionId);
     },
 
-    geoHaystackSearch(selectedCollection, xAxis, yAxis, options) {
+    geoHaystackSearch(selectedCollection, xAxis, yAxis, options, sessionId) {
         const methodArray = [
             {
                 "geoHaystackSearch": [xAxis, yAxis, options]
             }
         ];
-        return proceedQueryExecution(selectedCollection, methodArray);
+        return proceedQueryExecution(selectedCollection, methodArray, sessionId);
     },
 
-    dropIndex(selectedCollection, indexName) {
+    dropIndex(selectedCollection, indexName, sessionId) {
         const methodArray = [
             {
                 "dropIndex": [indexName]
             }
         ];
 
-        return proceedQueryExecution(selectedCollection, methodArray);
+        return proceedQueryExecution(selectedCollection, methodArray, sessionId);
     },
 
-    distinct(selectedCollection, selector, fieldName, options) {
+    distinct(selectedCollection, selector, fieldName, options, sessionId) {
         const methodArray = [
             {
                 "distinct": [fieldName, selector, options]
             }
         ];
 
-        return proceedQueryExecution(selectedCollection, methodArray);
+        return proceedQueryExecution(selectedCollection, methodArray, sessionId);
     },
 
-    delete(selectedCollection, selector) {
+    delete(selectedCollection, selector, sessionId) {
         const methodArray = [
             {
                 "deleteMany": [selector]
             }
         ];
 
-        return proceedQueryExecution(selectedCollection, methodArray);
+        return proceedQueryExecution(selectedCollection, methodArray, sessionId);
     },
 
-    createIndex(selectedCollection, fields, options) {
+    createIndex(selectedCollection, fields, options, sessionId) {
         const methodArray = [
             {
                 "createIndex": [fields, options]
             }
         ];
 
-        return proceedQueryExecution(selectedCollection, methodArray);
+        return proceedQueryExecution(selectedCollection, methodArray, sessionId);
     },
 
-    findOne(selectedCollection, selector, cursorOptions) {
+    findOne(selectedCollection, selector, cursorOptions, sessionId) {
         const methodArray = [
             {
                 "find": [selector]
@@ -262,10 +262,10 @@ Meteor.methods({
         }
         methodArray.push({'limit': [1]});
         methodArray.push({'next': []});
-        return proceedQueryExecution(selectedCollection, methodArray);
+        return proceedQueryExecution(selectedCollection, methodArray, sessionId);
     },
 
-    find(selectedCollection, selector, cursorOptions, executeExplain) {
+    find(selectedCollection, selector, cursorOptions, executeExplain, sessionId) {
         const methodArray = [
             {
                 "find": [selector]
@@ -285,61 +285,61 @@ Meteor.methods({
             methodArray.push({'toArray': []});
         }
 
-        return proceedQueryExecution(selectedCollection, methodArray);
+        return proceedQueryExecution(selectedCollection, methodArray, sessionId);
     },
 
-    findOneAndUpdate(selectedCollection, selector, setObject, options) {
+    findOneAndUpdate(selectedCollection, selector, setObject, options, sessionId) {
         const methodArray = [
             {
                 "findOneAndUpdate": [selector, setObject, options]
             }
         ];
-        return proceedQueryExecution(selectedCollection, methodArray);
+        return proceedQueryExecution(selectedCollection, methodArray, sessionId);
     },
 
-    findOneAndReplace(selectedCollection, selector, setObject, options) {
+    findOneAndReplace(selectedCollection, selector, setObject, options, sessionId) {
         const methodArray = [
             {
                 "findOneAndReplace": [selector, setObject, options]
             }
         ];
-        return proceedQueryExecution(selectedCollection, methodArray);
+        return proceedQueryExecution(selectedCollection, methodArray, sessionId);
     },
 
-    findOneAndDelete(selectedCollection, selector, options) {
+    findOneAndDelete(selectedCollection, selector, options, sessionId) {
         const methodArray = [
             {
                 "findOneAndDelete": [selector, options]
             }
         ];
-        return proceedQueryExecution(selectedCollection, methodArray);
+        return proceedQueryExecution(selectedCollection, methodArray, sessionId);
     },
 
-    aggregate(selectedCollection, pipeline, options = {}) {
+    aggregate(selectedCollection, pipeline, options = {}, sessionId) {
         const methodArray = [
             {
                 "aggregate": [pipeline, options]
             }
         ];
-        return proceedQueryExecution(selectedCollection, methodArray);
+        return proceedQueryExecution(selectedCollection, methodArray, sessionId);
     },
 
-    count(selectedCollection, selector, options) {
+    count(selectedCollection, selector, options, sessionId) {
         const methodArray = [
             {
                 "count": [selector, options]
             }
         ];
-        return proceedQueryExecution(selectedCollection, methodArray);
+        return proceedQueryExecution(selectedCollection, methodArray, sessionId);
     },
 
-    group (selectedCollection, keys, condition, initial, reduce, finalize, command){
+    group (selectedCollection, keys, condition, initial, reduce, finalize, command, sessionId){
         const methodArray = [
             {
                 "group": [keys, condition, initial, reduce, finalize, command]
             }
         ];
 
-        return proceedQueryExecution(selectedCollection, methodArray);
+        return proceedQueryExecution(selectedCollection, methodArray, sessionId);
     }
 });

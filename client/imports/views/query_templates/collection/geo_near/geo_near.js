@@ -57,7 +57,7 @@ Template.geoNear.executeQuery = function (historyParams) {
     };
 
     Meteor.call("geoNear", selectedCollection, xAxis, yAxis, options, function (err, result) {
-        Helper.renderAfterQueryExecution(err, result, false, "geoNear", params, (!historyParams));
+        Helper.renderAfterQueryExecution(err, result, false, "geoNear", params, Meteor.default_connection._lastSessionId,(!historyParams));
     });
 };
 

@@ -5,15 +5,15 @@
 import LOGGER from "../internal/logger";
 import Helper from "./helper";
 import {Meteor} from "meteor/meteor";
-import {database} from "./methods_common";
+import {databasesBySessionId} from "./methods_common";
 
 
-const proceedQueryExecution = function (methodArray, runOnAdminDB) {
+const proceedQueryExecution = function (methodArray, runOnAdminDB, sessionId) {
     LOGGER.info(JSON.stringify(methodArray), runOnAdminDB);
 
     let result = Async.runSync(function (done) {
         try {
-            let execution = runOnAdminDB ? database.admin() : database;
+            let execution = runOnAdminDB ? databasesBySessionId[sessionId].admin() : databasesBySessionId[sessionId];
             for (let i = 0; i < methodArray.length; i++) {
                 let last = i == (methodArray.length - 1);
                 let entry = methodArray[i];
@@ -44,12 +44,12 @@ const proceedQueryExecution = function (methodArray, runOnAdminDB) {
 };
 
 Meteor.methods({
-    top(){
+    top(sessionId){
         LOGGER.info('[top]');
 
         let result = Async.runSync(function (done) {
             try {
-                database.executeDbAdminCommand({top: 1}, {}, function (err, res) {
+                databasesBySessionId[sessionId].executeDbAdminCommand({top: 1}, {}, function (err, res) {
                     done(err, res);
                 });
             }
@@ -62,12 +62,12 @@ Meteor.methods({
         return Helper.convertBSONtoJSON(result);
     },
 
-    dbStats() {
+    dbStats(sessionId) {
         LOGGER.info('[stats]');
 
         let result = Async.runSync(function (done) {
             try {
-                database.stats(function (err, docs) {
+                databasesBySessionId[sessionId].stats(function (err, docs) {
                     done(err, docs);
                 });
             }
@@ -80,111 +80,111 @@ Meteor.methods({
         return Helper.convertBSONtoJSON(result);
     },
 
-    validateCollection(collectionName, options) {
+    validateCollection(collectionName, options, sessionId) {
         const methodArray = [
             {
                 "validateCollection": [collectionName, options]
             }
         ];
-        return proceedQueryExecution(methodArray, true);
+        return proceedQueryExecution(methodArray, true, sessionId);
     },
 
-    setProfilingLevel(level) {
+    setProfilingLevel(level, sessionId) {
         const methodArray = [
             {
                 "setProfilingLevel": [level]
             }
         ];
-        return proceedQueryExecution(methodArray, true);
+        return proceedQueryExecution(methodArray, true, sessionId);
     },
 
-    serverStatus() {
+    serverStatus(sessionId) {
         const methodArray = [
             {
                 "serverStatus": []
             }
         ];
-        return proceedQueryExecution(methodArray, true);
+        return proceedQueryExecution(methodArray, true, sessionId);
     },
 
-    serverInfo() {
+    serverInfo(sessionId) {
         const methodArray = [
             {
                 "serverInfo": []
             }
         ];
-        return proceedQueryExecution(methodArray, true);
+        return proceedQueryExecution(methodArray, true, sessionId);
     },
 
-    replSetGetStatus() {
+    replSetGetStatus(sessionId) {
         const methodArray = [
             {
                 "replSetGetStatus": []
             }
         ];
-        return proceedQueryExecution(methodArray, true);
+        return proceedQueryExecution(methodArray, true, sessionId);
     },
 
-    removeUser(username, runOnAdminDB) {
+    removeUser(username, runOnAdminDB, sessionId) {
         const methodArray = [
             {
                 "removeUser": [username]
             }
         ];
-        return proceedQueryExecution(methodArray, runOnAdminDB);
+        return proceedQueryExecution(methodArray, runOnAdminDB, sessionId);
     },
 
-    profilingInfo() {
+    profilingInfo(sessionId) {
         const methodArray = [
             {
                 "profilingInfo": []
             }
         ];
-        return proceedQueryExecution(methodArray, true);
+        return proceedQueryExecution(methodArray, true, sessionId);
     },
 
-    ping() {
+    ping(sessionId) {
         const methodArray = [
             {
                 "ping": []
             }
         ];
-        return proceedQueryExecution(methodArray, true);
+        return proceedQueryExecution(methodArray, true, sessionId);
     },
 
-    listDatabases() {
+    listDatabases(sessionId) {
         const methodArray = [
             {
                 "listDatabases": []
             }
         ];
-        return proceedQueryExecution(methodArray, true);
+        return proceedQueryExecution(methodArray, true, sessionId);
     },
 
-    command (command, runOnAdminDB, options) {
+    command (command, runOnAdminDB, options, sessionId) {
         const methodArray = [
             {
                 "command": [command, options]
             }
         ];
-        return proceedQueryExecution(methodArray, runOnAdminDB);
+        return proceedQueryExecution(methodArray, runOnAdminDB, sessionId);
     },
 
-    addUser(username, password, options, runOnAdminDB) {
+    addUser(username, password, options, runOnAdminDB, sessionId) {
         const methodArray = [
             {
                 "addUser": [username, password, options]
             }
         ];
-        return proceedQueryExecution(methodArray, runOnAdminDB);
+        return proceedQueryExecution(methodArray, runOnAdminDB, sessionId);
     },
 
-    buildInfo() {
+    buildInfo(sessionId) {
         const methodArray = [
             {
                 "buildInfo": []
             }
         ];
-        return proceedQueryExecution(methodArray, true);
+        return proceedQueryExecution(methodArray, true, sessionId);
     }
 });

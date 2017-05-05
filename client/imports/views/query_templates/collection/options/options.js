@@ -16,7 +16,7 @@ Template.options.executeQuery = function (historyParams) {
     initExecuteQuery();
     const selectedCollection = Session.get(Helper.strSessionSelectedCollection);
 
-    Meteor.call("options", selectedCollection, function (err, result) {
+    Meteor.call("options", selectedCollection,Meteor.default_connection._lastSessionId, function (err, result) {
         Helper.renderAfterQueryExecution(err, result, false, "options", {}, (!historyParams));
     });
 };

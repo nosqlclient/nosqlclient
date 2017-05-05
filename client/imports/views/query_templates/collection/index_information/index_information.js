@@ -24,7 +24,7 @@ Template.indexInformation.executeQuery = function (historyParams) {
         full: fullVal
     };
 
-    Meteor.call("indexInformation", selectedCollection, fullVal, function (err, result) {
+    Meteor.call("indexInformation", selectedCollection, fullVal,Meteor.default_connection._lastSessionId, function (err, result) {
         Helper.renderAfterQueryExecution(err, result, false, "indexInformation", params, (!historyParams));
     });
 };

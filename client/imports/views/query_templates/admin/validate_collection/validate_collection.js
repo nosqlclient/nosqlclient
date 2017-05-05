@@ -33,7 +33,7 @@ Template.validateCollection.executeQuery = function () {
         return;
     }
 
-    Meteor.call("validateCollection", collectionName, options, function (err, result) {
+    Meteor.call("validateCollection", collectionName, options,Meteor.default_connection._lastSessionId, function (err, result) {
         Helper.renderAfterQueryExecution(err, result, true);
     });
 };

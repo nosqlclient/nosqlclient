@@ -16,7 +16,7 @@ Template.isCapped.executeQuery = function (historyParams) {
     initExecuteQuery();
     const selectedCollection = Session.get(Helper.strSessionSelectedCollection);
 
-    Meteor.call("isCapped", selectedCollection, function (err, result) {
+    Meteor.call("isCapped", selectedCollection,Meteor.default_connection._lastSessionId, function (err, result) {
         if (!result.result) {
             result.result = false;
         }

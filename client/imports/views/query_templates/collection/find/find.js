@@ -30,7 +30,7 @@ const proceedFindQuery = function (selectedCollection, selector, cursorOptions, 
         window.open('export?format=' + exportFormat + '&selectedCollection=' + selectedCollection + "&selector=" + JSON.stringify(selector) + "&cursorOptions=" + JSON.stringify(cursorOptions));
         Ladda.stopAll();
     } else {
-        Meteor.call("find", selectedCollection, selector, cursorOptions, executeExplain, function (err, result) {
+        Meteor.call("find", selectedCollection, selector, cursorOptions, executeExplain,Meteor.default_connection._lastSessionId, function (err, result) {
             Helper.renderAfterQueryExecution(err, result, false, "find", params, saveHistory);
         });
     }
@@ -91,7 +91,7 @@ Template.find.executeQuery = function (historyParams, exportFormat) {
     // max allowed fetch size  != 0 and there's no project option, check for size
     if (maxAllowedFetchSize && maxAllowedFetchSize != 0 && !(Enums.CURSOR_OPTIONS.PROJECT in cursorOptions)) {
         // get stats to calculate fetched documents size from avgObjSize (stats could be changed, therefore we can't get it from html )
-        Meteor.call("stats", selectedCollection, {}, function (statsError, statsResult) {
+        Meteor.call("stats", selectedCollection, {},Meteor.default_connection._lastSessionId, function (statsError, statsResult) {
             if (statsError || statsResult.error || !(statsResult.result.avgObjSize)) {
                 // if there's an error, nothing we can do
                 proceedFindQuery(selectedCollection, selector, cursorOptions, (!historyParams), exportFormat);
@@ -104,7 +104,7 @@ Template.find.executeQuery = function (historyParams, exportFormat) {
                     }
                 }
                 else {
-                    Meteor.call("count", selectedCollection, selector, function (err, result) {
+                    Meteor.call("count", selectedCollection, selector,{},Meteor.default_connection._lastSessionId, function (err, result) {
                         if (err || result.error) {
                             proceedFindQuery(selectedCollection, selector, cursorOptions, (!historyParams), exportFormat);
                         }

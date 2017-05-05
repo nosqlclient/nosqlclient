@@ -142,7 +142,7 @@ Template.fileManagement.events({
                     return;
                 }
 
-                Meteor.call('deleteFiles', $('#txtBucketName').val(), selector, function (err, result) {
+                Meteor.call('deleteFiles', $('#txtBucketName').val(), selector,Meteor.default_connection._lastSessionId, function (err, result) {
                     if (err || result.err) {
                         Helper.showMeteorFuncError(err, result, "Couldn't delete files");
                     } else {
@@ -216,7 +216,7 @@ Template.fileManagement.events({
                 delete setValue._id;
 
                 Meteor.call('updateOne', $('#txtBucketName').val() + '.files',
-                    {'_id': {"$oid": Session.get(Helper.strSessionSelectedFile)._id}}, {"$set": setValue}, {}, function (err) {
+                    {'_id': {"$oid": Session.get(Helper.strSessionSelectedFile)._id}}, {"$set": setValue}, {},Meteor.default_connection._lastSessionId, function (err) {
                         if (err) {
                             toastr.error("Couldn't update file info: " + err.message);
                         } else {

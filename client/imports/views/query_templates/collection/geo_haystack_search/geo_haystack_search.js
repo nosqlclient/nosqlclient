@@ -58,7 +58,7 @@ Template.geoHaystackSearch.executeQuery = function (historyParams) {
         options: options
     };
 
-    Meteor.call("geoHaystackSearch", selectedCollection, xAxis, yAxis, options, function (err, result) {
+    Meteor.call("geoHaystackSearch", selectedCollection, xAxis, yAxis, options,Meteor.default_connection._lastSessionId, function (err, result) {
         Helper.renderAfterQueryExecution(err, result, false, "geoHaystackSearch", params, (!historyParams));
     });
 };

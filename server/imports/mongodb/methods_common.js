@@ -18,6 +18,10 @@ const fs = require('fs');
 const spawn = require('cross-spawn');
 const os = require('os');
 
+export let databasesBySessionId = {};
+let spawnedShellsBySessionId = {};
+let tunnelsBySessionId = {};
+
 export let database;
 let spawnedShell;
 let tunnel;
@@ -93,7 +97,7 @@ const getProperMongo = function () {
     }
 };
 
-const proceedConnectingMongodb = function (dbName, connectionUrl, connectionOptions, done) {
+const proceedConnectingMongodb = function (dbName, sessionId, connectionUrl, connectionOptions, done) {
     if (!connectionOptions) {
         connectionOptions = {};
     }
@@ -110,8 +114,8 @@ const proceedConnectingMongodb = function (dbName, connectionUrl, connectionOpti
                 }
                 return;
             }
-            database = db.db(dbName);
-            database.listCollections().toArray(function (err, collections) {
+            databasesBySessionId[sessionId] = db.db(dbName);
+            databasesBySessionId[sessionId].listCollections().toArray(function (err, collections) {
                 done(err, collections);
             });
         }
@@ -232,12 +236,12 @@ Meteor.methods({
         });
     },
 
-    listCollectionNames(dbName) {
+    listCollectionNames(dbName, sessionId) {
         LOGGER.info('[listCollectionNames]', dbName);
 
         return Async.runSync(function (done) {
             try {
-                const wishedDB = database.db(dbName);
+                const wishedDB = databasesBySessionId[sessionId].db(dbName);
                 wishedDB.listCollections().toArray(function (err, collections) {
                     done(err, collections);
                 });
@@ -250,12 +254,12 @@ Meteor.methods({
 
     },
 
-    getDatabases() {
+    getDatabases(sessionId) {
         LOGGER.info('[getDatabases]');
 
         return Async.runSync(function (done) {
             try {
-                database.admin().listDatabases(function (err, dbs) {
+                databasesBySessionId[sessionId].admin().listDatabases(function (err, dbs) {
                     if (dbs) {
                         done(err, dbs.databases);
                     }
@@ -271,9 +275,9 @@ Meteor.methods({
         });
     },
 
-    disconnect() {
-        if (database) {
-            database.close();
+    disconnect(sessionId) {
+        if (databasesBySessionId[sessionId]) {
+            databasesBySessionId[sessionId].close();
         }
         if (spawnedShell) {
             spawnedShell.stdin.end();
@@ -283,7 +287,7 @@ Meteor.methods({
         SchemaAnaylzeResult.remove({});
     },
 
-    connect(connectionId) {
+    connect(connectionId, sessionId) {
         const connection = Connections.findOne({_id: connectionId});
         const connectionUrl = Helper.getConnectionUrl(connection);
         const connectionOptions = Helper.getConnectionOptions(connection);
@@ -311,7 +315,7 @@ Meteor.methods({
                             done(new Meteor.Error(error.message), null);
                             return;
                         }
-                        proceedConnectingMongodb(connection.databaseName, connectionUrl, connectionOptions, done);
+                        proceedConnectingMongodb(connection.databaseName, sessionId, connectionUrl, connectionOptions, done);
                         spawnedShell = spawn(getProperMongo(), [connectionUrl]);
                         setEventsToShell(connectionId);
                     }));
@@ -325,7 +329,7 @@ Meteor.methods({
                     });
                 }
                 else {
-                    proceedConnectingMongodb(connection.databaseName, connectionUrl, connectionOptions, done);
+                    proceedConnectingMongodb(connection.databaseName, sessionId, connectionUrl, connectionOptions, done);
                 }
             }
             catch (ex) {
@@ -335,12 +339,12 @@ Meteor.methods({
         });
     },
 
-    dropDB() {
+    dropDB(sessionId) {
         LOGGER.info('[dropDatabase]');
 
         return Async.runSync(function (done) {
             try {
-                database.dropDatabase(function (err, result) {
+                databasesBySessionId[sessionId].dropDatabase(function (err, result) {
                     done(err, result);
                 });
             }
@@ -351,12 +355,12 @@ Meteor.methods({
         });
     },
 
-    dropCollection(collectionName) {
+    dropCollection(collectionName, sessionId) {
         LOGGER.info('[dropCollection]', collectionName);
 
         return Async.runSync(function (done) {
             try {
-                const collection = database.collection(collectionName);
+                const collection = databasesBySessionId[sessionId].collection(collectionName);
                 collection.drop(function (dropError) {
                     done(dropError, null);
                 });
@@ -368,10 +372,10 @@ Meteor.methods({
         });
     },
 
-    dropAllCollections() {
+    dropAllCollections(sessionId) {
         return Async.runSync(function (done) {
             try {
-                database.collections(function (err, collections) {
+                databasesBySessionId[sessionId].collections(function (err, collections) {
                     keepDroppingCollections(collections, 0, done);
                 });
             }
@@ -382,12 +386,12 @@ Meteor.methods({
         });
     },
 
-    createCollection(collectionName, options) {
+    createCollection(collectionName, options, sessionId) {
         LOGGER.info('[createCollection]', collectionName, JSON.stringify(options));
 
         return Async.runSync(function (done) {
             try {
-                database.createCollection(collectionName, options, function (err) {
+                databasesBySessionId[sessionId].createCollection(collectionName, options, function (err) {
                     done(err, null);
                 });
             }

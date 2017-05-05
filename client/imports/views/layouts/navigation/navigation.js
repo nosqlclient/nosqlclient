@@ -41,7 +41,7 @@ const dropAllCollections = function () {
         closeOnConfirm: true
     }, function (isConfirm) {
         if (isConfirm) {
-            Meteor.call('dropAllCollections', function (err, result) {
+            Meteor.call('dropAllCollections',Meteor.default_connection._lastSessionId, function (err, result) {
                 if (err || result.error) {
                     Helper.showMeteorFuncError(err, result, "Couldn't drop all collections");
                 }
@@ -72,7 +72,7 @@ const handleNavigationAndSessions = function () {
 };
 
 const clearCollection = function (collectionName) {
-    Meteor.call('delete', collectionName, {}, function (err, result) {
+    Meteor.call('delete', collectionName, {},Meteor.default_connection._lastSessionId, function (err, result) {
         if (err || result.error) {
             Helper.showMeteorFuncError(err, result, "Couldn't clear collection");
         }
@@ -83,7 +83,7 @@ const clearCollection = function (collectionName) {
 };
 
 const dropCollection = function (collectionName) {
-    Meteor.call('dropCollection', collectionName, function (err, result) {
+    Meteor.call('dropCollection', collectionName,Meteor.default_connection._lastSessionId, function (err, result) {
         if (err || result.error) {
             Helper.showMeteorFuncError(err, result, "Couldn't drop collection");
         }
@@ -95,7 +95,7 @@ const dropCollection = function (collectionName) {
 };
 
 export const renderCollectionNames = function () {
-    Meteor.call('connect', Session.get(Helper.strSessionConnection), function (err, result) {
+    Meteor.call('connect', Session.get(Helper.strSessionConnection),Meteor.default_connection._lastSessionId, function (err, result) {
         if (err || result.error) {
             Helper.showMeteorFuncError(err, result, "Couldn't connect");
         }
@@ -166,7 +166,7 @@ Template.navigation.events({
             confirmButtonText: "Yes, drop it!",
             closeOnConfirm: false
         }, function () {
-            Meteor.call('dropDB', function (err, result) {
+            Meteor.call('dropDB',Meteor.default_connection._lastSessionId, function (err, result) {
                 if (err || result.error) {
                     Helper.showMeteorFuncError(err, result, "Couldn't drop database");
                 }

@@ -65,7 +65,7 @@ Template.findOneAndReplace.executeQuery = function (historyParams) {
         options: options
     };
 
-    Meteor.call("findOneAndReplace", selectedCollection, selector, replaceObject, options, function (err, result) {
+    Meteor.call("findOneAndReplace", selectedCollection, selector, replaceObject, options,Meteor.default_connection._lastSessionId, function (err, result) {
             Helper.renderAfterQueryExecution(err, result, false, "findOneAndReplace", params, (!historyParams));
         }
     );

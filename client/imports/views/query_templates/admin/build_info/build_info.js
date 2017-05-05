@@ -12,7 +12,7 @@ Template.buildInfo.onRendered(function()  {
 Template.buildInfo.executeQuery = function() {
     initExecuteQuery();
 
-    Meteor.call("buildInfo", function(err, result) {
+    Meteor.call("buildInfo",Meteor.default_connection._lastSessionId, function(err, result) {
         Helper.renderAfterQueryExecution(err, result, true);
     });
 };

@@ -30,7 +30,7 @@ Template.pageHeading.helpers({
             // get distinct field keys for auto complete on every collection change.
             Helper.getDistinctKeysForAutoComplete(selectedCollection);
 
-            Meteor.call("stats", selectedCollection, {}, function (err, result) {
+            Meteor.call("stats", selectedCollection, {},Meteor.default_connection._lastSessionId, function (err, result) {
                 if (err || result.error) {
                     $('#divCollectionInfo').html("<div class=\"row\"><div class=\"col-lg-7\"><b>Couldn't fetch stats:</b></div><div class=\"col-lg-5\">" + Helper.getErrorMessage(err, result) + "</div></div>");
                 }

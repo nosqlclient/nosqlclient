@@ -15,7 +15,7 @@ Template.replSetGetStatus.onRendered(function () {
 Template.replSetGetStatus.executeQuery = function () {
     initExecuteQuery();
 
-    Meteor.call("replSetGetStatus", function (err, result) {
+    Meteor.call("replSetGetStatus",Meteor.default_connection._lastSessionId, function (err, result) {
         Helper.renderAfterQueryExecution(err, result, true);
     });
 };
