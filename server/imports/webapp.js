@@ -1,10 +1,10 @@
 /**
  * Created by Sercan on 26.10.2016.
  */
-import {WebApp} from 'meteor/webapp';
-import {Meteor} from 'meteor/meteor';
-import {Papa} from 'meteor/harrison:papa-parse';
-import {database} from "/server/imports/mongodb/methods_common";
+import {WebApp} from "meteor/webapp";
+import {Meteor} from "meteor/meteor";
+import {Papa} from "meteor/harrison:papa-parse";
+import {databasesBySessionId} from "/server/imports/mongodb/methods_common";
 import LOGGER from "/server/imports/internal/logger";
 
 const mongodbApi = require('mongodb');
@@ -18,7 +18,7 @@ WebApp.connectHandlers.use('/export', function (req, res) {
 
     LOGGER.info('[export]', format, selectedCollection, selector, cursorOptions);
 
-    Meteor.call("find", selectedCollection, JSON.parse(selector), JSON.parse(cursorOptions), false,Meteor.default_connection._lastSessionId, function (err, result) {
+    Meteor.call("find", selectedCollection, JSON.parse(selector), JSON.parse(cursorOptions), false, Meteor.default_connection._lastSessionId, function (err, result) {
         if (err || result.error) {
             LOGGER.error('[export]', err, result.error);
             res.writeHead(400);
@@ -52,8 +52,9 @@ WebApp.connectHandlers.use("/download", function (req, res) {
     const urlParts = decodeURI(req.url).split('&');
     let fileId = urlParts[0].substr(urlParts[0].indexOf('=') + 1);
     let bucketName = urlParts[1].substr(urlParts[1].indexOf('=') + 1);
+    let sessionId = urlParts[2].substr(urlParts[2].indexOf('=') + 1);
 
-    LOGGER.info('[downloadFile]', fileId, bucketName);
+    LOGGER.info('[downloadFile]', fileId, bucketName, sessionId);
 
     if (!bucketName || !fileId) {
         LOGGER.info('[downloadFile]', 'file not found !');
@@ -63,10 +64,10 @@ WebApp.connectHandlers.use("/download", function (req, res) {
     }
 
     try {
-        let filesCollection = database.collection(bucketName + '.files');
+        let filesCollection = databasesBySessionId[sessionId].collection(bucketName + '.files');
         filesCollection.find({_id: new mongodbApi.ObjectId(fileId)}).limit(1).next(function (err, doc) {
             if (doc) {
-                const bucket = new mongodbApi.GridFSBucket(database, {bucketName: bucketName});
+                const bucket = new mongodbApi.GridFSBucket(databasesBySessionId[sessionId], {bucketName: bucketName});
                 const headers = {
                     'Content-type': 'application/octet-stream',
                     'Content-Disposition': 'attachment; filename=' + doc.filename

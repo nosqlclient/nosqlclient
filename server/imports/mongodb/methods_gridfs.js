@@ -4,21 +4,21 @@
 /*global Async*/
 import LOGGER from "../internal/logger";
 import Helper from "./helper";
-import {database} from "./methods_common";
+import {databasesBySessionId} from "./methods_common";
 import {Meteor} from "meteor/meteor";
 
 const mongodbApi = require('mongodb');
 
 Meteor.methods({
-    deleteFiles(bucketName, selector){
-        LOGGER.info('[deleteFiles]', bucketName, selector);
+    deleteFiles(bucketName, selector, sessionId){
+        LOGGER.info('[deleteFiles]', bucketName, selector, sessionId);
 
         selector = Helper.convertJSONtoBSON(selector);
 
         let result = Async.runSync(function (done) {
             try {
-                let filesCollection = database.collection(bucketName + ".files");
-                let chunksCollection = database.collection(bucketName + ".chunks");
+                let filesCollection = databasesBySessionId[sessionId].collection(bucketName + ".files");
+                let chunksCollection = databasesBySessionId[sessionId].collection(bucketName + ".chunks");
 
                 filesCollection.find(selector, {_id: 1}).toArray(function (err, docs) {
                     if (err) {
@@ -54,12 +54,12 @@ Meteor.methods({
         return Helper.convertBSONtoJSON(result);
     },
 
-    deleteFile(bucketName, fileId) {
-        LOGGER.info('[deleteFile]', bucketName, fileId);
+    deleteFile(bucketName, fileId, sessionId) {
+        LOGGER.info('[deleteFile]', bucketName, fileId, sessionId);
 
         let result = Async.runSync(function (done) {
             try {
-                const bucket = new mongodbApi.GridFSBucket(database, {bucketName: bucketName});
+                const bucket = new mongodbApi.GridFSBucket(databasesBySessionId[sessionId], {bucketName: bucketName});
                 bucket.delete(new mongodbApi.ObjectId(fileId), function (err) {
                     done(err, null);
                 });
@@ -73,16 +73,16 @@ Meteor.methods({
         return Helper.convertBSONtoJSON(result);
     },
 
-    getFileInfos(bucketName, selector, limit) {
+    getFileInfos(bucketName, selector, limit, sessionId) {
         limit = parseInt(limit) || 100;
         selector = selector || {};
         selector = Helper.convertJSONtoBSON(selector);
 
-        LOGGER.info('[getFileInfos]', bucketName, JSON.stringify(selector), limit);
+        LOGGER.info('[getFileInfos]', bucketName, JSON.stringify(selector), limit, sessionId);
 
         let result = Async.runSync(function (done) {
             try {
-                const bucket = new mongodbApi.GridFSBucket(database, {bucketName: bucketName});
+                const bucket = new mongodbApi.GridFSBucket(databasesBySessionId[sessionId], {bucketName: bucketName});
                 bucket.find(selector, {limit: limit}).toArray(function (err, files) {
                     done(err, files);
                 });
@@ -97,18 +97,18 @@ Meteor.methods({
         return Helper.convertBSONtoJSON(result);
     },
 
-    uploadFile(bucketName, blob, fileName, contentType, metaData, aliases) {
+    uploadFile(bucketName, blob, fileName, contentType, metaData, aliases, sessionId) {
         if (metaData) {
             metaData = Helper.convertJSONtoBSON(metaData);
         }
 
         blob = new Buffer(blob);
 
-        LOGGER.info('[uploadFile]', bucketName, fileName, contentType, JSON.stringify(metaData), aliases);
+        LOGGER.info('[uploadFile]', bucketName, fileName, contentType, JSON.stringify(metaData), aliases, sessionId);
 
         return Async.runSync(function (done) {
             try {
-                const bucket = new mongodbApi.GridFSBucket(database, {bucketName: bucketName});
+                const bucket = new mongodbApi.GridFSBucket(databasesBySessionId[sessionId], {bucketName: bucketName});
                 let uploadStream = bucket.openUploadStream(fileName, {
                     metadata: metaData,
                     contentType: contentType,
@@ -126,12 +126,12 @@ Meteor.methods({
         });
     },
 
-    getFile(bucketName, fileId) {
-        LOGGER.info('[getFile]', bucketName, fileId);
+    getFile(bucketName, fileId, sessionId) {
+        LOGGER.info('[getFile]', bucketName, fileId, sessionId);
 
         let result = Async.runSync(function (done) {
             try {
-                let filesCollection = database.collection(bucketName + '.files');
+                let filesCollection = databasesBySessionId[sessionId].collection(bucketName + '.files');
                 filesCollection.find({_id: new mongodbApi.ObjectId(fileId)}).limit(1).next(function (err, doc) {
                     if (doc) {
                         done(null, doc);

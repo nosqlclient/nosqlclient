@@ -22,7 +22,6 @@ export let databasesBySessionId = {};
 let spawnedShellsBySessionId = {};
 let tunnelsBySessionId = {};
 
-export let database;
 let spawnedShell;
 let tunnel;
 

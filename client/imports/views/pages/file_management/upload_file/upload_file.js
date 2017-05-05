@@ -53,7 +53,7 @@ export const proceedUploading = function (blob, contentType, metaData, aliases) 
     Ladda.create(document.querySelector('#btnUpload')).start();
     const fileReader = new FileReader();
     fileReader.onload = function (file) {
-        Meteor.call('uploadFile', $('#txtBucketName').val(), new Uint8Array(file.target.result), blob.name, contentType, metaData, aliases, function (err, result) {
+        Meteor.call('uploadFile', $('#txtBucketName').val(), new Uint8Array(file.target.result), blob.name, contentType, metaData, aliases, Meteor.default_connection._lastSessionId, function (err, result) {
             if (err || result.error) {
                 Helper.showMeteorFuncError(err, result, "Couldn't upload file");
             }

@@ -53,7 +53,7 @@ export const initFilesInformation = function () {
         return;
     }
 
-    Meteor.call('getFileInfos', $('#txtBucketName').val(), selector, $('#txtFileFetchLimit').val(), function (err, result) {
+    Meteor.call('getFileInfos', $('#txtBucketName').val(), selector, $('#txtFileFetchLimit').val(), Meteor.default_connection._lastSessionId, function (err, result) {
             if (err || result.error) {
                 Helper.showMeteorFuncError(err, result, "Couldn't get file informations");
                 return;
@@ -142,7 +142,7 @@ Template.fileManagement.events({
                     return;
                 }
 
-                Meteor.call('deleteFiles', $('#txtBucketName').val(), selector,Meteor.default_connection._lastSessionId, function (err, result) {
+                Meteor.call('deleteFiles', $('#txtBucketName').val(), selector, Meteor.default_connection._lastSessionId, function (err, result) {
                     if (err || result.err) {
                         Helper.showMeteorFuncError(err, result, "Couldn't delete files");
                     } else {
@@ -163,7 +163,7 @@ Template.fileManagement.events({
         e.preventDefault();
         const fileRow = Session.get(Helper.strSessionSelectedFile);
         if (fileRow) {
-            window.open('download?fileId=' + fileRow._id + '&bucketName=' + $('#txtBucketName').val());
+            window.open('download?fileId=' + fileRow._id + '&bucketName=' + $('#txtBucketName').val() + '&sessionId=' + Meteor.default_connection._lastSessionId);
         }
     },
 
@@ -183,7 +183,7 @@ Template.fileManagement.events({
                 if (isConfirm) {
 
                     Ladda.create(document.querySelector('#btnReloadFiles')).start();
-                    Meteor.call('deleteFile', $('#txtBucketName').val(), fileRow._id, function (err) {
+                    Meteor.call('deleteFile', $('#txtBucketName').val(), fileRow._id, Meteor.default_connection._lastSessionId, function (err) {
                         if (err) {
                             toastr.error("Couldn't delete: " + err.message);
                         } else {
@@ -216,7 +216,7 @@ Template.fileManagement.events({
                 delete setValue._id;
 
                 Meteor.call('updateOne', $('#txtBucketName').val() + '.files',
-                    {'_id': {"$oid": Session.get(Helper.strSessionSelectedFile)._id}}, {"$set": setValue}, {},Meteor.default_connection._lastSessionId, function (err) {
+                    {'_id': {"$oid": Session.get(Helper.strSessionSelectedFile)._id}}, {"$set": setValue}, {}, Meteor.default_connection._lastSessionId, function (err) {
                         if (err) {
                             toastr.error("Couldn't update file info: " + err.message);
                         } else {

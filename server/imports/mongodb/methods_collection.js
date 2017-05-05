@@ -21,7 +21,7 @@ const proceedMapReduceExecution = function (selectedCollection, map, reduce, opt
                     done(err, null);
                     return;
                 }
-                if ((typeof options.out) == 'string') {
+                if ((typeof options.out) === 'string') {
                     resultCollection.find().toArray(function (err, result) {
                         done(err, result);
                     });
@@ -47,12 +47,12 @@ export const proceedQueryExecution = function (selectedCollection, methodArray, 
         try {
             let execution = databasesBySessionId[sessionId].collection(selectedCollection);
             for (let i = 0; i < methodArray.length; i++) {
-                let last = i == (methodArray.length - 1);
+                let last = (i === (methodArray.length - 1));
                 let entry = methodArray[i];
                 entry = Helper.convertJSONtoBSON(entry);
                 for (let key in entry) {
                     if (entry.hasOwnProperty(key)) {
-                        if (last && key == Object.keys(entry)[Object.keys(entry).length - 1]) {
+                        if (last && key === Object.keys(entry)[Object.keys(entry).length - 1]) {
                             entry[key].push(function (err, docs) {
                                 done(err, docs);
                             });
