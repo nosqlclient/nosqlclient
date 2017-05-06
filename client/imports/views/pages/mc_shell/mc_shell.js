@@ -136,7 +136,7 @@ const initializeCommandCodeMirror = function () {
                 },
                 "Ctrl-Space": "autocomplete",
                 "Enter": function (cm) {
-                    Meteor.call("executeShellCommand", cm.getValue(), Session.get(Helper.strSessionConnection), (err) => {
+                    Meteor.call("executeShellCommand", cm.getValue(), Session.get(Helper.strSessionConnection), Meteor.default_connection._lastSessionId, (err) => {
                         if (err) {
                             Helper.showMeteorFuncError(err, null, "Couldn't execute shell command");
                         }
@@ -177,7 +177,7 @@ const initializeCommandCodeMirror = function () {
 Template.mcShell.events({
     'click #btnClearShell': function () {
         Helper.setCodeMirrorValue($('#divShellResult'), '');
-        Meteor.call('clearShell');
+        Meteor.call('clearShell', Meteor.default_connection._lastSessionId);
     }
 });
 
@@ -219,7 +219,7 @@ Template.mcShell.onRendered(function () {
 
     initializeCommandCodeMirror();
 
-    Meteor.call("connectToShell", Session.get(Helper.strSessionConnection), (err) => {
+    Meteor.call("connectToShell", Session.get(Helper.strSessionConnection), Meteor.default_connection._lastSessionId, (err) => {
         if (err) {
             Helper.showMeteorFuncError(err, null, "Couldn't connect via shell");
         }

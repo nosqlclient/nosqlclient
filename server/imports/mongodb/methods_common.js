@@ -22,31 +22,28 @@ export let databasesBySessionId = {};
 let spawnedShellsBySessionId = {};
 let tunnelsBySessionId = {};
 
-let spawnedShell;
-let tunnel;
-
-const connectToShell = function (connectionId) {
+const connectToShell = function (connectionId, sessionId) {
     try {
         const connection = Connections.findOne({_id: connectionId});
-        if (!spawnedShell) {
+        if (!spawnedShellsBySessionId[sessionId]) {
             const connectionUrl = Helper.getConnectionUrl(connection);
             const mongoPath = getProperMongo();
 
             LOGGER.info('[shell]', mongoPath, connectionUrl);
-            spawnedShell = spawn(mongoPath, [connectionUrl]);
-            setEventsToShell(connectionId);
+            spawnedShellsBySessionId[sessionId] = spawn(mongoPath, [connectionUrl]);
+            setEventsToShell(connectionId, sessionId);
         }
 
-        if (spawnedShell) {
+        if (spawnedShellsBySessionId[sessionId]) {
             LOGGER.info('[shell]', 'executing command "use ' + connection.databaseName + '" on shell');
-            spawnedShell.stdin.write('use ' + connection.databaseName + '\n');
+            spawnedShellsBySessionId[sessionId].stdin.write('use ' + connection.databaseName + '\n');
         }
         else {
             return {err: new Meteor.Error("Couldn't spawn shell !"), result: null};
         }
     }
     catch (ex) {
-        spawnedShell = null;
+        spawnedShellsBySessionId[sessionId] = null;
         LOGGER.error('[shell]', ex);
         return {err: new Meteor.Error(ex.message), result: null};
     }
@@ -107,9 +104,9 @@ const proceedConnectingMongodb = function (dbName, sessionId, connectionUrl, con
                 LOGGER.error(mainError, db);
                 done(mainError, db);
                 if (db) db.close();
-                if (tunnel) {
-                    tunnel.close();
-                    tunnel = null;
+                if (tunnelsBySessionId[sessionId]) {
+                    tunnelsBySessionId[sessionId].close();
+                    tunnelsBySessionId[sessionId] = null;
                 }
                 return;
             }
@@ -122,61 +119,65 @@ const proceedConnectingMongodb = function (dbName, sessionId, connectionUrl, con
             LOGGER.error('[connect]', ex);
             done(new Meteor.Error(ex.message), null);
             if (db) db.close();
-            if (tunnel) {
-                tunnel.close();
-                tunnel = null;
+            if (tunnelsBySessionId[sessionId]) {
+                tunnelsBySessionId[sessionId].close();
+                tunnelsBySessionId[sessionId] = null;
             }
         }
     });
 };
 
-const setEventsToShell = function (connectionId) {
+const setEventsToShell = function (connectionId, sessionId) {
     LOGGER.info('[shell]', 'binding events to shell');
 
-    spawnedShell.on('error', Meteor.bindEnvironment(function (err) {
+    spawnedShellsBySessionId[sessionId].on('error', Meteor.bindEnvironment(function (err) {
         LOGGER.error('unexpected error on spawned shell: ' + err);
-        spawnedShell = null;
+        spawnedShellsBySessionId[sessionId] = null;
         if (err) {
             ShellCommands.insert({
                 'date': Date.now(),
+                'sessionId': sessionId,
                 'connectionId': connectionId,
                 'message': 'unexpected error ' + err.message
             });
         }
     }));
 
-    spawnedShell.stdout.on('data', Meteor.bindEnvironment(function (data) {
+    spawnedShellsBySessionId[sessionId].stdout.on('data', Meteor.bindEnvironment(function (data) {
         if (data && data.toString()) {
             ShellCommands.insert({
                 'date': Date.now(),
+                'sessionId': sessionId,
                 'connectionId': connectionId,
                 'message': data.toString()
             });
         }
     }));
 
-    spawnedShell.stderr.on('data', Meteor.bindEnvironment(function (data) {
+    spawnedShellsBySessionId[sessionId].stderr.on('data', Meteor.bindEnvironment(function (data) {
         if (data && data.toString()) {
             ShellCommands.insert({
                 'date': Date.now(),
+                'sessionId': sessionId,
                 'connectionId': connectionId,
                 'message': data.toString()
             });
         }
     }));
 
-    spawnedShell.on('close', Meteor.bindEnvironment(function (code) {
+    spawnedShellsBySessionId[sessionId].on('close', Meteor.bindEnvironment(function (code) {
         // show ended message in codemirror
         ShellCommands.insert({
             'date': Date.now(),
             'connectionId': connectionId,
+            'sessionId': sessionId,
             'message': 'shell closed ' + code.toString()
         });
 
-        spawnedShell = null;
+        spawnedShellsBySessionId[sessionId] = null;
         Meteor.setTimeout(function () {
             // remove all for further
-            ShellCommands.remove({});
+            ShellCommands.remove({'sessionId': sessionId});
         }, 500);
     }));
 };
@@ -278,11 +279,11 @@ Meteor.methods({
         if (databasesBySessionId[sessionId]) {
             databasesBySessionId[sessionId].close();
         }
-        if (spawnedShell) {
-            spawnedShell.stdin.end();
-            spawnedShell = null;
+        if (spawnedShellsBySessionId[sessionId]) {
+            spawnedShellsBySessionId[sessionId].stdin.end();
+            spawnedShellsBySessionId[sessionId] = null;
         }
-        ShellCommands.remove({});
+        ShellCommands.remove({'sessionId': sessionId});
         SchemaAnaylzeResult.remove({});
     },
 
@@ -309,21 +310,21 @@ Meteor.methods({
                     if (connection.ssh.password) config.password = connection.ssh.password;
 
                     LOGGER.info('[connect]', '[ssh]', 'ssh is enabled, config is ' + JSON.stringify(config));
-                    tunnel = tunnelSsh(config, Meteor.bindEnvironment(function (error) {
+                    tunnelsBySessionId[sessionId] = tunnelSsh(config, Meteor.bindEnvironment(function (error) {
                         if (error) {
                             done(new Meteor.Error(error.message), null);
                             return;
                         }
                         proceedConnectingMongodb(connection.databaseName, sessionId, connectionUrl, connectionOptions, done);
-                        spawnedShell = spawn(getProperMongo(), [connectionUrl]);
-                        setEventsToShell(connectionId);
+                        spawnedShellsBySessionId[sessionId] = spawn(getProperMongo(), [connectionUrl]);
+                        setEventsToShell(connectionId, sessionId);
                     }));
 
-                    tunnel.on('error', function (err) {
+                    tunnelsBySessionId[sessionId].on('error', function (err) {
                         if (err) done(new Meteor.Error(err.message), null);
-                        if (tunnel) {
-                            tunnel.close();
-                            tunnel = null;
+                        if (tunnelsBySessionId[sessionId]) {
+                            tunnelsBySessionId[sessionId].close();
+                            tunnelsBySessionId[sessionId] = null;
                         }
                     });
                 }
@@ -401,19 +402,19 @@ Meteor.methods({
         });
     },
 
-    clearShell(){
+    clearShell(sessionId){
         LOGGER.info('[clearShell]');
-        ShellCommands.remove({});
+        ShellCommands.remove({'sessionId': sessionId});
     },
 
-    executeShellCommand(command, connectionId){
+    executeShellCommand(command, connectionId, sessionId){
         LOGGER.info('[shellCommand]', command, connectionId);
-        if (!spawnedShell) connectToShell(connectionId);
-        if (spawnedShell) spawnedShell.stdin.write(command + '\n');
+        if (!spawnedShellsBySessionId[sessionId]) connectToShell(connectionId, sessionId);
+        if (spawnedShellsBySessionId[sessionId]) spawnedShellsBySessionId[sessionId].stdin.write(command + '\n');
     },
 
-    connectToShell(connectionId){
-        connectToShell(connectionId);
+    connectToShell(connectionId, sessionId){
+        connectToShell(connectionId, sessionId);
     },
 
     analyzeSchema(connectionId, collection){
