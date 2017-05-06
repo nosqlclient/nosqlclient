@@ -138,8 +138,8 @@ Meteor.methods({
         }
     },
 
-    removeSchemaAnalyzeResult(){
-        SchemaAnalyzeResult.remove({});
+    removeSchemaAnalyzeResult(sessionId){
+        SchemaAnalyzeResult.remove({sessionId: sessionId});
     },
 
     saveActions(action) {

@@ -1,12 +1,12 @@
-import {Template} from 'meteor/templating';
-import {Meteor} from 'meteor/meteor';
-import {Session} from 'meteor/session';
-import Helper from '/client/imports/helper';
-import Enums from '/lib/imports/enums';
-import {initExecuteQuery} from '/client/imports/views/pages/browse_collection/browse_collection';
-import {$} from 'meteor/jquery';
+import {Template} from "meteor/templating";
+import {Meteor} from "meteor/meteor";
+import {Session} from "meteor/session";
+import Helper from "/client/imports/helper";
+import Enums from "/lib/imports/enums";
+import {initExecuteQuery} from "/client/imports/views/pages/browse_collection/browse_collection";
+import {$} from "meteor/jquery";
 
-import './rename.html';
+import "./rename.html";
 
 const toastr = require('toastr');
 const Ladda = require('ladda');
@@ -48,7 +48,7 @@ Template.rename.executeQuery = function () {
     }
 
     if (newName) {
-        Meteor.call("rename", selectedCollection, newName, options,Meteor.default_connection._lastSessionId, function (err, result) {
+        Meteor.call("rename", selectedCollection, newName, options, Meteor.default_connection._lastSessionId, function (err, result) {
             Helper.renderAfterQueryExecution(err, result, false, "rename");
             if (err == undefined && result.error == undefined) {
                 renderCollectionnames(newName);
@@ -62,7 +62,7 @@ Template.rename.executeQuery = function () {
 };
 
 const renderCollectionnames = function (newName) {
-    Meteor.call('connect', Session.get(Helper.strSessionConnection),Meteor.default_connection._lastSessionId, function (err, result) {
+    Meteor.call('connect', Session.get(Helper.strSessionConnection), Meteor.default_connection._lastSessionId, function (err, result) {
         if (err || result.error) {
             Helper.showMeteorFuncError(err, result, "Couldn't connect");
         } else {

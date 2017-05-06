@@ -15,7 +15,7 @@ export const initializeForm = function (collection) {
     Ladda.create(document.querySelector('#btnCreateCollection')).start();
 
     const connection = Connections.findOne({_id: Session.get(Helper.strSessionConnection)});
-    Meteor.call('listCollectionNames', connection.databaseName,Meteor.default_connection._lastSessionId, function (err, result) {
+    Meteor.call('listCollectionNames', connection.databaseName, Meteor.default_connection._lastSessionId, function (err, result) {
         if (err || result.error) {
             Ladda.stopAll();
             Helper.showMeteorFuncError(err, result, "Couldn't fetch data");
@@ -334,7 +334,7 @@ Template.addCollection.events({
 
         Ladda.create(document.querySelector('#btnCreateCollection')).start();
 
-        Meteor.call('createCollection', name, options,Meteor.default_connection._lastSessionId, function (err, res) {
+        Meteor.call('createCollection', name, options, Meteor.default_connection._lastSessionId, function (err, res) {
             if (err || (res && res.error)) {
                 Helper.showMeteorFuncError(err, res, "Couldn't create");
             } else {

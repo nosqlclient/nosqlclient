@@ -32,7 +32,7 @@ Template.renameCollection.events({
             return;
         }
 
-        Meteor.call("rename", collection, newName, options,Meteor.default_connection._lastSessionId, function (err, result) {
+        Meteor.call("rename", collection, newName, options, Meteor.default_connection._lastSessionId, function (err, result) {
             if (err || result.error) {
                 Helper.showMeteorFuncError(err, result, "Couldn't rename");
             } else {

@@ -1,12 +1,12 @@
-import {Template} from 'meteor/templating';
-import {Meteor} from 'meteor/meteor';
-import {Session} from 'meteor/session';
-import Helper from '/client/imports/helper';
-import Enums from '/lib/imports/enums';
-import {initExecuteQuery} from '/client/imports/views/pages/browse_collection/browse_collection';
-import {getOptions} from '/client/imports/views/query_templates_options/geo_near_options/geo_near_options';
+import {Template} from "meteor/templating";
+import {Meteor} from "meteor/meteor";
+import {Session} from "meteor/session";
+import Helper from "/client/imports/helper";
+import Enums from "/lib/imports/enums";
+import {initExecuteQuery} from "/client/imports/views/pages/browse_collection/browse_collection";
+import {getOptions} from "/client/imports/views/query_templates_options/geo_near_options/geo_near_options";
 
-import './geo_near.html';
+import "./geo_near.html";
 
 const toastr = require('toastr');
 const Ladda = require('ladda');
@@ -56,8 +56,8 @@ Template.geoNear.executeQuery = function (historyParams) {
         options: options
     };
 
-    Meteor.call("geoNear", selectedCollection, xAxis, yAxis, options, function (err, result) {
-        Helper.renderAfterQueryExecution(err, result, false, "geoNear", params, Meteor.default_connection._lastSessionId,(!historyParams));
+    Meteor.call("geoNear", selectedCollection, xAxis, yAxis, options, Meteor.default_connection._lastSessionId, function (err, result) {
+        Helper.renderAfterQueryExecution(err, result, false, "geoNear", params, (!historyParams));
     });
 };
 

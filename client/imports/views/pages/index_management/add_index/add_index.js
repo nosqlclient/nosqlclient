@@ -19,7 +19,7 @@ export const prepareFormForView = function () {
         return;
     }
 
-    Meteor.call("indexInformation", selectedCollection, true,Meteor.default_connection._lastSessionId, function (err, indexInformation) {
+    Meteor.call("indexInformation", selectedCollection, true, Meteor.default_connection._lastSessionId, function (err, indexInformation) {
         if (err || indexInformation.error) {
             Helper.showMeteorFuncError(err, indexInformation, "Couldn't fetch index information");
         }
@@ -367,7 +367,7 @@ Template.addIndex.events({
         setOtherOptionsForIndex(index, ttl, partialFilterExpression, indexName, collation);
 
         command.indexes.push(index);
-        Meteor.call("command", command, false, {},Meteor.default_connection._lastSessionId, function (err, result) {
+        Meteor.call("command", command, false, {}, Meteor.default_connection._lastSessionId, function (err, result) {
             if (err || result.error) {
                 Helper.showMeteorFuncError(err, result, "Couldn't create index");
             } else {

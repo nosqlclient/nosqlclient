@@ -1,11 +1,11 @@
-import {Template} from 'meteor/templating';
-import {Meteor} from 'meteor/meteor';
-import {Session} from 'meteor/session';
-import {FlowRouter} from 'meteor/kadira:flow-router';
-import Helper from '/client/imports/helper';
-import {setResult} from './aggregate_result_modal/aggregate_result_modal';
+import {Template} from "meteor/templating";
+import {Meteor} from "meteor/meteor";
+import {Session} from "meteor/session";
+import {FlowRouter} from "meteor/kadira:flow-router";
+import Helper from "/client/imports/helper";
+import {setResult} from "./aggregate_result_modal/aggregate_result_modal";
 
-import './aggregate_pipeline.html';
+import "./aggregate_pipeline.html";
 
 const toastr = require('toastr');
 const Ladda = require('ladda');
@@ -101,7 +101,7 @@ Template.aggregatePipeline.events({
         }
 
 
-        Meteor.call("aggregate", selectedCollection, pipeline,{},Meteor.default_connection._lastSessionId, function (err, result) {
+        Meteor.call("aggregate", selectedCollection, pipeline, {}, Meteor.default_connection._lastSessionId, function (err, result) {
                 if (err || result.error) {
                     Helper.showMeteorFuncError(err, result, "Couldn't execute ");
                 }

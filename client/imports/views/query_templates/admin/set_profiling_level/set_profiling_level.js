@@ -1,10 +1,10 @@
-import {Template} from 'meteor/templating';
-import {Meteor} from 'meteor/meteor';
-import Helper from '/client/imports/helper';
-import Enums from '/lib/imports/enums';
-import {initExecuteQuery} from '/client/imports/views/pages/admin_queries/admin_queries';
+import {Template} from "meteor/templating";
+import {Meteor} from "meteor/meteor";
+import Helper from "/client/imports/helper";
+import Enums from "/lib/imports/enums";
+import {initExecuteQuery} from "/client/imports/views/pages/admin_queries/admin_queries";
 
-import './set_profiling_level.html';
+import "./set_profiling_level.html";
 
 /**
  * Created by RSercan on 10.1.2016.
@@ -18,7 +18,7 @@ Template.setProfilingLevel.executeQuery = function () {
     initExecuteQuery();
     const level = $('#cmbLevel').val();
 
-    Meteor.call("setProfilingLevel", level,Meteor.default_connection._lastSessionId, function (err, result) {
+    Meteor.call("setProfilingLevel", level, Meteor.default_connection._lastSessionId, function (err, result) {
         Helper.renderAfterQueryExecution(err, result, true);
     });
 };

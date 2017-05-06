@@ -131,7 +131,7 @@ Template.topNavbar.events({
 
         Ladda.create(document.querySelector('#btnConnectSwitchedDatabase')).start();
 
-        Meteor.call('listDatabases',Meteor.default_connection._lastSessionId, function (err, result) {
+        Meteor.call('listDatabases', Meteor.default_connection._lastSessionId, function (err, result) {
             if (err || result.error) {
                 Helper.showMeteorFuncError(err, result, "Couldn't fetch databases");
             }

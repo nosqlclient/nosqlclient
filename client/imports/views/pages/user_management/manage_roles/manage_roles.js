@@ -28,7 +28,7 @@ const popEditRoleModal = function (role) {
         showPrivileges: true
     };
 
-    Meteor.call('command', rolesInfoCommand, runOnAdminDB,{},Meteor.default_connection._lastSessionId, function (err, result) {
+    Meteor.call('command', rolesInfoCommand, runOnAdminDB, {}, Meteor.default_connection._lastSessionId, function (err, result) {
         if (err || result.error) {
             Helper.showMeteorFuncError(err, result, "Couldn't fetch roleInfo");
         }
@@ -211,7 +211,7 @@ const initResourcesForPrivileges = function (dbToSelect, collectionToSelect) {
 
     const cmbDBGroup = cmb.find('#optDB');
 
-    Meteor.call('getDatabases',Meteor.default_connection._lastSessionId, function (err, result) {
+    Meteor.call('getDatabases', Meteor.default_connection._lastSessionId, function (err, result) {
         if (err || result.error) {
             Helper.showMeteorFuncError(err, result, "Couldn't fetch databases");
         }
@@ -257,7 +257,7 @@ const initCollectionsForPrivilege = function (collectionToSelect, db, stopLadda)
     const cmbGroup = cmb.find('#optCollections');
 
     if (db) {
-        Meteor.call('listCollectionNames', db,Meteor.default_connection._lastSessionId, function (err, result) {
+        Meteor.call('listCollectionNames', db, Meteor.default_connection._lastSessionId, function (err, result) {
             if (err || result.error) {
                 Helper.showMeteorFuncError(err, result, "Couldn't fetch collection names");
             }
@@ -319,7 +319,7 @@ const initActionsForPrivilege = function (actions) {
     const cmb = $('#cmbActionsOfPrivilege');
     cmb.empty();
 
-    Meteor.call('getAllActions', Session.get(Helper.strSessionConnection), function (err, result) {
+    Meteor.call('getAllActions', function (err, result) {
         if (err || result.error) {
             Helper.showMeteorFuncError(err, result, "Couldn't fetch actions from docs.mongodb.org");
         }
@@ -357,7 +357,7 @@ const initDatabasesForInheritRole = function () {
     const cmb = $('#cmbDatabasesForInheritRole');
     cmb.empty();
 
-    Meteor.call('getDatabases',Meteor.default_connection._lastSessionId, function (err, result) {
+    Meteor.call('getDatabases', Meteor.default_connection._lastSessionId, function (err, result) {
         if (err || result.error) {
             Helper.showMeteorFuncError(err, result, "Couldn't fetch databases");
         }
@@ -390,7 +390,7 @@ const initRolesForDBForInheritRole = function () {
     Meteor.call('command', {
         rolesInfo: 1,
         showBuiltinRoles: true
-    }, runOnAdminDB,{},Meteor.default_connection._lastSessionId, function (err, result) {
+    }, runOnAdminDB, {}, Meteor.default_connection._lastSessionId, function (err, result) {
         if (err || result.error) {
             Helper.showMeteorFuncError(err, result, "Couldn't fetch roles, please enter one manually");
         }
@@ -451,7 +451,7 @@ export const initRoles = function () {
 
     const runOnAdminDB = $('#aRunOnAdminDBToFetchUsers').iCheck('update')[0].checked;
 
-    Meteor.call('command', command, runOnAdminDB,{},Meteor.default_connection._lastSessionId, function (err, result) {
+    Meteor.call('command', command, runOnAdminDB, {}, Meteor.default_connection._lastSessionId, function (err, result) {
         if (err || result.error) {
             Helper.showMeteorFuncError(err, result, "Couldn't fetch roles");
         }
@@ -541,7 +541,7 @@ Template.manageRoles.events({
                 const command = {dropRole: Session.get(Helper.strSessionUsermanagementRole).role};
                 const runOnAdminDB = $('#aRunOnAdminDBToFetchUsers').iCheck('update')[0].checked;
 
-                Meteor.call('command', command, runOnAdminDB,{},Meteor.default_connection._lastSessionId, function (err, result) {
+                Meteor.call('command', command, runOnAdminDB, {}, Meteor.default_connection._lastSessionId, function (err, result) {
                     if (err || result.error) {
                         Helper.showMeteorFuncError(err, result, "Couldn't drop role");
                     }
@@ -664,7 +664,7 @@ Template.manageRoles.events({
 
         const runOnAdminDB = $('#aRunOnAdminDBToFetchUsers').iCheck('update')[0].checked;
 
-        Meteor.call('command', command, runOnAdminDB,{},Meteor.default_connection._lastSessionId, function (err, result) {
+        Meteor.call('command', command, runOnAdminDB, {}, Meteor.default_connection._lastSessionId, function (err, result) {
             if (err || result.error) {
                 Helper.showMeteorFuncError(err, result, "Couldn't update role");
             }

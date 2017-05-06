@@ -29,7 +29,7 @@ Template.convertToCapped.events({
             size: parseInt(size)
         };
 
-        Meteor.call('command', command, false, {},Meteor.default_connection._lastSessionId, function (err, result) {
+        Meteor.call('command', command, false, {}, Meteor.default_connection._lastSessionId, function (err, result) {
             if (err || result.error) {
                 Helper.showMeteorFuncError(err, result, "Couldn't convert");
             } else {

@@ -1,13 +1,13 @@
-import {Template} from 'meteor/templating';
-import {Meteor} from 'meteor/meteor';
-import {Session} from 'meteor/session';
-import Helper from '/client/imports/helper';
-import Enums from '/lib/imports/enums';
-import {initExecuteQuery} from '/client/imports/views/pages/browse_collection/browse_collection';
-import {getSelectorValue} from '/client/imports/views/query_templates_options/selector/selector';
-import {getOptions} from '/client/imports/views/query_templates_options/findone_modify_options/findone_modify_options';
+import {Template} from "meteor/templating";
+import {Meteor} from "meteor/meteor";
+import {Session} from "meteor/session";
+import Helper from "/client/imports/helper";
+import Enums from "/lib/imports/enums";
+import {initExecuteQuery} from "/client/imports/views/pages/browse_collection/browse_collection";
+import {getSelectorValue} from "/client/imports/views/query_templates_options/selector/selector";
+import {getOptions} from "/client/imports/views/query_templates_options/findone_modify_options/findone_modify_options";
 
-import './findone_and_replace.html';
+import "./findone_and_replace.html";
 
 const toastr = require('toastr');
 const Ladda = require('ladda');
@@ -65,7 +65,7 @@ Template.findOneAndReplace.executeQuery = function (historyParams) {
         options: options
     };
 
-    Meteor.call("findOneAndReplace", selectedCollection, selector, replaceObject, options,Meteor.default_connection._lastSessionId, function (err, result) {
+    Meteor.call("findOneAndReplace", selectedCollection, selector, replaceObject, options, Meteor.default_connection._lastSessionId, function (err, result) {
             Helper.renderAfterQueryExecution(err, result, false, "findOneAndReplace", params, (!historyParams));
         }
     );

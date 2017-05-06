@@ -101,7 +101,7 @@ export const popEditUserModal = function (user) {
         showPrivileges: true
     };
 
-    Meteor.call('command', userInfoCommand, runOnAdminDB,{},Meteor.default_connection._lastSessionId, function (err, result) {
+    Meteor.call('command', userInfoCommand, runOnAdminDB, {}, Meteor.default_connection._lastSessionId, function (err, result) {
         if (err || result.error) {
             Helper.showMeteorFuncError(err, result, "Couldn't fetch userInfo");
         }
@@ -141,7 +141,7 @@ export const initUsers = function () {
 
     const runOnAdminDB = $('#aRunOnAdminDBToFetchUsers').iCheck('update')[0].checked;
 
-    Meteor.call('command', command, runOnAdminDB,{},Meteor.default_connection._lastSessionId, function (err, result) {
+    Meteor.call('command', command, runOnAdminDB, {}, Meteor.default_connection._lastSessionId, function (err, result) {
         if (err || result.error) {
             Helper.showMeteorFuncError(err, result, "Couldn't fetch users");
         }
@@ -232,7 +232,7 @@ Template.manageUsers.events({
                 const command = {dropUser: Session.get(Helper.strSessionUsermanagementUser).user};
                 const runOnAdminDB = $('#aRunOnAdminDBToFetchUsers').iCheck('update')[0].checked;
 
-                Meteor.call('command', command, runOnAdminDB,{},Meteor.default_connection._lastSessionId, function (err, result) {
+                Meteor.call('command', command, runOnAdminDB, {}, Meteor.default_connection._lastSessionId, function (err, result) {
                     if (err || result.error) {
                         Helper.showMeteorFuncError(err, result, "Couldn't drop user");
                     }
@@ -275,7 +275,7 @@ Template.manageUsers.events({
                 showPrivileges: true
             };
 
-            Meteor.call('command', userInfoCommand, runOnAdminDB,{},Meteor.default_connection._lastSessionId, function (err, result) {
+            Meteor.call('command', userInfoCommand, runOnAdminDB, {}, Meteor.default_connection._lastSessionId, function (err, result) {
                 if (err || result.error) {
                     Helper.showMeteorFuncError(err, result, "Couldn't fetch userInfo");
                 }
@@ -338,7 +338,7 @@ Template.manageUsers.events({
         Ladda.create(document.querySelector('#btnApplyAddEditUser')).start();
         const runOnAdminDB = $('#aRunOnAdminDBToFetchUsers').iCheck('update')[0].checked;
 
-        Meteor.call('command', command, runOnAdminDB,{},Meteor.default_connection._lastSessionId, function (err, result) {
+        Meteor.call('command', command, runOnAdminDB, {}, Meteor.default_connection._lastSessionId, function (err, result) {
             if (err || result.error) {
                 Helper.showMeteorFuncError(err, result, "Couldn't update user");
             }
@@ -397,7 +397,7 @@ Template.manageUsers.events({
         cmb.append($("<optgroup id='optGroupDatabases' label='Databases'></optgroup>"));
         const cmbOptGroupCollection = cmb.find('#optGroupDatabases');
 
-        Meteor.call('getDatabases',Meteor.default_connection._lastSessionId, function (err, result) {
+        Meteor.call('getDatabases', Meteor.default_connection._lastSessionId, function (err, result) {
             if (err || result.error) {
                 Helper.showMeteorFuncError(err, result, "Couldn't fetch databases");
             }
@@ -418,7 +418,10 @@ Template.manageUsers.events({
         });
 
         const runOnAdminDB = $('#aRunOnAdminDBToFetchUsers').iCheck('update')[0].checked;
-        Meteor.call('command', {rolesInfo: 1, showBuiltinRoles: true}, runOnAdminDB,{},Meteor.default_connection._lastSessionId, function (err, result) {
+        Meteor.call('command', {
+            rolesInfo: 1,
+            showBuiltinRoles: true
+        }, runOnAdminDB, {}, Meteor.default_connection._lastSessionId, function (err, result) {
             if (err || result.error) {
                 Helper.showMeteorFuncError(err, result, "Couldn't fetch roles to populate table");
             }

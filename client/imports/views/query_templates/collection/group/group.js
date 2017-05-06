@@ -84,7 +84,7 @@ Template.group.executeQuery = function (historyParams) {
         command: command
     };
 
-    Meteor.call("group", selectedCollection, keys, condition, initial, reduce, finalize, command,Meteor.default_connection._lastSessionId, function (err, result) {
+    Meteor.call("group", selectedCollection, keys, condition, initial, reduce, finalize, command, Meteor.default_connection._lastSessionId, function (err, result) {
         Helper.renderAfterQueryExecution(err, result, false, "group", params, (!historyParams));
     });
 };

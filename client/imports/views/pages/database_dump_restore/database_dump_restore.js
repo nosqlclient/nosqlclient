@@ -178,7 +178,7 @@ Template.databaseDumpRestore.events({
         const fileReader = new FileReader();
         fileReader.onload = function (file) {
             let fileContent = new Uint8Array(file.target.result);
-            Meteor.call('mongoimport', fileContent, selectedCollection, function (err, result) {
+            Meteor.call('mongoimport', fileContent, selectedCollection, Meteor.default_connection._lastSessionId, function (err, result) {
                 if (err || result.error) {
                     Helper.showMeteorFuncError(err, result, "Couldn't import data");
                 }

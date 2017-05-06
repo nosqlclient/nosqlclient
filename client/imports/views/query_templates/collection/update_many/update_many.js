@@ -1,16 +1,16 @@
-import {Template} from 'meteor/templating';
-import {Meteor} from 'meteor/meteor';
-import {Session} from 'meteor/session';
-import Helper from '/client/imports/helper';
-import Enums from '/lib/imports/enums';
-import {initExecuteQuery} from '/client/imports/views/pages/browse_collection/browse_collection';
-import {getSelectorValue} from '/client/imports/views/query_templates_options/selector/selector';
-import {$} from 'meteor/jquery';
+import {Template} from "meteor/templating";
+import {Meteor} from "meteor/meteor";
+import {Session} from "meteor/session";
+import Helper from "/client/imports/helper";
+import Enums from "/lib/imports/enums";
+import {initExecuteQuery} from "/client/imports/views/pages/browse_collection/browse_collection";
+import {getSelectorValue} from "/client/imports/views/query_templates_options/selector/selector";
+import {$} from "meteor/jquery";
 
-import '/client/imports/views/query_templates_options/set/set';
-import '/client/imports/views/query_templates_options/upsert/upsert';
+import "/client/imports/views/query_templates_options/set/set";
+import "/client/imports/views/query_templates_options/upsert/upsert";
 
-import './update_many.html';
+import "./update_many.html";
 
 const toastr = require('toastr');
 const Ladda = require('ladda');
@@ -82,7 +82,7 @@ Template.updateMany.executeQuery = function (historyParams) {
         options: options
     };
 
-    Meteor.call("updateMany", selectedCollection, selector, setObject, options,Meteor.default_connection._lastSessionId, function (err, result) {
+    Meteor.call("updateMany", selectedCollection, selector, setObject, options, Meteor.default_connection._lastSessionId, function (err, result) {
             Helper.renderAfterQueryExecution(err, result, false, "updateMany", params, (!historyParams));
         }
     );

@@ -417,7 +417,7 @@ Meteor.methods({
         connectToShell(connectionId, sessionId);
     },
 
-    analyzeSchema(connectionId, collection){
+    analyzeSchema(connectionId, collection, sessionId){
         const connectionUrl = Helper.getConnectionUrl(Connections.findOne({_id: connectionId}), true);
         const mongoPath = getProperMongo();
 
@@ -437,6 +437,7 @@ Meteor.methods({
                 if (data.toString()) {
                     SchemaAnaylzeResult.insert({
                         'date': Date.now(),
+                        'sessionId': sessionId,
                         'connectionId': connectionId,
                         'message': data.toString()
                     });
@@ -446,6 +447,7 @@ Meteor.methods({
             spawned.on('close', Meteor.bindEnvironment(function () {
                 SchemaAnaylzeResult.insert({
                     'date': Date.now(),
+                    'sessionId': sessionId,
                     'connectionId': connectionId,
                     'message': message
                 });

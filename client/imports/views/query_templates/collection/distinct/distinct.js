@@ -66,7 +66,7 @@ Template.distinct.executeQuery = function (historyParams) {
         options: options
     };
 
-    Meteor.call("distinct", selectedCollection, selector, fieldName, options,Meteor.default_connection._lastSessionId, function (err, result) {
+    Meteor.call("distinct", selectedCollection, selector, fieldName, options, Meteor.default_connection._lastSessionId, function (err, result) {
             Helper.renderAfterQueryExecution(err, result, false, "distinct", params, (!historyParams));
         }
     );

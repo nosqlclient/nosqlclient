@@ -17,7 +17,7 @@ const toastr = require('toastr');
 const Ladda = require('ladda');
 
 const proceedShowingMetadata = function (id, jsonEditor) {
-    Meteor.call('getFile', $('#txtBucketName').val(), id, function (err, result) {
+    Meteor.call('getFile', $('#txtBucketName').val(), id, Meteor.default_connection._lastSessionId, function (err, result) {
         if (err || result.error) {
             Helper.showMeteorFuncError(err, result, "Couldn't find file");
         }
