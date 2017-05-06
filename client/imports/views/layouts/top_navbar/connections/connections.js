@@ -92,7 +92,7 @@ export const connect = function (isRefresh) {
         Ladda.stopAll();
         return;
     }
-    Meteor.call('connect', connection._id, function (err, result) {
+    Meteor.call('connect', connection._id, Meteor.default_connection._lastSessionId, function (err, result) {
         if (err || result.error) {
             Helper.showMeteorFuncError(err, result, "Couldn't connect");
         }

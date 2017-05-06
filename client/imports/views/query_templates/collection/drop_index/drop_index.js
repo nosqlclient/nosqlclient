@@ -29,7 +29,7 @@ Template.dropIndex.executeQuery = function (historyParams) {
         indexName: indexName
     };
 
-    Meteor.call("dropIndex", selectedCollection, indexName, function (err, result) {
+    Meteor.call("dropIndex", selectedCollection, indexName, Meteor.default_connection._lastSessionId, function (err, result) {
         Helper.renderAfterQueryExecution(err, result, false, "dropIndex", params, (!historyParams));
     });
 };

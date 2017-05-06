@@ -54,7 +54,7 @@ Template.command.executeQuery = function () {
 
     let runOnAdminDB = $('#aRunOnAdminDB').iCheck('update')[0].checked;
 
-    Meteor.call("command", command, runOnAdminDB, options, function (err, result) {
+    Meteor.call("command", command, runOnAdminDB, options,Meteor.default_connection._lastSessionId, function (err, result) {
             Helper.renderAfterQueryExecution(err, result, true);
         }
     );

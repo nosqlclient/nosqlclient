@@ -1,12 +1,12 @@
-import {Template} from 'meteor/templating';
-import {Meteor} from 'meteor/meteor';
-import {Session} from 'meteor/session';
-import Helper from '/client/imports/helper';
-import Enums from '/lib/imports/enums';
-import {initExecuteQuery} from '/client/imports/views/pages/browse_collection/browse_collection';
-import {$} from 'meteor/jquery';
+import {Template} from "meteor/templating";
+import {Meteor} from "meteor/meteor";
+import {Session} from "meteor/session";
+import Helper from "/client/imports/helper";
+import Enums from "/lib/imports/enums";
+import {initExecuteQuery} from "/client/imports/views/pages/browse_collection/browse_collection";
+import {$} from "meteor/jquery";
 
-import './stats.html';
+import "./stats.html";
 
 /**
  * Created by sercan on 06.01.2016.
@@ -56,7 +56,7 @@ Template.stats.executeQuery = function (historyParams) {
         options: options
     };
 
-    Meteor.call("stats", selectedCollection, options, function (err, result) {
+    Meteor.call("stats", selectedCollection, options, Meteor.default_connection._lastSessionId, function (err, result) {
         Helper.renderAfterQueryExecution(err, result, false, "stats", params, (!historyParams));
     });
 };

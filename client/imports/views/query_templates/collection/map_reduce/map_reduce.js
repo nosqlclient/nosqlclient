@@ -1,12 +1,12 @@
-import {Template} from 'meteor/templating';
-import {Meteor} from 'meteor/meteor';
-import {Session} from 'meteor/session';
-import Helper from '/client/imports/helper';
-import Enums from '/lib/imports/enums';
-import {initExecuteQuery} from '/client/imports/views/pages/browse_collection/browse_collection';
-import {getOptions} from '/client/imports/views/query_templates_options/map_reduce_options/map_reduce_options';
+import {Template} from "meteor/templating";
+import {Meteor} from "meteor/meteor";
+import {Session} from "meteor/session";
+import Helper from "/client/imports/helper";
+import Enums from "/lib/imports/enums";
+import {initExecuteQuery} from "/client/imports/views/pages/browse_collection/browse_collection";
+import {getOptions} from "/client/imports/views/query_templates_options/map_reduce_options/map_reduce_options";
 
-import './map_reduce.html';
+import "./map_reduce.html";
 
 const toastr = require('toastr');
 const Ladda = require('ladda');
@@ -65,7 +65,7 @@ Template.mapReduce.executeQuery = function (historyParams) {
         options: options
     };
 
-    Meteor.call("mapReduce", selectedCollection, map, reduce, options, function (err, result) {
+    Meteor.call("mapReduce", selectedCollection, map, reduce, options, Meteor.default_connection._lastSessionId, function (err, result) {
         Helper.renderAfterQueryExecution(err, result, false, "mapReduce", params, (!historyParams));
     });
 };

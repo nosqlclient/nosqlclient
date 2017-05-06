@@ -15,7 +15,7 @@ Template.serverStatus.onRendered(function () {
 Template.serverStatus.executeQuery = function () {
     initExecuteQuery();
 
-    Meteor.call("serverStatus", function (err, result) {
+    Meteor.call("serverStatus",Meteor.default_connection._lastSessionId, function (err, result) {
         Helper.renderAfterQueryExecution(err, result, true);
     });
 };

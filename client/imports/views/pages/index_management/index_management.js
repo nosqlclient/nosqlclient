@@ -21,19 +21,19 @@ export const initIndexes = function () {
     }
 
     Ladda.create(document.querySelector('#btnAddIndex')).start();
-    Meteor.call("indexInformation", selectedCollection, true, function (err, indexInformation) {
+    Meteor.call("indexInformation", selectedCollection, true, Meteor.default_connection._lastSessionId, function (err, indexInformation) {
         if (err || indexInformation.error) {
             Helper.showMeteorFuncError(err, indexInformation, "Couldn't fetch indexes");
             Ladda.stopAll();
         }
         else {
-            Meteor.call("stats", selectedCollection, {}, function (statsErr, stats) {
+            Meteor.call("stats", selectedCollection, {}, Meteor.default_connection._lastSessionId, function (statsErr, stats) {
                 if (statsErr || stats.error) {
                     Helper.showMeteorFuncError(statsErr, stats, "Couldn't fetch indexes");
                     Ladda.stopAll();
                 }
                 else {
-                    Meteor.call("aggregate", selectedCollection, [{$indexStats: {}}], {}, function (aggregateErr, indexStats) {
+                    Meteor.call("aggregate", selectedCollection, [{$indexStats: {}}], {}, Meteor.default_connection._lastSessionId, function (aggregateErr, indexStats) {
                         const data = populateTableData(indexInformation, stats, indexStats);
 
                         initializeIndexesTable(data);
@@ -280,7 +280,7 @@ Template.indexManagement.events({
             }, function (isConfirm) {
                 if (isConfirm) {
                     Ladda.create(document.querySelector('#btnAddIndex')).start();
-                    Meteor.call("dropIndex", selectedCollection, indexName, function (err, result) {
+                    Meteor.call("dropIndex", selectedCollection, indexName, Meteor.default_connection._lastSessionId, function (err, result) {
                         if (err || result.error) {
                             Helper.showMeteorFuncError(err, result, "Couldn't drop index");
                         } else {

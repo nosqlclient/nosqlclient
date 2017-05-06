@@ -1,14 +1,13 @@
-import {Template} from 'meteor/templating';
-import {Meteor} from 'meteor/meteor';
-import {Session} from 'meteor/session';
-import {FlowRouter} from 'meteor/kadira:flow-router';
-import Helper from '/client/imports/helper';
-import {Connections} from '/lib/imports/collections/connections';
-import {Settings} from '/lib/imports/collections/settings';
-import {Dumps} from '/lib/imports/collections/dumps';
-import Enums from '/lib/imports/enums';
-
-import './database_dump_restore.html';
+import {Template} from "meteor/templating";
+import {Meteor} from "meteor/meteor";
+import {Session} from "meteor/session";
+import {FlowRouter} from "meteor/kadira:flow-router";
+import Helper from "/client/imports/helper";
+import {Connections} from "/lib/imports/collections/connections";
+import {Settings} from "/lib/imports/collections/settings";
+import {Dumps} from "/lib/imports/collections/dumps";
+import Enums from "/lib/imports/enums";
+import "./database_dump_restore.html";
 
 require('bootstrap-filestyle');
 
@@ -28,7 +27,7 @@ const initCollectionsForImport = function () {
     const cmbGroup = cmb.find('#optCollections');
 
     const connection = Connections.findOne({_id: Session.get(Helper.strSessionConnection)});
-    Meteor.call('listCollectionNames', connection.databaseName, function (err, result) {
+    Meteor.call('listCollectionNames', connection.databaseName, Meteor.default_connection._lastSessionId, function (err, result) {
         if (err || result.error) {
             Helper.showMeteorFuncError(err, result, "Couldn't fetch collection names");
         }
@@ -179,7 +178,7 @@ Template.databaseDumpRestore.events({
         const fileReader = new FileReader();
         fileReader.onload = function (file) {
             let fileContent = new Uint8Array(file.target.result);
-            Meteor.call('mongoimport', fileContent, selectedCollection, function (err, result) {
+            Meteor.call('mongoimport', fileContent, selectedCollection, Meteor.default_connection._lastSessionId, function (err, result) {
                 if (err || result.error) {
                     Helper.showMeteorFuncError(err, result, "Couldn't import data");
                 }

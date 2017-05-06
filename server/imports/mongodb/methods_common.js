@@ -18,33 +18,33 @@ const fs = require('fs');
 const spawn = require('cross-spawn');
 const os = require('os');
 
-export let database;
-let spawnedShell;
-let tunnel;
+export let databasesBySessionId = {};
+let spawnedShellsBySessionId = {};
+let tunnelsBySessionId = {};
 
-const connectToShell = function (connectionId) {
+const connectToShell = function (connectionId, sessionId) {
     try {
         const connection = Connections.findOne({_id: connectionId});
-        if (!spawnedShell) {
+        if (!spawnedShellsBySessionId[sessionId]) {
             const connectionUrl = Helper.getConnectionUrl(connection);
             const mongoPath = getProperMongo();
 
-            LOGGER.info('[shell]', mongoPath, connectionUrl);
-            spawnedShell = spawn(mongoPath, [connectionUrl]);
-            setEventsToShell(connectionId);
+            LOGGER.info('[shell]', mongoPath, connectionUrl, sessionId);
+            spawnedShellsBySessionId[sessionId] = spawn(mongoPath, [connectionUrl]);
+            setEventsToShell(connectionId, sessionId);
         }
 
-        if (spawnedShell) {
-            LOGGER.info('[shell]', 'executing command "use ' + connection.databaseName + '" on shell');
-            spawnedShell.stdin.write('use ' + connection.databaseName + '\n');
+        if (spawnedShellsBySessionId[sessionId]) {
+            LOGGER.info('[shell]', 'executing command "use ' + connection.databaseName + '" on shell', sessionId);
+            spawnedShellsBySessionId[sessionId].stdin.write('use ' + connection.databaseName + '\n');
         }
         else {
             return {err: new Meteor.Error("Couldn't spawn shell !"), result: null};
         }
     }
     catch (ex) {
-        spawnedShell = null;
-        LOGGER.error('[shell]', ex);
+        spawnedShellsBySessionId[sessionId] = null;
+        LOGGER.error('[shell]', sessionId, ex);
         return {err: new Meteor.Error(ex.message), result: null};
     }
 };
@@ -93,7 +93,7 @@ const getProperMongo = function () {
     }
 };
 
-const proceedConnectingMongodb = function (dbName, connectionUrl, connectionOptions, done) {
+const proceedConnectingMongodb = function (dbName, sessionId, connectionUrl, connectionOptions, done) {
     if (!connectionOptions) {
         connectionOptions = {};
     }
@@ -101,79 +101,83 @@ const proceedConnectingMongodb = function (dbName, connectionUrl, connectionOpti
     mongodbApi.MongoClient.connect(connectionUrl, connectionOptions, function (mainError, db) {
         try {
             if (mainError || !db) {
-                LOGGER.error(mainError, db);
+                LOGGER.error(mainError, sessionId, db);
                 done(mainError, db);
                 if (db) db.close();
-                if (tunnel) {
-                    tunnel.close();
-                    tunnel = null;
+                if (tunnelsBySessionId[sessionId]) {
+                    tunnelsBySessionId[sessionId].close();
+                    tunnelsBySessionId[sessionId] = null;
                 }
                 return;
             }
-            database = db.db(dbName);
-            database.listCollections().toArray(function (err, collections) {
+            databasesBySessionId[sessionId] = db.db(dbName);
+            databasesBySessionId[sessionId].listCollections().toArray(function (err, collections) {
                 done(err, collections);
             });
         }
         catch (ex) {
-            LOGGER.error('[connect]', ex);
+            LOGGER.error('[connect]', sessionId, ex);
             done(new Meteor.Error(ex.message), null);
             if (db) db.close();
-            if (tunnel) {
-                tunnel.close();
-                tunnel = null;
+            if (tunnelsBySessionId[sessionId]) {
+                tunnelsBySessionId[sessionId].close();
+                tunnelsBySessionId[sessionId] = null;
             }
         }
     });
 };
 
-const setEventsToShell = function (connectionId) {
-    LOGGER.info('[shell]', 'binding events to shell');
+const setEventsToShell = function (connectionId, sessionId) {
+    LOGGER.info('[shell]', 'binding events to shell', connectionId, sessionId);
 
-    spawnedShell.on('error', Meteor.bindEnvironment(function (err) {
-        LOGGER.error('unexpected error on spawned shell: ' + err);
-        spawnedShell = null;
+    spawnedShellsBySessionId[sessionId].on('error', Meteor.bindEnvironment(function (err) {
+        LOGGER.error('unexpected error on spawned shell: ' + err, sessionId);
+        spawnedShellsBySessionId[sessionId] = null;
         if (err) {
             ShellCommands.insert({
                 'date': Date.now(),
+                'sessionId': sessionId,
                 'connectionId': connectionId,
                 'message': 'unexpected error ' + err.message
             });
         }
     }));
 
-    spawnedShell.stdout.on('data', Meteor.bindEnvironment(function (data) {
+    spawnedShellsBySessionId[sessionId].stdout.on('data', Meteor.bindEnvironment(function (data) {
         if (data && data.toString()) {
             ShellCommands.insert({
                 'date': Date.now(),
+                'sessionId': sessionId,
                 'connectionId': connectionId,
                 'message': data.toString()
             });
         }
     }));
 
-    spawnedShell.stderr.on('data', Meteor.bindEnvironment(function (data) {
+    spawnedShellsBySessionId[sessionId].stderr.on('data', Meteor.bindEnvironment(function (data) {
         if (data && data.toString()) {
             ShellCommands.insert({
                 'date': Date.now(),
+                'sessionId': sessionId,
                 'connectionId': connectionId,
                 'message': data.toString()
             });
         }
     }));
 
-    spawnedShell.on('close', Meteor.bindEnvironment(function (code) {
+    spawnedShellsBySessionId[sessionId].on('close', Meteor.bindEnvironment(function (code) {
         // show ended message in codemirror
         ShellCommands.insert({
             'date': Date.now(),
             'connectionId': connectionId,
+            'sessionId': sessionId,
             'message': 'shell closed ' + code.toString()
         });
 
-        spawnedShell = null;
+        spawnedShellsBySessionId[sessionId] = null;
         Meteor.setTimeout(function () {
             // remove all for further
-            ShellCommands.remove({});
+            ShellCommands.remove({'sessionId': sessionId});
         }, 500);
     }));
 };
@@ -232,30 +236,30 @@ Meteor.methods({
         });
     },
 
-    listCollectionNames(dbName) {
-        LOGGER.info('[listCollectionNames]', dbName);
+    listCollectionNames(dbName, sessionId) {
+        LOGGER.info('[listCollectionNames]', dbName, sessionId);
 
         return Async.runSync(function (done) {
             try {
-                const wishedDB = database.db(dbName);
+                const wishedDB = databasesBySessionId[sessionId].db(dbName);
                 wishedDB.listCollections().toArray(function (err, collections) {
                     done(err, collections);
                 });
             }
             catch (ex) {
-                LOGGER.error('[listCollectionNames]', ex);
+                LOGGER.error('[listCollectionNames]', sessionId, ex);
                 done(new Meteor.Error(ex.message), null);
             }
         });
 
     },
 
-    getDatabases() {
-        LOGGER.info('[getDatabases]');
+    getDatabases(sessionId) {
+        LOGGER.info('[getDatabases]', sessionId);
 
         return Async.runSync(function (done) {
             try {
-                database.admin().listDatabases(function (err, dbs) {
+                databasesBySessionId[sessionId].admin().listDatabases(function (err, dbs) {
                     if (dbs) {
                         done(err, dbs.databases);
                     }
@@ -265,30 +269,32 @@ Meteor.methods({
                 });
             }
             catch (ex) {
-                LOGGER.error('[getDatabases]', ex);
+                LOGGER.error('[getDatabases]', sessionId, ex);
                 done(new Meteor.Error(ex.message), null);
             }
         });
     },
 
-    disconnect() {
-        if (database) {
-            database.close();
+    disconnect(sessionId) {
+        LOGGER.info('[disconnect]', sessionId);
+
+        if (databasesBySessionId[sessionId]) {
+            databasesBySessionId[sessionId].close();
         }
-        if (spawnedShell) {
-            spawnedShell.stdin.end();
-            spawnedShell = null;
+        if (spawnedShellsBySessionId[sessionId]) {
+            spawnedShellsBySessionId[sessionId].stdin.end();
+            spawnedShellsBySessionId[sessionId] = null;
         }
-        ShellCommands.remove({});
+        ShellCommands.remove({'sessionId': sessionId});
         SchemaAnaylzeResult.remove({});
     },
 
-    connect(connectionId) {
+    connect(connectionId, sessionId) {
         const connection = Connections.findOne({_id: connectionId});
         const connectionUrl = Helper.getConnectionUrl(connection);
         const connectionOptions = Helper.getConnectionOptions(connection);
 
-        LOGGER.info('[connect]', connectionUrl, Helper.clearConnectionOptionsForLog(connectionOptions));
+        LOGGER.info('[connect]', connectionUrl, Helper.clearConnectionOptionsForLog(connectionOptions), sessionId);
 
         return Async.runSync(function (done) {
             try {
@@ -305,121 +311,122 @@ Meteor.methods({
                     if (connection.ssh.passPhrase) config.passphrase = connection.ssh.passPhrase;
                     if (connection.ssh.password) config.password = connection.ssh.password;
 
-                    LOGGER.info('[connect]', '[ssh]', 'ssh is enabled, config is ' + JSON.stringify(config));
-                    tunnel = tunnelSsh(config, Meteor.bindEnvironment(function (error) {
+                    LOGGER.info('[connect]', '[ssh]', sessionId, 'ssh is enabled, config is ' + JSON.stringify(config));
+                    tunnelsBySessionId[sessionId] = tunnelSsh(config, Meteor.bindEnvironment(function (error) {
                         if (error) {
                             done(new Meteor.Error(error.message), null);
                             return;
                         }
-                        proceedConnectingMongodb(connection.databaseName, connectionUrl, connectionOptions, done);
-                        spawnedShell = spawn(getProperMongo(), [connectionUrl]);
-                        setEventsToShell(connectionId);
+                        proceedConnectingMongodb(connection.databaseName, sessionId, connectionUrl, connectionOptions, done);
+                        spawnedShellsBySessionId[sessionId] = spawn(getProperMongo(), [connectionUrl]);
+                        setEventsToShell(connectionId, sessionId);
                     }));
 
-                    tunnel.on('error', function (err) {
+                    tunnelsBySessionId[sessionId].on('error', function (err) {
                         if (err) done(new Meteor.Error(err.message), null);
-                        if (tunnel) {
-                            tunnel.close();
-                            tunnel = null;
+                        if (tunnelsBySessionId[sessionId]) {
+                            tunnelsBySessionId[sessionId].close();
+                            tunnelsBySessionId[sessionId] = null;
                         }
                     });
                 }
                 else {
-                    proceedConnectingMongodb(connection.databaseName, connectionUrl, connectionOptions, done);
+                    proceedConnectingMongodb(connection.databaseName, sessionId, connectionUrl, connectionOptions, done);
                 }
             }
             catch (ex) {
-                LOGGER.error('[connect]', ex);
+                LOGGER.error('[connect]', sessionId, ex);
                 done(new Meteor.Error(ex.message), null);
             }
         });
     },
 
-    dropDB() {
-        LOGGER.info('[dropDatabase]');
+    dropDB(sessionId) {
+        LOGGER.info('[dropDatabase]', sessionId);
 
         return Async.runSync(function (done) {
             try {
-                database.dropDatabase(function (err, result) {
+                databasesBySessionId[sessionId].dropDatabase(function (err, result) {
                     done(err, result);
                 });
             }
             catch (ex) {
-                LOGGER.error('[dropDatabase]', ex);
+                LOGGER.error('[dropDatabase]', sessionId, ex);
                 done(new Meteor.Error(ex.message), null);
             }
         });
     },
 
-    dropCollection(collectionName) {
-        LOGGER.info('[dropCollection]', collectionName);
+    dropCollection(collectionName, sessionId) {
+        LOGGER.info('[dropCollection]', sessionId, collectionName);
 
         return Async.runSync(function (done) {
             try {
-                const collection = database.collection(collectionName);
+                const collection = databasesBySessionId[sessionId].collection(collectionName);
                 collection.drop(function (dropError) {
                     done(dropError, null);
                 });
             }
             catch (ex) {
-                LOGGER.error('[dropCollection]', ex);
+                LOGGER.error('[dropCollection]', sessionId, ex);
                 done(new Meteor.Error(ex.message), null);
             }
         });
     },
 
-    dropAllCollections() {
+    dropAllCollections(sessionId) {
+        LOGGER.info('[dropAllCollections]', sessionId);
         return Async.runSync(function (done) {
             try {
-                database.collections(function (err, collections) {
+                databasesBySessionId[sessionId].collections(function (err, collections) {
                     keepDroppingCollections(collections, 0, done);
                 });
             }
             catch (ex) {
-                LOGGER.error('[dropAllCollections]', ex);
+                LOGGER.error('[dropAllCollections]', sessionId, ex);
                 done(new Meteor.Error(ex.message), null);
             }
         });
     },
 
-    createCollection(collectionName, options) {
-        LOGGER.info('[createCollection]', collectionName, JSON.stringify(options));
+    createCollection(collectionName, options, sessionId) {
+        LOGGER.info('[createCollection]', collectionName, sessionId, JSON.stringify(options));
 
         return Async.runSync(function (done) {
             try {
-                database.createCollection(collectionName, options, function (err) {
+                databasesBySessionId[sessionId].createCollection(collectionName, options, function (err) {
                     done(err, null);
                 });
             }
             catch (ex) {
-                LOGGER.error('[createCollection]', ex);
+                LOGGER.error('[createCollection]', sessionId, ex);
                 done(new Meteor.Error(ex.message), null);
             }
         });
     },
 
-    clearShell(){
-        LOGGER.info('[clearShell]');
-        ShellCommands.remove({});
+    clearShell(sessionId){
+        LOGGER.info('[clearShell]', sessionId);
+        ShellCommands.remove({'sessionId': sessionId});
     },
 
-    executeShellCommand(command, connectionId){
-        LOGGER.info('[shellCommand]', command, connectionId);
-        if (!spawnedShell) connectToShell(connectionId);
-        if (spawnedShell) spawnedShell.stdin.write(command + '\n');
+    executeShellCommand(command, connectionId, sessionId){
+        LOGGER.info('[shellCommand]', sessionId, command, connectionId);
+        if (!spawnedShellsBySessionId[sessionId]) connectToShell(connectionId, sessionId);
+        if (spawnedShellsBySessionId[sessionId]) spawnedShellsBySessionId[sessionId].stdin.write(command + '\n');
     },
 
-    connectToShell(connectionId){
-        connectToShell(connectionId);
+    connectToShell(connectionId, sessionId){
+        connectToShell(connectionId, sessionId);
     },
 
-    analyzeSchema(connectionId, collection){
+    analyzeSchema(connectionId, collection, sessionId){
         const connectionUrl = Helper.getConnectionUrl(Connections.findOne({_id: connectionId}), true);
         const mongoPath = getProperMongo();
 
         let args = [connectionUrl, '--quiet', '--eval', 'var collection =\"' + collection + '\", outputFormat=\"json\"', getMongoExternalsPath() + '/variety/variety.js_'];
 
-        LOGGER.info('[analyzeSchema]', args, collection);
+        LOGGER.info('[analyzeSchema]', sessionId, args, collection);
         try {
             let spawned = spawn(mongoPath, args);
             let message = "";
@@ -433,6 +440,7 @@ Meteor.methods({
                 if (data.toString()) {
                     SchemaAnaylzeResult.insert({
                         'date': Date.now(),
+                        'sessionId': sessionId,
                         'connectionId': connectionId,
                         'message': data.toString()
                     });
@@ -442,6 +450,7 @@ Meteor.methods({
             spawned.on('close', Meteor.bindEnvironment(function () {
                 SchemaAnaylzeResult.insert({
                     'date': Date.now(),
+                    'sessionId': sessionId,
                     'connectionId': connectionId,
                     'message': message
                 });
@@ -450,7 +459,7 @@ Meteor.methods({
             spawned.stdin.end();
         }
         catch (ex) {
-            LOGGER.error('[analyzeSchema]', ex);
+            LOGGER.error('[analyzeSchema]', sessionId, ex);
             return {err: new Meteor.Error(ex.message), result: null};
         }
 

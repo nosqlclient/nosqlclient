@@ -17,6 +17,7 @@ const packageJson = require('/package.json');
 const mongodbUrlParser = require('parse-mongo-url');
 
 const checkAuthenticationOfConnection = function (connection) {
+    LOGGER.info('[checkAuthenticationOfConnection]', connection.authenticationType);
     if (connection.authenticationType !== 'scram_sha_1') delete connection.scram_sha_1;
     if (connection.authenticationType !== 'mongodb_cr') delete connection.mongodb_cr;
     if (connection.authenticationType !== 'mongodb_x509') delete connection.mongodb_x509;
@@ -31,6 +32,7 @@ const checkAuthenticationOfConnection = function (connection) {
 
 export const parseUrl = function (connection) {
     try {
+        LOGGER.info('[parseUrl]', connection.url);
         let parsedUrl = mongodbUrlParser(connection.url);
         connection.options = connection.options || {};
         connection.ssl = connection.ssl || {};
@@ -92,6 +94,7 @@ const checkConnection = function (connection) {
 };
 
 const saveConnectionToDB = function (connection) {
+    LOGGER.info('[saveConnectionToDB]', JSON.stringify(connection));
     if (connection._id) {
         Connections.remove({_id: connection._id});
     }
@@ -101,6 +104,7 @@ const saveConnectionToDB = function (connection) {
 
 Meteor.methods({
     subscribed(){
+        LOGGER.info('[subscriber]', 'setting as subscribed');
         Settings.update({}, {
             $set: {subscribed: true}
         });
@@ -128,6 +132,7 @@ Meteor.methods({
 
     checkMongoclientVersion(){
         try {
+            LOGGER.info('[checkMongoclientVersion]');
             const response = HTTP.get('https://api.github.com/repos/mongoclient/mongoclient/releases/latest', {headers: {"User-Agent": "Mongoclient"}});
             if (response && response.data && response.data.name && response.data.name !== packageJson.version) {
                 return "There's a new version of mongoclient: " + response.data.name + ", <a href='https://github.com/mongoclient/mongoclient/releases/latest' target='_blank'>download here</a>, if you're using docker just use pull for the <b>" + response.data.name + "</b> or <b>latest</b> tag !";
@@ -138,15 +143,18 @@ Meteor.methods({
         }
     },
 
-    removeSchemaAnalyzeResult(){
-        SchemaAnalyzeResult.remove({});
+    removeSchemaAnalyzeResult(sessionId){
+        LOGGER.info('[removeSchemaAnalyzeResult]', sessionId);
+        SchemaAnalyzeResult.remove({sessionId: sessionId});
     },
 
     saveActions(action) {
+        LOGGER.info('[saveActions]', action);
         Actions.insert(action);
     },
 
     saveQueryHistory(history) {
+        LOGGER.info('[saveQueryHistory]', history);
         const queryHistoryCount = QueryHistory.find({
             connectionId: history.connectionId,
             collectionName: history.collectionName
@@ -160,6 +168,7 @@ Meteor.methods({
     },
 
     updateDump(dump) {
+        LOGGER.info('[updateDump]', dump._id, dump.connectionName, dump.connectionId, dump.status);
         Dumps.update({_id: dump._id}, {
             $set: {
                 connectionName: dump.connectionName,
@@ -173,19 +182,23 @@ Meteor.methods({
     },
 
     saveDump(dump) {
+        LOGGER.info('[saveDump]', dump._id, dump.connectionName, dump.connectionId, dump.status);
         Dumps.insert(dump);
     },
 
     updateSettings(settings) {
+        LOGGER.info('[updateSettings]', JSON.stringify(settings));
         Settings.remove({});
         Settings.insert(settings);
     },
 
     saveConnection(connection) {
+        LOGGER.info('[saveConnection]', JSON.stringify(connection));
         saveConnectionToDB(connection)
     },
 
     checkAndSaveConnection(connection){
+        LOGGER.info('[checkAndSaveConnection]', JSON.stringify(connection));
         checkConnection(connection);
 
         if (!connection.databaseName) {
@@ -200,6 +213,7 @@ Meteor.methods({
     },
 
     removeConnection(connectionId) {
+        LOGGER.info('[removeConnection]', connectionId);
         Connections.remove(connectionId);
         Dumps.remove({connectionId: connectionId});
         QueryHistory.remove({connectionId: connectionId});

@@ -485,7 +485,7 @@ const saveFindEditor = function () {
 
             const selectedCollection = Session.get(Helper.strSessionSelectedCollection);
 
-            Meteor.call("saveFindResult", selectedCollection, updateObjects, deletedObjectIds, addedObjects, function (err) {
+            Meteor.call("saveFindResult", selectedCollection, updateObjects, deletedObjectIds, addedObjects, Meteor.default_connection._lastSessionId, function (err) {
                 if (err) {
                     Helper.showMeteorFuncError(err, null, "Couldn't proceed saving find result");
                 } else {
@@ -521,7 +521,7 @@ const saveEditor = function () {
 
             const selectedCollection = Session.get(Helper.strSessionSelectedCollection);
             if (doc._id) {
-                Meteor.call("updateOne", selectedCollection, {_id: doc._id}, doc, {}, function (err, result) {
+                Meteor.call("updateOne", selectedCollection, {_id: doc._id}, doc, {}, Meteor.default_connection._lastSessionId, function (err, result) {
                     if (err || result.error) {
                         Helper.showMeteorFuncError(err, result, "Couldn't update document");
                     } else {
@@ -559,7 +559,7 @@ const deleteDocument = function () {
 
             const selectedCollection = Session.get(Helper.strSessionSelectedCollection);
             if (doc._id) {
-                Meteor.call("delete", selectedCollection, {_id: doc._id}, function (err, result) {
+                Meteor.call("delete", selectedCollection, {_id: doc._id}, Meteor.default_connection._lastSessionId, function (err, result) {
                     if (err || result.error) {
                         Helper.showMeteorFuncError(err, result, "Couldn't delete document");
                     } else {

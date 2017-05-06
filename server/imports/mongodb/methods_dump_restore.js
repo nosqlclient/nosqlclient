@@ -2,31 +2,31 @@
  * Created by RSercan on 17.1.2016.
  */
 
-import {Connections} from '/lib/imports/collections/connections';
-import {Meteor} from 'meteor/meteor';
+import {Connections} from "/lib/imports/collections/connections";
+import {Meteor} from "meteor/meteor";
 import LOGGER from "../internal/logger";
 import Helper from "./helper";
 import Enums from "/lib/imports/enums";
-import {proceedQueryExecution} from './methods_collection';
+import {proceedQueryExecution} from "./methods_collection";
 
 const backup = require('mongodb-backup');
 const restore = require('mongodb-restore');
 const fs = require('fs');
 
 Meteor.methods({
-    mongoimport(blob, collection){
-        try{
+    mongoimport(blob, collection, sessionId){
+        try {
             let buffer = new Buffer(blob);
-            LOGGER.info('[mongoimport]', collection);
+            LOGGER.info('[mongoimport]', sessionId, collection);
 
             const methodArray = [
                 {
                     "insertMany": [JSON.parse(buffer.toString())]
                 }
             ];
-            return proceedQueryExecution(collection, methodArray);
-        }catch (ex){
-            LOGGER.error('[mongoimport]', ex);
+            return proceedQueryExecution(collection, methodArray, sessionId);
+        } catch (ex) {
+            LOGGER.error('[mongoimport]', sessionId, ex);
             throw new Meteor.Error(ex.message);
         }
     },

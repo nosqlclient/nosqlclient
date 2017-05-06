@@ -57,7 +57,7 @@ Template.addUser.executeQuery = function () {
 
     const runOnAdminDB = $('#aRunOnAdminDB').iCheck('update')[0].checked;
 
-    Meteor.call("addUser", username, password, options, runOnAdminDB, function (err, result) {
+    Meteor.call("addUser", username, password, options, runOnAdminDB,Meteor.default_connection._lastSessionId, function (err, result) {
         Helper.renderAfterQueryExecution(err, result, true);
     });
 };
