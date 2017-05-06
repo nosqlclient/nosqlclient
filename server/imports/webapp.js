@@ -56,6 +56,7 @@ WebApp.connectHandlers.use("/download", function (req, res) {
 
     LOGGER.info('[downloadFile]', fileId, bucketName, sessionId);
 
+    res.charset = 'UTF-8';
     if (!bucketName || !fileId) {
         LOGGER.info('[downloadFile]', 'file not found !');
         res.writeHead(400);
@@ -70,9 +71,9 @@ WebApp.connectHandlers.use("/download", function (req, res) {
                 const bucket = new mongodbApi.GridFSBucket(databasesBySessionId[sessionId], {bucketName: bucketName});
                 const headers = {
                     'Content-type': 'application/octet-stream',
-                    'Content-Disposition': 'attachment; filename=' + doc.filename
+                    'Content-Disposition': 'attachment; filename=' + encodeURIComponent(doc.filename)
                 };
-                LOGGER.info('[downloadFile]', 'file found and started downloading...');
+                LOGGER.info('[downloadFile]', 'file found and started downloading...', headers);
                 const downloadStream = bucket.openDownloadStream(new mongodbApi.ObjectID(fileId));
                 res.writeHead(200, headers);
                 const pipeStream = downloadStream.pipe(res);
