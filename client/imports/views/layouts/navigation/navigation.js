@@ -339,31 +339,6 @@ Template.navigation.onRendered(function () {
                                     toastr.warning('No collection selected !');
                                 }
                             }
-                        },
-
-                        drop_collection: {
-                            name: "Drop Collection",
-                            icon: "fa-trash",
-                            callback: function () {
-                                if ($(this) && $(this).context && $(this).context.innerText) {
-                                    const collectionName = $(this).context.innerText.substring(1).split(' ')[0];
-                                    swal({
-                                        title: "Are you sure?",
-                                        text: collectionName + " collection will be dropped, are you sure ?",
-                                        type: "warning",
-                                        showCancelButton: true,
-                                        confirmButtonColor: "#DD6B55",
-                                        confirmButtonText: "Yes, drop it!",
-                                        closeOnConfirm: true
-                                    }, function (isConfirm) {
-                                        if (isConfirm) {
-                                            dropCollection(collectionName);
-                                        }
-                                    });
-                                } else {
-                                    toastr.warning('No collection selected !');
-                                }
-                            }
                         }
                     }
                 },
@@ -399,6 +374,30 @@ Template.navigation.onRendered(function () {
                     icon: "fa-refresh",
                     callback: function () {
                         connect(true);
+                    }
+                },
+                drop_collection: {
+                    name: "Drop Collection",
+                    icon: "fa-trash",
+                    callback: function () {
+                        if ($(this) && $(this).context && $(this).context.innerText) {
+                            const collectionName = $(this).context.innerText.substring(1).split(' ')[0];
+                            swal({
+                                title: "Are you sure?",
+                                text: collectionName + " collection will be dropped, are you sure ?",
+                                type: "warning",
+                                showCancelButton: true,
+                                confirmButtonColor: "#DD6B55",
+                                confirmButtonText: "Yes, drop it!",
+                                closeOnConfirm: true
+                            }, function (isConfirm) {
+                                if (isConfirm) {
+                                    dropCollection(collectionName);
+                                }
+                            });
+                        } else {
+                            toastr.warning('No collection selected !');
+                        }
                     }
                 },
                 drop_collections: {

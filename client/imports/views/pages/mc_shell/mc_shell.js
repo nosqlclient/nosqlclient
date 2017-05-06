@@ -196,7 +196,10 @@ Template.mcShell.onRendered(function () {
     Helper.initializeCodeMirror(divResult, 'txtShellResult', false, 600);
     divResult.data('editor').setOption("readOnly", true);
 
-    ShellCommands.find({connectionId: Session.get(Helper.strSessionConnection)}, {sort: {date: -1}}).observeChanges({
+    ShellCommands.find({
+        connectionId: Session.get(Helper.strSessionConnection),
+        sessionId: Meteor.default_connection._lastSessionId
+    }, {sort: {date: -1}}).observeChanges({
         added: function (id, fields) {
             let previousValue = Helper.getCodeMirrorValue(divResult);
             if (previousValue && !previousValue.endsWith('\n')) {

@@ -11,11 +11,11 @@ import ShellCommands from "/lib/imports/collections/shell";
 import SchemaAnalyzeResult from "/lib/imports/collections/schema_analyze_result";
 
 Meteor.publish('schema_analyze_result', function () {
-    return SchemaAnalyzeResult.find({sessionId: Meteor.default_connection._lastSessionId});
+    return SchemaAnalyzeResult.find({});
 });
 
 Meteor.publish('shell_commands', function () {
-    return ShellCommands.find({sessionId: Meteor.default_connection._lastSessionId});
+    return ShellCommands.find({});
 });
 
 Meteor.publish('connections', function () {
