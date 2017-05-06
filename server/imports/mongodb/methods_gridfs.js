@@ -31,14 +31,14 @@ Meteor.methods({
                         ids.push(obj._id);
                     }
 
-                    LOGGER.info(JSON.stringify(selector) + " removing from " + bucketName + ".files");
+                    LOGGER.info(JSON.stringify(selector) + " removing from " + bucketName + ".files", sessionId);
                     filesCollection.deleteMany({_id: {$in: ids}}, {}, function (err) {
                         if (err) {
                             done(err, null);
                             return;
                         }
 
-                        LOGGER.info(JSON.stringify(selector) + " removing from " + bucketName + ".chunks");
+                        LOGGER.info(JSON.stringify(selector) + " removing from " + bucketName + ".chunks", sessionId);
                         chunksCollection.deleteMany({files_id: {$in: ids}}, function (err) {
                             done(err, null);
                         })
@@ -46,7 +46,7 @@ Meteor.methods({
                 });
             }
             catch (ex) {
-                LOGGER.error('[deleteFiles]', ex);
+                LOGGER.error('[deleteFiles]', sessionId, ex);
                 done(new Meteor.Error(ex.message), null);
             }
         });
@@ -65,7 +65,7 @@ Meteor.methods({
                 });
             }
             catch (ex) {
-                LOGGER.error('[deleteFile]', ex);
+                LOGGER.error('[deleteFile]', sessionId, ex);
                 done(new Meteor.Error(ex.message), null);
             }
         });
@@ -89,7 +89,7 @@ Meteor.methods({
 
             }
             catch (ex) {
-                LOGGER.error('[getFileInfos]', ex);
+                LOGGER.error('[getFileInfos]', sessionId, ex);
                 done(new Meteor.Error(ex.message), null);
             }
         });
@@ -120,7 +120,7 @@ Meteor.methods({
                 });
             }
             catch (ex) {
-                LOGGER.error('[uploadFile]', ex);
+                LOGGER.error('[uploadFile]', sessionId, ex);
                 done(new Meteor.Error(ex.message), null);
             }
         });
@@ -141,7 +141,7 @@ Meteor.methods({
                 });
             }
             catch (ex) {
-                LOGGER.error('[getFile]', ex);
+                LOGGER.error('[getFile]', sessionId, ex);
                 done(new Meteor.Error(ex.message), null);
             }
         });

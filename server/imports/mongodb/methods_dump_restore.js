@@ -17,7 +17,7 @@ Meteor.methods({
     mongoimport(blob, collection, sessionId){
         try {
             let buffer = new Buffer(blob);
-            LOGGER.info('[mongoimport]', collection);
+            LOGGER.info('[mongoimport]', sessionId, collection);
 
             const methodArray = [
                 {
@@ -26,7 +26,7 @@ Meteor.methods({
             ];
             return proceedQueryExecution(collection, methodArray, sessionId);
         } catch (ex) {
-            LOGGER.error('[mongoimport]', ex);
+            LOGGER.error('[mongoimport]', sessionId, ex);
             throw new Meteor.Error(ex.message);
         }
     },

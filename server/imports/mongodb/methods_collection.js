@@ -11,7 +11,7 @@ import {databasesBySessionId} from "./methods_common";
 const proceedMapReduceExecution = function (selectedCollection, map, reduce, options, sessionId) {
     options = Helper.convertJSONtoBSON(options);
 
-    LOGGER.info('[mapReduce]', selectedCollection, map, reduce, options);
+    LOGGER.info('[mapReduce]', selectedCollection, map, reduce, options, sessionId);
 
     let result = Async.runSync(function (done) {
         try {
@@ -32,7 +32,7 @@ const proceedMapReduceExecution = function (selectedCollection, map, reduce, opt
             });
         }
         catch (ex) {
-            LOGGER.error('[mapReduce]', ex);
+            LOGGER.error('[mapReduce]', sessionId, ex);
             done(new Meteor.Error(ex.message), null);
         }
     });
@@ -41,7 +41,7 @@ const proceedMapReduceExecution = function (selectedCollection, map, reduce, opt
 };
 
 export const proceedQueryExecution = function (selectedCollection, methodArray, sessionId, removeCollectionTopology) {
-    LOGGER.info(JSON.stringify(methodArray), selectedCollection);
+    LOGGER.info(JSON.stringify(methodArray), selectedCollection, sessionId);
 
     let result = Async.runSync(function (done) {
         try {
@@ -67,7 +67,7 @@ export const proceedQueryExecution = function (selectedCollection, methodArray, 
             }
         }
         catch (ex) {
-            LOGGER.error(methodArray, ex);
+            LOGGER.error(methodArray, sessionId, ex);
             done(new Meteor.Error(ex.message), null);
         }
     });

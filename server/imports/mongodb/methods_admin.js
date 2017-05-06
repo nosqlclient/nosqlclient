@@ -9,7 +9,7 @@ import {databasesBySessionId} from "./methods_common";
 
 
 const proceedQueryExecution = function (methodArray, runOnAdminDB, sessionId) {
-    LOGGER.info(JSON.stringify(methodArray), runOnAdminDB);
+    LOGGER.info(JSON.stringify(methodArray), runOnAdminDB, sessionId);
 
     let result = Async.runSync(function (done) {
         try {
@@ -35,7 +35,7 @@ const proceedQueryExecution = function (methodArray, runOnAdminDB, sessionId) {
             }
         }
         catch (ex) {
-            LOGGER.error(methodArray, ex);
+            LOGGER.error(methodArray, sessionId, ex);
             done(new Meteor.Error(ex.message), null);
         }
     });
@@ -45,7 +45,7 @@ const proceedQueryExecution = function (methodArray, runOnAdminDB, sessionId) {
 
 Meteor.methods({
     top(sessionId){
-        LOGGER.info('[top]');
+        LOGGER.info('[top]', sessionId);
 
         let result = Async.runSync(function (done) {
             try {
@@ -54,7 +54,7 @@ Meteor.methods({
                 });
             }
             catch (ex) {
-                LOGGER.error('[top]', ex);
+                LOGGER.error('[top]', sessionId, ex);
                 done(new Meteor.Error(ex.message), null);
             }
         });
@@ -63,7 +63,7 @@ Meteor.methods({
     },
 
     dbStats(sessionId) {
-        LOGGER.info('[stats]');
+        LOGGER.info('[stats]', sessionId);
 
         let result = Async.runSync(function (done) {
             try {
@@ -72,7 +72,7 @@ Meteor.methods({
                 });
             }
             catch (ex) {
-                LOGGER.error('[stats]', ex);
+                LOGGER.error('[stats]', sessionId, ex);
                 done(new Meteor.Error(ex.message), null);
             }
         });
