@@ -6,7 +6,7 @@ printf "\n[-] Installing base OS dependencies...\n\n"
 
 apt-get update -y
 
-apt-get install -y --no-install-recommends curl ca-certificates bzip2 build-essential numactl python git wget
+apt-get install -y --no-install-recommends curl ca-certificates bzip2 build-essential numactl python git wget bsdtar
 
 dpkgArch="$(dpkg --print-architecture | awk -F- '{ print $NF }')"
 
@@ -15,7 +15,7 @@ wget -O /usr/local/bin/gosu.asc "https://github.com/tianon/gosu/releases/downloa
 
 export GNUPGHOME="$(mktemp -d)"
 
-gpg --keyserver ha.pool.sks-keyservers.net --recv-keys B42F6819007F00F88E364FD4036A9C25BF357DD4
+gpg --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys B42F6819007F00F88E364FD4036A9C25BF357DD4
 gpg --batch --verify /usr/local/bin/gosu.asc /usr/local/bin/gosu
 
 rm -r "$GNUPGHOME" /usr/local/bin/gosu.asc
