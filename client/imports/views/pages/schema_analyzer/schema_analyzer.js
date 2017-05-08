@@ -134,12 +134,15 @@ Template.schemaAnalyzer.onRendered(function () {
         if (connections.ready() && settings.ready() && schemaAnalyzeResult.ready()) {
             Helper.initializeCollectionsCombobox();
 
-            SchemaAnalyzeResult.find({connectionId: Session.get(Helper.strSessionConnection)}, {sort: {date: -1}}).observeChanges({
+            SchemaAnalyzeResult.find({
+                connectionId: Session.get(Helper.strSessionConnection),
+                sessionId: Meteor.default_connection._lastSessionId
+            }, {sort: {date: -1}}).observeChanges({
                 added: function (id, fields) {
                     let jsonData = Helper.convertAndCheckJSON(fields.message);
                     if (jsonData['ERROR']) {
                         toastr.error(fields.message);
-                        Meteor.call("removeSchemaAnalyzeResult");
+                        Meteor.call("removeSchemaAnalyzeResult", Meteor.default_connection._lastSessionId);
                         Ladda.stopAll();
                         return;
                     }
@@ -156,7 +159,7 @@ Template.schemaAnalyzer.onRendered(function () {
 });
 
 Template.schemaAnalyzer.onDestroyed(function () {
-    Meteor.call("removeSchemaAnalyzeResult");
+    Meteor.call("removeSchemaAnalyzeResult", Meteor.default_connection._lastSessionId);
 });
 
 Template.schemaAnalyzer.events({
@@ -173,7 +176,7 @@ Template.schemaAnalyzer.events({
 
         Ladda.create(document.querySelector('#btnAnalyzeNow')).start();
 
-        Meteor.call("analyzeSchema", Session.get(Helper.strSessionConnection), collection, (err) => {
+        Meteor.call("analyzeSchema", Session.get(Helper.strSessionConnection), collection, Meteor.default_connection._lastSessionId, (err) => {
             if (err) {
                 Helper.showMeteorFuncError(err, null, "Couldn't analyze collection");
             }

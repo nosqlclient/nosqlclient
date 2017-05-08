@@ -7,7 +7,7 @@ import {FlowRouter} from "meteor/kadira:flow-router";
 import {Connections} from "/lib/imports/collections/connections";
 import Helper from "/client/imports/helper";
 import {connect} from "/client/imports/views/layouts/top_navbar/connections/connections";
-import {resetForm, initializeForm} from "./add_collection/add_collection";
+import {initializeForm, resetForm} from "./add_collection/add_collection";
 import {resetForm as resetCappedForm} from "./convert_capped_collection/convert_to_capped";
 import {resetForm as resetRenameForm} from "./rename_collection/rename_collection";
 import {resetForm as resetValidationRulesForm} from "./validation_rules/validation_rules";
@@ -41,7 +41,7 @@ const dropAllCollections = function () {
         closeOnConfirm: true
     }, function (isConfirm) {
         if (isConfirm) {
-            Meteor.call('dropAllCollections', function (err, result) {
+            Meteor.call('dropAllCollections', Meteor.default_connection._lastSessionId, function (err, result) {
                 if (err || result.error) {
                     Helper.showMeteorFuncError(err, result, "Couldn't drop all collections");
                 }
@@ -72,7 +72,7 @@ const handleNavigationAndSessions = function () {
 };
 
 const clearCollection = function (collectionName) {
-    Meteor.call('delete', collectionName, {}, function (err, result) {
+    Meteor.call('delete', collectionName, {}, Meteor.default_connection._lastSessionId, function (err, result) {
         if (err || result.error) {
             Helper.showMeteorFuncError(err, result, "Couldn't clear collection");
         }
@@ -83,7 +83,7 @@ const clearCollection = function (collectionName) {
 };
 
 const dropCollection = function (collectionName) {
-    Meteor.call('dropCollection', collectionName, function (err, result) {
+    Meteor.call('dropCollection', collectionName, Meteor.default_connection._lastSessionId, function (err, result) {
         if (err || result.error) {
             Helper.showMeteorFuncError(err, result, "Couldn't drop collection");
         }
@@ -95,7 +95,7 @@ const dropCollection = function (collectionName) {
 };
 
 export const renderCollectionNames = function () {
-    Meteor.call('connect', Session.get(Helper.strSessionConnection), function (err, result) {
+    Meteor.call('connect', Session.get(Helper.strSessionConnection), Meteor.default_connection._lastSessionId, function (err, result) {
         if (err || result.error) {
             Helper.showMeteorFuncError(err, result, "Couldn't connect");
         }
@@ -166,7 +166,7 @@ Template.navigation.events({
             confirmButtonText: "Yes, drop it!",
             closeOnConfirm: false
         }, function () {
-            Meteor.call('dropDB', function (err, result) {
+            Meteor.call('dropDB', Meteor.default_connection._lastSessionId, function (err, result) {
                 if (err || result.error) {
                     Helper.showMeteorFuncError(err, result, "Couldn't drop database");
                 }
@@ -339,31 +339,6 @@ Template.navigation.onRendered(function () {
                                     toastr.warning('No collection selected !');
                                 }
                             }
-                        },
-
-                        drop_collection: {
-                            name: "Drop Collection",
-                            icon: "fa-trash",
-                            callback: function () {
-                                if ($(this) && $(this).context && $(this).context.innerText) {
-                                    const collectionName = $(this).context.innerText.substring(1).split(' ')[0];
-                                    swal({
-                                        title: "Are you sure?",
-                                        text: collectionName + " collection will be dropped, are you sure ?",
-                                        type: "warning",
-                                        showCancelButton: true,
-                                        confirmButtonColor: "#DD6B55",
-                                        confirmButtonText: "Yes, drop it!",
-                                        closeOnConfirm: true
-                                    }, function (isConfirm) {
-                                        if (isConfirm) {
-                                            dropCollection(collectionName);
-                                        }
-                                    });
-                                } else {
-                                    toastr.warning('No collection selected !');
-                                }
-                            }
                         }
                     }
                 },
@@ -399,6 +374,30 @@ Template.navigation.onRendered(function () {
                     icon: "fa-refresh",
                     callback: function () {
                         connect(true);
+                    }
+                },
+                drop_collection: {
+                    name: "Drop Collection",
+                    icon: "fa-trash",
+                    callback: function () {
+                        if ($(this) && $(this).context && $(this).context.innerText) {
+                            const collectionName = $(this).context.innerText.substring(1).split(' ')[0];
+                            swal({
+                                title: "Are you sure?",
+                                text: collectionName + " collection will be dropped, are you sure ?",
+                                type: "warning",
+                                showCancelButton: true,
+                                confirmButtonColor: "#DD6B55",
+                                confirmButtonText: "Yes, drop it!",
+                                closeOnConfirm: true
+                            }, function (isConfirm) {
+                                if (isConfirm) {
+                                    dropCollection(collectionName);
+                                }
+                            });
+                        } else {
+                            toastr.warning('No collection selected !');
+                        }
                     }
                 },
                 drop_collections: {

@@ -12,7 +12,7 @@ const Ladda = require('ladda');
 const init = function (isRefresh) {
     Ladda.create(document.querySelector('#btnAddNewStoredFunction')).start();
 
-    Meteor.call("find", "system.js", {}, {}, false, function (err, result) {
+    Meteor.call("find", "system.js", {}, {}, false, Meteor.default_connection._lastSessionId, function (err, result) {
         if (err || result.error) {
             Helper.showMeteorFuncError(err, result, "Couldn't fetch stored functions");
         }
@@ -112,7 +112,7 @@ Template.storedFunctions.events({
         Ladda.create(document.querySelector('#btnSaveStoredFunction')).start();
         if (modal.data('selected')) {
             //edit
-            Meteor.call('updateOne', "system.js", {_id: data._id}, objectToSave, function (err, result) {
+            Meteor.call('updateOne', "system.js", {_id: data._id}, objectToSave, {}, Meteor.default_connection._lastSessionId, function (err, result) {
                 if (err || result.error) {
                     Helper.showMeteorFuncError(err, result, "Couldn't save");
                 } else {
@@ -126,7 +126,7 @@ Template.storedFunctions.events({
         }
         else {
             //add
-            Meteor.call('insertMany', "system.js", [objectToSave], {}, function (err, result) {
+            Meteor.call('insertMany', "system.js", [objectToSave], {}, Meteor.default_connection._lastSessionId, function (err, result) {
                 if (err || result.error) {
                     Helper.showMeteorFuncError(err, result, "Couldn't insert");
                 } else {
@@ -170,7 +170,7 @@ Template.storedFunctions.events({
             }, function (isConfirm) {
                 if (isConfirm) {
                     Ladda.create(document.querySelector('#btnAddNewStoredFunction')).start();
-                    Meteor.call('delete', "system.js", {_id: name}, function (err, result) {
+                    Meteor.call('delete', "system.js", {_id: name}, Meteor.default_connection._lastSessionId, function (err, result) {
                         if (err || result.error) {
                             Helper.showMeteorFuncError(err, result, "Couldn't delete");
                         } else {

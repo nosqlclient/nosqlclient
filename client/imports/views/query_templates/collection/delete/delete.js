@@ -31,7 +31,7 @@ Template.delete.executeQuery = function (historyParams) {
         selector: selector
     };
 
-    Meteor.call("delete", selectedCollection, selector, function (err, result) {
+    Meteor.call("delete", selectedCollection, selector,Meteor.default_connection._lastSessionId, function (err, result) {
             Helper.renderAfterQueryExecution(err, result, false, "delete", params, (!historyParams));
         }
     );

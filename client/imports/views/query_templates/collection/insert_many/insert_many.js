@@ -48,7 +48,7 @@ Template.insertMany.executeQuery = function (historyParams) {
         options: options
     };
 
-    Meteor.call("insertMany", selectedCollection, docs, options, function (err, result) {
+    Meteor.call("insertMany", selectedCollection, docs, options,Meteor.default_connection._lastSessionId, function (err, result) {
         Helper.renderAfterQueryExecution(err, result, false, "insertMany", params, (!historyParams));
     });
 };

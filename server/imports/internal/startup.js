@@ -96,6 +96,7 @@ const migrateSSHPart = function (oldConnection, connection) {
             host: oldConnection.sshAddress,
             port: oldConnection.sshPort,
             username: oldConnection.sshUser,
+            destinationPort: oldConnection.sshPort
         };
 
         if (oldConnection.sshPassword) connection.ssh.password = oldConnection.sshPassword;

@@ -1,8 +1,8 @@
 /**
  * Created by RSercan on 10.1.2016.
  */
-import {Meteor} from 'meteor/meteor';
-import {Actions} from '/lib/imports/collections/actions';
+import {Meteor} from "meteor/meteor";
+import {Actions} from "/lib/imports/collections/actions";
 import LOGGER from "../internal/logger";
 
 const cheerio = require('cheerio');
@@ -60,7 +60,7 @@ Meteor.methods({
         let loadedUrl = load(url);
         fixHrefs(url, loadedUrl);
 
-        return loadedUrl("dt[id='authr." + action + "']").parent('dl[class=authaction]').children('dd').html();
+        return loadedUrl("dt[id='" + action + "']").parent('dl[class=authaction]').children('dd').html();
     },
 
     getRoleInfo(roleName) {

@@ -58,7 +58,7 @@ Template.findOneAndDelete.executeQuery = function (historyParams) {
         options: options
     };
 
-    Meteor.call("findOneAndDelete", selectedCollection, selector, options, function (err, result) {
+    Meteor.call("findOneAndDelete", selectedCollection, selector, options,Meteor.default_connection._lastSessionId, function (err, result) {
             Helper.renderAfterQueryExecution(err, result, false, "findOneAndDelete", params, (!historyParams));
         }
     );

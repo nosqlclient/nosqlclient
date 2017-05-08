@@ -1,10 +1,10 @@
-import {Template} from 'meteor/templating';
-import {Meteor} from 'meteor/meteor';
-import {Session} from 'meteor/session';
-import Helper from '/client/imports/helper';
-import {initExecuteQuery} from '/client/imports/views/pages/browse_collection/browse_collection';
+import {Template} from "meteor/templating";
+import {Meteor} from "meteor/meteor";
+import {Session} from "meteor/session";
+import Helper from "/client/imports/helper";
+import {initExecuteQuery} from "/client/imports/views/pages/browse_collection/browse_collection";
 
-import './index_information.html';
+import "./index_information.html";
 
 /**
  * Created by RSercan on 3.1.2016.
@@ -24,7 +24,7 @@ Template.indexInformation.executeQuery = function (historyParams) {
         full: fullVal
     };
 
-    Meteor.call("indexInformation", selectedCollection, fullVal, function (err, result) {
+    Meteor.call("indexInformation", selectedCollection, fullVal, Meteor.default_connection._lastSessionId, function (err, result) {
         Helper.renderAfterQueryExecution(err, result, false, "indexInformation", params, (!historyParams));
     });
 };
