@@ -3,7 +3,7 @@ MAINTAINER R.Sercan Özdemir <info@mongoclient.com>
 
 RUN groupadd -r node && useradd -m -g node node
 
-ENV NODE_VERSION 4.7.3
+ENV NODE_VERSION 4.8.2
 ENV GOSU_VERSION 1.10
 
 # default values for Meteor environment variables
