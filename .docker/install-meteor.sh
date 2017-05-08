@@ -11,5 +11,5 @@ set -e
 
   # install
   printf "\n[-] Installing latest Meteor ...\n\n"
-  sh /tmp/install_meteor.sh
+  /bin/bash /tmp/install_meteor.sh
 
