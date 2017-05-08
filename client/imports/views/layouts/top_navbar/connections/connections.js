@@ -5,6 +5,7 @@ import {ReactiveVar} from "meteor/reactive-var";
 import {FlowRouter} from "meteor/kadira:flow-router";
 import Helper from "/client/imports/helper";
 import {Connections} from "/lib/imports/collections/connections";
+import {loadFile} from "/client/imports/views/layouts/top_navbar/top_navbar";
 import "./connections.html";
 
 const toastr = require('toastr');
@@ -255,7 +256,7 @@ const prepareFormForEdit = function () {
 const loadSSHCertificate = function (connection, currentConnection, done) {
     if (connection.ssh) {
         if (connection.ssh.certificateFileName) {
-            loadCertificate(currentConnection.ssh ? currentConnection.ssh.certificateFile : null, $('#inputSshCertificate'), function (val) {
+            loadFile(currentConnection.ssh ? currentConnection.ssh.certificateFile : null, $('#inputSshCertificate'), function (val) {
                 connection.ssh.certificateFile = val;
                 done(connection);
             });
@@ -306,7 +307,7 @@ const populateConnection = function (currentConnection, done) {
 
 const loadCertificateKeyFile = function (connection, prop, currentConnection, done) {
     if (connection[prop].certificateKeyFileName) {
-        loadCertificate(currentConnection[prop] ? currentConnection[prop].certificateKeyFile : null, $('#inputCertificateKey'), function (val) {
+        loadFile(currentConnection[prop] ? currentConnection[prop].certificateKeyFile : null, $('#inputCertificateKey'), function (val) {
             connection[prop].certificateKeyFile = val;
             done();
         });
@@ -317,7 +318,7 @@ const loadCertificateKeyFile = function (connection, prop, currentConnection, do
 
 const loadsslCertificate = function (connection, prop, currentConnection, done) {
     if (connection[prop].certificateFileName) {
-        loadCertificate(currentConnection[prop] ? currentConnection[prop].certificateFile : null, $('#inputCertificate'), function (val) {
+        loadFile(currentConnection[prop] ? currentConnection[prop].certificateFile : null, $('#inputCertificate'), function (val) {
             connection[prop].certificateFile = val;
             loadCertificateKeyFile(connection, prop, currentConnection, done);
         });
@@ -329,29 +330,13 @@ const loadsslCertificate = function (connection, prop, currentConnection, done) 
 
 const loadRootCa = function (connection, prop, currentConnection, done) {
     if (connection[prop].rootCAFileName) {
-        loadCertificate(currentConnection[prop] ? currentConnection[prop].rootCAFile : null, $('#inputRootCA'), function (val) {
+        loadFile(currentConnection[prop] ? currentConnection[prop].rootCAFile : null, $('#inputRootCA'), function (val) {
             connection[prop].rootCAFile = val;
             loadsslCertificate(connection, prop, currentConnection, done);
         });
     }
     else {
         loadsslCertificate(connection, prop, currentConnection, done);
-    }
-};
-
-const loadCertificate = function (currentVal, input, done) {
-    let fileInput = input.siblings('.bootstrap-filestyle').children('input');
-    if (input[0].files.length == 0 && currentVal && fileInput.val()) {
-        done(currentVal);
-    }
-    else if (input[0].files.length != 0) {
-        const fileReader = new FileReader();
-        fileReader.onload = function (file) {
-            done(new Uint8Array(file.target.result));
-        };
-        fileReader.readAsArrayBuffer(input[0].files[0]);
-    } else {
-        done([]);
     }
 };
 
@@ -625,18 +610,6 @@ Template.connections.events({
             return;
         }
         $(e.currentTarget).parents('.divHostField').remove();
-    },
-
-    'change .filestyle'(e){
-        let inputSelector = $('#' + e.currentTarget.id);
-        let blob = inputSelector[0].files[0];
-        let fileInput = inputSelector.siblings('.bootstrap-filestyle').children('input');
-
-        if (blob) {
-            fileInput.val(blob.name);
-        } else {
-            fileInput.val('');
-        }
     },
 
     'click #btnCreateNewConnection' () {

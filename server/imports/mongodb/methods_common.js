@@ -6,6 +6,7 @@
 import {Meteor} from "meteor/meteor";
 import {Settings} from "/lib/imports/collections/settings";
 import {Connections} from "/lib/imports/collections/connections";
+import {migrateConnectionsIfExist} from "/server/imports/internal/startup";
 import ShellCommands from "/lib/imports/collections/shell";
 import SchemaAnaylzeResult from "/lib/imports/collections/schema_analyze_result";
 import LOGGER from "../internal/logger";
@@ -188,33 +189,25 @@ Meteor.methods({
     importMongoclient(file)  {
         LOGGER.info('[importMongoclient]', file);
 
-        let result = Async.runSync(function (done) {
-            try {
-                fs.readFile(file, 'utf8', function (err, data) {
-                    done(err, data);
-                });
-            } catch (ex) {
-                LOGGER.error('[importMongoclient]', ex);
-                done(new Meteor.Error(ex.message), null);
+        try {
+            let mongoclientData = JSON.parse(file);
+            if (mongoclientData.settings) {
+                Settings.remove({});
+                delete mongoclientData.settings._id;
+                Settings.insert(mongoclientData.settings);
             }
-        });
 
-        if (result.err) {
-            return result;
-        }
-
-        let mongoclientData = JSON.parse(result.result);
-        if (mongoclientData.settings) {
-            Settings.remove({});
-            delete mongoclientData.settings._id;
-            Settings.insert(mongoclientData.settings);
-        }
-
-        if (mongoclientData.connections) {
-            for (let i = 0; i < mongoclientData.connections.length; i++) {
-                delete mongoclientData.connections[i]._id;
-                Connections._collection.insert(mongoclientData.connections[i]);
+            if (mongoclientData.connections) {
+                for (let i = 0; i < mongoclientData.connections.length; i++) {
+                    delete mongoclientData.connections[i]._id;
+                    Connections._collection.insert(mongoclientData.connections[i]);
+                }
+                migrateConnectionsIfExist();
             }
+        }
+        catch (ex) {
+            LOGGER.error('[importMongoclient]', 'unexpected error during import', ex);
+            throw new Meteor.Error(ex.message);
         }
     },
 

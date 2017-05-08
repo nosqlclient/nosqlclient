@@ -18,7 +18,27 @@ require('datatables.net-bs')(window, $);
 require('datatables.net-buttons-bs')(window, $);
 require('datatables.net-responsive-bs')(window, $);
 
+export const loadFile = function (currentVal, input, done, readAsString) {
+    let fileInput = input.siblings('.bootstrap-filestyle').children('input');
+    if (input[0].files.length == 0 && currentVal && fileInput.val()) {
+        done(currentVal);
+    }
+    else if (input[0].files.length != 0) {
+        const fileReader = new FileReader();
+        fileReader.onload = function (file) {
+            if (readAsString) done(file.target.result);
+            else done(new Uint8Array(file.target.result));
+        };
+
+        if (readAsString) fileReader.readAsText(input[0].files[0], "UTF-8");
+        else fileReader.readAsArrayBuffer(input[0].files[0]);
+    } else {
+        done([]);
+    }
+};
+
 const init = function () {
+    $(".filestyle").filestyle({});
     let selectorForSwitchDatabases = $('#tblSwitchDatabases');
     selectorForSwitchDatabases.find('tbody').on('click', 'tr', function () {
         let table = selectorForSwitchDatabases.DataTable();
@@ -65,16 +85,18 @@ Template.topNavbar.events({
 
         if (isImport && importInput.val()) {
             laddaButton.start();
-            Meteor.call('importMongoclient', importInput.val(), function (err) {
-                if (err) {
-                    toastr.error("Couldn't import: " + err.message);
-                } else {
-                    toastr.success("Successfully imported from " + importInput.val());
-                    $('#importExportMongoclientModal').modal('hide');
-                }
+            loadFile(null, importInput, function (val) {
+                Meteor.call('importMongoclient', val, function (err) {
+                    if (err) {
+                        toastr.error("Couldn't import: " + err.message);
+                    } else {
+                        toastr.success("Successfully imported from " + importInput.siblings('.bootstrap-filestyle').children('input').val());
+                        $('#importExportMongoclientModal').modal('hide');
+                    }
 
-                Ladda.stopAll();
-            });
+                    Ladda.stopAll();
+                });
+            }, true);
         }
         else if (!isImport && exportInput.val()) {
             laddaButton.start();
@@ -90,6 +112,18 @@ Template.topNavbar.events({
             });
         }
 
+    },
+
+    'change .filestyle'(e){
+        let inputSelector = $('#' + e.currentTarget.id);
+        let blob = inputSelector[0].files[0];
+        let fileInput = inputSelector.siblings('.bootstrap-filestyle').children('input');
+
+        if (blob) {
+            fileInput.val(blob.name);
+        } else {
+            fileInput.val('');
+        }
     },
 
     'click #btnRefreshCollections2'() {
