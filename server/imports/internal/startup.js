@@ -12,7 +12,7 @@ import {parseUrl} from "./internal_methods";
 /**
  * Migrates 1.x version connections to 2.x
  */
-const migrateConnectionsIfExist = function () {
+export const migrateConnectionsIfExist = function () {
     let settings = Settings.findOne();
     if (settings.isMigrationDone) return;
 
