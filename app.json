@@ -2,7 +2,7 @@
   "name": "Mongoclient",
   "description": "MongoDB Management Tool",
   "repository": "https://github.com/mongoclient/mongoclient",
-  "logo": "http://mongoclient.com/img/logo/head_only_big.png",
+  "logo": "https://mongoclient.com/img/logo/mongoclient_logo-1.png",
   "keywords": [
     "meteor",
     "mongodb",
@@ -10,7 +10,7 @@
     "developerTool",
     "managementTool"
   ],
-  "website": "http://www.mongoclient.com",
+  "website": "https://www.mongoclient.com",
   "env": {
     "BUILDPACK_URL": "https://github.com/rsercano/meteor-buildpack-horse",
     "ROOT_URL": {
