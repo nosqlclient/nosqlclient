@@ -114,6 +114,8 @@ const proceedConnectingMongodb = function (dbName, sessionId, connectionUrl, con
             databasesBySessionId[sessionId].listCollections().toArray(function (err, collections) {
                 done(err, collections);
             });
+
+            LOGGER.info('[connect]', 'current sesssion length: ' + Object.keys(databasesBySessionId).length);
         }
         catch (ex) {
             LOGGER.error('[connect]', sessionId, ex);
