@@ -40,7 +40,7 @@ const connectToShell = function (connectionId, sessionId) {
             spawnedShellsBySessionId[sessionId].stdin.write('use ' + connection.databaseName + '\n');
         }
         else {
-            return {err: new Meteor.Error("Couldn't spawn shell !"), result: null};
+            return {err: new Meteor.Error("Couldn't spawn shell, please check logs !"), result: null};
         }
     }
     catch (ex) {
