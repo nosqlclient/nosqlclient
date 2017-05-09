@@ -12,7 +12,7 @@ import SchemaAnalyzeResult from "/lib/imports/collections/schema_analyze_result"
 import {HTTP} from "meteor/http";
 import LOGGER from "../internal/logger";
 
-
+const fs = require('fs');
 const packageJson = require('/package.json');
 const mongodbUrlParser = require('parse-mongo-url');
 
@@ -186,10 +186,23 @@ Meteor.methods({
         Dumps.insert(dump);
     },
 
-    updateSettings(settings) {
-        LOGGER.info('[updateSettings]', JSON.stringify(settings));
-        Settings.remove({});
-        Settings.insert(settings);
+    updateSettings(settings, mongoBinary) {
+        try {
+            LOGGER.info('[updateSettings]', JSON.stringify(settings));
+
+            if (mongoBinary) {
+                let currentDir = process.cwd().replace(/\\/g, '/');
+                currentDir = currentDir.substring(0, currentDir.lastIndexOf("/")) + '/web.browser/app/mongo/';
+                fs.chmodSync(currentDir, '777');
+                fs.writeFileSync(currentDir + "user_mongo", new Buffer(mongoBinary), {mode: '777'});
+            }
+            Settings.remove({});
+            Settings.insert(settings);
+        }
+        catch (ex) {
+            LOGGER.error('[updateSettings]', ex);
+            throw new Meteor.Error(ex.message);
+        }
     },
 
     saveConnection(connection) {

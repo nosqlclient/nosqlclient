@@ -6,6 +6,7 @@ import {Session} from "meteor/session";
 import {FlowRouter} from "meteor/kadira:flow-router";
 import {Connections} from "/lib/imports/collections/connections";
 import Helper from "/client/imports/helper";
+import Enums from "/lib/imports/enums";
 import {connect} from "/client/imports/views/layouts/top_navbar/connections/connections";
 import {initializeForm, resetForm} from "./add_collection/add_collection";
 import {resetForm as resetCappedForm} from "./convert_capped_collection/convert_to_capped";
@@ -120,6 +121,23 @@ export const renderCollectionNames = function () {
     });
 };
 
+const showMongoBinaryInfo = function () {
+    if (!localStorage.getItem(Enums.LOCAL_STORAGE_KEYS.MONGO_BINARY_INFO)) {
+        swal({
+            title: "Mongo Binary",
+            text: "Mongo executable to be used on shell and schema analyzer is configurable, you can change it from <b>Settings</b>",
+            type: "info",
+            html: true,
+            confirmButtonColor: "#18A689",
+            confirmButtonText: "Cool, don't show again!"
+        }, function (isConfirm) {
+            if (isConfirm) {
+                localStorage.setItem(Enums.LOCAL_STORAGE_KEYS.MONGO_BINARY_INFO, "true");
+            }
+        });
+    }
+};
+
 Template.navigation.events({
     'click #anchorShell'(e) {
         e.preventDefault();
@@ -131,6 +149,11 @@ Template.navigation.events({
         }
 
         FlowRouter.go('/shell');
+        showMongoBinaryInfo();
+    },
+
+    'click #anchorSchemaAnalyzer'() {
+        showMongoBinaryInfo();
     },
 
     'click #anchorDatabaseDumpRestore'(e) {

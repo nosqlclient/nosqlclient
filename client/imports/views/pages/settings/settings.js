@@ -1,6 +1,6 @@
 import {Template} from "meteor/templating";
-import {Meteor} from "meteor/meteor";
 import {Settings} from "/lib/imports/collections/settings";
+import {loadFile} from "/client/imports/views/layouts/top_navbar/top_navbar";
 import "./settings.html";
 
 const toastr = require('toastr');
@@ -9,7 +9,7 @@ const Ladda = require('ladda');
  * Created by RSercan on 9.1.2016.
  */
 
-const getSettingsFromForm = function () {
+const proceedSavingSettings = function (mongoBinary) {
     const settings = {};
     settings.autoCompleteFields = $('#divAutoCompleteFields').iCheck('update')[0].checked;
     settings.scale = $("#cmbScale").chosen().val();
@@ -21,15 +21,21 @@ const getSettingsFromForm = function () {
     settings.showDBStats = $('#divShowDBStats').iCheck('update')[0].checked;
     settings.showLiveChat = $('#divShowLiveChat').iCheck('update')[0].checked;
     settings.dumpPath = $('#inputDumpPath').val();
+    settings.mongoBinaryName = $('#inputMongoExecutable').siblings('.bootstrap-filestyle').children('input').val() || 'mongo';
     settings.singleTabResultSets = $('#divUseSingleTab').iCheck('update')[0].checked;
-    return settings;
+
+    Meteor.call('updateSettings', settings, mongoBinary, function (err) {
+        if (err) this.showMeteorFuncError(err, null, "Couldn't save");
+        else toastr.success('Successfuly saved !');
+        Ladda.stopAll();
+    });
 };
 
 Template.settings.onRendered(function () {
     $('#divAutoCompleteFields, #divShowDBStats, #divShowLiveChat, #divUseSingleTab').iCheck({
         checkboxClass: 'icheckbox_square-green'
     });
-
+    $('.filestyle').filestyle({});
     $('#cmbScale, #cmbResultView').chosen();
 
     let settings = this.subscribe('settings');
@@ -47,12 +53,7 @@ Template.settings.events({
         e.preventDefault();
 
         Ladda.create(document.querySelector('#btnSaveSettings')).start();
-
-        Meteor.call('updateSettings', getSettingsFromForm());
-        toastr.success('Successfuly saved !');
-
-
-        Ladda.stopAll();
+        loadFile(Settings.findOne().mongoBinary, $('#inputMongoExecutable'), proceedSavingSettings);
     }
 });
 
@@ -61,15 +62,6 @@ const load = function () {
     const settings = Settings.findOne();
     const cmbScale = $('#cmbScale');
     const cmbResultView = $('#cmbResultView');
-    const inputMaxAllowedFetchSize = $('#inputMaxAllowedFetchSize');
-    const inputSocketTimeout = $('#inputSocketTimeout');
-    const inputConnectionTimeout = $('#inputConnectionTimeout');
-    const inputDBStatsScheduler = $('#inputDBStatsScheduler');
-    const inputAutoCompleteFields = $('#inputAutoCompleteFields');
-    const inputShowLiveChat = $('#inputShowLiveChat');
-    const inputShowDBStats = $('#inputShowDBStats');
-    const inputDumpPath = $('#inputDumpPath');
-    const inputUseSingleTab = $('#inputUseSingleTab');
 
     cmbScale.val(settings.scale);
     cmbScale.trigger("chosen:updated");
@@ -77,30 +69,15 @@ const load = function () {
     cmbResultView.val(settings.defaultResultView);
     cmbResultView.trigger("chosen:updated");
 
-    if (settings.dumpPath) inputDumpPath.val(settings.dumpPath);
-
-    if (settings.maxAllowedFetchSize) inputMaxAllowedFetchSize.val(settings.maxAllowedFetchSize);
-    else inputMaxAllowedFetchSize.val(0);
-
-    if (settings.socketTimeoutInSeconds) inputSocketTimeout.val(settings.socketTimeoutInSeconds);
-    else inputSocketTimeout.val(0);
-
-    if (settings.connectionTimeoutInSeconds) inputConnectionTimeout.val(settings.connectionTimeoutInSeconds);
-    else inputConnectionTimeout.val(0);
-
-    if (settings.dbStatsScheduler) inputDBStatsScheduler.val(settings.dbStatsScheduler);
-    else inputDBStatsScheduler.val(3000);
-
-    if (settings.autoCompleteFields) inputAutoCompleteFields.iCheck('check');
-    else inputAutoCompleteFields.iCheck('uncheck');
-
-    if (settings.showLiveChat) inputShowLiveChat.iCheck('check');
-    else inputShowLiveChat.iCheck('uncheck');
-
-    if (settings.singleTabResultSets) inputUseSingleTab.iCheck('check');
-    else inputUseSingleTab.iCheck('uncheck');
-
-    if (settings.showDBStats) inputShowDBStats.iCheck('check');
-    else inputShowDBStats.iCheck('uncheck');
+    $('#inputDumpPath').val(settings.dumpPath || '');
+    $('#inputMaxAllowedFetchSize').val(settings.maxAllowedFetchSize || 0);
+    $('#inputSocketTimeout').val(settings.socketTimeoutInSeconds || 0);
+    $('#inputConnectionTimeout').val(settings.connectionTimeoutInSeconds || 0);
+    $('#inputDBStatsScheduler').val(settings.dbStatsScheduler || 3000);
+    $('#inputAutoCompleteFields').iCheck(settings.autoCompleteFields ? 'check' : 'uncheck');
+    $('#inputShowLiveChat').iCheck(settings.showLiveChat ? 'check' : 'uncheck');
+    $('#inputUseSingleTab').iCheck(settings.singleTabResultSets ? 'check' : 'uncheck');
+    $('#inputShowDBStats').iCheck(settings.showDBStats ? 'check' : 'uncheck');
+    $('#inputMongoExecutable').siblings('.bootstrap-filestyle').children('input').val(settings.mongoBinaryName || 'mongo');
 
 };

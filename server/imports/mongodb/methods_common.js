@@ -82,6 +82,10 @@ const getMongoExternalsPath = function () {
 
 const getProperMongo = function () {
     let currentDir = getMongoExternalsPath();
+    if (fs.existsSync(currentDir + "user_mongo")) {
+        LOGGER.info('[userMongo]', 'found a mongo binary set by user, choosing it');
+        return currentDir + "user_mongo";
+    }
     switch (os.platform()) {
         case 'darwin':
             return currentDir + 'darwin/mongo';
