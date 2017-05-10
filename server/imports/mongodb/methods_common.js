@@ -39,9 +39,9 @@ const connectToShell = function (connectionId, sessionId) {
             LOGGER.info('[shell]', 'executing command "use ' + connection.databaseName + '" on shell', sessionId);
             spawnedShellsBySessionId[sessionId].stdin.write('use ' + connection.databaseName + '\n');
         }
-        else {
-            return {err: new Meteor.Error("Couldn't spawn shell, please check logs !"), result: null};
-        }
+        else return {err: new Meteor.Error("Couldn't spawn shell, please check logs !"), result: null};
+
+        return 'use ' + connection.databaseName;
     }
     catch (ex) {
         spawnedShellsBySessionId[sessionId] = null;
@@ -416,7 +416,7 @@ Meteor.methods({
     },
 
     connectToShell(connectionId, sessionId){
-        connectToShell(connectionId, sessionId);
+        return connectToShell(connectionId, sessionId);
     },
 
     analyzeSchema(connectionId, collection, sessionId){
