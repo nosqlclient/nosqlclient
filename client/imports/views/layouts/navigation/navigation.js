@@ -139,6 +139,16 @@ const showMongoBinaryInfo = function () {
 };
 
 Template.navigation.events({
+    'click .anchor-skin' (e){
+        const body = $('body');
+        const skin = e.currentTarget.id;
+        localStorage.setItem(Enums.LOCAL_STORAGE_KEYS.MONGOCLIENT_SKIN, skin);
+        body.removeClass('skin-1');
+        body.removeClass('skin-2');
+        body.removeClass('skin-3');
+        if (skin !== 'skin-default') body.addClass(skin);
+    },
+
     'click #anchorShell'(e) {
         e.preventDefault();
         let connection = Connections.findOne({_id: Session.get(Helper.strSessionConnection)});

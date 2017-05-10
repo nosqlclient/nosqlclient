@@ -5,6 +5,7 @@ import {FlowRouter} from "meteor/kadira:flow-router";
 import Helper from "/client/imports/helper";
 import {Connections} from "/lib/imports/collections/connections";
 import {connect, populateConnectionsTable} from "/client/imports/views/layouts/top_navbar/connections/connections";
+import Enums from "/lib/imports/enums";
 import "/client/imports/views/layouts/top_navbar/connections/connections";
 import "./top_navbar.html";
 
@@ -49,7 +50,11 @@ const init = function () {
         }
     });
 
-    $("body").addClass('fixed-sidebar');
+    let body = $("body");
+    let skin = localStorage.getItem(Enums.LOCAL_STORAGE_KEYS.MONGOCLIENT_SKIN);
+    body.addClass('fixed-sidebar');
+    if (skin && skin !== 'skin-default') body.addClass(skin);
+
 };
 
 const populateSwitchDatabaseTable = function (data) {
