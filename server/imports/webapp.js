@@ -4,10 +4,28 @@
 import {WebApp} from "meteor/webapp";
 import {Meteor} from "meteor/meteor";
 import {Papa} from "meteor/harrison:papa-parse";
+import {Settings} from "/lib/imports/collections/settings";
+import {Connections} from "/lib/imports/collections/connections";
 import {databasesBySessionId} from "/server/imports/mongodb/methods_common";
 import LOGGER from "/server/imports/internal/logger";
 
 const mongodbApi = require('mongodb');
+
+WebApp.connectHandlers.use('/exportMongoclient', function (req, res) {
+    let fileContent = {};
+    fileContent.settings = Settings.findOne();
+    fileContent.connections = Connections.find().fetch();
+    let fileName = "backup_" + moment().format('DD_MM_YYYY_HH_mm_ss') + ".json";
+
+    LOGGER.info('[exportMongoclient]', fileContent, fileName);
+
+    const headers = {
+        'Content-type': 'application/octet-stream',
+        'Content-Disposition': 'attachment; filename=' + fileName
+    };
+    res.writeHead(200, headers);
+    res.end(JSON.stringify(fileContent));
+});
 
 WebApp.connectHandlers.use('/export', function (req, res) {
     const urlParts = decodeURI(req.url).split('&');
@@ -15,10 +33,11 @@ WebApp.connectHandlers.use('/export', function (req, res) {
     const selectedCollection = urlParts[1].substr(urlParts[1].indexOf('=') + 1);
     const selector = urlParts[2].substr(urlParts[2].indexOf('=') + 1);
     const cursorOptions = urlParts[3].substr(urlParts[3].indexOf('=') + 1);
+    const sessionId = urlParts[4].substr(urlParts[4].indexOf('=') + 1);
 
-    LOGGER.info('[export]', format, selectedCollection, selector, cursorOptions);
+    LOGGER.info('[export]', format, selectedCollection, selector, cursorOptions, sessionId);
 
-    Meteor.call("find", selectedCollection, JSON.parse(selector), JSON.parse(cursorOptions), false, Meteor.default_connection._lastSessionId, function (err, result) {
+    Meteor.call("find", selectedCollection, JSON.parse(selector), JSON.parse(cursorOptions), false, sessionId, function (err, result) {
         if (err || result.error) {
             LOGGER.error('[export]', err, result.error);
             res.writeHead(400);

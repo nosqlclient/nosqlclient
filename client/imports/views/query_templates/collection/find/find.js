@@ -27,7 +27,7 @@ const proceedFindQuery = function (selectedCollection, selector, cursorOptions, 
     };
 
     if (exportFormat) {
-        window.open('export?format=' + exportFormat + '&selectedCollection=' + selectedCollection + "&selector=" + JSON.stringify(selector) + "&cursorOptions=" + JSON.stringify(cursorOptions));
+        window.open('export?format=' + exportFormat + '&selectedCollection=' + selectedCollection + "&selector=" + JSON.stringify(selector) + "&cursorOptions=" + JSON.stringify(cursorOptions) + "&sessionId=" + Meteor.default_connection._lastSessionId);
         Ladda.stopAll();
     } else {
         Meteor.call("find", selectedCollection, selector, cursorOptions, executeExplain, Meteor.default_connection._lastSessionId, function (err, result) {

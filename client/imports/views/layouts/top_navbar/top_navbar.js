@@ -79,11 +79,9 @@ Template.topNavbar.events({
     'click #btnProceedImportExport'(e) {
         e.preventDefault();
         let laddaButton = Ladda.create(document.querySelector('#btnProceedImportExport'));
-        let isImport = $('#importExportMongoclientTitle').text() == 'Import Mongoclient Data';
         let importInput = $('#inputImportBackupFile');
-        let exportInput = $('#inputExportBackupDir');
 
-        if (isImport && importInput.val()) {
+        if (importInput.val()) {
             laddaButton.start();
             loadFile(null, importInput, function (val) {
                 Meteor.call('importMongoclient', val, function (err) {
@@ -98,20 +96,6 @@ Template.topNavbar.events({
                 });
             }, true);
         }
-        else if (!isImport && exportInput.val()) {
-            laddaButton.start();
-            Meteor.call('exportMongoclient', exportInput.val(), function (err, path) {
-                if (err) {
-                    toastr.error("Couldn't export: " + err.message);
-                } else {
-                    toastr.success("Successfully exported to " + path.result);
-                    $('#importExportMongoclientModal').modal('hide');
-                }
-
-                Ladda.stopAll();
-            });
-        }
-
     },
 
     'change .filestyle'(e){
@@ -132,14 +116,7 @@ Template.topNavbar.events({
 
     'click #btnExportMongoclient' (e) {
         e.preventDefault();
-        let icon = $('#importExportMongoclientIcon');
-        $('#importExportMongoclientTitle').text('Export Mongoclient Data');
-        icon.removeClass('fa-download');
-        icon.addClass('fa-upload');
-        $('#btnProceedImportExport').text('Export');
-        $('#frmImportMongoclient').hide();
-        $('#frmExportMongoclient').show();
-        $('#importExportMongoclientModal').modal('show');
+        window.open('exportMongoclient');
     },
 
     'click #btnImportMongoclient' (e) {

@@ -215,26 +215,6 @@ Meteor.methods({
         }
     },
 
-    exportMongoclient(dir) {
-        let filePath = dir + "/backup_" + moment().format('DD_MM_YYYY_HH_mm_ss') + ".json";
-        let fileContent = {};
-        fileContent.settings = Settings.findOne();
-        fileContent.connections = Connections.find().fetch();
-
-        LOGGER.info('[exportMongoclient]', filePath);
-
-        return Async.runSync(function (done) {
-            try {
-                fs.writeFile(filePath, JSON.stringify(fileContent), function (err) {
-                    done(err, filePath);
-                });
-            } catch (ex) {
-                LOGGER.error('[exportMongoclient]', ex);
-                done(new Meteor.Error(ex.message), null);
-            }
-        });
-    },
-
     listCollectionNames(dbName, sessionId) {
         LOGGER.info('[listCollectionNames]', dbName, sessionId);
 
