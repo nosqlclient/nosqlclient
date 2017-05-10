@@ -1,26 +1,25 @@
-<template name="queryHistories">
+<template name="shellHistories">
     <!-- MODAL QueryHistories-->
-    <div class="modal inmodal" id="queryHistoriesModal" tabindex="-1" role="dialog" aria-hidden="true"
+    <div class="modal inmodal" id="shellHistoriesModal" tabindex="-1" role="dialog" aria-hidden="true"
          style="display: none;">
         <div class="modal-dialog modal-lg">
             <div class="modal-content animated bounceInRight">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span><span
                             class="sr-only">Close</span></button>
-                    <h4 class="modal-title">Query Histories</h4>
-                    <small class="font-bold">Last 20 Queries for collection {{getSelectedCollection}}
+                    <h4 class="modal-title">Shell Histories</h4>
+                    <small class="font-bold">Last 20 Shell Commands
                     </small>
                 </div>
                 <div class="modal-body">
                     <div class="dataTables_wrapper form-inline dt-bootstrap">
-                        <table id="tblQueryHistories"
+                        <table id="tblShellHistories"
                                class="table table-striped table-bordered table-hover dataTables-example dataTable"
                                width="100%">
                             <thead>
                             <tr>
-                                <th>Query</th>
+                                <th>Command</th>
                                 <th>Date</th>
-                                <th>Parameters</th>
                             </tr>
                             </thead>
                             <tbody>
@@ -32,9 +31,10 @@
                     <div class="pull-left">
                         <button type="button" class="btn btn-white" data-dismiss="modal">Close</button>
                     </div>
-                    <button id="btnExecuteAgain" disabled="true" type="button" class="btn btn-primary ladda-button"
+                    <button id="btnUseHistoricalShellQuery" disabled="true" type="button"
+                            class="btn btn-primary ladda-button"
                             data-style="contract"
-                            data-dismiss="modal">Execute Again
+                            data-dismiss="modal">I want to use this
                     </button>
                 </div>
             </div>

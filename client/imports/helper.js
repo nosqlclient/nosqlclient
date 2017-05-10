@@ -89,6 +89,7 @@ let Helper = function () {
     this.strSessionSelectedStoredFunction = "selectedStoredFunction";
     this.strSessionDistinctFields = "distinctFields";
     this.strSessionSelectedQueryHistory = "selectedQueryHistory";
+    this.strSessionSelectedShellHistory = "selectedShellHistory";
     this.strSessionSelectorValue = "selectorValue";
     this.strSessionSelectionUserManagement = "userManagementValue";
     this.strSessionUsermanagementInfo = "userManagementInfo";
@@ -373,8 +374,8 @@ Helper.prototype = {
                 const regex = new RegExp('^' + curWord, 'i');
                 return {
                     list: (!curWord ? list : list.filter(function (item) {
-                        return item.match(regex);
-                    })).sort(),
+                            return item.match(regex);
+                        })).sort(),
                     from: CodeMirror.Pos(cursor.line, start),
                     to: CodeMirror.Pos(cursor.line, end)
                 };

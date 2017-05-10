@@ -12,7 +12,12 @@
                             </h5>
 
                             <div class="ibox-tools">
-                                <button id="btnClearShell" type="button" class="btn btn-sm btn-primary">Clear Shell
+                                <button id="btnClearShell" style="margin-right: 5px;" type="button"
+                                        class="btn btn-sm btn-primary">Clear Shell
+                                </button>
+
+                                <button id="btnShowShellHistories" title="Show Shell Command History"
+                                        data-toggle="tooltip" type="button" class="btn btn-sm btn-primary">History
                                 </button>
                             </div>
                         </div>
@@ -36,5 +41,7 @@
                 </div>
             </div>
         </div>
+
+        {{> shellHistories}}
     {{/if}}
 </template>
