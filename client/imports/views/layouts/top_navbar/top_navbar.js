@@ -49,12 +49,6 @@ const init = function () {
             $('#inputDatabaseNameToSwitch').val(table.row(this).data().name);
         }
     });
-
-    let body = $("body");
-    let skin = localStorage.getItem(Enums.LOCAL_STORAGE_KEYS.MONGOCLIENT_SKIN);
-    body.addClass('fixed-sidebar');
-    if (skin && skin !== 'skin-default') body.addClass(skin);
-
 };
 
 const populateSwitchDatabaseTable = function (data) {
@@ -193,33 +187,35 @@ Template.topNavbar.events({
     },
 
     // Toggle left navigation
-    /*'click #navbar-minimalize' (event) {
-     event.preventDefault();
+    'click #navbar-minimalize' (event) {
+        event.preventDefault();
 
-     let body = $('body');
-     let sideMenu = $('#side-menu');
-     // Toggle special class
-     body.toggleClass("mini-navbar");
+        let body = $('body');
+        let sideMenu = $('#side-menu');
+        // Toggle special class
+        body.toggleClass("mini-navbar");
 
-     // Enable smoothly hide/show menu
-     if (!body.hasClass('mini-navbar') || body.hasClass('body-small')) {
-     // Hide menu in order to smoothly turn on when maximize menu
-     sideMenu.hide();
-     // For smoothly turn on menu
-     setTimeout(function () {
-     sideMenu.fadeIn(400);
-     }, 200);
-     } else if (body.hasClass('fixed-sidebar')) {
-     sideMenu.hide();
-     setTimeout(
-     function () {
-     sideMenu.fadeIn(400);
-     }, 100);
-     } else {
-     // Remove all inline style from jquery fadeIn  to reset menu state
-     sideMenu.removeAttr('style');
-     }
-     },*/
+        // Enable smoothly hide/show menu
+        if (!body.hasClass('mini-navbar') || body.hasClass('body-small')) {
+            // Hide menu in order to smoothly turn on when maximize menu
+            console.log('1');
+            sideMenu.hide();
+            // For smoothly turn on menu
+            setTimeout(function () {
+                sideMenu.fadeIn(400);
+            }, 200);
+        } else if (body.hasClass('fixed-sidebar')) {
+            console.log('2');
+            sideMenu.hide();
+            setTimeout(
+                function () {
+                    sideMenu.fadeIn(400);
+                }, 100);
+        } else {
+            // Remove all inline style from jquery fadeIn  to reset menu state
+            sideMenu.removeAttr('style');
+        }
+    },
 
     'click #btnConnect' () {
         // loading button
