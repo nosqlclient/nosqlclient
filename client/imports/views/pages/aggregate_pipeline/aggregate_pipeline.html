@@ -9,6 +9,11 @@
                             <h5>Drag stages between list to re-order
                             </h5>
                             <div class="ibox-tools">
+                                <button id="btnAggregateHistory" type="button"
+                                        style="margin-right: 5px;"
+                                        class="btn btn-sm btn-primary ladda-button" data-style="contract">
+                                    History
+                                </button>
                                 <button id="btnExecuteAggregatePipeline" type="button"
                                         class="btn btn-sm btn-primary ladda-button" data-style="contract">
                                     Execute
@@ -68,6 +73,11 @@
                                     <ul class="sortable-list agile-list col-lg-11" id="stages">
                                     </ul>
                                 </div>
+
+                                <ul id="resultTabs" class="nav nav-tabs">
+                                </ul>
+                                <div id="resultTabContents" class="tab-content">
+                                </div>
                             </form>
                         </div>
                     </div>
@@ -75,6 +85,6 @@
             </div>
         </div>
 
-        {{> aggregateResultModal}}
+        {{> aggregateHistories}}
     {{/if}}
 </template>
