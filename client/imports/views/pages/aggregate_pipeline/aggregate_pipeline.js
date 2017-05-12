@@ -4,7 +4,6 @@ import {Session} from "meteor/session";
 import {FlowRouter} from "meteor/kadira:flow-router";
 import Helper from "/client/imports/helper";
 import {setResult} from "./aggregate_result_modal/aggregate_result_modal";
-
 import "./aggregate_pipeline.html";
 
 const toastr = require('toastr');
@@ -27,18 +26,24 @@ const createPipeline = function (stageListElements) {
         const liElement = $(this);
         const queryName = liElement.text().split(' ')[0].trim();
         if (liElement.find('[id^=inputNumberStage]').length != 0) {
+            // number values
             stage[queryName] = parseInt(liElement.find('[id^=inputNumberStage]').val());
-        } else if (liElement.find('[id^=wrapper]').data('editor')) {
+        }
+        else if (liElement.find('[id^=wrapper]').data('editor')) {
+            // codemirror values
             let jsonValue = liElement.find('[id^=wrapper]').data('editor').getValue();
-            jsonValue = Helper.convertAndCheckJSON(jsonValue);
-            if (jsonValue["ERROR"]) {
-                throw queryName + " error: " + jsonValue["ERROR"];
+            if (!liElement.hasClass('$unwind') || (liElement.hasClass('$unwind') && jsonValue.indexOf(':') !== -1)) {
+                jsonValue = Helper.convertAndCheckJSON(jsonValue);
+                if (jsonValue["ERROR"]) throw queryName + " error: " + jsonValue["ERROR"];
             }
+
             stage[queryName] = jsonValue;
         }
         else if (liElement.find('[id^=txtStringStage]').length != 0) {
+            // string values
             stage[queryName] = liElement.find('[id^=txtStringStage]').val();
-        } else {
+        }
+        else {
             throw queryName;
         }
 
@@ -83,7 +88,7 @@ Template.aggregatePipeline.events({
             return;
         }
 
-        if (stages.length == 0) {
+        if (stages.length === 0) {
             toastr.warning('At least one stage is required !');
             return;
         }
@@ -121,7 +126,7 @@ Template.aggregatePipeline.events({
         let query = cmb.chosen().val();
         if (query) {
             query = '$' + query;
-            let liElement = '<li class="success-element" id="stage' + stageNumbers + '">' + query + '<div id="wrapper' + stageNumbers + '" class="agile-detail">' +
+            let liElement = '<li class="success-element ' + query + '" id="stage' + stageNumbers + '">' + query + '<div id="wrapper' + stageNumbers + '" class="agile-detail">' +
                 '<a id="remove-stage-element" href="#" data-number="' + stageNumbers + '" class="pull-right btn btn-xs btn-white"><i class="fa fa-remove"></i> Remove</a>';
 
             let stringInput = '<input type="text" class="form-control" id="txtStringStage' + stageNumbers + '"/>';
