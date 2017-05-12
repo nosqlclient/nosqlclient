@@ -10,6 +10,8 @@ import "./top_navbar.html";
 
 const toastr = require('toastr');
 const Ladda = require('ladda');
+const packageJson = require('/package.json');
+
 require('datatables.net')(window, $);
 require('datatables.net-buttons')(window, $);
 require('datatables.net-responsive')(window, $);
@@ -49,7 +51,7 @@ const init = function () {
         }
     });
 
-    $("body").addClass('fixed-sidebar');
+    $('#versionText').html(packageJson.version);
 };
 
 const populateSwitchDatabaseTable = function (data) {
@@ -79,11 +81,9 @@ Template.topNavbar.events({
     'click #btnProceedImportExport'(e) {
         e.preventDefault();
         let laddaButton = Ladda.create(document.querySelector('#btnProceedImportExport'));
-        let isImport = $('#importExportMongoclientTitle').text() == 'Import Mongoclient Data';
         let importInput = $('#inputImportBackupFile');
-        let exportInput = $('#inputExportBackupDir');
 
-        if (isImport && importInput.val()) {
+        if (importInput.val()) {
             laddaButton.start();
             loadFile(null, importInput, function (val) {
                 Meteor.call('importMongoclient', val, function (err) {
@@ -98,20 +98,6 @@ Template.topNavbar.events({
                 });
             }, true);
         }
-        else if (!isImport && exportInput.val()) {
-            laddaButton.start();
-            Meteor.call('exportMongoclient', exportInput.val(), function (err, path) {
-                if (err) {
-                    toastr.error("Couldn't export: " + err.message);
-                } else {
-                    toastr.success("Successfully exported to " + path.result);
-                    $('#importExportMongoclientModal').modal('hide');
-                }
-
-                Ladda.stopAll();
-            });
-        }
-
     },
 
     'change .filestyle'(e){
@@ -132,14 +118,7 @@ Template.topNavbar.events({
 
     'click #btnExportMongoclient' (e) {
         e.preventDefault();
-        let icon = $('#importExportMongoclientIcon');
-        $('#importExportMongoclientTitle').text('Export Mongoclient Data');
-        icon.removeClass('fa-download');
-        icon.addClass('fa-upload');
-        $('#btnProceedImportExport').text('Export');
-        $('#frmImportMongoclient').hide();
-        $('#frmExportMongoclient').show();
-        $('#importExportMongoclientModal').modal('show');
+        window.open('exportMongoclient');
     },
 
     'click #btnImportMongoclient' (e) {
@@ -211,33 +190,35 @@ Template.topNavbar.events({
     },
 
     // Toggle left navigation
-    /*'click #navbar-minimalize' (event) {
-     event.preventDefault();
+    'click #navbar-minimalize' (event) {
+        event.preventDefault();
 
-     let body = $('body');
-     let sideMenu = $('#side-menu');
-     // Toggle special class
-     body.toggleClass("mini-navbar");
+        let body = $('body');
+        let sideMenu = $('#side-menu');
+        // Toggle special class
+        body.toggleClass("mini-navbar");
 
-     // Enable smoothly hide/show menu
-     if (!body.hasClass('mini-navbar') || body.hasClass('body-small')) {
-     // Hide menu in order to smoothly turn on when maximize menu
-     sideMenu.hide();
-     // For smoothly turn on menu
-     setTimeout(function () {
-     sideMenu.fadeIn(400);
-     }, 200);
-     } else if (body.hasClass('fixed-sidebar')) {
-     sideMenu.hide();
-     setTimeout(
-     function () {
-     sideMenu.fadeIn(400);
-     }, 100);
-     } else {
-     // Remove all inline style from jquery fadeIn  to reset menu state
-     sideMenu.removeAttr('style');
-     }
-     },*/
+        // Enable smoothly hide/show menu
+        if (!body.hasClass('mini-navbar') || body.hasClass('body-small')) {
+            // Hide menu in order to smoothly turn on when maximize menu
+            console.log('1');
+            sideMenu.hide();
+            // For smoothly turn on menu
+            setTimeout(function () {
+                sideMenu.fadeIn(400);
+            }, 200);
+        } else if (body.hasClass('fixed-sidebar')) {
+            console.log('2');
+            sideMenu.hide();
+            setTimeout(
+                function () {
+                    sideMenu.fadeIn(400);
+                }, 100);
+        } else {
+            // Remove all inline style from jquery fadeIn  to reset menu state
+            sideMenu.removeAttr('style');
+        }
+    },
 
     'click #btnConnect' () {
         // loading button

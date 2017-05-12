@@ -234,7 +234,6 @@ Template.mcShell.onRendered(function () {
     Meteor.call("connectToShell", Session.get(Helper.strSessionConnection), Meteor.default_connection._lastSessionId, (err, result) => {
         if (err || result.error) Helper.showMeteorFuncError(err, result, "Couldn't connect via shell");
         else addCommandToHistory(result);
-        console.log(result);
     });
 });
 

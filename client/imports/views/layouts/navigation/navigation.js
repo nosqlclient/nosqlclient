@@ -139,6 +139,16 @@ const showMongoBinaryInfo = function () {
 };
 
 Template.navigation.events({
+    'click .anchor-skin' (e){
+        const body = $('body');
+        const skin = e.currentTarget.id;
+        localStorage.setItem(Enums.LOCAL_STORAGE_KEYS.MONGOCLIENT_SKIN, skin);
+        body.removeClass('skin-1');
+        body.removeClass('skin-2');
+        body.removeClass('skin-3');
+        if (skin !== 'skin-default') body.addClass(skin);
+    },
+
     'click #anchorShell'(e) {
         e.preventDefault();
         let connection = Connections.findOne({_id: Session.get(Helper.strSessionConnection)});
@@ -242,22 +252,6 @@ Template.navigation.events({
 });
 
 Template.navigation.onRendered(function () {
-    $('.sidebar-collapse').slimScroll({
-        height: '100%',
-        railOpacity: 0.9
-    });
-    const nav = $('.navbar-static-side');
-    const pageWrapper = $('#page-wrapper');
-
-    nav.resizable();
-    nav.on('resize', function () {
-        if (!window.matchMedia('(max-width: 768px)').matches) {
-            pageWrapper.css('margin', '0 0 0 ' + nav.width() + 'px');
-        } else {
-            pageWrapper.css('margin', '0');
-        }
-    });
-
     const filterModal = $('#collectionFilterModal');
     filterModal.on('shown.bs.modal', function () {
         initializeFilterTable();
