@@ -5,12 +5,13 @@ import {FlowRouter} from "meteor/kadira:flow-router";
 import Helper from "/client/imports/helper";
 import {Connections} from "/lib/imports/collections/connections";
 import {connect, populateConnectionsTable} from "/client/imports/views/layouts/top_navbar/connections/connections";
-import Enums from "/lib/imports/enums";
 import "/client/imports/views/layouts/top_navbar/connections/connections";
 import "./top_navbar.html";
 
 const toastr = require('toastr');
 const Ladda = require('ladda');
+const packageJson = require('/package.json');
+
 require('datatables.net')(window, $);
 require('datatables.net-buttons')(window, $);
 require('datatables.net-responsive')(window, $);
@@ -49,6 +50,8 @@ const init = function () {
             $('#inputDatabaseNameToSwitch').val(table.row(this).data().name);
         }
     });
+
+    $('#versionText').html(packageJson.version);
 };
 
 const populateSwitchDatabaseTable = function (data) {
