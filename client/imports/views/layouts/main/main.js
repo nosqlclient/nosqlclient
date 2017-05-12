@@ -69,11 +69,7 @@ const doUIStuff = function () {
 
     nav.resizable();
     nav.on('resize', function () {
-        if (!window.matchMedia('(max-width: 768px)').matches) {
-            pageWrapper.css('margin', '0 0 0 ' + nav.width() + 'px');
-        } else {
-            pageWrapper.css('margin', '0');
-        }
+        pageWrapper.css('margin', '0 0 0 ' + nav.width() + 'px');
     });
 };
 
