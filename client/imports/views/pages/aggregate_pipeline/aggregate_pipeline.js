@@ -2,6 +2,14 @@ import {Template} from "meteor/templating";
 import {Meteor} from "meteor/meteor";
 import {Session} from "meteor/session";
 import {FlowRouter} from "meteor/kadira:flow-router";
+import {initAggregateHistories} from "./aggregate_histories/aggregate_histories";
+import Enums from "/lib/imports/enums";
+import {
+    clarifyTabID,
+    getResultTabContent,
+    setAllTabsInactive,
+    setResultToEditors
+} from "/client/imports/views/pages/browse_collection/browse_collection";
 import Helper from "/client/imports/helper";
 import "./aggregate_pipeline.html";
 
@@ -13,12 +21,67 @@ const Ladda = require('ladda');
  */
 let stageNumbers = 0;
 
+export const renderQuery = function (query) {
+    if (!query || !query.queryInfo || !query.queryParams) return;
+
+    $("#stages").empty();
+    stageNumbers = 0;
+    $("#cmbCollections").val(query.queryInfo).trigger('chosen:updated');
+    for (let stage of query.queryParams) {
+        addStageElement(Object.keys(stage)[0], stage[Object.keys(stage)[0]]);
+    }
+};
+
+const setAggregateResult = function (result, selectedCollection, pipeline) {
+    const jsonEditor = $('#divActiveJsonEditor');
+
+    if (jsonEditor.css('display') == 'none') {
+        // there's only one tab, set results
+        jsonEditor.show('slow');
+        setResultToEditors(1, result, pipeline, selectedCollection);
+    }
+    else {
+        const resultTabs = $('#resultTabs');
+
+        // open a new tab
+        const tabID = clarifyTabID(Helper.strSessionUsedTabIDsAggregate);
+        const tabContent = getResultTabContent(tabID, 'Jsoneditor');
+        const tabTitle = selectedCollection + ' - ' + pipeline.length + ' stages';
+        setAllTabsInactive();
+
+        // set tab href
+        resultTabs.append(
+            $('<li><a href="#tab-' + tabID + '" data-toggle="tab"><i class="fa fa-book"></i>' + tabTitle +
+                '<button class="close" type="button" title="Close">×</button></a></li>'));
+
+        // set tab content
+        $('#resultTabContents').append(tabContent);
+
+        // show last tab
+        const lastTab = resultTabs.find('a:last');
+        lastTab.tab('show');
+
+        setResultToEditors(tabID, result, pipeline, selectedCollection);
+    }
+
+    addPipelineToHistory(selectedCollection, pipeline);
+};
+
+const addPipelineToHistory = function (collection, pipeline) {
+    let oldOnes = localStorage.getItem(Enums.LOCAL_STORAGE_KEYS.AGGREGATE_COMMAND_HISTORY) || "[]";
+    if (oldOnes) oldOnes = JSON.parse(oldOnes);
+    if (oldOnes.length >= 20) oldOnes.splice(0, oldOnes.length - 19);
+
+    oldOnes.push({pipeline: pipeline, collection: collection, date: new Date()});
+    localStorage.setItem(Enums.LOCAL_STORAGE_KEYS.AGGREGATE_COMMAND_HISTORY, JSON.stringify(oldOnes));
+};
+
 const init = function () {
-    const resultTabs = $('#aggregateResultTabs');
+    const resultTabs = $('#resultTabs');
     resultTabs.on('show.bs.tab', function (e) {
         const query = $($(e.target).attr('href')).data('query');
         if (query) {
-            //renderQuery(query);
+            renderQuery(query);
         }
     });
 
@@ -27,10 +90,93 @@ const init = function () {
         $(this).parents('li').remove();
         $($(this).parents('a').attr('href')).remove();
     });
+
+    $('#aggregateHistoriesModal').on('shown.bs.modal', function () {
+        initAggregateHistories();
+    });
+
+    $.contextMenu({
+        selector: "#resultTabs li",
+        items: {
+            close_others: {
+                name: "Close Others", icon: "fa-times-circle", callback: function () {
+                    let tabId = $(this).children('a').attr('href');
+                    let resultTabsLi = $('#resultTabs').find('li');
+                    resultTabsLi.each(function (idx, li) {
+                        let select = $(li);
+                        if (select.children('a').attr('href') !== tabId) {
+                            $(select.children('a').attr('href')).remove();
+                            select.remove();
+                        }
+                    });
+                }
+            },
+            close_all: {
+                name: "Close All Tabs", icon: "fa-times", callback: function () {
+                    let resultTabs = $('#resultTabs').find('li');
+                    resultTabs.each(function (idx, li) {
+                        let select = $(li);
+                        $(select.children('a').attr('href')).remove();
+                        select.remove();
+                    });
+                }
+            }
+        }
+    });
 };
 
 const initCodeMirrorStage = function () {
     Helper.initializeCodeMirror($('#wrapper' + stageNumbers), 'txtObjectStage' + stageNumbers, false, 50);
+};
+
+const addStageElement = function (query, val) {
+    const cmb = $("#cmbStageQueries");
+    query = query || cmb.chosen().val();
+    if (query) {
+        query = (query.indexOf('$') !== -1 ? query : '$' + query);
+        let liElement = '<li class="success-element ' + query + '" id="stage' + stageNumbers + '">' + query + '<a id="remove-stage-element" href="#" data-number="' + stageNumbers + '" class="pull-right btn btn-xs btn-white"><i class="fa fa-remove"></i> Remove</a><div id="wrapper' + stageNumbers + '" class="agile-detail">';
+
+        let stringInput = '<input type="text" class="form-control" id="txtStringStage' + stageNumbers + '"/>';
+        let numberInput = '<input id="inputNumberStage' + stageNumbers + '" min="0" type="number" class="form-control">';
+        let initCodeMirror, isNumber;
+        switch (query) {
+            case '$limit':
+                liElement += numberInput;
+                isNumber = true;
+                break;
+            case '$skip':
+                liElement += numberInput;
+                isNumber = true;
+                break;
+            case '$out':
+                liElement += stringInput;
+                break;
+            case '$sortByCount':
+                liElement += stringInput;
+                break;
+            case '$count':
+                liElement += stringInput;
+                break;
+            default:
+                initCodeMirror = true;
+                liElement += '<textarea id="txtObjectStage' + stageNumbers + '" class="form-control"></textarea>';
+                break;
+        }
+
+        liElement += '</div> </li>';
+        $('#stages').append(liElement);
+        if (initCodeMirror) initCodeMirrorStage();
+
+        cmb.val('').trigger('chosen:updated');
+
+        if (val) {
+            if (initCodeMirror) Helper.setCodeMirrorValue($('#wrapper' + stageNumbers), JSON.stringify(val).replace(/^"(.*)"$/, '$1'), $('#txtObjectStage' + stageNumbers));
+            else if (isNumber) $('#inputNumberStage' + stageNumbers).val(val);
+            else $('#txtStringStage' + stageNumbers).val(val.replace(/^"(.*)"$/, '$1'));
+        }
+
+        stageNumbers++;
+    }
 };
 
 const createPipeline = function (stageListElements) {
@@ -61,7 +207,6 @@ const createPipeline = function (stageListElements) {
         else {
             throw queryName;
         }
-
         pipeline.push(stage);
     });
 
@@ -92,6 +237,10 @@ Template.aggregatePipeline.onRendered(function () {
 });
 
 Template.aggregatePipeline.events({
+    'click #btnAggregateHistory'(){
+        $('#aggregateHistoriesModal').modal('show');
+    },
+
     'click #btnExecuteAggregatePipeline' (e) {
         e.preventDefault();
 
@@ -125,8 +274,7 @@ Template.aggregatePipeline.events({
                     Helper.showMeteorFuncError(err, result, "Couldn't execute ");
                 }
                 else {
-
-
+                    setAggregateResult(result.result, selectedCollection, pipeline);
                     //setResult(result.result);
                     //$('#aggregateResultModal').modal('show');
                 }
@@ -138,47 +286,7 @@ Template.aggregatePipeline.events({
     },
 
     'change #cmbStageQueries'() {
-        const cmb = $("#cmbStageQueries");
-        let query = cmb.chosen().val();
-        if (query) {
-            query = '$' + query;
-            let liElement = '<li class="success-element ' + query + '" id="stage' + stageNumbers + '">' + query + '<a id="remove-stage-element" href="#" data-number="' + stageNumbers + '" class="pull-right btn btn-xs btn-white"><i class="fa fa-remove"></i> Remove</a><div id="wrapper' + stageNumbers + '" class="agile-detail">';
-
-            let stringInput = '<input type="text" class="form-control" id="txtStringStage' + stageNumbers + '"/>';
-            let numberInput = '<input id="inputNumberStage' + stageNumbers + '" min="0" type="number" class="form-control">';
-            let initCodeMirror;
-            switch (query) {
-                case '$limit':
-                    liElement += numberInput;
-                    break;
-                case '$skip':
-                    liElement += numberInput;
-                    break;
-                case '$out':
-                    liElement += stringInput;
-                    break;
-                case '$sortByCount':
-                    liElement += stringInput;
-                    break;
-                case '$count':
-                    liElement += stringInput;
-                    break;
-                default:
-                    initCodeMirror = true;
-                    liElement += '<textarea id="txtObjectStage' + stageNumbers + '" class="form-control"></textarea>';
-                    break;
-            }
-
-            liElement += '</div> </li>';
-            $('#stages').append(liElement);
-
-            if (initCodeMirror) {
-                initCodeMirrorStage();
-            }
-
-            cmb.val('').trigger('chosen:updated');
-            stageNumbers++;
-        }
+        addStageElement();
     },
 
     'click #remove-stage-element' (e) {

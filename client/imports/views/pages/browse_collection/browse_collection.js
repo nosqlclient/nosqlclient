@@ -39,11 +39,174 @@ import "/client/imports/views/query_templates/collection/update_one/update_one";
 import "/client/imports/views/query_templates/collection/group/group";
 import "../../query_templates/collection/find/query_wizard/query_wizard";
 import "./browse_collection.html";
-
 const JSONEditor = require('jsoneditor');
+
 const toastr = require('toastr');
 const Ladda = require('ladda');
 require('jquery-contextmenu');
+
+export const initExecuteQuery = function () {
+    // loading button
+    Ladda.create(document.querySelector('#btnExecuteQuery')).start();
+};
+
+export const setQueryResult = function (result, queryInfo, queryParams, saveHistory) {
+    const jsonEditor = $('#divActiveJsonEditor');
+    const aceEditor = $('#divActiveAceEditor');
+    const settings = Settings.findOne();
+
+    if (jsonEditor.css('display') == 'none' && aceEditor.css('display') == 'none') {
+        // there's only one tab, set results
+        if (settings.defaultResultView == 'Jsoneditor') {
+            jsonEditor.show('slow');
+        }
+        else {
+            aceEditor.show('slow');
+        }
+        setResultToEditors(1, result, queryParams, queryInfo);
+    }
+    else {
+        // close all if setting for single tab is enabled
+        const resultTabs = $('#resultTabs');
+        if (settings.singleTabResultSets) {
+            resultTabs.find('li').each(function (idx, li) {
+                let select = $(li);
+                $(select.children('a').attr('href')).remove();
+                select.remove();
+            });
+
+            $('#divBrowseCollectionFooter').hide();
+            $('#divBrowseCollectionFindFooter').hide();
+        }
+
+        // open a new tab
+        const tabID = clarifyTabID();
+        const tabContent = getResultTabContent(tabID, settings.defaultResultView);
+        const tabTitle = queryInfo + " - " + Session.get(Helper.strSessionSelectedCollection);
+        setAllTabsInactive();
+
+        // set tab href
+        resultTabs.append(
+            $('<li><a href="#tab-' + tabID + '" data-toggle="tab"><i class="fa fa-book"></i>' + tabTitle +
+                '<button class="close" type="button" title="Close">×</button></a></li>'));
+
+        // set tab content
+        $('#resultTabContents').append(tabContent);
+
+        // show last tab
+        const lastTab = resultTabs.find('a:last');
+        lastTab.tab('show');
+
+        setResultToEditors(tabID, result, queryParams, queryInfo);
+    }
+
+    if (saveHistory) saveQueryHistory(queryInfo, queryParams);
+
+};
+
+export const clarifyTabID = function (sessionKey = Helper.strSessionUsedTabIDs) {
+    let result = 1;
+    let tabIDArray = Session.get(sessionKey);
+    if (tabIDArray == undefined || tabIDArray.length == 0) {
+        tabIDArray = [result];
+        Session.set(sessionKey, tabIDArray);
+        return result;
+    }
+
+    result = tabIDArray[tabIDArray.length - 1] + 1;
+
+    tabIDArray.push(result);
+    Session.set(sessionKey, tabIDArray);
+    return result;
+};
+
+export const setAllTabsInactive = function () {
+    $('#resultTabContents').each(function () {
+        const otherTab = $(this);
+        otherTab.removeClass('active');
+        if (otherTab.find('#divActiveJsonEditor').length != 0) {
+            // set all tabs different IDs to prevent setting result to existing editor.
+            const uniqueID = new Date().getTime();
+            otherTab.find('#divActiveJsonEditor').attr('id', 'divActiveJsonEditor-' + uniqueID);
+            otherTab.find('#activeJsonEditor').attr('id', 'activeJsonEditor-' + uniqueID);
+            otherTab.find('#divActiveAceEditor').attr('id', 'divActiveAceEditor-' + uniqueID);
+            otherTab.find('#activeAceEditor').attr('id', 'activeAceEditor-' + uniqueID);
+        }
+    });
+};
+
+export const setResultToEditors = function (tabID, result, queryParams, queryInfo) {
+    // set json editor
+    getEditor(tabID).set(result);
+
+    // set ace
+    AceEditor.instance('activeAceEditor', {
+        mode: 'javascript',
+        theme: 'dawn'
+    }, function (editor) {
+        editor.$blockScrolling = Infinity;
+        editor.setOptions({
+            fontSize: '12pt',
+            showPrintMargin: false
+        });
+        editor.setValue(JSON.stringify(result, null, '\t'), -1);
+    });
+
+    const activeTab = $('#tab-' + tabID);
+
+    // cache query data
+    activeTab.data('query', {
+        queryInfo: queryInfo,
+        queryParams: queryParams
+    });
+
+    // cache find data for save button
+    if (queryInfo === 'find') {
+        activeTab.data('findData', result);
+    }
+};
+
+export const getResultTabContent = function (tabID, defaultView) {
+    const jsonEditorHtml = '<div class="tab-pane fade in active" id="tab-' + tabID + '">' +
+        '<div id="divActiveJsonEditor" class="form-group"> ' +
+        '<div id="activeJsonEditor" style="width: 100%;height:500px" class="col-lg-12"> ' +
+        '</div> </div> ' +
+        '<div id="divActiveAceEditor" class="form-group" style="display: none"> ' +
+        '<div class="col-lg-12"> ' +
+        '<pre id="activeAceEditor" style="height: 500px"></pre> ' +
+        '</div> </div> </div>';
+
+    const aceEditorHtml = '<div class="tab-pane fade in active" id="tab-' + tabID + '">' +
+        '<div id="divActiveJsonEditor" class="form-group" style="display:none;"> ' +
+        '<div id="activeJsonEditor" style="width: 100%;height:500px" class="col-lg-12"> ' +
+        '</div> </div> ' +
+        '<div id="divActiveAceEditor" class="form-group"> ' +
+        '<div class="col-lg-12"> ' +
+        '<pre id="activeAceEditor" style="height: 500px"></pre> ' +
+        '</div> </div> </div>';
+
+    const whichIsDisplayed = getWhichResultViewShowing();
+    let result;
+
+    if (whichIsDisplayed === 'none') {
+        let defaultIsAce = (defaultView !== 'Jsoneditor');
+        if (!defaultIsAce) {
+            result = jsonEditorHtml;
+        } else {
+            result = aceEditorHtml;
+        }
+    }
+    else {
+        if (whichIsDisplayed === 'jsonEditor') {
+            result = jsonEditorHtml;
+        }
+        else {
+            result = aceEditorHtml;
+        }
+    }
+
+    return result;
+};
 
 const init = function () {
     let cmb = $('#cmbQueries');
@@ -148,6 +311,7 @@ const init = function () {
     clearQueryIfAdmin();
 };
 
+
 const clearQueryIfAdmin = function () {
     $.each(Enums.ADMIN_QUERY_TYPES, function (key, value) {
         if (value === Session.get(Helper.strSessionSelectedQuery)) {
@@ -155,65 +319,6 @@ const clearQueryIfAdmin = function () {
             Session.set(Helper.strSessionSelectedOptions, null);
         }
     });
-};
-
-export const initExecuteQuery = function () {
-    // loading button
-    Ladda.create(document.querySelector('#btnExecuteQuery')).start();
-};
-
-export const setQueryResult = function (result, queryInfo, queryParams, saveHistory) {
-    const jsonEditor = $('#divActiveJsonEditor');
-    const aceEditor = $('#divActiveAceEditor');
-    const settings = Settings.findOne();
-
-    if (jsonEditor.css('display') == 'none' && aceEditor.css('display') == 'none') {
-        // there's only one tab, set results
-        if (settings.defaultResultView == 'Jsoneditor') {
-            jsonEditor.show('slow');
-        }
-        else {
-            aceEditor.show('slow');
-        }
-        setResultToEditors(1, result, queryParams, queryInfo);
-    }
-    else {
-        // close all if setting for single tab is enabled
-        const resultTabs = $('#resultTabs');
-        if (settings.singleTabResultSets) {
-            resultTabs.find('li').each(function (idx, li) {
-                let select = $(li);
-                $(select.children('a').attr('href')).remove();
-                select.remove();
-            });
-
-            $('#divBrowseCollectionFooter').hide();
-            $('#divBrowseCollectionFindFooter').hide();
-        }
-
-        // open a new tab
-        const tabID = clarifyTabID();
-        const tabContent = getResultTabContent(tabID, settings.defaultResultView, queryInfo);
-        const tabTitle = queryInfo + " - " + Session.get(Helper.strSessionSelectedCollection);
-        setAllTabsInactive();
-
-        // set tab href
-        resultTabs.append(
-            $('<li><a href="#tab-' + tabID + '" data-toggle="tab"><i class="fa fa-book"></i>' + tabTitle +
-                '<button class="close" type="button" title="Close">×</button></a></li>'));
-
-        // set tab content
-        $('#resultTabContents').append(tabContent);
-
-        // show last tab
-        const lastTab = resultTabs.find('a:last');
-        lastTab.tab('show');
-
-        setResultToEditors(tabID, result, queryParams, queryInfo);
-    }
-
-    if (saveHistory) saveQueryHistory(queryInfo, queryParams);
-
 };
 
 const getWhichResultViewShowing = function () {
@@ -248,111 +353,6 @@ const saveQueryHistory = function (queryInfo, queryParams) {
         params: JSON.stringify(queryParams),
         date: new Date()
     });
-};
-
-
-const setResultToEditors = function (tabID, result, queryParams, queryInfo) {
-    // set json editor
-    getEditor(tabID).set(result);
-
-    // set ace
-    AceEditor.instance('activeAceEditor', {
-        mode: 'javascript',
-        theme: 'dawn'
-    }, function (editor) {
-        editor.$blockScrolling = Infinity;
-        editor.setOptions({
-            fontSize: '12pt',
-            showPrintMargin: false
-        });
-        editor.setValue(JSON.stringify(result, null, '\t'), -1);
-    });
-
-    const activeTab = $('#tab-' + tabID);
-
-    // cache query data
-    activeTab.data('query', {
-        queryInfo: queryInfo,
-        queryParams: queryParams
-    });
-
-    // cache find data for save button
-    if (queryInfo === 'find') {
-        activeTab.data('findData', result);
-    }
-};
-
-const clarifyTabID = function () {
-    let result = 1;
-    let tabIDArray = Session.get(Helper.strSessionUsedTabIDs);
-    if (tabIDArray == undefined || tabIDArray.length == 0) {
-        tabIDArray = [result];
-        Session.set(Helper.strSessionUsedTabIDs, tabIDArray);
-        return result;
-    }
-
-    result = tabIDArray[tabIDArray.length - 1] + 1;
-
-    tabIDArray.push(result);
-    Session.set(Helper.strSessionUsedTabIDs, tabIDArray);
-    return result;
-};
-
-const setAllTabsInactive = function () {
-    $('#resultTabContents').each(function () {
-        const otherTab = $(this);
-        otherTab.removeClass('active');
-        if (otherTab.find('#divActiveJsonEditor').length != 0) {
-            // set all tabs different IDs to prevent setting result to existing editor.
-            const uniqueID = new Date().getTime();
-            otherTab.find('#divActiveJsonEditor').attr('id', 'divActiveJsonEditor-' + uniqueID);
-            otherTab.find('#activeJsonEditor').attr('id', 'activeJsonEditor-' + uniqueID);
-            otherTab.find('#divActiveAceEditor').attr('id', 'divActiveAceEditor-' + uniqueID);
-            otherTab.find('#activeAceEditor').attr('id', 'activeAceEditor-' + uniqueID);
-        }
-    });
-};
-
-const getResultTabContent = function (tabID, defaultView) {
-    const jsonEditorHtml = '<div class="tab-pane fade in active" id="tab-' + tabID + '">' +
-        '<div id="divActiveJsonEditor" class="form-group"> ' +
-        '<div id="activeJsonEditor" style="width: 100%;height:500px" class="col-lg-12"> ' +
-        '</div> </div> ' +
-        '<div id="divActiveAceEditor" class="form-group" style="display: none"> ' +
-        '<div class="col-lg-12"> ' +
-        '<pre id="activeAceEditor" style="height: 500px"></pre> ' +
-        '</div> </div> </div>';
-
-    const aceEditorHtml = '<div class="tab-pane fade in active" id="tab-' + tabID + '">' +
-        '<div id="divActiveJsonEditor" class="form-group" style="display:none;"> ' +
-        '<div id="activeJsonEditor" style="width: 100%;height:500px" class="col-lg-12"> ' +
-        '</div> </div> ' +
-        '<div id="divActiveAceEditor" class="form-group"> ' +
-        '<div class="col-lg-12"> ' +
-        '<pre id="activeAceEditor" style="height: 500px"></pre> ' +
-        '</div> </div> </div>';
-
-    const whichIsDisplayed = getWhichResultViewShowing();
-    let result;
-
-    if (whichIsDisplayed === 'none') {
-        let defaultIsAce = (defaultView !== 'Jsoneditor');
-        if (!defaultIsAce) {
-            result = jsonEditorHtml;
-        } else {
-            result = aceEditorHtml;
-        }
-    }
-    else {
-        if (whichIsDisplayed === 'jsonEditor') {
-            result = jsonEditorHtml;
-        }
-        else {
-            result = aceEditorHtml;
-        }
-    }
-
-    return result;
 };
 
 const getEditor = function (tabID) {
