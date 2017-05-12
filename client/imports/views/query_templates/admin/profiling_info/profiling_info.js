@@ -14,7 +14,7 @@ Template.profilingInfo.onRendered(function () {
 
 Template.profilingInfo.executeQuery = function () {
     initExecuteQuery();
-    Meteor.call("profilingInfo", function (err, result) {
+    Meteor.call("profilingInfo",Meteor.default_connection._lastSessionId, function (err, result) {
         Helper.renderAfterQueryExecution(err, result, true);
     });
 };

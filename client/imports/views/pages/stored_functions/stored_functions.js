@@ -12,7 +12,7 @@ const Ladda = require('ladda');
 const init = function (isRefresh) {
     Ladda.create(document.querySelector('#btnAddNewStoredFunction')).start();
 
-    Meteor.call("find", "system.js", {}, {}, false, function (err, result) {
+    Meteor.call("find", "system.js", {}, {}, false, Meteor.default_connection._lastSessionId, function (err, result) {
         if (err || result.error) {
             Helper.showMeteorFuncError(err, result, "Couldn't fetch stored functions");
         }
@@ -62,16 +62,17 @@ Template.storedFunctions.onRendered(function () {
     let connections = this.subscribe('connections');
     let modal = $('#editStoredFunctionModal');
     modal.on('shown.bs.modal', function () {
-        Helper.initializeCodeMirror($('#divStoredFunction'), 'txtStoredFunction');
+        const divStoredFunction = $('#divStoredFunction');
+        Helper.initializeCodeMirror(divStoredFunction, 'txtStoredFunction');
         if (modal.data('selected')) {
             const data = modal.data('selected');
             $('#storedFunctionModalTitle').html(data._id);
             $('#inputStoredFunctionName').val(data._id);
-            Helper.setCodeMirrorValue($('#divStoredFunction'), data.value.$code, $('#txtStoredFunction'))
+            Helper.setCodeMirrorValue(divStoredFunction, data.value.$code, $('#txtStoredFunction'))
         } else {
             $('#storedFunctionModalTitle').html('Add Stored Function');
             $('#inputStoredFunctionName').val('');
-            Helper.setCodeMirrorValue($('#divStoredFunction'), '', $('#txtStoredFunction'))
+            Helper.setCodeMirrorValue(divStoredFunction, '', $('#txtStoredFunction'))
         }
     });
 

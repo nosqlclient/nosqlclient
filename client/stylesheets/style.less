@@ -1,0 +1,68 @@
+/*
+ *
+ *   INSPINIA - Responsive Admin Theme
+ *   Meteor version
+ *   version 2.7.1
+ *
+*/
+
+// Google Fonts
+@import url("https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700");
+
+// Variables, Mixins
+@import "globals/variables.import.less";
+@import "globals/mixins.import.less";
+
+// INSPINIA Theme Elements
+@import "globals/typography.import.less";
+@import "globals/navigation.import.less";
+@import "globals/top_navigation.import.less";
+@import "globals/buttons.import.less";
+@import "globals/badgets_labels.import.less";
+@import "globals/elements.import.less";
+@import "globals/sidebar.import.less";
+@import "globals/base.import.less";
+@import "globals/pages.import.less";
+@import "globals/chat.import.less";
+@import "globals/metismenu.import.less";
+@import "globals/spinners.import.less";
+
+// Landing page
+@import "globals/landing.import.less";
+
+// RTL Support
+@import "globals/rtl.import.less";
+
+// For demo only - config box style
+@import "globals/theme-config.import.less";
+
+// INSPINIA Skins
+@import "globals/skins.import.less";
+@import "globals/md-skin.import.less";
+
+// Media query style
+@import "globals/media.import.less";
+
+// Custom style
+// Your custom style to override base style
+@import "globals/custom.import.less";
+
+
+
+// Clear layout on print mode
+@media print {
+  nav.navbar-static-side {
+    display: none;
+  }
+
+  body { overflow: visible !important; }
+
+  #page-wrapper {
+    margin: 0;
+  }
+}
+
+// Set height for main blaze element
+#__blaze-root {
+  height:100%
+}

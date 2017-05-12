@@ -4,6 +4,7 @@ import {Session} from "meteor/session";
 import {FlowRouter} from "meteor/kadira:flow-router";
 import Helper from "/client/imports/helper";
 import {connect, populateConnectionsTable} from "/client/imports/views/layouts/top_navbar/connections/connections";
+import Enums from "/lib/imports/enums";
 import "/client/imports/views/layouts/top_navbar/connections/connections";
 import "./top_navbar.html";
 
@@ -17,7 +18,27 @@ require('datatables.net-bs')(window, $);
 require('datatables.net-buttons-bs')(window, $);
 require('datatables.net-responsive-bs')(window, $);
 
+export const loadFile = function (currentVal, input, done, readAsString) {
+    let fileInput = input.siblings('.bootstrap-filestyle').children('input');
+    if (input[0].files.length == 0 && currentVal && fileInput.val()) {
+        done(currentVal);
+    }
+    else if (input[0].files.length != 0) {
+        const fileReader = new FileReader();
+        fileReader.onload = function (file) {
+            if (readAsString) done(file.target.result);
+            else done(new Uint8Array(file.target.result));
+        };
+
+        if (readAsString) fileReader.readAsText(input[0].files[0], "UTF-8");
+        else fileReader.readAsArrayBuffer(input[0].files[0]);
+    } else {
+        done([]);
+    }
+};
+
 const init = function () {
+    $(".filestyle").filestyle({});
     let selectorForSwitchDatabases = $('#tblSwitchDatabases');
     selectorForSwitchDatabases.find('tbody').on('click', 'tr', function () {
         let table = selectorForSwitchDatabases.DataTable();
@@ -27,8 +48,6 @@ const init = function () {
             $('#inputDatabaseNameToSwitch').val(table.row(this).data().name);
         }
     });
-
-    $("body").addClass('fixed-sidebar');
 };
 
 const populateSwitchDatabaseTable = function (data) {
@@ -66,14 +85,7 @@ Template.topNavbar.events({
 
     'click #btnExportMongoclient' (e) {
         e.preventDefault();
-        let icon = $('#importExportMongoclientIcon');
-        $('#importExportMongoclientTitle').text('Export Mongoclient Data');
-        icon.removeClass('fa-download');
-        icon.addClass('fa-upload');
-        $('#btnProceedImportExport').text('Export');
-        $('#frmImportMongoclient').hide();
-        $('#frmExportMongoclient').show();
-        $('#importExportMongoclientModal').modal('show');
+        Helper.warnDemoApp();
     },
 
     'click #btnImportMongoclient' (e) {
@@ -99,7 +111,7 @@ Template.topNavbar.events({
 
         Ladda.create(document.querySelector('#btnConnectSwitchedDatabase')).start();
 
-        Meteor.call('listDatabases', function (err, result) {
+        Meteor.call('listDatabases', Meteor.default_connection._lastSessionId, function (err, result) {
             if (err || result.error) {
                 Helper.showMeteorFuncError(err, result, "Couldn't fetch databases");
             }
@@ -139,33 +151,35 @@ Template.topNavbar.events({
     },
 
     // Toggle left navigation
-    /*'click #navbar-minimalize' (event) {
-     event.preventDefault();
+    'click #navbar-minimalize' (event) {
+        event.preventDefault();
 
-     let body = $('body');
-     let sideMenu = $('#side-menu');
-     // Toggle special class
-     body.toggleClass("mini-navbar");
+        let body = $('body');
+        let sideMenu = $('#side-menu');
+        // Toggle special class
+        body.toggleClass("mini-navbar");
 
-     // Enable smoothly hide/show menu
-     if (!body.hasClass('mini-navbar') || body.hasClass('body-small')) {
-     // Hide menu in order to smoothly turn on when maximize menu
-     sideMenu.hide();
-     // For smoothly turn on menu
-     setTimeout(function () {
-     sideMenu.fadeIn(400);
-     }, 200);
-     } else if (body.hasClass('fixed-sidebar')) {
-     sideMenu.hide();
-     setTimeout(
-     function () {
-     sideMenu.fadeIn(400);
-     }, 100);
-     } else {
-     // Remove all inline style from jquery fadeIn  to reset menu state
-     sideMenu.removeAttr('style');
-     }
-     },*/
+        // Enable smoothly hide/show menu
+        if (!body.hasClass('mini-navbar') || body.hasClass('body-small')) {
+            // Hide menu in order to smoothly turn on when maximize menu
+            console.log('1');
+            sideMenu.hide();
+            // For smoothly turn on menu
+            setTimeout(function () {
+                sideMenu.fadeIn(400);
+            }, 200);
+        } else if (body.hasClass('fixed-sidebar')) {
+            console.log('2');
+            sideMenu.hide();
+            setTimeout(
+                function () {
+                    sideMenu.fadeIn(400);
+                }, 100);
+        } else {
+            // Remove all inline style from jquery fadeIn  to reset menu state
+            sideMenu.removeAttr('style');
+        }
+    },
 
     'click #btnConnect' () {
         // loading button
@@ -176,7 +190,7 @@ Template.topNavbar.events({
     'click #btnDisconnect' (e) {
         e.preventDefault();
 
-        Meteor.call('disconnect');
+        Meteor.call('disconnect', Meteor.default_connection._lastSessionId);
         Helper.clearSessions();
 
         FlowRouter.go('/databaseStats');

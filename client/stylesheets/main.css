@@ -20,7 +20,7 @@ tr.selected {
     top: 0;
 }
 
-#btnManageRoles, #btnEditUser, #btnManageUsers, #btnExecuteAggregatePipeline, #btnExportQueryResult, #btnClearShell, #btnRefreshStoredFunctions {
+#btnManageRoles, #btnEditUser, #btnManageUsers, #btnExecuteAggregatePipeline, #btnExportQueryResult, #btnClearShell, #btnRefreshStoredFunctions, #btnShowShellHistories {
     margin-bottom: 0 !important;
 }
 

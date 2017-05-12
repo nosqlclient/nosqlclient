@@ -33,7 +33,7 @@ const initRules = function () {
     const cmbValidationLevel = $('#cmbValidationLevel');
 
     const connection = Connections.findOne({_id: Session.get(Helper.strSessionConnection)});
-    Meteor.call('listCollectionNames', connection.databaseName, function (err, result) {
+    Meteor.call('listCollectionNames', connection.databaseName, Meteor.default_connection._lastSessionId, function (err, result) {
         if (err || result.error) {
             Helper.showMeteorFuncError(err, result, "Couldn't fetch rules");
         }

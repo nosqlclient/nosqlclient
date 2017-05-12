@@ -19,7 +19,7 @@ export const prepareFormForView = function () {
         return;
     }
 
-    Meteor.call("indexInformation", selectedCollection, true, function (err, indexInformation) {
+    Meteor.call("indexInformation", selectedCollection, true, Meteor.default_connection._lastSessionId, function (err, indexInformation) {
         if (err || indexInformation.error) {
             Helper.showMeteorFuncError(err, indexInformation, "Couldn't fetch index information");
         }
@@ -137,9 +137,10 @@ const addFieldWeight = function (fieldName, val) {
 
 const prepareFieldWeights = function () {
     const divFieldWeight = $('.divFieldWeight:visible');
+    const divFieldSelector = $('.divField');
 
     //add weights for TEXT index fields
-    for (let divField of $('.divField')) {
+    for (let divField of divFieldSelector) {
         divField = $(divField);
         const fieldVal = divField.find('.cmbIndexTypes').val();
         const fieldName = divField.find('.txtFieldName').val();
@@ -163,7 +164,7 @@ const prepareFieldWeights = function () {
         const weightName = div.find('.txtFieldWeightName').val();
 
         let found = false;
-        for (let divField of $('.divField')) {
+        for (let divField of divFieldSelector) {
             divField = $(divField);
             const fieldName = divField.find('.txtFieldName').val();
             const fieldVal = divField.find('.cmbIndexTypes').val();

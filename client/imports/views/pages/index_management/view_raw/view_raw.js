@@ -18,7 +18,7 @@ export const initialize = function () {
     }
 
     Ladda.create(document.querySelector('#btnCloseRawViewModal')).start();
-    Meteor.call("indexInformation", selectedCollection, true, function (err, indexInformation) {
+    Meteor.call("indexInformation", selectedCollection, true, Meteor.default_connection._lastSessionId, function (err, indexInformation) {
         if (err || indexInformation.error) {
             Helper.showMeteorFuncError(err, indexInformation, "Couldn't fetch index information");
         }

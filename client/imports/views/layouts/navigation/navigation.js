@@ -6,6 +6,7 @@ import {Session} from "meteor/session";
 import {FlowRouter} from "meteor/kadira:flow-router";
 import {Connections} from "/lib/imports/collections/connections";
 import Helper from "/client/imports/helper";
+import Enums from "/lib/imports/enums";
 import {connect} from "/client/imports/views/layouts/top_navbar/connections/connections";
 import {initializeForm, resetForm} from "./add_collection/add_collection";
 import {resetForm as resetCappedForm} from "./convert_capped_collection/convert_to_capped";
@@ -13,6 +14,8 @@ import {resetForm as resetRenameForm} from "./rename_collection/rename_collectio
 import {resetForm as resetValidationRulesForm} from "./validation_rules/validation_rules";
 import {initializeFilterTable} from "./filter_collection/filter_collection";
 import "./navigation.html";
+import $ from "jquery";
+
 
 const toastr = require('toastr');
 
@@ -25,11 +28,7 @@ export const setFilterRegex = function (regex) {
 };
 
 const isFiltered = function () {
-    if (filterRegex.get() || excludedCollectionsByFilter.get().length !== 0) {
-        return true;
-    }
-
-    return false;
+    return filterRegex.get() || excludedCollectionsByFilter.get().length !== 0;
 };
 
 const dropAllCollections = function () {
@@ -74,7 +73,7 @@ const dropCollection = function () {
 };
 
 export const renderCollectionNames = function () {
-    Meteor.call('connect', Session.get(Helper.strSessionConnection), function (err, result) {
+    Meteor.call('connect', Session.get(Helper.strSessionConnection), Meteor.default_connection._lastSessionId, function (err, result) {
         if (err || result.error) {
             Helper.showMeteorFuncError(err, result, "Couldn't connect");
         }
@@ -99,7 +98,34 @@ export const renderCollectionNames = function () {
     });
 };
 
+const showMongoBinaryInfo = function () {
+    if (!localStorage.getItem(Enums.LOCAL_STORAGE_KEYS.MONGO_BINARY_INFO)) {
+        swal({
+            title: "Mongo Binary",
+            text: "Mongo executable to be used on shell and schema analyzer is configurable, you can change it from <b>Settings</b>",
+            type: "info",
+            html: true,
+            confirmButtonColor: "#18A689",
+            confirmButtonText: "Cool, don't show again!"
+        }, function (isConfirm) {
+            if (isConfirm) {
+                localStorage.setItem(Enums.LOCAL_STORAGE_KEYS.MONGO_BINARY_INFO, "true");
+            }
+        });
+    }
+};
+
 Template.navigation.events({
+    'click .anchor-skin' (e){
+        const body = $('body');
+        const skin = e.currentTarget.id;
+        localStorage.setItem(Enums.LOCAL_STORAGE_KEYS.MONGOCLIENT_SKIN, skin);
+        body.removeClass('skin-1');
+        body.removeClass('skin-2');
+        body.removeClass('skin-3');
+        if (skin !== 'skin-default') body.addClass(skin);
+    },
+
     'click #anchorShell'(e) {
         e.preventDefault();
         let connection = Connections.findOne({_id: Session.get(Helper.strSessionConnection)});
@@ -110,6 +136,11 @@ Template.navigation.events({
         }
 
         FlowRouter.go('/shell');
+        showMongoBinaryInfo();
+    },
+
+    'click #anchorSchemaAnalyzer'() {
+        showMongoBinaryInfo();
     },
 
     'click #anchorDatabaseDumpRestore'(e) {
@@ -186,22 +217,6 @@ Template.navigation.events({
 });
 
 Template.navigation.onRendered(function () {
-    $('.sidebar-collapse').slimScroll({
-        height: '100%',
-        railOpacity: 0.9
-    });
-    const nav = $('.navbar-static-side');
-    const pageWrapper = $('#page-wrapper');
-
-    nav.resizable();
-    nav.on('resize', function () {
-        if (!window.matchMedia('(max-width: 768px)').matches) {
-            pageWrapper.css('margin', '0 0 0 ' + nav.width() + 'px');
-        } else {
-            pageWrapper.css('margin', '0');
-        }
-    });
-
     const filterModal = $('#collectionFilterModal');
     filterModal.on('shown.bs.modal', function () {
         initializeFilterTable();
@@ -306,31 +321,6 @@ Template.navigation.onRendered(function () {
                                     toastr.warning('No collection selected !');
                                 }
                             }
-                        },
-
-                        drop_collection: {
-                            name: "Drop Collection",
-                            icon: "fa-trash",
-                            callback: function () {
-                                if ($(this) && $(this).context && $(this).context.innerText) {
-                                    const collectionName = $(this).context.innerText.substring(1).split(' ')[0];
-                                    swal({
-                                        title: "Are you sure?",
-                                        text: collectionName + " collection will be dropped, are you sure ?",
-                                        type: "warning",
-                                        showCancelButton: true,
-                                        confirmButtonColor: "#DD6B55",
-                                        confirmButtonText: "Yes, drop it!",
-                                        closeOnConfirm: true
-                                    }, function (isConfirm) {
-                                        if (isConfirm) {
-                                            dropCollection(collectionName);
-                                        }
-                                    });
-                                } else {
-                                    toastr.warning('No collection selected !');
-                                }
-                            }
                         }
                     }
                 },
@@ -366,6 +356,30 @@ Template.navigation.onRendered(function () {
                     icon: "fa-refresh",
                     callback: function () {
                         connect(true);
+                    }
+                },
+                drop_collection: {
+                    name: "Drop Collection",
+                    icon: "fa-trash",
+                    callback: function () {
+                        if ($(this) && $(this).context && $(this).context.innerText) {
+                            const collectionName = $(this).context.innerText.substring(1).split(' ')[0];
+                            swal({
+                                title: "Are you sure?",
+                                text: collectionName + " collection will be dropped, are you sure ?",
+                                type: "warning",
+                                showCancelButton: true,
+                                confirmButtonColor: "#DD6B55",
+                                confirmButtonText: "Yes, drop it!",
+                                closeOnConfirm: true
+                            }, function (isConfirm) {
+                                if (isConfirm) {
+                                    dropCollection(collectionName);
+                                }
+                            });
+                        } else {
+                            toastr.warning('No collection selected !');
+                        }
                     }
                 },
                 drop_collections: {

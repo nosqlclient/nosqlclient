@@ -15,7 +15,7 @@ Template.serverInfo.onRendered(function () {
 Template.serverInfo.executeQuery = function () {
     initExecuteQuery();
 
-    Meteor.call("serverInfo", function (err, result) {
+    Meteor.call("serverInfo",Meteor.default_connection._lastSessionId, function (err, result) {
         Helper.renderAfterQueryExecution(err, result, true);
     });
 };

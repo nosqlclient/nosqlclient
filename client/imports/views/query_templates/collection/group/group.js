@@ -6,7 +6,6 @@ import {Template} from "meteor/templating";
 import {Meteor} from "meteor/meteor";
 import {Session} from "meteor/session";
 import Helper from "/client/imports/helper";
-import Enums from "/lib/imports/enums";
 import {initExecuteQuery} from "/client/imports/views/pages/browse_collection/browse_collection";
 import "./group.html";
 
@@ -85,7 +84,7 @@ Template.group.executeQuery = function (historyParams) {
         command: command
     };
 
-    Meteor.call("group", selectedCollection, keys, condition, initial, reduce, finalize, command, function (err, result) {
+    Meteor.call("group", selectedCollection, keys, condition, initial, reduce, finalize, command, Meteor.default_connection._lastSessionId, function (err, result) {
         Helper.renderAfterQueryExecution(err, result, false, "group", params, (!historyParams));
     });
 };

@@ -1,6 +1,12 @@
 extends:
   eslint:recommended
 
+rules:
+  no-alert
+  camelcase
+  no-duplicate-imports
+  no-useless-constructor
+
 parserOptions:
   sourceType: module
 

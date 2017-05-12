@@ -3,6 +3,7 @@ import {Session} from "meteor/session";
 import Helper from "/client/imports/helper";
 import "./filter_collection.html";
 import {excludedCollectionsByFilter, filterRegex, setExcludedCollectionsByFilter, setFilterRegex} from "../navigation";
+import $ from "jquery";
 
 require('datatables.net')(window, $);
 require('datatables.net-buttons')(window, $);

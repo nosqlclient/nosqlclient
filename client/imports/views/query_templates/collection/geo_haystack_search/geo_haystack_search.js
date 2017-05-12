@@ -1,12 +1,12 @@
-import {Template} from 'meteor/templating';
-import {Meteor} from 'meteor/meteor';
-import {Session} from 'meteor/session';
-import Helper from '/client/imports/helper';
-import Enums from '/lib/imports/enums';
-import {initExecuteQuery} from '/client/imports/views/pages/browse_collection/browse_collection';
-import {getOptions} from '/client/imports/views/query_templates_options/geo_haystack_search_options/geo_haystack_search_options';
+import {Template} from "meteor/templating";
+import {Meteor} from "meteor/meteor";
+import {Session} from "meteor/session";
+import Helper from "/client/imports/helper";
+import Enums from "/lib/imports/enums";
+import {initExecuteQuery} from "/client/imports/views/pages/browse_collection/browse_collection";
+import {getOptions} from "/client/imports/views/query_templates_options/geo_haystack_search_options/geo_haystack_search_options";
 
-import './geo_haystack_search.html';
+import "./geo_haystack_search.html";
 
 const toastr = require('toastr');
 const Ladda = require('ladda');
@@ -58,7 +58,7 @@ Template.geoHaystackSearch.executeQuery = function (historyParams) {
         options: options
     };
 
-    Meteor.call("geoHaystackSearch", selectedCollection, xAxis, yAxis, options, function (err, result) {
+    Meteor.call("geoHaystackSearch", selectedCollection, xAxis, yAxis, options, Meteor.default_connection._lastSessionId, function (err, result) {
         Helper.renderAfterQueryExecution(err, result, false, "geoHaystackSearch", params, (!historyParams));
     });
 };

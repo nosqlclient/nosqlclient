@@ -5,6 +5,8 @@ import {Template} from "meteor/templating";
 import {Meteor} from "meteor/meteor";
 import {Session} from "meteor/session";
 import {FlowRouter} from "meteor/kadira:flow-router";
+import {initShellHistories} from "./shell_histories/shell_histories";
+import Enums from "/lib/imports/enums";
 import Helper from "/client/imports/helper";
 import ShellCommands from "/lib/imports/collections/shell";
 import "./mc_shell.html";
@@ -136,10 +138,9 @@ const initializeCommandCodeMirror = function () {
                 },
                 "Ctrl-Space": "autocomplete",
                 "Enter": function (cm) {
-                    Meteor.call("executeShellCommand", cm.getValue(), Session.get(Helper.strSessionConnection), (err) => {
-                        if (err) {
-                            Helper.showMeteorFuncError(err, null, "Couldn't execute shell command");
-                        }
+                    Meteor.call("executeShellCommand", cm.getValue(), Session.get(Helper.strSessionConnection), Meteor.default_connection._lastSessionId, (err) => {
+                        if (err) Helper.showMeteorFuncError(err, null, "Couldn't execute shell command");
+                        else addCommandToHistory(cm.getValue());
                     })
                 }
             },
@@ -160,8 +161,8 @@ const initializeCommandCodeMirror = function () {
             let regex = new RegExp('^' + curWord, 'i');
             return {
                 list: (!curWord ? list : list.filter(function (item) {
-                    return item.match(regex);
-                })),
+                        return item.match(regex);
+                    })),
                 from: CodeMirror.Pos(cursor.line, start),
                 to: CodeMirror.Pos(cursor.line, end)
             };
@@ -175,9 +176,13 @@ const initializeCommandCodeMirror = function () {
 };
 
 Template.mcShell.events({
-    'click #btnClearShell': function () {
+    'click #btnClearShell' () {
         Helper.setCodeMirrorValue($('#divShellResult'), '');
-        Meteor.call('clearShell');
+        Meteor.call('clearShell', Meteor.default_connection._lastSessionId);
+    },
+
+    'click #btnShowShellHistories' (){
+        $('#shellHistoriesModal').modal('show');
     }
 });
 
@@ -191,12 +196,19 @@ Template.mcShell.onRendered(function () {
     this.subscribe('connections');
     this.subscribe('shell_commands');
 
+    $('#shellHistoriesModal').on('shown.bs.modal', function () {
+        initShellHistories();
+    });
+
     let divResult = $('#divShellResult');
     let divCommand = $('#divShellCommand');
     Helper.initializeCodeMirror(divResult, 'txtShellResult', false, 600);
     divResult.data('editor').setOption("readOnly", true);
 
-    ShellCommands.find({connectionId: Session.get(Helper.strSessionConnection)}, {sort: {date: -1}}).observeChanges({
+    ShellCommands.find({
+        connectionId: Session.get(Helper.strSessionConnection),
+        sessionId: Meteor.default_connection._lastSessionId
+    }, {sort: {date: -1}}).observeChanges({
         added: function (id, fields) {
             let previousValue = Helper.getCodeMirrorValue(divResult);
             if (previousValue && !previousValue.endsWith('\n')) {
@@ -219,9 +231,17 @@ Template.mcShell.onRendered(function () {
 
     initializeCommandCodeMirror();
 
-    Meteor.call("connectToShell", Session.get(Helper.strSessionConnection), (err) => {
-        if (err) {
-            Helper.showMeteorFuncError(err, null, "Couldn't connect via shell");
-        }
+    Meteor.call("connectToShell", Session.get(Helper.strSessionConnection), Meteor.default_connection._lastSessionId, (err, result) => {
+        if (err || result.error) Helper.showMeteorFuncError(err, result, "Couldn't connect via shell");
+        else addCommandToHistory(result);
     });
 });
+
+const addCommandToHistory = function (command) {
+    let oldOnes = localStorage.getItem(Enums.LOCAL_STORAGE_KEYS.SHELL_COMMAND_HISTORY) || "[]";
+    if (oldOnes) oldOnes = JSON.parse(oldOnes);
+    if (oldOnes.length >= 20) oldOnes.splice(0, oldOnes.length - 19);
+
+    oldOnes.push({command: command, date: new Date()});
+    localStorage.setItem(Enums.LOCAL_STORAGE_KEYS.SHELL_COMMAND_HISTORY, JSON.stringify(oldOnes));
+};

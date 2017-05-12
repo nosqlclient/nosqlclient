@@ -17,7 +17,7 @@ const toastr = require('toastr');
 const Ladda = require('ladda');
 
 const proceedShowingMetadata = function (id, jsonEditor) {
-    Meteor.call('getFile', $('#txtBucketName').val(), id, function (err, result) {
+    Meteor.call('getFile', $('#txtBucketName').val(), id, Meteor.default_connection._lastSessionId, function (err, result) {
         if (err || result.error) {
             Helper.showMeteorFuncError(err, result, "Couldn't find file");
         }
@@ -53,7 +53,7 @@ export const initFilesInformation = function () {
         return;
     }
 
-    Meteor.call('getFileInfos', $('#txtBucketName').val(), selector, $('#txtFileFetchLimit').val(), function (err, result) {
+    Meteor.call('getFileInfos', $('#txtBucketName').val(), selector, $('#txtFileFetchLimit').val(), Meteor.default_connection._lastSessionId, function (err, result) {
             if (err || result.error) {
                 Helper.showMeteorFuncError(err, result, "Couldn't get file informations");
                 return;
@@ -145,7 +145,7 @@ Template.fileManagement.events({
         e.preventDefault();
         const fileRow = Session.get(Helper.strSessionSelectedFile);
         if (fileRow) {
-            window.open('download?fileId=' + fileRow._id + '&bucketName=' + $('#txtBucketName').val());
+            window.open('download?fileId=' + fileRow._id + '&bucketName=' + $('#txtBucketName').val() + '&sessionId=' + Meteor.default_connection._lastSessionId);
         }
     },
 

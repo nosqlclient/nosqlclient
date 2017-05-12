@@ -54,7 +54,7 @@ Template.aggregate.executeQuery = function (historyParams) {
         options: options
     };
 
-    Meteor.call("aggregate", selectedCollection, pipeline, options, function (err, result) {
+    Meteor.call("aggregate", selectedCollection, pipeline, options,Meteor.default_connection._lastSessionId, function (err, result) {
             Helper.renderAfterQueryExecution(err, result, false, "aggregate", params, (!historyParams));
         }
     );

@@ -12,7 +12,7 @@ import {parseUrl} from "./internal_methods";
 /**
  * Migrates 1.x version connections to 2.x
  */
-const migrateConnectionsIfExist = function () {
+export const migrateConnectionsIfExist = function () {
     let settings = Settings.findOne();
     if (settings.isMigrationDone) return;
 
@@ -96,6 +96,7 @@ const migrateSSHPart = function (oldConnection, connection) {
             host: oldConnection.sshAddress,
             port: oldConnection.sshPort,
             username: oldConnection.sshUser,
+            destinationPort: oldConnection.sshPort
         };
 
         if (oldConnection.sshPassword) connection.ssh.password = oldConnection.sshPassword;
@@ -117,7 +118,7 @@ function tryInjectDefaultConnection() {
     connection.connectionName = DEFAULT_CONNECTION_NAME;
 
     // delete existing connection after we parsed the new one
-    let existingConnection = Connections.findOne({ connectionName: DEFAULT_CONNECTION_NAME });
+    let existingConnection = Connections.findOne({connectionName: DEFAULT_CONNECTION_NAME});
     if (existingConnection) {
         Connections.remove(existingConnection._id);
         connection._id = existingConnection._id;
@@ -155,5 +156,5 @@ Meteor.startup(function () {
     ShellCommands.remove({});
     SchemaAnalyzeResult.remove({});
     migrateConnectionsIfExist();
-    tryInjectDefaultConnection();    
+    tryInjectDefaultConnection();
 });
