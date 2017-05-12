@@ -195,6 +195,9 @@ Template.topNavbar.events({
 
         let body = $('body');
         let sideMenu = $('#side-menu');
+        const nav = $('.navbar-static-side');
+        const pageWrapper = $('#page-wrapper');
+
         // Toggle special class
         body.toggleClass("mini-navbar");
 
@@ -210,14 +213,19 @@ Template.topNavbar.events({
         } else if (body.hasClass('fixed-sidebar')) {
             console.log('2');
             sideMenu.hide();
-            setTimeout(
-                function () {
-                    sideMenu.fadeIn(400);
-                }, 100);
+            setTimeout(function () {
+                sideMenu.fadeIn(400);
+            }, 100);
         } else {
             // Remove all inline style from jquery fadeIn  to reset menu state
             sideMenu.removeAttr('style');
         }
+
+        setTimeout(function () {
+            nav.removeAttr('style');
+            if (nav.css('display') === 'block') pageWrapper.css('margin', '0 0 0 ' + nav.width() + 'px');
+            if (nav.css('display') === 'none') pageWrapper.css('margin', '0');
+        }, 300);
     },
 
     'click #btnConnect' () {
