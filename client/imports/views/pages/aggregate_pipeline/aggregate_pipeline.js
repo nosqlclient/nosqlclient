@@ -3,7 +3,6 @@ import {Meteor} from "meteor/meteor";
 import {Session} from "meteor/session";
 import {FlowRouter} from "meteor/kadira:flow-router";
 import Helper from "/client/imports/helper";
-import {setResult} from "./aggregate_result_modal/aggregate_result_modal";
 import "./aggregate_pipeline.html";
 
 const toastr = require('toastr');
@@ -14,8 +13,24 @@ const Ladda = require('ladda');
  */
 let stageNumbers = 0;
 
+const init = function () {
+    const resultTabs = $('#aggregateResultTabs');
+    resultTabs.on('show.bs.tab', function (e) {
+        const query = $($(e.target).attr('href')).data('query');
+        if (query) {
+            //renderQuery(query);
+        }
+    });
+
+    // set onclose
+    resultTabs.on('click', '.close', function () {
+        $(this).parents('li').remove();
+        $($(this).parents('a').attr('href')).remove();
+    });
+};
+
 const initCodeMirrorStage = function () {
-    Helper.initializeCodeMirror($('#wrapper' + stageNumbers), 'txtObjectStage' + stageNumbers);
+    Helper.initializeCodeMirror($('#wrapper' + stageNumbers), 'txtObjectStage' + stageNumbers, false, 50);
 };
 
 const createPipeline = function (stageListElements) {
@@ -69,10 +84,9 @@ Template.aggregatePipeline.onRendered(function () {
             });
 
             $('#cmbStageQueries').chosen();
-
             stageNumbers = 0;
-
             Helper.initializeCollectionsCombobox();
+            init();
         }
     });
 });
@@ -111,8 +125,10 @@ Template.aggregatePipeline.events({
                     Helper.showMeteorFuncError(err, result, "Couldn't execute ");
                 }
                 else {
-                    setResult(result.result);
-                    $('#aggregateResultModal').modal('show');
+
+
+                    //setResult(result.result);
+                    //$('#aggregateResultModal').modal('show');
                 }
 
                 Ladda.stopAll();
@@ -126,8 +142,7 @@ Template.aggregatePipeline.events({
         let query = cmb.chosen().val();
         if (query) {
             query = '$' + query;
-            let liElement = '<li class="success-element ' + query + '" id="stage' + stageNumbers + '">' + query + '<div id="wrapper' + stageNumbers + '" class="agile-detail">' +
-                '<a id="remove-stage-element" href="#" data-number="' + stageNumbers + '" class="pull-right btn btn-xs btn-white"><i class="fa fa-remove"></i> Remove</a>';
+            let liElement = '<li class="success-element ' + query + '" id="stage' + stageNumbers + '">' + query + '<a id="remove-stage-element" href="#" data-number="' + stageNumbers + '" class="pull-right btn btn-xs btn-white"><i class="fa fa-remove"></i> Remove</a><div id="wrapper' + stageNumbers + '" class="agile-detail">';
 
             let stringInput = '<input type="text" class="form-control" id="txtStringStage' + stageNumbers + '"/>';
             let numberInput = '<input id="inputNumberStage' + stageNumbers + '" min="0" type="number" class="form-control">';

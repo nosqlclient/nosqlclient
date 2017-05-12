@@ -145,15 +145,14 @@ const init = function () {
         }
     });
 
-
     clearQueryIfAdmin();
 };
 
 const clearQueryIfAdmin = function () {
     $.each(Enums.ADMIN_QUERY_TYPES, function (key, value) {
-        if (value == Session.get(Helper.strSessionSelectedQuery)) {
-            Session.set(Helper.strSessionSelectedQuery, undefined);
-            Session.set(Helper.strSessionSelectedOptions, undefined);
+        if (value === Session.get(Helper.strSessionSelectedQuery)) {
+            Session.set(Helper.strSessionSelectedQuery, null);
+            Session.set(Helper.strSessionSelectedOptions, null);
         }
     });
 };
