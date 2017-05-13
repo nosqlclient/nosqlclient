@@ -1,5 +1,14 @@
 # History
 
+## 2.1.0, 13 May 2017
+- Fixed sidebar minimize button
+- Fixed SSH Tunneling
+- Added shell histories
+- Improved aggregation section, added aggregate histories
+- Added configurable mongo binary for shell and schema analyzer
+- Fixed messed up sessions for per connection
+- Added skins
+
 ## 2.0.0, 9 April 2017
 - Enterprise edition is finally here
 - More on docs - https://mongoclient.com/docs/

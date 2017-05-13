@@ -23,7 +23,7 @@ All documentation can be found in https://www.mongoclient.com/docs
 
 To install latest stable release:
 
-```docker pull mongoclient/mongoclient:2.0.0```
+```docker pull mongoclient/mongoclient:2.1.0```
 
 Then you can run it as a daemon:
 
@@ -38,9 +38,9 @@ To persist your connections and settings simply bind ```/data/db``` directory to
 
 ## Distributions
 
-* [Linux x64](https://github.com/mongoclient/mongoclient/releases/download/2.0.0/linux-portable-x64.zip)
-* [Windows x64](https://github.com/mongoclient/mongoclient/releases/download/2.0.0/windows-portable-x64.zip)
-* [OSx](https://github.com/mongoclient/mongoclient/releases/download/2.0.0/osx-portable.zip)
+* [Linux x64](https://github.com/mongoclient/mongoclient/releases/download/2.1.0/linux-portable-x64.zip)
+* [Windows x64](https://github.com/mongoclient/mongoclient/releases/download/2.1.0/windows-portable-x64.zip)
+* [OSx](https://github.com/mongoclient/mongoclient/releases/download/2.1.0/osx-portable.zip)
 * [More](https://mongoclient.com/docs/start.html)
 
 
