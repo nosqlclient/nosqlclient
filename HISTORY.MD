@@ -8,7 +8,6 @@
 - Added configurable mongo binary for shell and schema analyzer
 - Fixed messed up sessions for per connection
 - Added skins
-- https://mongoclient.com/docs/
 
 ## 2.0.0, 9 April 2017
 - Enterprise edition is finally here
