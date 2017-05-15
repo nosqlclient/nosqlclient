@@ -34,7 +34,7 @@ const fixHeight = function () {
 };
 
 const doUIStuff = function () {
-    let body = $("body");
+    const body = $("body");
 
     // Minimalize menu when screen is less than 768px
     $(window).bind("resize load", function () {
@@ -70,6 +70,14 @@ const doUIStuff = function () {
     nav.resizable();
     nav.on('resize', function () {
         pageWrapper.css('margin', '0 0 0 ' + nav.width() + 'px');
+    });
+
+    // Hack to enable multiple modals by making sure the .modal-open class
+    // is set to the <body> when there is at least one modal open left
+    body.on('hidden.bs.modal', function () {
+        if ($('.modal.in').length > 0) {
+            body.addClass('modal-open');
+        }
     });
 };
 
