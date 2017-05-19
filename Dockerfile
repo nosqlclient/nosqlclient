@@ -1,5 +1,4 @@
 FROM debian:jessie
-MAINTAINER Sercan Özdemir
 
 RUN groupadd -r node && useradd -m -g node node
 
