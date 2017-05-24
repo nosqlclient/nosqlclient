@@ -23,6 +23,7 @@ const proceedSavingSettings = function (mongoBinary) {
     settings.dumpPath = $('#inputDumpPath').val();
     settings.mongoBinaryName = $('#inputMongoExecutable').siblings('.bootstrap-filestyle').children('input').val() || 'mongo';
     settings.singleTabResultSets = $('#divUseSingleTab').iCheck('update')[0].checked;
+    settings.maxLiveChartDataPoints = $('#inputMaxChartPoints').val();
 
     Meteor.call('updateSettings', settings, mongoBinary, function (err) {
         if (err) this.showMeteorFuncError(err, null, "Couldn't save");
@@ -79,5 +80,6 @@ const load = function () {
     $('#inputUseSingleTab').iCheck(settings.singleTabResultSets ? 'check' : 'uncheck');
     $('#inputShowDBStats').iCheck(settings.showDBStats ? 'check' : 'uncheck');
     $('#inputMongoExecutable').siblings('.bootstrap-filestyle').children('input').val(settings.mongoBinaryName || 'mongo');
+    $('#inputMaxChartPoints').val(settings.maxLiveChartDataPoints || 15);
 
 };
