@@ -250,13 +250,13 @@ Helper.prototype = {
     },
 
     checkCodeMirrorSelectorForOption  (option, result, optionEnum) {
-        if ($.inArray(option, Session.get(this.strSessionSelectedOptions)) != -1) {
+        if ($.inArray(option, Session.get(this.strSessionSelectedOptions)) !== -1) {
             checkOption(getSelectorValue(), result, optionEnum, option);
         }
     },
 
     checkAndAddOption  (option, divSelector, result, optionEnum) {
-        if ($.inArray(option, Session.get(this.strSessionSelectedOptions)) != -1) {
+        if ($.inArray(option, Session.get(this.strSessionSelectedOptions)) !== -1) {
             checkOption(this.getCodeMirrorValue(divSelector), result, optionEnum, option);
         }
     },
@@ -280,7 +280,7 @@ Helper.prototype = {
             levels = 1;
         }
         while (view) {
-            if (view.name.indexOf("Template.") != -1 && !(levels--)) {
+            if (view.name.indexOf("Template.") !== -1 && !(levels--)) {
                 return view.name.substring(view.name.indexOf('.') + 1);
             }
             view = view.parentView;
@@ -297,36 +297,52 @@ Helper.prototype = {
     },
 
     getDistinctKeysForAutoComplete  (selectedCollection) {
-        let settings = Settings.findOne();
-        if (!settings || !settings.autoCompleteFields) {
-            return;
-        }
-        if (selectedCollection.endsWith('.chunks')) {
+        const settings = Settings.findOne();
+        let countToTake = isNaN(parseInt(settings.autoCompleteSamplesCount)) ? 50 : parseInt(settings.autoCompleteSamplesCount);
+        if (selectedCollection.endsWith('.chunks') || countToTake <= 0) {
+            Session.set(this.strSessionDistinctFields, []);
             // ignore chunks
             return;
         }
 
-        const mapFunc = "function () {for (var key in this) {emit(key, null);}};";
-        const reduceFunc = "function (key, stuff) {return null;};";
-        const options = {
-            out: {inline: 1}
-        };
-
-        Meteor.call("mapReduce", selectedCollection, mapFunc, reduceFunc, options, Meteor.default_connection._lastSessionId, (err, result) => {
+        Meteor.call("count", selectedCollection, {}, {}, Meteor.default_connection._lastSessionId, (err, result) => {
             if (err || result.error) {
-                this.showMeteorFuncError(err, result, "Couldn't fetch distinct fields for autocomplete");
-            }
-            else {
-                const nameArray = [];
-                result.result.forEach(function (entry) {
-                    nameArray.push(entry._id);
-                });
-                Session.set(this.strSessionDistinctFields, nameArray);
-
+                this.showMeteorFuncError(err, result, "Couldn't fetch distinct fields");
                 Ladda.stopAll();
             }
+            else {
+                const count = result.result;
+                Meteor.call("find", selectedCollection, {}, {
+                    limit: countToTake,
+                    skip: Math.random() * count
+                }, false, Meteor.default_connection._lastSessionId, (err, samples) => {
+                    if (err || samples.error) {
+                        this.showMeteorFuncError(err, samples, "Couldn't fetch distinct fields");
+                    }
+                    else {
+                        const keys = this.findKeysOfObject(samples.result);
+                        Session.set(this.strSessionDistinctFields, keys);
+                    }
 
+                    Ladda.stopAll();
+                });
+            }
         });
+
+
+    },
+
+    findKeysOfObject (resultArray){
+        let result = [];
+
+        for (let object of resultArray) {
+            const keys = Object.keys(object);
+            for (let key of keys) {
+                if (result.indexOf(key) === -1) result.push(key);
+            }
+        }
+
+        return result;
     },
 
     doCodeMirrorResizable(codeMirror){
@@ -376,8 +392,8 @@ Helper.prototype = {
                 const regex = new RegExp('^' + curWord, 'i');
                 return {
                     list: (!curWord ? list : list.filter(function (item) {
-                            return item.match(regex);
-                        })).sort(),
+                        return item.match(regex);
+                    })).sort(),
                     from: CodeMirror.Pos(cursor.line, start),
                     to: CodeMirror.Pos(cursor.line, end)
                 };
@@ -442,7 +458,7 @@ export default helper;
     };
 
     Template.registerHelper('isOptionSelected', function (option) {
-        return $.inArray(option, Session.get(helper.strSessionSelectedOptions)) != -1;
+        return $.inArray(option, Session.get(helper.strSessionSelectedOptions)) !== -1;
     });
 
     Template.registerHelper('getConnection', function () {

@@ -135,7 +135,7 @@ Meteor.startup(function () {
             scale: "MegaBytes",
             defaultResultView: "Jsoneditor",
             maxAllowedFetchSize: 3,
-            autoCompleteFields: false,
+            autoCompleteSamplesCount: 50,
             socketTimeoutInSeconds: 5,
             connectionTimeoutInSeconds: 3,
             dbStatsScheduler: 3000,

@@ -11,7 +11,7 @@ const Ladda = require('ladda');
 
 const proceedSavingSettings = function (mongoBinary) {
     const settings = {};
-    settings.autoCompleteFields = $('#divAutoCompleteFields').iCheck('update')[0].checked;
+    settings.autoCompleteSamplesCount = $('#inputAutoCompleteSamplesCount').val();
     settings.scale = $("#cmbScale").chosen().val();
     settings.defaultResultView = $("#cmbResultView").chosen().val();
     settings.maxAllowedFetchSize = $("#inputMaxAllowedFetchSize").val();
@@ -33,7 +33,7 @@ const proceedSavingSettings = function (mongoBinary) {
 };
 
 Template.settings.onRendered(function () {
-    $('#divAutoCompleteFields, #divShowDBStats, #divShowLiveChat, #divUseSingleTab').iCheck({
+    $('#divShowDBStats, #divShowLiveChat, #divUseSingleTab').iCheck({
         checkboxClass: 'icheckbox_square-green'
     });
     $('.filestyle').filestyle({});
@@ -75,7 +75,7 @@ const load = function () {
     $('#inputSocketTimeout').val(settings.socketTimeoutInSeconds || 0);
     $('#inputConnectionTimeout').val(settings.connectionTimeoutInSeconds || 0);
     $('#inputDBStatsScheduler').val(settings.dbStatsScheduler || 3000);
-    $('#inputAutoCompleteFields').iCheck(settings.autoCompleteFields ? 'check' : 'uncheck');
+    $('#inputAutoCompleteSamplesCount').val(settings.autoCompleteSamplesCount || 50);
     $('#inputShowLiveChat').iCheck(settings.showLiveChat ? 'check' : 'uncheck');
     $('#inputUseSingleTab').iCheck(settings.singleTabResultSets ? 'check' : 'uncheck');
     $('#inputShowDBStats').iCheck(settings.showDBStats ? 'check' : 'uncheck');
