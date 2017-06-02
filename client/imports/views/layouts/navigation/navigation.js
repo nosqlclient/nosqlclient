@@ -323,6 +323,43 @@ Template.navigation.onRendered(function () {
                             }
                         },
 
+                        clone_collection: {
+                            icon: "fa-clone",
+                            name: "Clone",
+                            callback: function () {
+                                const collectionName = $(this).context.innerText.substring(1).split(' ')[0];
+                                swal({
+                                        title: "Collection Name",
+                                        text: "Please type collection name",
+                                        type: "input",
+                                        showCancelButton: true,
+                                        closeOnConfirm: false,
+                                        confirmButtonColor: "#DD6B55",
+                                        inputPlaceholder: "Collection Name",
+                                        inputValue: collectionName
+                                    },
+                                    function (inputValue) {
+                                        if (!inputValue) {
+                                            swal.showInputError("You need to write something!");
+                                            return false;
+                                        }
+
+                                        swal("Creating...", "Please wait while " + inputValue + " is being created, collections will be refreshed automatically !", "info");
+
+                                        Meteor.call("aggregate", collectionName, [{$match: {}}, {$out: inputValue}], {}, Meteor.default_connection._lastSessionId, function (err, result) {
+                                                if (err || result.error) {
+                                                    Helper.showMeteorFuncError(err, result, "Couldn't clone ");
+                                                }
+                                                else {
+                                                    connect(true, "Successfully cloned collection " + collectionName + " as " + inputValue);
+                                                    swal.close();
+                                                }
+                                            }
+                                        );
+                                    });
+                            }
+                        },
+
                         validation_rules: {
                             icon: "fa-check-circle",
                             name: "Edit Validation Rules",

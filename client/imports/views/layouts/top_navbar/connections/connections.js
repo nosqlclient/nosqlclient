@@ -86,7 +86,7 @@ export const populateConnectionsTable = function () {
     });
 };
 
-export const connect = function (isRefresh) {
+export const connect = function (isRefresh, message) {
     let connection = Connections.findOne({_id: Session.get(Helper.strSessionConnection)});
     if (!connection) {
         toastr.info('Please select a connection first !');
@@ -116,7 +116,8 @@ export const connect = function (isRefresh) {
                 FlowRouter.go('/databaseStats');
             }
             else {
-                toastr.success("Successfuly refreshed collections");
+                if (!message) toastr.success("Successfuly refreshed collections");
+                else toastr.success(message);
             }
             Ladda.stopAll();
         }
