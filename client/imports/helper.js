@@ -100,6 +100,10 @@ let Helper = function () {
     this.strSessionUsermanagementRole = "userManagementRole";
     this.strSessionUsermanagementPrivilege = "userManagementPrivilege";
     this.strSessionSelectedAddCollectionOptions = "selectedAddCollectionOptions";
+    this.strSessionMongodumpArgs = "selectedMongodumpArgs";
+    this.strSessionMongorestoreArgs = "selectedMongorestoreArgs";
+    this.strSessionMongoexportArgs = "selectedMongoexportArgs";
+    this.strSessionMongoimportArgs = "selectedMongoimportArgs";
 };
 
 Helper.prototype = {
@@ -261,16 +265,16 @@ Helper.prototype = {
         }
     },
 
-    setOptionsComboboxChangeEvent (cmb) {
+    setOptionsComboboxChangeEvent (cmb, sessionVar) {
         cmb.on('change', (evt, params) => {
-            const array = Session.get(this.strSessionSelectedOptions);
+            const array = Session.get(sessionVar || this.strSessionSelectedOptions);
             if (params.deselected) {
                 array.remove(params.deselected);
             }
             else {
                 array.push(params.selected);
             }
-            Session.set(this.strSessionSelectedOptions, array);
+            Session.set(sessionVar || this.strSessionSelectedOptions, array);
         });
     },
 
@@ -353,7 +357,7 @@ Helper.prototype = {
         });
     },
 
-    initializeCodeMirror  (divSelector, txtAreaId, keepValue, height = 100) {
+    initializeCodeMirror  (divSelector, txtAreaId, keepValue, height = 100, noResize) {
         let codeMirror;
         if (!divSelector.data('editor')) {
             codeMirror = CodeMirror.fromTextArea(document.getElementById(txtAreaId), {
@@ -401,7 +405,7 @@ Helper.prototype = {
 
             divSelector.data('editor', codeMirror);
 
-            this.doCodeMirrorResizable(codeMirror);
+            if (!noResize) this.doCodeMirrorResizable(codeMirror);
         }
         else {
             codeMirror = divSelector.data('editor');
@@ -457,8 +461,8 @@ export default helper;
         return null;
     };
 
-    Template.registerHelper('isOptionSelected', function (option) {
-        return $.inArray(option, Session.get(helper.strSessionSelectedOptions)) !== -1;
+    Template.registerHelper('isOptionSelected', function (option, sessionVar) {
+        return $.inArray(option, Session.get(sessionVar || helper.strSessionSelectedOptions)) !== -1;
     });
 
     Template.registerHelper('getConnection', function () {

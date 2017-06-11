@@ -6,6 +6,7 @@
 import {Meteor} from "meteor/meteor";
 import {Settings} from "/lib/imports/collections/settings";
 import {Connections} from "/lib/imports/collections/connections";
+import {Dumps} from "/lib/imports/collections/dumps";
 import {migrateConnectionsIfExist} from "/server/imports/internal/startup";
 import ShellCommands from "/lib/imports/collections/shell";
 import SchemaAnaylzeResult from "/lib/imports/collections/schema_analyze_result";
@@ -23,13 +24,44 @@ export let databasesBySessionId = {};
 let spawnedShellsBySessionId = {};
 let tunnelsBySessionId = {};
 
+export const getProperBinary = function (binaryName) {
+    const settings = Settings.findOne();
+    if (settings.mongoBinaryPath) {
+        const dir = settings.mongoBinaryPath.replace(/\\/g, '/') + '/';
+        LOGGER.info('[' + binaryName + ']', 'checking dir ' + dir + ' for binary ' + binaryName);
+        const errorMessage = 'Binary ' + binaryName + ' not found in ' + (dir + binaryName) + ', please set mongo binary path from settings';
+
+        switch (os.platform()) {
+            case 'win32':
+                if (!fs.existsSync(dir + binaryName + '.exe')) throw new Meteor.Error(errorMessage);
+                return dir + binaryName + '.exe';
+            default:
+                if (!fs.existsSync(dir + binaryName)) throw new Meteor.Error(errorMessage);
+                return dir + binaryName;
+        }
+    }
+    else if (!settings.mongoBinaryPath && binaryName === 'mongo') {
+        let dir = getMongoExternalsPath();
+        switch (os.platform()) {
+            case 'darwin':
+                return dir + 'darwin/mongo';
+            case 'win32':
+                return dir + 'win32/mongo.exe';
+            case 'linux':
+                return dir + 'linux/mongo';
+            default :
+                throw new Meteor.Error('Not supported os: ' + os.platform() + ', you can set mongo binary path from settings');
+        }
+    }
+    else throw new Meteor.Error('Please set mongo binaries from settings');
+};
+
 const connectToShell = function (connectionId, sessionId) {
     try {
         const connection = Connections.findOne({_id: connectionId});
         if (!spawnedShellsBySessionId[sessionId]) {
             const connectionUrl = Helper.getConnectionUrl(connection);
-            const mongoPath = getProperMongo();
-
+            const mongoPath = getProperBinary('mongo');
             LOGGER.info('[shell]', mongoPath, connectionUrl, sessionId);
             spawnedShellsBySessionId[sessionId] = spawn(mongoPath, [connectionUrl]);
             setEventsToShell(connectionId, sessionId);
@@ -39,14 +71,14 @@ const connectToShell = function (connectionId, sessionId) {
             LOGGER.info('[shell]', 'executing command "use ' + connection.databaseName + '" on shell', sessionId);
             spawnedShellsBySessionId[sessionId].stdin.write('use ' + connection.databaseName + '\n');
         }
-        else return {err: new Meteor.Error("Couldn't spawn shell, please check logs !"), result: null};
+        else throw new Meteor.Error("Couldn't spawn shell, please check logs !");
 
         return 'use ' + connection.databaseName;
     }
     catch (ex) {
         spawnedShellsBySessionId[sessionId] = null;
         LOGGER.error('[shell]', sessionId, ex);
-        return {err: new Meteor.Error(ex.message), result: null};
+        throw new Meteor.Error(ex.message || ex);
     }
 };
 
@@ -78,24 +110,6 @@ const getMongoExternalsPath = function () {
     fs.chmodSync(currentDir + "variety/variety.js_", '777');
 
     return currentDir;
-};
-
-const getProperMongo = function () {
-    let currentDir = getMongoExternalsPath();
-    if (fs.existsSync(currentDir + "user_mongo")) {
-        LOGGER.info('[userMongo]', 'found a mongo binary set by user, choosing it');
-        return currentDir + "user_mongo";
-    }
-    switch (os.platform()) {
-        case 'darwin':
-            return currentDir + 'darwin/mongo';
-        case 'win32':
-            return currentDir + 'win32/mongo.exe';
-        case 'linux':
-            return currentDir + 'linux/mongo';
-        default :
-            throw 'Not supported os: ' + os.platform();
-    }
 };
 
 const proceedConnectingMongodb = function (dbName, sessionId, connectionUrl, connectionOptions, done) {
@@ -265,7 +279,8 @@ Meteor.methods({
             spawnedShellsBySessionId[sessionId] = null;
         }
         ShellCommands.remove({'sessionId': sessionId});
-        SchemaAnaylzeResult.remove({});
+        SchemaAnaylzeResult.remove({'sessionId': sessionId});
+        Dumps.remove({'sessionId': sessionId});
     },
 
     connect(connectionId, sessionId) {
@@ -297,7 +312,9 @@ Meteor.methods({
                             return;
                         }
                         proceedConnectingMongodb(connection.databaseName, sessionId, connectionUrl, connectionOptions, done);
-                        spawnedShellsBySessionId[sessionId] = spawn(getProperMongo(), [connectionUrl]);
+
+                        const mongoPath = getProperBinary('mongo');
+                        spawnedShellsBySessionId[sessionId] = spawn(mongoPath, [connectionUrl]);
                         setEventsToShell(connectionId, sessionId);
                     }));
 
@@ -401,10 +418,9 @@ Meteor.methods({
 
     analyzeSchema(connectionId, collection, sessionId){
         const connectionUrl = Helper.getConnectionUrl(Connections.findOne({_id: connectionId}), true);
-        const mongoPath = getProperMongo();
+        const mongoPath = getProperBinary('mongo');
 
         let args = [connectionUrl, '--quiet', '--eval', 'var collection =\"' + collection + '\", outputFormat=\"json\"', getMongoExternalsPath() + '/variety/variety.js_'];
-
         LOGGER.info('[analyzeSchema]', sessionId, args, collection);
         try {
             let spawned = spawn(mongoPath, args);
@@ -439,7 +455,7 @@ Meteor.methods({
         }
         catch (ex) {
             LOGGER.error('[analyzeSchema]', sessionId, ex);
-            return {err: new Meteor.Error(ex.message), result: null};
+            throw new Meteor.Error(ex.message);
         }
 
     }

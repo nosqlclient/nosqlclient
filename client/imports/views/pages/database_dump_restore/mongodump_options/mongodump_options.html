@@ -1,0 +1,71 @@
+<template name="mongodumpOptions">
+    {{#if isOptionSelected "-v" "selectedMongodumpArgs"}}
+        {{> verboseLevels id="mongodump-v"}}
+    {{/if}}
+    {{#if isOptionSelected "--host" "selectedMongodumpArgs"}}
+        {{> inputFieldTemplate label="Hostname" id="mongodump--host" type="text"}}
+    {{/if}}
+    {{#if isOptionSelected "--port" "selectedMongodumpArgs"}}
+        {{> inputFieldTemplate label="Port" id="mongodump--port" type="number"}}
+    {{/if}}
+    {{#if isOptionSelected "--sslCAFile" "selectedMongodumpArgs"}}
+        {{> inputFieldTemplate label="Ssl Ca Path" id="mongodump--sslCAFile" type="text"}}
+    {{/if}}
+    {{#if isOptionSelected "--sslPEMKeyFile" "selectedMongodumpArgs"}}
+        {{> inputFieldTemplate label="Ssl Pem Key Path" id="mongodump--sslPEMKeyFile" type="text"}}
+    {{/if}}
+    {{#if isOptionSelected "--sslPEMKeyPassword" "selectedMongodumpArgs"}}
+        {{> inputFieldTemplate label="Ssl Pem Key Password" id="mongodump--sslPEMKeyPassword" type="password"}}
+    {{/if}}
+    {{#if isOptionSelected "--sslCRLFile" "selectedMongodumpArgs"}}
+        {{> inputFieldTemplate label="Ssl Crl Path" id="mongodump--sslCRLFile" type="text"}}
+    {{/if}}
+    {{#if isOptionSelected "--username" "selectedMongodumpArgs"}}
+        {{> inputFieldTemplate label="Username" id="mongodump--username" type="text"}}
+    {{/if}}
+    {{#if isOptionSelected "--password" "selectedMongodumpArgs"}}
+        {{> inputFieldTemplate label="Password" id="mongodump--password" type="password"}}
+    {{/if}}
+    {{#if isOptionSelected "--authenticationDatabase" "selectedMongodumpArgs"}}
+        {{> inputFieldTemplate label="Authentication Database" id="mongodump--authenticationDatabase" type="text"}}
+    {{/if}}
+    {{#if isOptionSelected "--authenticationMechanism" "selectedMongodumpArgs"}}
+        {{> inputFieldTemplate label="Authentication Mechanism" id="mongodump--authenticationMechanism" type="text"}}
+    {{/if}}
+    {{#if isOptionSelected "--gssapiServiceName" "selectedMongodumpArgs"}}
+        {{> inputFieldTemplate label="Gssapi Service Name" id="mongodump--gssapiServiceName" type="text"}}
+    {{/if}}
+    {{#if isOptionSelected "--gssapiHostName" "selectedMongodumpArgs"}}
+        {{> inputFieldTemplate label="Gssapi Hostname" id="mongodump--gssapiHostName" type="text"}}
+    {{/if}}
+    {{#if isOptionSelected "--db" "selectedMongodumpArgs"}}
+        {{> databasesTemplate id="mongodump--db"}}
+    {{/if}}
+    {{#if isOptionSelected "--collection" "selectedMongodumpArgs"}}
+        {{> collectionsTemplate id="mongodump--collection"}}
+    {{/if}}
+    {{#if isOptionSelected "--query" "selectedMongodumpArgs"}}
+        {{> queryTemplate id="mongodump--query"}}
+    {{/if}}
+    {{#if isOptionSelected "--queryFile" "selectedMongodumpArgs"}}
+        {{> inputFieldTemplate label="Query File" id="mongodump--queryFile" type="text"}}
+    {{/if}}
+    {{#if isOptionSelected "--readPreference" "selectedMongodumpArgs"}}
+        {{> readPreferenceTemplate id="mongodump--readPreference"}}
+    {{/if}}
+    {{#if isOptionSelected "--out" "selectedMongodumpArgs"}}
+        {{> inputFieldTemplate label="Out" id="mongodump--out" type="text"}}
+    {{/if}}
+    {{#if isOptionSelected "--archive" "selectedMongodumpArgs"}}
+        {{> inputFieldTemplate label="Archive" id="mongodump--archive" type="text"}}
+    {{/if}}
+    {{#if isOptionSelected "--excludeCollection" "selectedMongodumpArgs"}}
+        {{> inputFieldTemplate label="Exclude Collection" id="mongodump--excludeCollection" type="text"}}
+    {{/if}}
+    {{#if isOptionSelected "--excludeCollectionsWithPrefix" "selectedMongodumpArgs"}}
+        {{> inputFieldTemplate label="Exclude Collection Prefix" id="mongodump--excludeCollectionsWithPrefix" type="text"}}
+    {{/if}}
+    {{#if isOptionSelected "--numParallelCollections" "selectedMongodumpArgs"}}
+        {{> inputFieldTemplate label="Parallel Collections Number" id="mongodump--numParallelCollections" type="number"}}
+    {{/if}}
+</template>

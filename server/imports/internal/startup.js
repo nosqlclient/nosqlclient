@@ -4,6 +4,7 @@
 import {Meteor} from "meteor/meteor";
 import {Settings} from "/lib/imports/collections/settings";
 import {Connections} from "/lib/imports/collections/connections";
+import {Dumps} from "/lib/imports/collections/dumps";
 import ShellCommands from "/lib/imports/collections/shell";
 import SchemaAnalyzeResult from "/lib/imports/collections/schema_analyze_result";
 import {HttpBasicAuth} from "meteor/jabbslad:basic-auth";
@@ -142,8 +143,7 @@ Meteor.startup(function () {
             showDBStats: true,
             showLiveChat: true,
             singleTabResultSets: false,
-            maxLiveChartDataPoints: 15,
-            dumpPath: home + "/myDumps/"
+            maxLiveChartDataPoints: 15
         });
     }
 
@@ -156,6 +156,7 @@ Meteor.startup(function () {
 
     ShellCommands.remove({});
     SchemaAnalyzeResult.remove({});
+    Dumps.remove({});
     migrateConnectionsIfExist();
     tryInjectDefaultConnection();
 });

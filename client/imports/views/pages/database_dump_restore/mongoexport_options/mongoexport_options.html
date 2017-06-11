@@ -1,0 +1,86 @@
+<template name="mongoexportOptions">
+    {{#if isOptionSelected "-v" "selectedMongoexportArgs"}}
+        {{> verboseLevels id="mongoexport-v"}}
+    {{/if}}
+    {{#if isOptionSelected "--host" "selectedMongoexportArgs"}}
+        {{> inputFieldTemplate label="Hostname" id="mongoexport--host" type="text"}}
+    {{/if}}
+    {{#if isOptionSelected "--port" "selectedMongoexportArgs"}}
+        {{> inputFieldTemplate label="Port" id="mongoexport--port" type="number"}}
+    {{/if}}
+    {{#if isOptionSelected "--sslCAFile" "selectedMongoexportArgs"}}
+        {{> inputFieldTemplate label="Ssl Ca Path" id="mongoexport--sslCAFile" type="text"}}
+    {{/if}}
+    {{#if isOptionSelected "--sslPEMKeyFile" "selectedMongoexportArgs"}}
+        {{> inputFieldTemplate label="Ssl Pem Key Path" id="mongoexport--sslPEMKeyFile" type="text"}}
+    {{/if}}
+    {{#if isOptionSelected "--sslPEMKeyPassword" "selectedMongoexportArgs"}}
+        {{> inputFieldTemplate label="Ssl Pem Key Password" id="mongoexport--sslPEMKeyPassword" type="password"}}
+    {{/if}}
+    {{#if isOptionSelected "--sslCRLFile" "selectedMongoexportArgs"}}
+        {{> inputFieldTemplate label="Ssl Crl Path" id="mongoexport--sslCRLFile" type="text"}}
+    {{/if}}
+    {{#if isOptionSelected "--username" "selectedMongoexportArgs"}}
+        {{> inputFieldTemplate label="Username" id="mongoexport--username" type="text"}}
+    {{/if}}
+    {{#if isOptionSelected "--password" "selectedMongoexportArgs"}}
+        {{> inputFieldTemplate label="Password" id="mongoexport--password" type="password"}}
+    {{/if}}
+    {{#if isOptionSelected "--authenticationDatabase" "selectedMongoexportArgs"}}
+        {{> inputFieldTemplate label="Authentication Database" id="mongoexport--authenticationDatabase" type="text"}}
+    {{/if}}
+    {{#if isOptionSelected "--authenticationMechanism" "selectedMongoexportArgs"}}
+        {{> inputFieldTemplate label="Authentication Mechanism" id="mongoexport--authenticationMechanism" type="text"}}
+    {{/if}}
+    {{#if isOptionSelected "--gssapiServiceName" "selectedMongoexportArgs"}}
+        {{> inputFieldTemplate label="Gssapi Service Name" id="mongoexport--gssapiServiceName" type="text"}}
+    {{/if}}
+    {{#if isOptionSelected "--gssapiHostName" "selectedMongoexportArgs"}}
+        {{> inputFieldTemplate label="Gssapi Hostname" id="mongoexport--gssapiHostName" type="text"}}
+    {{/if}}
+    {{#if isOptionSelected "--db" "selectedMongoexportArgs"}}
+        {{> databasesTemplate id="mongoexport--db"}}
+    {{/if}}
+    {{#if isOptionSelected "--collection" "selectedMongoexportArgs"}}
+        {{> collectionsTemplate id="mongoexport--collection"}}
+    {{/if}}
+    {{#if isOptionSelected "--fields" "selectedMongoexportArgs"}}
+        {{> inputFieldTemplate label="Field(s) to include" id="mongoexport--fields" type="text"}}
+    {{/if}}
+    {{#if isOptionSelected "--fieldFile" "selectedMongoexportArgs"}}
+        {{> inputFieldTemplate label="Field File" id="mongoexport--fieldFile" type="text"}}
+    {{/if}}
+    {{#if isOptionSelected "--query" "selectedMongoexportArgs"}}
+        {{> queryTemplate id="mongoexport--query"}}
+    {{/if}}
+    {{#if isOptionSelected "--type" "selectedMongoexportArgs"}}
+        {{> inputFieldTemplate label="Type" id="mongoexport--type" type="text"}}
+    {{/if}}
+    {{#if isOptionSelected "--out" "selectedMongoexportArgs"}}
+        {{> inputFieldTemplate label="Out" id="mongoexport--out" type="text"}}
+    {{/if}}
+    {{#if isOptionSelected "--readPreference" "selectedMongoexportArgs"}}
+        {{> readPreferenceTemplate id="mongoexport--readPreference"}}
+    {{/if}}
+    {{#if isOptionSelected "--skip" "selectedMongoexportArgs"}}
+        {{> inputFieldTemplate label="Skip" id="mongoexport--skip" type="number"}}
+    {{/if}}
+    {{#if isOptionSelected "--limit" "selectedMongoexportArgs"}}
+        {{> inputFieldTemplate label="Limit" id="mongoexport--limit" type="number"}}
+    {{/if}}
+    {{#if isOptionSelected "--sort" "selectedMongoexportArgs"}}
+        {{> sortTemplate}}
+    {{/if}}
+</template>
+
+<template name="sortTemplate">
+    <div class="form-group">
+        <div id="mongoexport--sort">
+            <label class="col-lg-2 control-label">Sort</label>
+            <div class="col-lg-10">
+                <textarea id="txtSort" class="form-control"></textarea>
+                <span class="help-block m-b-none"><b>Extended json</b> is valid</span>
+            </div>
+        </div>
+    </div>
+</template>

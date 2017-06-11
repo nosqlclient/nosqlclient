@@ -1,0 +1,80 @@
+<template name="mongorestoreOptions">
+    {{#if isOptionSelected "-v" "selectedMongorestoreArgs"}}
+        {{> verboseLevels id="mongorestore-v"}}
+    {{/if}}
+    {{#if isOptionSelected "--host" "selectedMongorestoreArgs"}}
+        {{> inputFieldTemplate label="Hostname" id="mongorestore--host" type="text"}}
+    {{/if}}
+    {{#if isOptionSelected "--port" "selectedMongorestoreArgs"}}
+        {{> inputFieldTemplate label="Port" id="mongorestore--port" type="number"}}
+    {{/if}}
+    {{#if isOptionSelected "--sslCAFile" "selectedMongorestoreArgs"}}
+        {{> inputFieldTemplate label="Ssl Ca Path" id="mongorestore--sslCAFile" type="text"}}
+    {{/if}}
+    {{#if isOptionSelected "--sslPEMKeyFile" "selectedMongorestoreArgs"}}
+        {{> inputFieldTemplate label="Ssl Pem Key Path" id="mongorestore--sslPEMKeyFile" type="text"}}
+    {{/if}}
+    {{#if isOptionSelected "--sslPEMKeyPassword" "selectedMongorestoreArgs"}}
+        {{> inputFieldTemplate label="Ssl Pem Key Password" id="mongorestore--sslPEMKeyPassword" type="password"}}
+    {{/if}}
+    {{#if isOptionSelected "--sslCRLFile" "selectedMongorestoreArgs"}}
+        {{> inputFieldTemplate label="Ssl Crl Path" id="mongorestore--sslCRLFile" type="text"}}
+    {{/if}}
+    {{#if isOptionSelected "--username" "selectedMongorestoreArgs"}}
+        {{> inputFieldTemplate label="Username" id="mongorestore--username" type="text"}}
+    {{/if}}
+    {{#if isOptionSelected "--password" "selectedMongorestoreArgs"}}
+        {{> inputFieldTemplate label="Password" id="mongorestore--password" type="password"}}
+    {{/if}}
+    {{#if isOptionSelected "--authenticationDatabase" "selectedMongorestoreArgs"}}
+        {{> inputFieldTemplate label="Authentication Database" id="mongorestore--authenticationDatabase" type="text"}}
+    {{/if}}
+    {{#if isOptionSelected "--authenticationMechanism" "selectedMongorestoreArgs"}}
+        {{> inputFieldTemplate label="Authentication Mechanism" id="mongorestore--authenticationMechanism" type="text"}}
+    {{/if}}
+    {{#if isOptionSelected "--gssapiServiceName" "selectedMongorestoreArgs"}}
+        {{> inputFieldTemplate label="Gssapi Service Name" id="mongorestore--gssapiServiceName" type="text"}}
+    {{/if}}
+    {{#if isOptionSelected "--gssapiHostName" "selectedMongorestoreArgs"}}
+        {{> inputFieldTemplate label="Gssapi Hostname" id="mongorestore--gssapiHostName" type="text"}}
+    {{/if}}
+    {{#if isOptionSelected "--db" "selectedMongorestoreArgs"}}
+        {{> databasesTemplate id="mongorestore--db"}}
+    {{/if}}
+    {{#if isOptionSelected "--collection" "selectedMongorestoreArgs"}}
+        {{> collectionsTemplate id="mongorestore--collection"}}
+    {{/if}}
+    {{#if isOptionSelected "--nsExclude" "selectedMongorestoreArgs"}}
+        {{> inputFieldTemplate label="Namespace To Exclude" id="mongorestore--nsExclude" type="text"}}
+    {{/if}}
+    {{#if isOptionSelected "--nsInclude" "selectedMongorestoreArgs"}}
+        {{> inputFieldTemplate label="Namespace To Include" id="mongorestore--nsInclude" type="text"}}
+    {{/if}}
+    {{#if isOptionSelected "--nsFrom" "selectedMongorestoreArgs"}}
+        {{> inputFieldTemplate label="Namespace From" id="mongorestore--nsFrom" type="text"}}
+    {{/if}}
+    {{#if isOptionSelected "--nsTo" "selectedMongorestoreArgs"}}
+        {{> inputFieldTemplate label="Namespace To" id="mongorestore--nsTo" type="text"}}
+    {{/if}}
+    {{#if isOptionSelected "--oplogLimit" "selectedMongorestoreArgs"}}
+        {{> inputFieldTemplate label="Oplog Limit" id="mongorestore--oplogLimit" type="text"}}
+    {{/if}}
+    {{#if isOptionSelected "--oplogFile" "selectedMongorestoreArgs"}}
+        {{> inputFieldTemplate label="Oplog File" id="mongorestore--oplogFile" type="text"}}
+    {{/if}}
+    {{#if isOptionSelected "--writeConcern" "selectedMongorestoreArgs"}}
+        {{> inputFieldTemplate label="Write Concern" id="mongorestore--writeConcern" type="text"}}
+    {{/if}}
+    {{#if isOptionSelected "--numParallelCollections" "selectedMongorestoreArgs"}}
+        {{> inputFieldTemplate label="Parallel Collections Number" id="mongorestore--numParallelCollections" type="number"}}
+    {{/if}}
+    {{#if isOptionSelected "--numInsertionWorkersPerCollection" "selectedMongorestoreArgs"}}
+        {{> inputFieldTemplate label="Insertion Workers Per Collection" id="mongorestore--numInsertionWorkersPerCollection" type="number"}}
+    {{/if}}
+    {{#if isOptionSelected "--archive" "selectedMongorestoreArgs"}}
+        {{> inputFieldTemplate label="Archive" id="mongorestore--archive" type="text"}}
+    {{/if}}
+    {{#if isOptionSelected "--dir" "selectedMongorestoreArgs"}}
+        {{> inputFieldTemplate label="Dir" id="mongorestore--dir" type="text"}}
+    {{/if}}
+</template>

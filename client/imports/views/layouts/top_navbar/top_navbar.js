@@ -204,14 +204,12 @@ Template.topNavbar.events({
         // Enable smoothly hide/show menu
         if (!body.hasClass('mini-navbar') || body.hasClass('body-small')) {
             // Hide menu in order to smoothly turn on when maximize menu
-            console.log('1');
             sideMenu.hide();
             // For smoothly turn on menu
             setTimeout(function () {
                 sideMenu.fadeIn(400);
             }, 200);
         } else if (body.hasClass('fixed-sidebar')) {
-            console.log('2');
             sideMenu.hide();
             setTimeout(function () {
                 sideMenu.fadeIn(400);
