@@ -396,8 +396,8 @@ Helper.prototype = {
                 const regex = new RegExp('^' + curWord, 'i');
                 return {
                     list: (!curWord ? list : list.filter(function (item) {
-                        return item.match(regex);
-                    })).sort(),
+                            return item.match(regex);
+                        })).sort(),
                     from: CodeMirror.Pos(cursor.line, start),
                     to: CodeMirror.Pos(cursor.line, end)
                 };
@@ -462,7 +462,9 @@ export default helper;
     };
 
     Template.registerHelper('isOptionSelected', function (option, sessionVar) {
-        return $.inArray(option, Session.get(sessionVar || helper.strSessionSelectedOptions)) !== -1;
+        if (!sessionVar || Object.prototype.toString.call(sessionVar) !== '[object String]') return $.inArray(option, Session.get(helper.strSessionSelectedOptions)) !== -1;
+
+        return $.inArray(option, Session.get(sessionVar)) !== -1;
     });
 
     Template.registerHelper('getConnection', function () {
