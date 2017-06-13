@@ -135,6 +135,7 @@ Meteor.startup(function () {
         Settings.insert({
             scale: "MegaBytes",
             defaultResultView: "Jsoneditor",
+            mongoBinaryPath: "/opt/mongodb/bin/",
             maxAllowedFetchSize: 3,
             autoCompleteSamplesCount: 50,
             socketTimeoutInSeconds: 5,
