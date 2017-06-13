@@ -11,7 +11,6 @@ import {getMongorestoreArgs} from "./mongorestore_options/mongorestore_options";
 import {getMongoexportOptions} from "./mongoexport_options/mongoexport_options";
 import {getMongoimportOptions} from "./mongoimport_options/mongoimport_options";
 import "./common_options/common_options";
-
 import Helper from "/client/imports/helper";
 
 const Ladda = require('ladda');
@@ -58,7 +57,7 @@ const observeLogs = function () {
                 Helper.setCodeMirrorValue(divLogs, previousValue + fields.message);
                 if (editorResult) {
                     editorResult.focus();
-                    editorResult.setCursor(editorResult.lineCount(), 0);
+                    editorResult.setCursor(editorResult.lineCount() - 2, editorResult.getLine(editorResult.lineCount() - 2).length - 2);
                 }
 
                 if (divLogs.data('editor')) {
