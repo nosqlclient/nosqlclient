@@ -59,6 +59,8 @@ Template.settings.events({
 const load = function () {
     // since we are using some external plugins such as chosen, icheck we can't load settings directly via meteor
     const settings = Settings.findOne();
+    if (!settings) return;
+
     const cmbScale = $('#cmbScale');
     const cmbResultView = $('#cmbResultView');
 
