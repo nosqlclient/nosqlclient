@@ -26,6 +26,6 @@
 
 ## Your Environment
 <!--- Include as many relevant details about the environment you experienced the bug in -->
-* Mongoclient version used:
+* Nosqlclient version used:
 * Environment name (e.g. chrome 39, portable, docker):
 * Operating System and version (e.g. windows 10, ubuntu 16, osx 10.12):

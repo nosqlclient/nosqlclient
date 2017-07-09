@@ -131,13 +131,13 @@ Meteor.methods({
 
     checkMongoclientVersion(){
         try {
-            LOGGER.info('[checkMongoclientVersion]');
+            LOGGER.info('[checkNosqlclientVersion]');
             const response = HTTP.get('https://api.github.com/repos/mongoclient/mongoclient/releases/latest', {headers: {"User-Agent": "Mongoclient"}});
             if (response && response.data && response.data.name && response.data.name !== packageJson.version) {
                 return "There's a new version of mongoclient: " + response.data.name + ", <a href='https://github.com/mongoclient/mongoclient/releases/latest' target='_blank'>download here</a>, if you're using docker just use pull for the <b>" + response.data.name + "</b> or <b>latest</b> tag !";
             }
         } catch (e) {
-            LOGGER.error('[checkMongoclientVersion]', e);
+            LOGGER.error('[checkNosqlclientVersion]', e);
             return null;
         }
     },

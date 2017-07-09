@@ -29,7 +29,7 @@ const reset = function () {
     sendButton2.prop('disabled', false);
 
     chatDiv.empty();
-    chatDiv.append($('<div class="left"> <div class="author-name"> Mongoclient </div> <div class="chat-message active"> Hello, let\'s start with giving a field name to me. </div></div> ' +
+    chatDiv.append($('<div class="left"> <div class="author-name"> Nosqlclient </div> <div class="chat-message active"> Hello, let\'s start with giving a field name to me. </div></div> ' +
         '<div class="right"> <div class="author-name"> Me</div> <div class="chat-message"> Hmm...</div> </div>'));
 
     step = 1;
@@ -107,7 +107,7 @@ const respond = function () {
                 return;
             }
             chatDiv.append($('<div class="right"><div class="author-name">Me </div> <div class="chat-message">' + txt.val() + '</div></div>'));
-            chatDiv.append($('<div class="left"><div class="author-name">Mongoclient </div> <div class="chat-message active"></div></div>'));
+            chatDiv.append($('<div class="left"><div class="author-name">Nosqlclient </div> <div class="chat-message active"></div></div>'));
             chatDiv.find('.left').last().find('.chat-message').typed({
                 strings: ["So, you want to retrieve documents that..."],
                 typeSpeed: -15
@@ -131,7 +131,7 @@ const respond = function () {
             let stepText = step2();
             chatDiv.append($('<div class="right"><div class="author-name">Me </div> <div class="chat-message">I want to retrieve documents that ' +
                 text + '</div></div>'));
-            chatDiv.append($('<div class="left"><div class="author-name">Mongoclient </div> <div class="chat-message active"></div></div>'));
+            chatDiv.append($('<div class="left"><div class="author-name">Nosqlclient </div> <div class="chat-message active"></div></div>'));
             chatDiv.find('.left').last().find('.chat-message').typed({
                 strings: ['Okay, ' + stepText],
                 typeSpeed: -15
@@ -149,7 +149,7 @@ const respond = function () {
             if (selectedOption === "4" || selectedOption === "-4") {
                 let convertedValue = Helper.convertAndCheckJSON(txtValue);
                 if (convertedValue["ERROR"] || Object.prototype.toString.call(convertedValue) !== '[object Array]') {
-                    chatDiv.append($('<div class="left"><div class="author-name">Mongoclient </div> <div class="chat-message active"></div></div>'));
+                    chatDiv.append($('<div class="left"><div class="author-name">Nosqlclient </div> <div class="chat-message active"></div></div>'));
                     chatDiv.find('.left').last().find('.chat-message').typed({
                         strings: ["Please provide a valid array, e.g. [3,5,6,7] or [\"myValue\",\"mySecondValue\"]"],
                         typeSpeed: -15
@@ -160,7 +160,7 @@ const respond = function () {
 
             let stepText = step3();
             chatDiv.append($('<div class="right"><div class="author-name">Me </div> <div class="chat-message">' + txt.val() + '</div></div>'));
-            chatDiv.append($('<div class="left"><div class="author-name">Mongoclient </div> <div class="chat-message active"></div></div>'));
+            chatDiv.append($('<div class="left"><div class="author-name">Nosqlclient </div> <div class="chat-message active"></div></div>'));
             chatDiv.find('.left').last().find('.chat-message').typed({
                 strings: [stepText],
                 typeSpeed: -15
@@ -177,7 +177,7 @@ const respond = function () {
 
             regexOptions = cmb.val();
             chatDiv.append($('<div class="right"><div class="author-name">Me </div> <div class="chat-message">' + (regexOptions ? regexOptions : "No options") + '</div></div>'));
-            chatDiv.append($('<div class="left"><div class="author-name">Mongoclient </div> <div class="chat-message active"></div></div>'));
+            chatDiv.append($('<div class="left"><div class="author-name">Nosqlclient </div> <div class="chat-message active"></div></div>'));
             chatDiv.find('.left').last().find('.chat-message').typed({
                 strings: [redirectText],
                 typeSpeed: -15

@@ -125,7 +125,7 @@ const showMongoBinaryInfo = function () {
     if (!localStorage.getItem(Enums.LOCAL_STORAGE_KEYS.MONGO_BINARY_INFO)) {
         swal({
             title: "Mongo Tools",
-            text: "Mongoclient uses mongo binaries and tools for dump/restore, schema analyzer, and shell you can set the directory of binaries from <b>Settings</b>",
+            text: "Nosqlclient uses mongo binaries and tools for dump/restore, schema analyzer, and shell you can set the directory of binaries from <b>Settings</b>",
             type: "info",
             html: true,
             confirmButtonColor: "#18A689",

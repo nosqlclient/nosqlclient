@@ -205,7 +205,7 @@ const setEventsToShell = function (connectionId, sessionId) {
 
 Meteor.methods({
     importMongoclient(file)  {
-        LOGGER.info('[importMongoclient]', file);
+        LOGGER.info('[importNosqlclient]', file);
 
         try {
             let mongoclientData = JSON.parse(file);
@@ -224,7 +224,7 @@ Meteor.methods({
             }
         }
         catch (ex) {
-            LOGGER.error('[importMongoclient]', 'unexpected error during import', ex);
+            LOGGER.error('[importNosqlclient]', 'unexpected error during import', ex);
             throw new Meteor.Error(ex.message);
         }
     },

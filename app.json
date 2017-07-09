@@ -1,8 +1,8 @@
 {
-  "name": "Mongoclient",
+  "name": "Nosqlclient (Formerly Mongoclient)",
   "description": "MongoDB Management Tool",
-  "repository": "https://github.com/mongoclient/mongoclient",
-  "logo": "https://mongoclient.com/img/logo/mongoclient_logo-1.png",
+  "repository": "https://github.com/nosqlclient/nosqlclient",
+  "logo": "https://nosqlclient.com/img/logo/mongoclient_logo-1.png",
   "keywords": [
     "meteor",
     "mongodb",
@@ -10,7 +10,7 @@
     "developerTool",
     "managementTool"
   ],
-  "website": "https://www.mongoclient.com",
+  "website": "https://www.nosqlclient.com",
   "env": {
     "BUILDPACK_URL": "https://github.com/rsercano/meteor-buildpack-horse",
     "ROOT_URL": {
