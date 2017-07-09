@@ -1,6 +1,5 @@
 ## Nosqlclient (Formerly Mongoclient), MongoDB Management Tool
 
-[![Greenkeeper badge](https://badges.greenkeeper.io/nosqlclient/nosqlclient.svg)](https://greenkeeper.io/)
 Cross-platform, easy to use, MongoDB 3.4+ support and more features!
 
 [![Build Status](https://travis-ci.org/nosqlclient/nosqlclient.svg?branch=master)](https://travis-ci.org/nosqlclient/nosqlclient)
