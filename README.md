@@ -1,6 +1,6 @@
 ## Nosqlclient (Formerly Mongoclient), MongoDB Management Tool
 
-Cross-platform, easy to use, MongoDB 3.4+ support and more features!
+Cross-platform, easy to use, MongoDB 3.4+ support and more features! 
 
 [![Build Status](https://travis-ci.org/nosqlclient/nosqlclient.svg?branch=master)](https://travis-ci.org/nosqlclient/nosqlclient)
 [![Code Climate](https://codeclimate.com/github/nosqlclient/nosqlclient/badges/gpa.svg)](https://codeclimate.com/github/nosqlclient/nosqlclient)
@@ -11,6 +11,9 @@ Cross-platform, easy to use, MongoDB 3.4+ support and more features!
 [![AGPLv3 License](https://img.shields.io/github/license/nosqlclient/nosqlclient.svg)](https://github.com/nosqlclient/nosqlclient/blob/master/LICENSE)
 
 ![Nosqlclient](https://www.nosqlclient.com/img/logo/mongoclient_logo_black_half_size.png)
+
+## Name Change
+[Read more about name change](https://medium.com/mongoclient/time-to-change-again-8db4dd56b171)
 
 ## Demo
 [Try Demo Application](https://www.nosqlclient.com/demo)
