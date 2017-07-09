@@ -1,7 +1,7 @@
 ## Mongoclient, MongoDB Management Tool
 Cross-platform, easy to use, MongoDB 3.4+ support and more features!
 
-[![Build Status](https://travis-ci.org/mongoclient/mongoclient.svg?branch=master)](https://travis-ci.org/mongoclient/mongoclient)
+[![Build Status](https://travis-ci.org/nosqlclient/nosqlclient.svg?branch=master)](https://travis-ci.org/nosqlclient/nosqlclient)
 [![Code Climate](https://codeclimate.com/github/mongoclient/mongoclient/badges/gpa.svg)](https://codeclimate.com/github/mongoclient/mongoclient)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/6a75fc4e1d3f480f811b5339202400b5)](https://www.codacy.com/app/ozdemirsercan27/mongoclient?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=mongoclient/mongoclient&amp;utm_campaign=Badge_Grade)
 [![GitHub release](https://img.shields.io/github/release/mongoclient/mongoclient.svg)](https://github.com/mongoclient/mongoclient)
