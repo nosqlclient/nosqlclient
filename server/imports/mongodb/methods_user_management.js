@@ -2,7 +2,7 @@
  * Created by RSercan on 10.1.2016.
  */
 import {Meteor} from "meteor/meteor";
-import {Actions} from "/lib/imports/collections/actions";
+import {Actions} from "/lib/imports/collections";
 import LOGGER from "../internal/logger";
 
 const cheerio = require('cheerio');

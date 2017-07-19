@@ -2,7 +2,7 @@ import {Template} from 'meteor/templating';
 import {Session} from 'meteor/session';
 import {FlowRouter} from 'meteor/kadira:flow-router';
 import Helper from '/client/imports/helper';
-import {Settings} from '/lib/imports/collections/settings';
+import {Settings} from '/lib/imports/collections';
 import Enums from '/lib/imports/enums';
 import {AceEditor} from 'meteor/arch:ace-editor';
 

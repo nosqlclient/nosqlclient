@@ -6,8 +6,7 @@ import {Template} from "meteor/templating";
 import {Session} from "meteor/session";
 import {Meteor} from "meteor/meteor";
 import {$} from "meteor/jquery";
-import {Connections} from "/lib/imports/collections/connections";
-import {Settings} from "/lib/imports/collections/settings";
+import {Connections, Settings} from "/lib/imports/collections";
 import {setAdminResult} from "/client/imports/views/pages/admin_queries/admin_queries";
 import {setQueryResult} from "/client/imports/views/pages/browse_collection/browse_collection";
 import {getSelectorValue} from "/client/imports/views/query_templates_options/selector/selector";
@@ -85,7 +84,6 @@ let Helper = function () {
     this.strSessionDBStats = "dbStats";
     this.strSessionUsedTabIDs = "usedTabIDs";
     this.strSessionUsedTabIDsAggregate = "usedTabIDsAggregate";
-    this.strSessionSelectedDump = "selectedDump";
     this.strSessionSelectedFile = "selectedFile";
     this.strSessionSelectedStoredFunction = "selectedStoredFunction";
     this.strSessionDistinctFields = "distinctFields";

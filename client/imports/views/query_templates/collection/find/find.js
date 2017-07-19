@@ -3,7 +3,7 @@ import {Meteor} from "meteor/meteor";
 import {Session} from "meteor/session";
 import Helper from "/client/imports/helper";
 import Enums from "/lib/imports/enums";
-import {Settings} from "/lib/imports/collections/settings";
+import {Settings} from "/lib/imports/collections";
 import {initExecuteQuery} from "/client/imports/views/pages/browse_collection/browse_collection";
 import {getSelectorValue} from "/client/imports/views/query_templates_options/selector/selector";
 import {getCursorOptions} from "/client/imports/views/query_templates_options/cursor_options/cursor_options";

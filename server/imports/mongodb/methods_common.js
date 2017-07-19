@@ -4,12 +4,8 @@
 /*global Async*/
 /*global moment*/
 import {Meteor} from "meteor/meteor";
-import {Settings} from "/lib/imports/collections/settings";
-import {Connections} from "/lib/imports/collections/connections";
-import {Dumps} from "/lib/imports/collections/dumps";
+import {Settings, Connections, Dumps, ShellCommands, SchemaAnalyzeResult} from "/lib/imports/collections";
 import {migrateConnectionsIfExist} from "/server/imports/internal/startup";
-import ShellCommands from "/lib/imports/collections/shell";
-import SchemaAnaylzeResult from "/lib/imports/collections/schema_analyze_result";
 import LOGGER from "../internal/logger";
 import Helper from "./helper";
 
@@ -279,7 +275,7 @@ Meteor.methods({
             spawnedShellsBySessionId[sessionId] = null;
         }
         ShellCommands.remove({'sessionId': sessionId});
-        SchemaAnaylzeResult.remove({'sessionId': sessionId});
+        SchemaAnalyzeResult.remove({'sessionId': sessionId});
         Dumps.remove({'sessionId': sessionId});
     },
 
@@ -433,7 +429,7 @@ Meteor.methods({
 
             spawned.stderr.on('data', Meteor.bindEnvironment(function (data) {
                 if (data.toString()) {
-                    SchemaAnaylzeResult.insert({
+                    SchemaAnalyzeResult.insert({
                         'date': Date.now(),
                         'sessionId': sessionId,
                         'connectionId': connectionId,
@@ -443,7 +439,7 @@ Meteor.methods({
             }));
 
             spawned.on('close', Meteor.bindEnvironment(function () {
-                SchemaAnaylzeResult.insert({
+                SchemaAnalyzeResult.insert({
                     'date': Date.now(),
                     'sessionId': sessionId,
                     'connectionId': connectionId,

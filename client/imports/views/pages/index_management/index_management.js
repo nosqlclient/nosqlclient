@@ -6,7 +6,7 @@ import "./index_management.html";
 import {FlowRouter} from "meteor/kadira:flow-router";
 import {prepareFormForView} from "./add_index/add_index";
 import {initialize} from "./view_raw/view_raw";
-import {Settings} from "/lib/imports/collections/settings";
+import {Settings} from "/lib/imports/collections";
 
 /*global moment*/
 /*global swal*/

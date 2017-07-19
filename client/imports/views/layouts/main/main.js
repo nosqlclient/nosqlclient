@@ -2,7 +2,7 @@ import {Template} from "meteor/templating";
 import "/client/imports/views/layouts/navigation/navigation";
 import "/client/imports/views/layouts/top_navbar/top_navbar";
 import "/client/imports/views/layouts/footer/footer.html";
-import {Settings} from "/lib/imports/collections/settings";
+import {Settings} from "/lib/imports/collections";
 import Enums from "/lib/imports/enums";
 import "./main.html";
 

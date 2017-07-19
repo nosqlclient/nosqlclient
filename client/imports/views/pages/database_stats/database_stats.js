@@ -2,7 +2,7 @@ import {Template} from "meteor/templating";
 import {Meteor} from "meteor/meteor";
 import {Session} from "meteor/session";
 import Helper from "/client/imports/helper";
-import {Settings} from "/lib/imports/collections/settings";
+import {Settings} from "/lib/imports/collections";
 import "./database_stats.html";
 
 require('datatables.net')(window, $);

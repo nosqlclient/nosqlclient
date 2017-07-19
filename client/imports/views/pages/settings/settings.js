@@ -1,5 +1,5 @@
 import {Template} from "meteor/templating";
-import {Settings} from "/lib/imports/collections/settings";
+import {Settings} from "/lib/imports/collections";
 import Helper from "/client/imports/helper";
 import "./settings.html";
 

@@ -3,7 +3,7 @@ import {Meteor} from "meteor/meteor";
 import {Session} from "meteor/session";
 import {FlowRouter} from "meteor/kadira:flow-router";
 import Helper from "/client/imports/helper";
-import {Connections} from "/lib/imports/collections/connections";
+import {Connections} from "/lib/imports/collections";
 import {initUsers, popEditUserModal} from "./manage_users/manage_users";
 import {initRoles} from "./manage_roles/manage_roles";
 import "./user_management.html";

@@ -3,7 +3,7 @@
  */
 
 import {Meteor} from "meteor/meteor";
-import {Dumps} from "/lib/imports/collections/dumps";
+import {Dumps} from "/lib/imports/collections";
 import {getProperBinary} from "./methods_common";
 import LOGGER from "../internal/logger";
 

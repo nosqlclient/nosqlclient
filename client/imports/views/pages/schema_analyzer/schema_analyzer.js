@@ -6,7 +6,7 @@ import {Meteor} from "meteor/meteor";
 import {Session} from "meteor/session";
 import {FlowRouter} from "meteor/kadira:flow-router";
 import Helper from "/client/imports/helper";
-import SchemaAnalyzeResult from "/lib/imports/collections/schema_analyze_result";
+import {SchemaAnalyzeResult} from "/lib/imports/collections";
 import "./schema_analyzer.html";
 
 const toastr = require('toastr');

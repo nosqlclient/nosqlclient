@@ -7,7 +7,7 @@ import {Template} from "meteor/templating";
 import {Meteor} from "meteor/meteor";
 import {Session} from "meteor/session";
 import Helper from "/client/imports/helper";
-import {Settings} from "/lib/imports/collections/settings";
+import {Settings} from "/lib/imports/collections";
 import {FlowRouter} from "meteor/kadira:flow-router";
 import Enums from "/lib/imports/enums";
 import {initQueryHistories} from "./query_histories/query_histories";

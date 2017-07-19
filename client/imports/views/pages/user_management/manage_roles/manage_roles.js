@@ -7,7 +7,7 @@ import {Template} from "meteor/templating";
 import {Meteor} from "meteor/meteor";
 import {Session} from "meteor/session";
 import Helper from "/client/imports/helper";
-import {Connections} from "/lib/imports/collections/connections";
+import {Connections} from "/lib/imports/collections";
 import "./manage_roles.html";
 
 const toastr = require('toastr');

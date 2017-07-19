@@ -1,7 +1,7 @@
 /**
  * Created by RSercan on 30.12.2015.
  */
-import {Settings} from "/lib/imports/collections/settings";
+import {Settings} from "/lib/imports/collections";
 import {deserialize, serialize} from "./extended_json";
 
 const addOptionToUrl = function (url, option, value) {

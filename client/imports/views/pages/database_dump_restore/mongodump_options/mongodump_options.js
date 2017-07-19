@@ -1,4 +1,3 @@
-import {Template} from "meteor/templating";
 import {$} from "meteor/jquery";
 import "./mongodump_options.html";
 import Helper from "/client/imports/helper";

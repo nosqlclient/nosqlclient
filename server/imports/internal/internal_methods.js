@@ -2,12 +2,8 @@
  * Created by RSercan on 26.12.2015.
  */
 import {Meteor} from "meteor/meteor";
-import {Actions} from "/lib/imports/collections/actions";
-import {QueryHistory} from "/lib/imports/collections/query_history";
-import {Settings} from "/lib/imports/collections/settings";
-import {Connections} from "/lib/imports/collections/connections";
+import {Actions, QueryHistory, Settings, Connections, SchemaAnalyzeResult} from "/lib/imports/collections";
 import mailchimpAPI from "meteor/universe:mailchimp-v3-api";
-import SchemaAnalyzeResult from "/lib/imports/collections/schema_analyze_result";
 import {HTTP} from "meteor/http";
 import LOGGER from "../internal/logger";
 
@@ -132,9 +128,9 @@ Meteor.methods({
     checkMongoclientVersion(){
         try {
             LOGGER.info('[checkNosqlclientVersion]');
-            const response = HTTP.get('https://api.github.com/repos/mongoclient/mongoclient/releases/latest', {headers: {"User-Agent": "Mongoclient"}});
+            const response = HTTP.get('https://api.github.com/repos/nosqlclient/nosqlclient/releases/latest', {headers: {"User-Agent": "Mongoclient"}});
             if (response && response.data && response.data.name && response.data.name !== packageJson.version) {
-                return "There's a new version of mongoclient: " + response.data.name + ", <a href='https://github.com/mongoclient/mongoclient/releases/latest' target='_blank'>download here</a>, if you're using docker just use pull for the <b>" + response.data.name + "</b> or <b>latest</b> tag !";
+                return "There's a new version of mongoclient: " + response.data.name + ", <a href='https://github.com/nosqlclient/nosqlclient/releases/latest' target='_blank'>download here</a>, if you're using docker just use pull for the <b>" + response.data.name + "</b> or <b>latest</b> tag !";
             }
         } catch (e) {
             LOGGER.error('[checkNosqlclientVersion]', e);

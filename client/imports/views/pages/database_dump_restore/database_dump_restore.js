@@ -1,8 +1,7 @@
 import {Template} from "meteor/templating";
 import {Meteor} from "meteor/meteor";
 import {Session} from "meteor/session";
-import {Connections} from "/lib/imports/collections/connections";
-import {Dumps} from "/lib/imports/collections/dumps";
+import {Connections, Dumps} from "/lib/imports/collections";
 import {FlowRouter} from "meteor/kadira:flow-router";
 import {$} from "meteor/jquery";
 import "./database_dump_restore.html";
