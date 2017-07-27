@@ -75,6 +75,8 @@ const convertToExtendedJson = function (str) {
 };
 
 let Helper = function () {
+    this.strSessionPromptedUsername = "promptedUsername";
+    this.strSessionPromptedPassword = "promptedPassword";
     this.strSessionConnection = "connection";
     this.strSessionCollectionNames = "collectionNames";
     this.strSessionSelectedCollection = "selectedCollection";

@@ -138,7 +138,7 @@ const initializeCommandCodeMirror = function () {
                 },
                 "Ctrl-Space": "autocomplete",
                 "Enter": function (cm) {
-                    Meteor.call("executeShellCommand", cm.getValue(), Session.get(Helper.strSessionConnection), Meteor.default_connection._lastSessionId, (err) => {
+                    Meteor.call("executeShellCommand", cm.getValue(), Session.get(Helper.strSessionConnection), Session.get(Helper.strSessionPromptedUsername), Session.get(Helper.strSessionPromptedPassword), Meteor.default_connection._lastSessionId, (err) => {
                         if (err) Helper.showMeteorFuncError(err, null, "Couldn't execute shell command");
                         else addCommandToHistory(cm.getValue());
                     })
@@ -231,7 +231,7 @@ Template.mcShell.onRendered(function () {
 
     initializeCommandCodeMirror();
 
-    Meteor.call("connectToShell", Session.get(Helper.strSessionConnection), Meteor.default_connection._lastSessionId, (err, result) => {
+    Meteor.call("connectToShell", Session.get(Helper.strSessionConnection), Session.get(Helper.strSessionPromptedUsername), Session.get(Helper.strSessionPromptedPassword), Meteor.default_connection._lastSessionId, (err, result) => {
         if (err || result.error) Helper.showMeteorFuncError(err, result, "Couldn't connect via shell");
         else addCommandToHistory(result);
     });

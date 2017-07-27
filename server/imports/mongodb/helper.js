@@ -31,7 +31,7 @@ let Helper = function () {
 };
 
 Helper.prototype = {
-    getConnectionUrl (connection, addDB) {
+    getConnectionUrl (connection, addDB, username, password, addAuthSource) {
         if (connection.url) {
             if (!addDB) {
                 let options = "";
@@ -57,8 +57,12 @@ Helper.prototype = {
         // url
         let connectionUrl = 'mongodb://';
         if (connection.authenticationType) {
-            if (connection[connection.authenticationType].username) connectionUrl += encodeURIComponent(connection[connection.authenticationType].username);
-            if (connection[connection.authenticationType].password) connectionUrl += ':' + encodeURIComponent(connection[connection.authenticationType].password);
+            if (username) connectionUrl += encodeURIComponent(username);
+            else if (connection[connection.authenticationType].username) connectionUrl += encodeURIComponent(connection[connection.authenticationType].username);
+
+            if (password) connectionUrl += ':' + encodeURIComponent(password);
+            else if (connection[connection.authenticationType].password) connectionUrl += ':' + encodeURIComponent(connection[connection.authenticationType].password);
+
             connectionUrl += "@";
         }
         for (let server of connection.servers) {
@@ -90,6 +94,16 @@ Helper.prototype = {
 
         if (connection.ssl && connection.ssl.enabled) connectionUrl += addOptionToUrl(connectionUrl, 'ssl', 'true');
         if (connection.authenticationType) connectionUrl += addOptionToUrl(connectionUrl, 'authMechanism', connection.authenticationType.toUpperCase().replace(new RegExp("_", 'g'), "-"));
+
+        if (addAuthSource) {
+            if (connection.authenticationType === 'mongodb_cr' || connection.authenticationType === 'scram_sha_1') {
+                if (connection[connection.authenticationType].authSource) connectionUrl += addOptionToUrl(connection, 'authSource', connection[connection.authenticationType].authSource);
+                else connectionUrl += addOptionToUrl(connectionUrl, 'authSource', connection.databaseName);
+            }
+            else if (connection.authenticationType === 'gssapi' || connection.authenticationType === 'plain') {
+                connectionUrl += addOptionToUrl(connectionUrl, 'authSource', '$external');
+            }
+        }
 
         return connectionUrl;
     },

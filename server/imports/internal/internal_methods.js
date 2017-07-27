@@ -21,7 +21,7 @@ const checkAuthenticationOfConnection = function (connection) {
 
     if (connection.mongodb_x509) delete connection.ssl;
     if (connection.gssapi && !connection.gssapi.serviceName) throw new Meteor.Error('Service name is required for GSSAPI !');
-    if (connection.authenticationType && !connection[connection.authenticationType].username) throw new Meteor.Error('Username is required for this authentication type !');
+    //if (connection.authenticationType && !connection[connection.authenticationType].username) throw new Meteor.Error('Username is required for this authentication type !');
 
 };
 

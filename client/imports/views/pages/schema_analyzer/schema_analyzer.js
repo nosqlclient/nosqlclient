@@ -176,7 +176,7 @@ Template.schemaAnalyzer.events({
 
         Ladda.create(document.querySelector('#btnAnalyzeNow')).start();
 
-        Meteor.call("analyzeSchema", Session.get(Helper.strSessionConnection), collection, Meteor.default_connection._lastSessionId, (err) => {
+        Meteor.call("analyzeSchema", Session.get(Helper.strSessionConnection), Session.get(Helper.strSessionPromptedUsername), Session.get(Helper.strSessionPromptedPassword), collection, Meteor.default_connection._lastSessionId, (err) => {
             if (err) {
                 Helper.showMeteorFuncError(err, null, "Couldn't analyze collection");
             }

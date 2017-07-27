@@ -52,11 +52,11 @@ export const getProperBinary = function (binaryName) {
     else throw new Meteor.Error('Please set mongo binaries from settings');
 };
 
-const connectToShell = function (connectionId, sessionId) {
+const connectToShell = function (connectionId, username, password, sessionId) {
     try {
         const connection = Connections.findOne({_id: connectionId});
         if (!spawnedShellsBySessionId[sessionId]) {
-            const connectionUrl = Helper.getConnectionUrl(connection);
+            const connectionUrl = Helper.getConnectionUrl(connection, false, username, password, true);
             const mongoPath = getProperBinary('mongo');
             LOGGER.info('[shell]', mongoPath, connectionUrl, sessionId);
             spawnedShellsBySessionId[sessionId] = spawn(mongoPath, [connectionUrl]);
@@ -279,9 +279,9 @@ Meteor.methods({
         Dumps.remove({'sessionId': sessionId});
     },
 
-    connect(connectionId, sessionId) {
+    connect(connectionId, username, password, sessionId) {
         const connection = Connections.findOne({_id: connectionId});
-        const connectionUrl = Helper.getConnectionUrl(connection);
+        const connectionUrl = Helper.getConnectionUrl(connection, false, username, password);
         const connectionOptions = Helper.getConnectionOptions(connection);
 
         LOGGER.info('[connect]', connectionUrl, Helper.clearConnectionOptionsForLog(connectionOptions), sessionId);
@@ -403,18 +403,18 @@ Meteor.methods({
         ShellCommands.remove({'sessionId': sessionId});
     },
 
-    executeShellCommand(command, connectionId, sessionId){
+    executeShellCommand(command, connectionId, username, password, sessionId){
         LOGGER.info('[shellCommand]', sessionId, command, connectionId);
-        if (!spawnedShellsBySessionId[sessionId]) connectToShell(connectionId, sessionId);
+        if (!spawnedShellsBySessionId[sessionId]) connectToShell(connectionId, username, password, sessionId);
         if (spawnedShellsBySessionId[sessionId]) spawnedShellsBySessionId[sessionId].stdin.write(command + '\n');
     },
 
-    connectToShell(connectionId, sessionId){
-        return connectToShell(connectionId, sessionId);
+    connectToShell(connectionId, username, password, sessionId){
+        return connectToShell(connectionId, username, password, sessionId);
     },
 
-    analyzeSchema(connectionId, collection, sessionId){
-        const connectionUrl = Helper.getConnectionUrl(Connections.findOne({_id: connectionId}), true);
+    analyzeSchema(connectionId, username, password, collection, sessionId){
+        const connectionUrl = Helper.getConnectionUrl(Connections.findOne({_id: connectionId}), true, username, password, true);
         const mongoPath = getProperBinary('mongo');
 
         let args = [connectionUrl, '--quiet', '--eval', 'var collection =\"' + collection + '\", outputFormat=\"json\"', getMongoExternalsPath() + '/variety/variety.js_'];
