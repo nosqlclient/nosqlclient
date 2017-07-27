@@ -294,6 +294,7 @@ Meteor.methods({
                         localPort: connection.ssh.localPort ? connection.ssh.localPort : connection.servers[0].port,
                         host: connection.ssh.host,
                         port: connection.ssh.port,
+                        readyTimeout: 99999,
                         username: connection.ssh.username
                     };
 
