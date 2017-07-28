@@ -122,7 +122,7 @@ Helper.prototype = {
 
         if (addAuthSource) {
             if (connection.authenticationType === 'mongodb_cr' || connection.authenticationType === 'scram_sha_1') {
-                if (connection[connection.authenticationType].authSource) connectionUrl += addOptionToUrl(connection, 'authSource', connection[connection.authenticationType].authSource);
+                if (connection[connection.authenticationType].authSource) connectionUrl += addOptionToUrl(connectionUrl, 'authSource', connection[connection.authenticationType].authSource);
                 else connectionUrl += addOptionToUrl(connectionUrl, 'authSource', connection.databaseName);
             }
             else if (connection.authenticationType === 'gssapi' || connection.authenticationType === 'plain') {
