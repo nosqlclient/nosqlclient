@@ -31,23 +31,48 @@ let Helper = function () {
 };
 
 Helper.prototype = {
+    extractDBFromConnectionUrl (connection) {
+        let options = "";
+        if (connection.url.indexOf('?') !== -1) {
+            options = "?" + connection.url.split('?')[1];
+        }
+
+        const splited = connection.url.split('/');
+        if (splited.length <= 3) {
+            connection.url += "/" + options;
+        }
+        else {
+            splited[3] = '';
+            connection.url = splited.join('/') + options;
+        }
+    },
+
+    changeUsernameAndPasswordFromConnectionUrl (connection, username, password) {
+        let splitedForDash = connection.url.split('//');
+
+        if (connection.url.indexOf('@') !== -1) {
+            let splitedForAt = splitedForDash[1].split('@');
+            let usernameAndPassword = splitedForAt[0].split(':');
+            if (!username && usernameAndPassword[0]) username = usernameAndPassword[0];
+            if (!password && usernameAndPassword.length >= 2 && usernameAndPassword[1]) password = usernameAndPassword[1];
+
+            connection.url = splitedForDash[0] + "//" + username + ":" + password + "@" + splitedForAt[1];
+        }
+        else {
+            connection.url = splitedForDash[0] + "//" + username + ":" + password + "@" + splitedForDash[1];
+        }
+    },
+
+    addAuthSourceToConnectionUrl (connection){
+        if (connection.url.indexOf('authSource') !== -1) return;
+        connection.url += addOptionToUrl(connection.url, 'authSource', connection.databaseName);
+    },
+
     getConnectionUrl (connection, addDB, username, password, addAuthSource) {
         if (connection.url) {
-            if (!addDB) {
-                let options = "";
-                if (connection.url.indexOf('?') !== -1) {
-                    options = "?" + connection.url.split('?')[1];
-                }
-
-                const splited = connection.url.split('/');
-                if (splited.length <= 3) {
-                    return connection.url += "/" + options;
-                }
-                else {
-                    splited[3] = '';
-                    return splited.join('/') + options;
-                }
-            }
+            if (username || password) this.changeUsernameAndPasswordFromConnectionUrl(connection, username, password);
+            if (!addDB) this.extractDBFromConnectionUrl(connection);
+            if (addAuthSource) this.addAuthSourceToConnectionUrl(connection);
 
             return connection.url;
         }
