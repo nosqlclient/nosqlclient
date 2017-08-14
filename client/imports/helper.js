@@ -358,7 +358,15 @@ Helper.prototype = {
     },
 
     initializeCodeMirror  (divSelector, txtAreaId, keepValue, height = 100, noResize) {
+        const autoCompleteShortcut = Settings.findOne().autoCompleteShortcut || "Ctrl-Space";
         let codeMirror;
+        let extraKeys = {
+            "Ctrl-Q": function (cm) {
+                cm.foldCode(cm.getCursor());
+            }
+        };
+        extraKeys[autoCompleteShortcut] = "autocomplete";
+
         if (!divSelector.data('editor')) {
             codeMirror = CodeMirror.fromTextArea(document.getElementById(txtAreaId), {
                 mode: "javascript",
@@ -366,12 +374,7 @@ Helper.prototype = {
                 styleActiveLine: true,
                 lineNumbers: true,
                 lineWrapping: false,
-                extraKeys: {
-                    "Ctrl-Q": function (cm) {
-                        cm.foldCode(cm.getCursor());
-                    },
-                    "Ctrl-Space": "autocomplete"
-                },
+                extraKeys: extraKeys,
                 foldGutter: true,
                 gutters: ["CodeMirror-linenumbers", "CodeMirror-foldgutter"]
             });
@@ -460,6 +463,10 @@ export default helper;
 
         return null;
     };
+
+    Template.registerHelper('getConfiguredAutoCompletionKey', function () {
+        return Settings.findOne().autoCompleteShortcut || "Ctrl-Space";
+    });
 
     Template.registerHelper('isOptionSelected', function (option, sessionVar) {
         if (!sessionVar || Object.prototype.toString.call(sessionVar) !== '[object String]') return $.inArray(option, Session.get(helper.strSessionSelectedOptions)) !== -1;

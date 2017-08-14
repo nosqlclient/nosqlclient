@@ -8,7 +8,7 @@ import {FlowRouter} from "meteor/kadira:flow-router";
 import {initShellHistories} from "./shell_histories/shell_histories";
 import Enums from "/lib/imports/enums";
 import Helper from "/client/imports/helper";
-import {ShellCommands} from "/lib/imports/collections";
+import {ShellCommands, Settings} from "/lib/imports/collections";
 import "./mc_shell.html";
 
 const CodeMirror = require("codemirror");
@@ -123,7 +123,20 @@ const gatherCommandAutoCompletions = function (editorValue, curWord) {
 };
 
 const initializeCommandCodeMirror = function () {
+    const autoCompleteShortcut = Settings.findOne().autoCompleteShortcut || "Ctrl-Space";
     let codeMirror;
+    let extraKeys = {
+        "Ctrl-Q": function (cm) {
+            cm.foldCode(cm.getCursor());
+        },
+        "Enter": function (cm) {
+            Meteor.call("executeShellCommand", cm.getValue(), Session.get(Helper.strSessionConnection), Session.get(Helper.strSessionPromptedUsername), Session.get(Helper.strSessionPromptedPassword), Meteor.default_connection._lastSessionId, (err) => {
+                if (err) Helper.showMeteorFuncError(err, null, "Couldn't execute shell command");
+                else addCommandToHistory(cm.getValue());
+            })
+        }
+    };
+    extraKeys[autoCompleteShortcut] = "autocomplete";
     let divCommand = $('#divShellCommand');
     if (!divCommand.data('editor')) {
         codeMirror = CodeMirror.fromTextArea(document.getElementById('txtShellCommand'), {
@@ -132,18 +145,7 @@ const initializeCommandCodeMirror = function () {
             styleActiveLine: true,
             lineNumbers: true,
             lineWrapping: false,
-            extraKeys: {
-                "Ctrl-Q": function (cm) {
-                    cm.foldCode(cm.getCursor());
-                },
-                "Ctrl-Space": "autocomplete",
-                "Enter": function (cm) {
-                    Meteor.call("executeShellCommand", cm.getValue(), Session.get(Helper.strSessionConnection), Session.get(Helper.strSessionPromptedUsername), Session.get(Helper.strSessionPromptedPassword), Meteor.default_connection._lastSessionId, (err) => {
-                        if (err) Helper.showMeteorFuncError(err, null, "Couldn't execute shell command");
-                        else addCommandToHistory(cm.getValue());
-                    })
-                }
-            },
+            extraKeys: extraKeys,
             foldGutter: true,
             gutters: ["CodeMirror-linenumbers", "CodeMirror-foldgutter"]
         });
@@ -192,7 +194,7 @@ Template.mcShell.onRendered(function () {
         return;
     }
 
-    this.subscribe('settings');
+    const settings = this.subscribe('settings');
     this.subscribe('connections');
     this.subscribe('shell_commands');
 
@@ -229,7 +231,11 @@ Template.mcShell.onRendered(function () {
         }
     });
 
-    initializeCommandCodeMirror();
+    this.autorun(() => {
+        if (settings.ready()) {
+            initializeCommandCodeMirror();
+        }
+    });
 
     Meteor.call("connectToShell", Session.get(Helper.strSessionConnection), Session.get(Helper.strSessionPromptedUsername), Session.get(Helper.strSessionPromptedPassword), Meteor.default_connection._lastSessionId, (err, result) => {
         if (err || result.error) Helper.showMeteorFuncError(err, result, "Couldn't connect via shell");

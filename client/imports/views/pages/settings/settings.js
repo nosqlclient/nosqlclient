@@ -12,6 +12,7 @@ const Ladda = require('ladda');
 const proceedSavingSettings = function () {
     const settings = {};
     settings.autoCompleteSamplesCount = $('#inputAutoCompleteSamplesCount').val();
+    settings.autoCompleteShortcut = $('#inputAutocompleteShortcut').val();
     settings.scale = $("#cmbScale").chosen().val();
     settings.defaultResultView = $("#cmbResultView").chosen().val();
     settings.maxAllowedFetchSize = $("#inputMaxAllowedFetchSize").val();
@@ -80,5 +81,5 @@ const load = function () {
     $('#inputShowDBStats').iCheck(settings.showDBStats ? 'check' : 'uncheck');
     $('#inputMongoExecutable').val(settings.mongoBinaryPath || '');
     $('#inputMaxChartPoints').val(settings.maxLiveChartDataPoints || 15);
-
+    $('#inputAutocompleteShortcut').val(settings.autoCompleteShortcut || 'Ctrl-Space');
 };
