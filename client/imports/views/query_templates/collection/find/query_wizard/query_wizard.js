@@ -1,13 +1,13 @@
 /**
  * Created by Sercan on 16.11.2016.
  */
-import {Template} from 'meteor/templating';
-import {Meteor} from 'meteor/meteor';
-import {Session} from 'meteor/session';
-import {FlowRouter} from 'meteor/kadira:flow-router';
-import Helper from '/client/imports/helper';
-
-import './query_wizard.html';
+import {Template} from "meteor/templating";
+import {Meteor} from "meteor/meteor";
+import {Session} from "meteor/session";
+import {FlowRouter} from "meteor/kadira:flow-router";
+import Helper from "/client/imports/helper";
+import "./query_wizard.html";
+import {$} from "meteor/jquery";
 
 require('typed.js');
 
@@ -108,16 +108,14 @@ const respond = function () {
             }
             chatDiv.append($('<div class="right"><div class="author-name">Me </div> <div class="chat-message">' + txt.val() + '</div></div>'));
             chatDiv.append($('<div class="left"><div class="author-name">Nosqlclient </div> <div class="chat-message active"></div></div>'));
-            chatDiv.find('.left').last().find('.chat-message').typed({
-                strings: ["So, you want to retrieve documents that..."],
-                typeSpeed: -15
-            });
+            chatDiv.find('.left').last().find('.chat-message').html("So, you want to retrieve documents that...");
             txtDiv.css('display', 'none');
             cmbDiv.css('display', '');
             cmb.chosen({
                 allow_single_deselect: true,
                 skip_no_results: true
             });
+
             step++;
             fieldName = txt.val().trim();
             break;
@@ -132,10 +130,7 @@ const respond = function () {
             chatDiv.append($('<div class="right"><div class="author-name">Me </div> <div class="chat-message">I want to retrieve documents that ' +
                 text + '</div></div>'));
             chatDiv.append($('<div class="left"><div class="author-name">Nosqlclient </div> <div class="chat-message active"></div></div>'));
-            chatDiv.find('.left').last().find('.chat-message').typed({
-                strings: ['Okay, ' + stepText],
-                typeSpeed: -15
-            });
+            chatDiv.find('.left').last().find('.chat-message').html('Okay, ' + stepText);
 
             step++;
             break;
@@ -150,10 +145,7 @@ const respond = function () {
                 let convertedValue = Helper.convertAndCheckJSON(txtValue);
                 if (convertedValue["ERROR"] || Object.prototype.toString.call(convertedValue) !== '[object Array]') {
                     chatDiv.append($('<div class="left"><div class="author-name">Nosqlclient </div> <div class="chat-message active"></div></div>'));
-                    chatDiv.find('.left').last().find('.chat-message').typed({
-                        strings: ["Please provide a valid array, e.g. [3,5,6,7] or [\"myValue\",\"mySecondValue\"]"],
-                        typeSpeed: -15
-                    });
+                    chatDiv.find('.left').last().find('.chat-message').html("Please provide a valid array, e.g. [3,5,6,7] or [\"myValue\",\"mySecondValue\"]");
                     break;
                 }
             }
@@ -161,10 +153,7 @@ const respond = function () {
             let stepText = step3();
             chatDiv.append($('<div class="right"><div class="author-name">Me </div> <div class="chat-message">' + txt.val() + '</div></div>'));
             chatDiv.append($('<div class="left"><div class="author-name">Nosqlclient </div> <div class="chat-message active"></div></div>'));
-            chatDiv.find('.left').last().find('.chat-message').typed({
-                strings: [stepText],
-                typeSpeed: -15
-            });
+            chatDiv.find('.left').last().find('.chat-message').html(stepText);
 
             step++;
             break;
@@ -178,10 +167,7 @@ const respond = function () {
             regexOptions = cmb.val();
             chatDiv.append($('<div class="right"><div class="author-name">Me </div> <div class="chat-message">' + (regexOptions ? regexOptions : "No options") + '</div></div>'));
             chatDiv.append($('<div class="left"><div class="author-name">Nosqlclient </div> <div class="chat-message active"></div></div>'));
-            chatDiv.find('.left').last().find('.chat-message').typed({
-                strings: [redirectText],
-                typeSpeed: -15
-            });
+            chatDiv.find('.left').last().find('.chat-message').html(redirectText);
 
             redirect();
             break;

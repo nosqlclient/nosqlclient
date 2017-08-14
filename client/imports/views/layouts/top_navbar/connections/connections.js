@@ -527,7 +527,10 @@ Template.connections.onRendered(function () {
             Session.set(Helper.strSessionConnection, table.row(this).data()._id);
             $('#btnConnect').prop('disabled', false);
         }
-
+    });
+    selector.find('tbody').on('dblclick', 'tr', function () {
+        Ladda.create(document.querySelector('#btnConnect')).start();
+        connect(false);
     });
 
     const addEditModal = $('#addEditConnectionModal');
