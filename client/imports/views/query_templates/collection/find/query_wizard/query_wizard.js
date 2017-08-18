@@ -9,8 +9,6 @@ import Helper from "/client/imports/helper";
 import "./query_wizard.html";
 import {$} from "meteor/jquery";
 
-require('typed.js');
-
 let step = 1, selectedOption, fieldName, txtValue, regexOptions;
 const redirectText = "I'm redirecting you with your query, just press Execute";
 
