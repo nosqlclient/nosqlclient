@@ -4,6 +4,7 @@ import {Session} from "meteor/session";
 import Helper from "/client/imports/helper";
 import {Settings} from "/lib/imports/collections";
 import "./database_stats.html";
+import Enums from "/lib/imports/enums";
 
 require('datatables.net')(window, $);
 require('datatables.net-buttons')(window, $);
@@ -16,6 +17,8 @@ require('bootstrap-filestyle');
 
 const toastr = require('toastr');
 const Ladda = require('ladda');
+const packageJson = require('/package.json');
+
 /**
  * Created by RSercan on 26.12.2015.
  */
@@ -645,8 +648,28 @@ const initMemoryChart = function (data, text) {
     }
 };
 
+const showWhatisNew = function () {
+    const modal = $('#whatsNewModal');
+    modal.on('shown.bs.modal', function () {
+        $('#whatsNewHeader').html("What's new in " + packageJson.version);
+        $("#wizard").steps({
+            enableFinishButton: false,
+            enableCancelButton: false
+        });
+    });
+
+    if (!localStorage.getItem(Enums.LOCAL_STORAGE_KEYS.WHAT_IS_NEW) && Session.get(Helper.strSessionCollectionNames) == undefined) {
+        modal.modal('show');
+    }
+};
+
 Template.databaseStats.events({
-    'click #btnSubscribe'(){
+    'click #btnDontShowWhatsNewAgain'() {
+        localStorage.setItem(Enums.LOCAL_STORAGE_KEYS.WHAT_IS_NEW, "true");
+        $('#whatsNewModal').modal('hide');
+    },
+
+    'click #btnSubscribe'() {
         Ladda.create(document.querySelector('#btnSubscribe')).start();
 
         Meteor.call("handleSubscriber", $('#txtEmailToSubscribe').val(), function (err) {
@@ -684,6 +707,10 @@ Template.databaseStats.onRendered(function () {
             }
         }
     });
+
+    Meteor.setTimeout(function () {
+        showWhatisNew();
+    }, 500);
 });
 
 Template.databaseStats.onDestroyed(function () {
@@ -694,12 +721,12 @@ Template.databaseStats.onDestroyed(function () {
 });
 
 Template.databaseStats.helpers({
-    isSubscribed (){
+    isSubscribed() {
         const settings = Settings.findOne();
         return settings ? settings.subscribed : false;
     },
 
-    getServerStatus  () {
+    getServerStatus() {
         if (Settings.findOne().showDBStats) {
             if (Session.get(Helper.strSessionServerStatus) == undefined) {
                 fetchStatus();
@@ -709,7 +736,7 @@ Template.databaseStats.helpers({
         }
     },
 
-    getDBStats  () {
+    getDBStats() {
         if (Settings.findOne().showDBStats) {
             if (Session.get(Helper.strSessionDBStats) == undefined) {
                 fetchStats();
