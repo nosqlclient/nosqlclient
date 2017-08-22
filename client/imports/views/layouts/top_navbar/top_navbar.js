@@ -5,7 +5,6 @@ import {FlowRouter} from "meteor/kadira:flow-router";
 import Helper from "/client/imports/helper";
 import {Connections} from "/lib/imports/collections";
 import {connect, populateConnectionsTable} from "/client/imports/views/layouts/top_navbar/connections/connections";
-import "/client/imports/views/layouts/top_navbar/connections/connections";
 import "./top_navbar.html";
 
 const toastr = require('toastr');
@@ -100,7 +99,7 @@ Template.topNavbar.events({
         }
     },
 
-    'change .filestyle'(e){
+    'change .filestyle'(e) {
         let inputSelector = $('#' + e.currentTarget.id);
         let blob = inputSelector[0].files[0];
         let fileInput = inputSelector.siblings('.bootstrap-filestyle').children('input');
@@ -116,12 +115,12 @@ Template.topNavbar.events({
         connect(true);
     },
 
-    'click #btnExportMongoclient' (e) {
+    'click #btnExportMongoclient'(e) {
         e.preventDefault();
         window.open('exportMongoclient');
     },
 
-    'click #btnImportMongoclient' (e) {
+    'click #btnImportMongoclient'(e) {
         e.preventDefault();
         let icon = $('#importExportMongoclientIcon');
         $('#importExportMongoclientTitle').text('Import Mongoclient Data');
@@ -133,12 +132,12 @@ Template.topNavbar.events({
         $('#importExportMongoclientModal').modal('show');
     },
 
-    'click #btnAboutMongoclient' (e) {
+    'click #btnAboutMongoclient'(e) {
         e.preventDefault();
         $('#aboutModal').modal('show');
     },
 
-    'click #btnSwitchDatabase' (e) {
+    'click #btnSwitchDatabase'(e) {
         e.preventDefault();
         $('#switchDatabaseModal').modal('show');
 
@@ -165,7 +164,7 @@ Template.topNavbar.events({
 
     },
 
-    'click #btnConnectionList' () {
+    'click #btnConnectionList'() {
         if (!Session.get(Helper.strSessionConnection)) {
             populateConnectionsTable();
 
@@ -174,7 +173,7 @@ Template.topNavbar.events({
         }
     },
 
-    'click #btnConnectSwitchedDatabase' () {
+    'click #btnConnectSwitchedDatabase'() {
         let selector = $('#inputDatabaseNameToSwitch');
         if (!selector.val()) {
             toastr.error('Please enter a database name or choose one from the list');
@@ -190,7 +189,7 @@ Template.topNavbar.events({
     },
 
     // Toggle left navigation
-    'click #navbar-minimalize' (event) {
+    'click #navbar-minimalize'(event) {
         event.preventDefault();
 
         let body = $('body');
@@ -226,13 +225,13 @@ Template.topNavbar.events({
         }, 300);
     },
 
-    'click #btnConnect' () {
+    'click #btnConnect'() {
         // loading button
         Ladda.create(document.querySelector('#btnConnect')).start();
         connect(false);
     },
 
-    'click #btnDisconnect' (e) {
+    'click #btnDisconnect'(e) {
         e.preventDefault();
 
         Meteor.call('disconnect', Meteor.default_connection._lastSessionId);
@@ -241,13 +240,13 @@ Template.topNavbar.events({
         FlowRouter.go('/databaseStats');
     },
 
-    'click #anchorTab1'  () {
+    'click #anchorTab1'() {
         if (!$('#anchorTab1').attr('data-toggle')) {
             toastr.warning('Disable URI connection to use this tab');
         }
     },
 
-    'click #anchorTab2'  () {
+    'click #anchorTab2'() {
         if (!$('#anchorTab2').attr('data-toggle')) {
             toastr.warning('Disable URI connection to use this tab');
         }
