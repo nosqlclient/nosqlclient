@@ -1,4 +1,14 @@
 # History
+## 2.2.0, 23 Aug 2017
+- Added clone collection
+- Added zoom in/out to charts
+- Added configurable number of points to charts
+- Made auto-complete enabled by default
+- Made auto-complete shortcut configurable
+- Added prompting credentials when they're empty in the connection
+- Changed SSH tunnel readyTimeout to 99 secs
+- Fixed connections UI
+- Fixed shell incorrect command crashes
 
 ## 2.1.0, 13 May 2017
 - Fixed sidebar minimize button
