@@ -1,219 +1,165 @@
 import {Template} from "meteor/templating";
 import {Meteor} from "meteor/meteor";
 import {Session} from "meteor/session";
+import {Connections, Dumps} from "/lib/imports/collections";
 import {FlowRouter} from "meteor/kadira:flow-router";
-import Helper from "/client/imports/helper";
-import {Connections} from "/lib/imports/collections/connections";
-import {Settings} from "/lib/imports/collections/settings";
-import {Dumps} from "/lib/imports/collections/dumps";
-import Enums from "/lib/imports/enums";
+import {$} from "meteor/jquery";
 import "./database_dump_restore.html";
+import {getMongodumpArgs} from "./mongodump_options/mongodump_options";
+import {getMongorestoreArgs} from "./mongorestore_options/mongorestore_options";
+import {getMongoexportOptions} from "./mongoexport_options/mongoexport_options";
+import {getMongoimportOptions} from "./mongoimport_options/mongoimport_options";
+import "./common_options/common_options";
+import Helper from "/client/imports/helper";
 
-require('bootstrap-filestyle');
-
-const toastr = require('toastr');
 const Ladda = require('ladda');
-/**
- * Created by RSercan on 17.1.2016.
- */
-/*global moment*/
-/*global swal*/
-const initCollectionsForImport = function () {
-    const cmb = $('#cmbImportCollection');
-    cmb.empty();
-    cmb.prepend("<option value=''></option>");
+const toastr = require('toastr');
 
-    cmb.append($("<optgroup id='optCollections' label='Collections'></optgroup>"));
-    const cmbGroup = cmb.find('#optCollections');
+const initializeArgsCombo = function (cmb, sessionVar) {
+    cmb.chosen();
+    Helper.setOptionsComboboxChangeEvent(cmb, sessionVar);
+};
 
-    const connection = Connections.findOne({_id: Session.get(Helper.strSessionConnection)});
-    Meteor.call('listCollectionNames', connection.databaseName, Meteor.default_connection._lastSessionId, function (err, result) {
-        if (err || result.error) {
-            Helper.showMeteorFuncError(err, result, "Couldn't fetch collection names");
-        }
-        else {
-            for (let i = 0; i < result.result.length; i++) {
-                cmbGroup.append($("<option></option>")
-                    .attr("value", result.result[i].name)
-                    .text(result.result[i].name));
+const initializeLogsArea = function (div, txt) {
+    Helper.initializeCodeMirror(div, txt, false, 150, true);
+    div.data('editor').setOption("readOnly", true);
+};
+
+const initializeUI = function () {
+    initializeArgsCombo($('#cmbMongodumpArgs'), Helper.strSessionMongodumpArgs);
+    initializeArgsCombo($('#cmbMongorestoreArgs'), Helper.strSessionMongorestoreArgs);
+    initializeArgsCombo($('#cmbMongoexportArgs'), Helper.strSessionMongoexportArgs);
+    initializeArgsCombo($('#cmbMongoimportArgs'), Helper.strSessionMongoimportArgs);
+    initializeLogsArea($('#mongodump'), 'txtMongodumpLogs');
+    initializeLogsArea($('#mongorestore'), 'txtMongorestoreLogs');
+    initializeLogsArea($('#mongoexport'), 'txtMongoexportLogs');
+    initializeLogsArea($('#mongoimport'), 'txtMongoimportLogs');
+
+    Session.set(Helper.strSessionMongodumpArgs, ['--host', '--out']);
+    Session.set(Helper.strSessionMongorestoreArgs, ['--host', '--dir']);
+    Session.set(Helper.strSessionMongoexportArgs, ['--host', '--out']);
+    Session.set(Helper.strSessionMongoimportArgs, ['--host', '--file']);
+};
+
+const observeLogs = function () {
+    Dumps.find({
+        sessionId: Meteor.default_connection._lastSessionId,
+    }, {sort: {date: -1}}).observeChanges({
+        added: function (id, fields) {
+            let divLogs = $('#' + fields.binary);
+
+            if (fields.message === 'CLOSED') Ladda.stopAll();
+            else {
+                let editorResult = divLogs.data('editor');
+                let previousValue = Helper.getCodeMirrorValue(divLogs);
+
+                Helper.setCodeMirrorValue(divLogs, previousValue + fields.message);
+                if (editorResult) {
+                    editorResult.focus();
+                    editorResult.setCursor(editorResult.lineCount() - 2, editorResult.getLine(editorResult.lineCount() - 2).length - 2);
+                }
+
+                if (divLogs.data('editor')) {
+                    divLogs.data('editor').focus();
+                }
             }
         }
-
-        cmb.chosen({
-            create_option: true,
-            allow_single_deselect: true,
-            persistent_create_option: true,
-            skip_no_results: true
-        });
-
-        cmb.trigger("chosen:updated");
     });
 };
 
-const populateDatatable = function () {
-    Ladda.create(document.querySelector('#btnTakeDump')).start();
-
-    const tblDumps = $('#tblDumps');
-    if ($.fn.dataTable.isDataTable('#tblDumps')) {
-        tblDumps.DataTable().destroy();
-    }
-    tblDumps.DataTable({
-        responsive: true,
-        destroy: true,
-        data: Dumps.find().fetch(),
-        columns: [
-            {
-                title: '_id',
-                data: '_id',
-                className: 'center',
-                sClass: "hide_column"
-            },
-            {
-                title: 'Connection name',
-                data: 'connectionName',
-                width: '20%',
-                className: 'center'
-            },
-            {
-                title: 'Date',
-                data: 'date',
-                width: '15%',
-                render: function (cellData) {
-                    return moment(cellData).format('YYYY-MM-DD HH:mm:ss');
-                },
-                className: 'center'
-            },
-            {
-                title: 'File Path',
-                data: 'filePath',
-                width: '30%',
-                className: 'center'
-            },
-            {
-                title: 'Size',
-                data: 'sizeInBytes',
-                width: '10%',
-                render: function (cellData) {
-                    let scale = 1;
-                    let text = "Bytes";
-
-                    const settings = Settings.findOne();
-                    switch (settings.scale) {
-                        case "MegaBytes":
-                            scale = 1024 * 1024;
-                            text = "MBs";
-                            break;
-                        case "KiloBytes":
-                            scale = 1024;
-                            text = "KBs";
-                            break;
-                        default:
-                            scale = 1;
-                            text = "Bytes";
-                            break;
-                    }
-
-                    return isNaN(Number(cellData / scale).toFixed(2)) ? "0.00" : Number(cellData / scale).toFixed(2) + " " + text;
-                },
-                className: 'center'
-            },
-            {
-                title: 'Import Status',
-                data: 'status',
-                width: '15%',
-                className: 'center'
-            },
-            {
-                title: 'Import',
-                data: null,
-                className: 'center',
-                width: '10%',
-                bSortable: false,
-                defaultContent: '<a href="" title="Import" class="editor_import"><i class="fa fa-database text-navy"></i></a>'
-            }
-        ]
-    }).draw();
-
-    Ladda.stopAll();
+const clearLogs = function (binary) {
+    Meteor.call("removeDumpLogs", Meteor.default_connection._lastSessionId, binary);
+    Helper.setCodeMirrorValue($('#' + binary), '');
 };
 
-Template.databaseDumpRestore.onRendered(function () {
-    if (Session.get(Helper.strSessionCollectionNames) == undefined) {
-        FlowRouter.go('/databaseStats');
+const callBinaryMethod = function (button, binary, argsMethod) {
+    Ladda.create(document.querySelector(button)).start();
+    const args = argsMethod();
+    if (args === null) {
+        Ladda.stopAll();
         return;
     }
 
-    Helper.initiateDatatable($('#tblDumps'), Helper.strSessionSelectedDump);
-    $(".filestyle").filestyle({});
+    Meteor.call(binary, args, Meteor.default_connection._lastSessionId, function (err) {
+        if (err) {
+            Ladda.stopAll();
+            Helper.showMeteorFuncError(err, null, "Couldn't proceed");
+        }
+    });
+};
+
+Template.databaseDumpRestore.onDestroyed(function () {
+    Meteor.call("removeDumpLogs", Meteor.default_connection._lastSessionId);
+});
+
+Template.databaseDumpRestore.onRendered(function () {
+    if (!Session.get(Helper.strSessionCollectionNames)) {
+        FlowRouter.go('/databaseStats');
+        return;
+    }
 
     let settings = this.subscribe('settings');
     let connections = this.subscribe('connections');
     let dumps = this.subscribe('dumps');
 
+    initializeUI();
+
     this.autorun(() => {
         if (settings.ready() && connections.ready() && dumps.ready()) {
-            initCollectionsForImport();
-            populateDatatable();
+
+            $('#cmbMongodumpArgs').val(['--host', '--out']).trigger('chosen:updated');
+            $('#cmbMongorestoreArgs').val(['--host', '--dir']).trigger('chosen:updated');
+            $('#cmbMongoexportArgs').val(['--host', '--out']).trigger('chosen:updated');
+            $('#cmbMongoimportArgs').val(['--host', '--file']).trigger('chosen:updated');
+
+            // wait till --host input gets ready
+            Meteor.setTimeout(function () {
+                const connection = Connections.findOne({_id: Session.get(Helper.strSessionConnection)});
+                let hostStr = "";
+                for (let server of connection.servers) hostStr += server.host + ":" + server.port + ",";
+                if (hostStr.endsWith(",")) hostStr = hostStr.substr(0, hostStr.length - 1);
+
+                $('#mongodump--host').val(hostStr);
+                $('#mongorestore--host').val(hostStr);
+                $('#mongoexport--host').val(hostStr);
+                $('#mongoimport--host').val(hostStr);
+            }, 100);
+
+            observeLogs();
         }
     });
 });
 
 Template.databaseDumpRestore.events({
-    'click #btnProceedMongoimport'(){
-        const inputSelector = $('#inputImportJsonFile');
-        let selectedCollection = $('#cmbImportCollection').val();
-        let inputFile = inputSelector.siblings('.bootstrap-filestyle').children('input').val();
-        if (!inputFile || inputSelector.get(0).files.length === 0) {
-            toastr.info('Please select a file !');
-            return;
-        }
-
-        if (!selectedCollection) {
-            toastr.info('Please select a collection !');
-            return;
-        }
-
-        Helper.warnDemoApp();
+    'click #btnExecuteMongodump'(){
+        callBinaryMethod('#btnExecuteMongodump', 'mongodump', getMongodumpArgs);
     },
 
-    'change #inputImportJsonFile'() {
-        const inputSelector = $('#inputImportJsonFile');
-        const blob = inputSelector[0].files[0];
-        const fileInput = inputSelector.siblings('.bootstrap-filestyle').children('input');
-
-        if (blob) {
-            fileInput.val(blob.name);
-        } else {
-            fileInput.val('');
-        }
+    'click #btnExecuteMongorestore'(){
+        callBinaryMethod('#btnExecuteMongorestore', 'mongorestore', getMongorestoreArgs);
     },
 
-    'click #btnRefreshDumps'(e){
-        e.preventDefault();
-        populateDatatable();
-
-        toastr.success('Successfully refreshed !');
+    'click #btnExecuteMongoexport'(){
+        callBinaryMethod('#btnExecuteMongoexport', 'mongoexport', getMongoexportOptions);
     },
 
-    'click #btnTakeDump'(e) {
-        e.preventDefault();
-        Helper.warnDemoApp();
+    'click #btnExecuteMongoimport'(){
+        callBinaryMethod('#btnExecuteMongoimport', 'mongoimport', getMongoimportOptions);
     },
 
-    'click .editor_import'(e) {
-        e.preventDefault();
-        if (Session.get(Helper.strSessionSelectedDump)) {
-            swal({
-                title: "Are you sure?",
-                text: "All collections will be dropped, and restored !",
-                type: "warning",
-                showCancelButton: true,
-                confirmButtonColor: "#DD6B55",
-                confirmButtonText: "Yes, do it!",
-                closeOnConfirm: true
-            }, function () {
-                Helper.warnDemoApp();
-            });
-        }
+    'click #btnClearMongoimportLogs'(){
+        clearLogs('mongoimport');
+    },
+
+    'click #btnClearMongoexportLogs'(){
+        clearLogs('mongoexport');
+    },
+
+    'click #btnClearMongodumpLogs'(){
+        clearLogs('mongodump');
+    },
+
+    'click #btnClearMongorestoreLogs'(){
+        clearLogs('mongorestore');
     }
 });

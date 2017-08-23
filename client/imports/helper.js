@@ -6,8 +6,7 @@ import {Template} from "meteor/templating";
 import {Session} from "meteor/session";
 import {Meteor} from "meteor/meteor";
 import {$} from "meteor/jquery";
-import {Connections} from "/lib/imports/collections/connections";
-import {Settings} from "/lib/imports/collections/settings";
+import {Connections, Settings} from "/lib/imports/collections";
 import {setAdminResult} from "/client/imports/views/pages/admin_queries/admin_queries";
 import {setQueryResult} from "/client/imports/views/pages/browse_collection/browse_collection";
 import {getSelectorValue} from "/client/imports/views/query_templates_options/selector/selector";
@@ -76,6 +75,8 @@ const convertToExtendedJson = function (str) {
 };
 
 let Helper = function () {
+    this.strSessionPromptedUsername = "promptedUsername";
+    this.strSessionPromptedPassword = "promptedPassword";
     this.strSessionConnection = "connection";
     this.strSessionCollectionNames = "collectionNames";
     this.strSessionSelectedCollection = "selectedCollection";
@@ -85,7 +86,6 @@ let Helper = function () {
     this.strSessionDBStats = "dbStats";
     this.strSessionUsedTabIDs = "usedTabIDs";
     this.strSessionUsedTabIDsAggregate = "usedTabIDsAggregate";
-    this.strSessionSelectedDump = "selectedDump";
     this.strSessionSelectedFile = "selectedFile";
     this.strSessionSelectedStoredFunction = "selectedStoredFunction";
     this.strSessionDistinctFields = "distinctFields";
@@ -100,6 +100,10 @@ let Helper = function () {
     this.strSessionUsermanagementRole = "userManagementRole";
     this.strSessionUsermanagementPrivilege = "userManagementPrivilege";
     this.strSessionSelectedAddCollectionOptions = "selectedAddCollectionOptions";
+    this.strSessionMongodumpArgs = "selectedMongodumpArgs";
+    this.strSessionMongorestoreArgs = "selectedMongorestoreArgs";
+    this.strSessionMongoexportArgs = "selectedMongoexportArgs";
+    this.strSessionMongoimportArgs = "selectedMongoimportArgs";
 };
 
 Helper.prototype = {
@@ -254,27 +258,27 @@ Helper.prototype = {
     },
 
     checkCodeMirrorSelectorForOption  (option, result, optionEnum) {
-        if ($.inArray(option, Session.get(this.strSessionSelectedOptions)) != -1) {
+        if ($.inArray(option, Session.get(this.strSessionSelectedOptions)) !== -1) {
             checkOption(getSelectorValue(), result, optionEnum, option);
         }
     },
 
     checkAndAddOption  (option, divSelector, result, optionEnum) {
-        if ($.inArray(option, Session.get(this.strSessionSelectedOptions)) != -1) {
+        if ($.inArray(option, Session.get(this.strSessionSelectedOptions)) !== -1) {
             checkOption(this.getCodeMirrorValue(divSelector), result, optionEnum, option);
         }
     },
 
-    setOptionsComboboxChangeEvent (cmb) {
+    setOptionsComboboxChangeEvent (cmb, sessionVar) {
         cmb.on('change', (evt, params) => {
-            const array = Session.get(this.strSessionSelectedOptions);
+            const array = Session.get(sessionVar || this.strSessionSelectedOptions);
             if (params.deselected) {
                 array.remove(params.deselected);
             }
             else {
                 array.push(params.selected);
             }
-            Session.set(this.strSessionSelectedOptions, array);
+            Session.set(sessionVar || this.strSessionSelectedOptions, array);
         });
     },
 
@@ -284,7 +288,7 @@ Helper.prototype = {
             levels = 1;
         }
         while (view) {
-            if (view.name.indexOf("Template.") != -1 && !(levels--)) {
+            if (view.name.indexOf("Template.") !== -1 && !(levels--)) {
                 return view.name.substring(view.name.indexOf('.') + 1);
             }
             view = view.parentView;
@@ -301,35 +305,50 @@ Helper.prototype = {
     },
 
     getDistinctKeysForAutoComplete  (selectedCollection) {
-        let settings = Settings.findOne();
-        if (!settings || !settings.autoCompleteFields) {
-            return;
-        }
-        if (selectedCollection.endsWith('.chunks')) {
+        const settings = Settings.findOne();
+        let countToTake = isNaN(parseInt(settings.autoCompleteSamplesCount)) ? 50 : parseInt(settings.autoCompleteSamplesCount);
+        if (selectedCollection.endsWith('.chunks') || countToTake <= 0) {
+            Session.set(this.strSessionDistinctFields, []);
             // ignore chunks
             return;
         }
 
-        const mapFunc = "function () {for (var key in this) {emit(key, null);}};";
-        const reduceFunc = "function (key, stuff) {return null;};";
-        const options = {
-            out: {inline: 1}
-        };
-
-        Meteor.call("mapReduce", selectedCollection, mapFunc, reduceFunc, options, Meteor.default_connection._lastSessionId, (err, result) => {
+        Meteor.call("count", selectedCollection, {}, {}, Meteor.default_connection._lastSessionId, (err, result) => {
             if (err || result.error) {
-                this.showMeteorFuncError(err, result, "Couldn't fetch distinct fields for autocomplete");
-            }
-            else {
-                const nameArray = [];
-                result.result.forEach(function (entry) {
-                    nameArray.push(entry._id);
-                });
-                Session.set(this.strSessionDistinctFields, nameArray);
-
+                this.showMeteorFuncError(err, result, "Couldn't fetch distinct fields");
                 Ladda.stopAll();
             }
+            else {
+                const count = result.result;
+                Meteor.call("find", selectedCollection, {}, {
+                    limit: countToTake,
+                    skip: Math.random() * count
+                }, false, Meteor.default_connection._lastSessionId, (err, samples) => {
+                    if (err || samples.error) {
+                        this.showMeteorFuncError(err, samples, "Couldn't fetch distinct fields");
+                    }
+                    else {
+                        const keys = this.findKeysOfObject(samples.result);
+                        Session.set(this.strSessionDistinctFields, keys);
+                    }
+
+                    Ladda.stopAll();
+                });
+            }
         });
+    },
+
+    findKeysOfObject (resultArray){
+        let result = [];
+
+        for (let object of resultArray) {
+            const keys = Object.keys(object);
+            for (let key of keys) {
+                if (result.indexOf(key) === -1) result.push(key);
+            }
+        }
+
+        return result;
     },
 
     doCodeMirrorResizable(codeMirror){
@@ -340,8 +359,16 @@ Helper.prototype = {
         });
     },
 
-    initializeCodeMirror  (divSelector, txtAreaId, keepValue, height = 100) {
+    initializeCodeMirror  (divSelector, txtAreaId, keepValue, height = 100, noResize) {
+        const autoCompleteShortcut = Settings.findOne().autoCompleteShortcut || "Ctrl-Space";
         let codeMirror;
+        let extraKeys = {
+            "Ctrl-Q": function (cm) {
+                cm.foldCode(cm.getCursor());
+            }
+        };
+        extraKeys[autoCompleteShortcut] = "autocomplete";
+
         if (!divSelector.data('editor')) {
             codeMirror = CodeMirror.fromTextArea(document.getElementById(txtAreaId), {
                 mode: "javascript",
@@ -349,12 +376,7 @@ Helper.prototype = {
                 styleActiveLine: true,
                 lineNumbers: true,
                 lineWrapping: false,
-                extraKeys: {
-                    "Ctrl-Q": function (cm) {
-                        cm.foldCode(cm.getCursor());
-                    },
-                    "Ctrl-Space": "autocomplete"
-                },
+                extraKeys: extraKeys,
                 foldGutter: true,
                 gutters: ["CodeMirror-linenumbers", "CodeMirror-foldgutter"]
             });
@@ -388,7 +410,7 @@ Helper.prototype = {
 
             divSelector.data('editor', codeMirror);
 
-            this.doCodeMirrorResizable(codeMirror);
+            if (!noResize) this.doCodeMirrorResizable(codeMirror);
         }
         else {
             codeMirror = divSelector.data('editor');
@@ -444,8 +466,14 @@ export default helper;
         return null;
     };
 
-    Template.registerHelper('isOptionSelected', function (option) {
-        return $.inArray(option, Session.get(helper.strSessionSelectedOptions)) != -1;
+    Template.registerHelper('getConfiguredAutoCompletionKey', function () {
+        return Settings.findOne().autoCompleteShortcut || "Ctrl-Space";
+    });
+
+    Template.registerHelper('isOptionSelected', function (option, sessionVar) {
+        if (!sessionVar || Object.prototype.toString.call(sessionVar) !== '[object String]') return $.inArray(option, Session.get(helper.strSessionSelectedOptions)) !== -1;
+
+        return $.inArray(option, Session.get(sessionVar)) !== -1;
     });
 
     Template.registerHelper('getConnection', function () {

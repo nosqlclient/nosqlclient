@@ -4,7 +4,7 @@ import {Session} from "meteor/session";
 import {ReactiveVar} from "meteor/reactive-var";
 import {FlowRouter} from "meteor/kadira:flow-router";
 import Helper from "/client/imports/helper";
-import {Connections} from "/lib/imports/collections/connections";
+import {Connections} from "/lib/imports/collections";
 import {loadFile} from "/client/imports/views/layouts/top_navbar/top_navbar";
 import "./connections.html";
 
@@ -71,8 +71,7 @@ export const populateConnectionsTable = function () {
                 defaultContent: '<a href="" title="Edit" class="editor_edit"><i class="fa fa-edit text-navy"></i></a>'
             },
             {
-                targets: [5],
-                data: null,
+                targets: [5], data: null,
                 bSortable: false,
                 defaultContent: '<a href="" title="Duplicate" class="editor_duplicate"><i class="fa fa-clone text-navy"></i></a>'
             },
@@ -86,14 +85,33 @@ export const populateConnectionsTable = function () {
     });
 };
 
-export const connect = function (isRefresh) {
+const isCredentialPromptNeeded = function (connection) {
+    return connection.authenticationType && connection.authenticationType !== 'mongodb_x509' && (!connection[connection.authenticationType].username || !connection[connection.authenticationType].password);
+};
+
+export const connect = function (isRefresh, message) {
     let connection = Connections.findOne({_id: Session.get(Helper.strSessionConnection)});
     if (!connection) {
         toastr.info('Please select a connection first !');
         Ladda.stopAll();
         return;
     }
-    Meteor.call('connect', connection._id, Meteor.default_connection._lastSessionId, function (err, result) {
+
+    // prompt for username && password
+    if (isCredentialPromptNeeded(connection)) {
+        const modal = $('#promptUsernamePasswordModal');
+        modal.data('username', connection[connection.authenticationType].username);
+        modal.data('password', connection[connection.authenticationType].password);
+        modal.data('connection', connection);
+        modal.modal('show');
+    }
+    else {
+        proceedConnecting(isRefresh, message, connection);
+    }
+};
+
+const proceedConnecting = function (isRefresh, message, connection, username, password) {
+    Meteor.call('connect', connection._id, username, password, Meteor.default_connection._lastSessionId, function (err, result) {
         if (err || result.error) {
             Helper.showMeteorFuncError(err, result, "Couldn't connect");
         }
@@ -112,12 +130,18 @@ export const connect = function (isRefresh) {
             if (!isRefresh) {
                 $('#connectionModal').modal('hide');
                 $('#switchDatabaseModal').modal('hide');
+                $('#promptUsernamePasswordModal').modal('hide');
 
                 FlowRouter.go('/databaseStats');
             }
             else {
-                toastr.success("Successfuly refreshed collections");
+                if (!message) toastr.success("Successfuly refreshed collections");
+                else toastr.success(message);
             }
+
+            Session.set(Helper.strSessionPromptedUsername, username);
+            Session.set(Helper.strSessionPromptedPassword, password);
+
             Ladda.stopAll();
         }
     });
@@ -482,6 +506,15 @@ Template.sslTemplate.onRendered(function () {
     $('#inputDisableHostnameVerification').iCheck({
         checkboxClass: 'icheckbox_square-green'
     });
+
+    const promptUsernamePasswordModal = $('#promptUsernamePasswordModal');
+    promptUsernamePasswordModal.on('shown.bs.modal', function () {
+        $('#inputPromptedUsername').val(promptUsernamePasswordModal.data('username'));
+        $('#inputPromptedPassword').val(promptUsernamePasswordModal.data('password'));
+    });
+    promptUsernamePasswordModal.on('hidden.bs.modal', function () {
+        Ladda.stopAll();
+    })
 });
 
 Template.connections.onRendered(function () {
@@ -494,7 +527,10 @@ Template.connections.onRendered(function () {
             Session.set(Helper.strSessionConnection, table.row(this).data()._id);
             $('#btnConnect').prop('disabled', false);
         }
-
+    });
+    selector.find('tbody').on('dblclick', 'tr', function () {
+        Ladda.create(document.querySelector('#btnConnect')).start();
+        connect(false);
     });
 
     const addEditModal = $('#addEditConnectionModal');
@@ -544,6 +580,10 @@ Template.connections.events({
     },
     'mouseout .showpass'(e){
         $(e.currentTarget).parent('span').siblings('input').attr('type', 'password');
+    },
+
+    'click #btnProceedConnecting'(){
+        proceedConnecting(false, null, $('#promptUsernamePasswordModal').data('connection'), $('#inputPromptedUsername').val(), $('#inputPromptedPassword').val());
     },
 
     'change #inputUrl'(){

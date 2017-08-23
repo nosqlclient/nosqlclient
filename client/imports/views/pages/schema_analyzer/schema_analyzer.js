@@ -6,7 +6,7 @@ import {Meteor} from "meteor/meteor";
 import {Session} from "meteor/session";
 import {FlowRouter} from "meteor/kadira:flow-router";
 import Helper from "/client/imports/helper";
-import SchemaAnalyzeResult from "/lib/imports/collections/schema_analyze_result";
+import {SchemaAnalyzeResult} from "/lib/imports/collections";
 import "./schema_analyzer.html";
 
 const toastr = require('toastr');
@@ -176,7 +176,7 @@ Template.schemaAnalyzer.events({
 
         Ladda.create(document.querySelector('#btnAnalyzeNow')).start();
 
-        Meteor.call("analyzeSchema", Session.get(Helper.strSessionConnection), collection, Meteor.default_connection._lastSessionId, (err) => {
+        Meteor.call("analyzeSchema", Session.get(Helper.strSessionConnection), Session.get(Helper.strSessionPromptedUsername), Session.get(Helper.strSessionPromptedPassword), collection, Meteor.default_connection._lastSessionId, (err) => {
             if (err) {
                 Helper.showMeteorFuncError(err, null, "Couldn't analyze collection");
             }

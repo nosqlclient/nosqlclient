@@ -15,28 +15,28 @@ import "./cursor_options.html";
  */
 
 export const getCursorOptions = function () {
-    const result = {};
+    let result = {};
 
     Helper.checkAndAddOption("PROJECT", $('#divProject'), result, Enums.CURSOR_OPTIONS);
     Helper.checkAndAddOption("MAX", $('#divMax'), result, Enums.CURSOR_OPTIONS);
     Helper.checkAndAddOption("MIN", $('#divMin'), result, Enums.CURSOR_OPTIONS);
     Helper.checkAndAddOption("SORT", $('#divSort'), result, Enums.CURSOR_OPTIONS);
 
-    if ($.inArray("MAX_TIME_MS", Session.get(Helper.strSessionSelectedOptions)) != -1) {
+    if ($.inArray("MAX_TIME_MS", Session.get(Helper.strSessionSelectedOptions)) !== -1) {
         const maxTimeMs = $('#inputMaxTimeMs').val();
         if (maxTimeMs) {
             result[Enums.CURSOR_OPTIONS.MAX_TIME_MS] = parseInt(maxTimeMs);
         }
     }
 
-    if ($.inArray("SKIP", Session.get(Helper.strSessionSelectedOptions)) != -1) {
+    if ($.inArray("SKIP", Session.get(Helper.strSessionSelectedOptions)) !== -1) {
         const skipVal = $('#inputSkip').val();
         if (skipVal) {
             result[Enums.CURSOR_OPTIONS.SKIP] = parseInt(skipVal);
         }
     }
 
-    if ($.inArray("LIMIT", Session.get(Helper.strSessionSelectedOptions)) != -1) {
+    if ($.inArray("LIMIT", Session.get(Helper.strSessionSelectedOptions)) !== -1) {
         const limitVal = $('#inputLimit').val();
         if (limitVal) {
             result[Enums.CURSOR_OPTIONS.LIMIT] = parseInt(limitVal);

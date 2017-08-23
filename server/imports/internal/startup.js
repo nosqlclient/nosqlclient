@@ -2,10 +2,7 @@
  * Created by RSercan on 17.1.2016.
  */
 import {Meteor} from "meteor/meteor";
-import {Settings} from "/lib/imports/collections/settings";
-import {Connections} from "/lib/imports/collections/connections";
-import ShellCommands from "/lib/imports/collections/shell";
-import SchemaAnalyzeResult from "/lib/imports/collections/schema_analyze_result";
+import {Settings, Connections, Dumps, ShellCommands, SchemaAnalyzeResult} from "/lib/imports/collections";
 import {HttpBasicAuth} from "meteor/jabbslad:basic-auth";
 import {parseUrl} from "./internal_methods";
 
@@ -108,7 +105,7 @@ const migrateSSHPart = function (oldConnection, connection) {
     }
 };
 
-function tryInjectDefaultConnection() {
+const tryInjectDefaultConnection = function () {
     const DEFAULT_CONNECTION_NAME = "Default (preconfigured)";
     let defaultConnection = process.env.MONGOCLIENT_DEFAULT_CONNECTION_URL;
     if (!defaultConnection) return;
@@ -125,7 +122,7 @@ function tryInjectDefaultConnection() {
     }
 
     Connections.insert(connection);
-}
+};
 
 Meteor.startup(function () {
     let home = process.env.HOME || process.env.USERPROFILE;
@@ -134,15 +131,16 @@ Meteor.startup(function () {
         Settings.insert({
             scale: "MegaBytes",
             defaultResultView: "Jsoneditor",
+            mongoBinaryPath: "/opt/mongodb/bin/",
             maxAllowedFetchSize: 3,
-            autoCompleteFields: false,
+            autoCompleteSamplesCount: 50,
             socketTimeoutInSeconds: 5,
             connectionTimeoutInSeconds: 3,
             dbStatsScheduler: 3000,
             showDBStats: true,
             showLiveChat: true,
             singleTabResultSets: false,
-            dumpPath: home + "/myDumps/"
+            maxLiveChartDataPoints: 15
         });
     }
 
@@ -155,6 +153,7 @@ Meteor.startup(function () {
 
     ShellCommands.remove({});
     SchemaAnalyzeResult.remove({});
+    Dumps.remove({});
     migrateConnectionsIfExist();
     tryInjectDefaultConnection();
 });

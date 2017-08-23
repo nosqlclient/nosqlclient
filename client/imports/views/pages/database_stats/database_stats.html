@@ -1,5 +1,5 @@
 <template name="databaseStats">
-    {{> pageHeading title='Mongoclient' }}
+    {{> pageHeading title='Nosqlclient' }}
     {{#if Template.subscriptionsReady}}
         {{#if isConnected}}
 
@@ -20,7 +20,7 @@
                                         and
                                         <strong>stats</strong> queries.
                                         Therefore, before having a look at below graphs consider
-                                        <strong>mongoclient</strong> is
+                                        <strong>nosqlclient</strong> is
                                         already executing <strong>serverStatus</strong> at regular intervals. See <a
                                             href="https://docs.mongodb.org/manual/administration/monitoring/#commands">here</a>
                                         for more info<br/><br/>
@@ -242,4 +242,67 @@
 
         {{/if}}
     {{/if}}
+
+    <!-- MODAL What's New-->
+    <div class="modal inmodal" id="whatsNewModal" tabindex="-1" role="dialog" aria-hidden="true"
+         style="display: none;">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content animated bounceInRight">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span><span
+                            class="sr-only">Close</span></button>
+                    <i class="fa fa-newspaper-o modal-icon"></i>
+                    <h4 class="modal-title">Mongoclient becomes Nosqlclient !</h4>
+                    <small id="whatsNewHeader" class="font-bold">
+                    </small>
+                </div>
+                <div class="modal-body">
+                    <div id="wizard">
+                        <h1>Auto-complete</h1>
+                        <div class="step-content">
+                            <div class="text-center m-t-md">
+                                <p>Auto complete is enabled by default, and it's shortcut is configurable via
+                                    settings.</p>
+                                <img width="800" height="400" src="whats_new/auto-complete-settings-220.gif">
+                            </div>
+                        </div>
+
+                        <h1>Prompt Credentials</h1>
+                        <div class="step-content">
+                            <div class="text-center m-t-md">
+                                <p>Nosqlclient prompts for username & password for your connections, if they're
+                                    empty.</p>
+                                <img width="650" height="400" src="whats_new/prompting-credentials-220.gif">
+                            </div>
+                        </div>
+
+                        <h1>Reworked Dump/Restore</h1>
+                        <div class="step-content">
+                            <div class="text-center m-t-md">
+                                <p>Dump, restore, import, export section now available for production uses, nosqlclient
+                                    uses native
+                                    mongo binaries which can be set from settings for dump section.</p>
+                                <img width="550" height="400" src="whats_new/reworked-dump-restore-220.gif">
+                            </div>
+                        </div>
+
+                        <h1>Tweaks</h1>
+                        <div class="step-content">
+                            <div class="text-center m-t-md">
+                                <p>Nosqlclient comes with a bunch of tweaks within this version, most important ones
+                                    are; clone collection, zoom in/out charts, configurable chart points count, UI and
+                                    many other fixes.</p>
+                                <img width="750" height="400" src="whats_new/tweaks-220.gif">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button id="btnDontShowWhatsNewAgain" title="Don't show again" type="button"
+                            class="btn btn-primary btn-block" data-style="contract">Cool, don't show again !
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
 </template>

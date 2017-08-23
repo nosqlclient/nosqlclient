@@ -2,7 +2,7 @@ import {Template} from "meteor/templating";
 import {Session} from "meteor/session";
 import {Meteor} from "meteor/meteor";
 import Enums from "/lib/imports/enums";
-import {Connections} from "/lib/imports/collections/connections";
+import {Connections} from "/lib/imports/collections";
 import Helper from "/client/imports/helper";
 import "./add_collection.html";
 import {getOptions} from "./options/add_collection_options";

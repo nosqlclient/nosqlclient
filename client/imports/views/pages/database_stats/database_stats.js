@@ -2,8 +2,9 @@ import {Template} from "meteor/templating";
 import {Meteor} from "meteor/meteor";
 import {Session} from "meteor/session";
 import Helper from "/client/imports/helper";
-import {Settings} from "/lib/imports/collections/settings";
+import {Settings} from "/lib/imports/collections";
 import "./database_stats.html";
+import Enums from "/lib/imports/enums";
 
 require('datatables.net')(window, $);
 require('datatables.net-buttons')(window, $);
@@ -16,6 +17,8 @@ require('bootstrap-filestyle');
 
 const toastr = require('toastr');
 const Ladda = require('ladda');
+const packageJson = require('/package.json');
+
 /**
  * Created by RSercan on 26.12.2015.
  */
@@ -24,6 +27,7 @@ let interval = null;
 let memoryChart = null, connectionsChart = null, networkChart = null, opCountersChart = null,
     queuedReadWriteChart = null, activeReadWriteChart = null;
 let previousTopData = {};
+let dataCountToKeep = 15;
 
 const lineOptions = {
     series: {
@@ -63,6 +67,12 @@ const lineOptions = {
     tooltip: true,
     tooltipOpts: {
         content: "%y"
+    },
+    zoom: {
+        interactive: true
+    },
+    pan: {
+        interactive: true
     }
 };
 
@@ -411,15 +421,15 @@ const initQueuedReadWriteChart = function (data, totalQueuedReadWrite) {
         }
         else {
             const existingData = queuedReadWriteChart.getData();
-            if (existingData[0].data.length == 15) {
-                existingData[0].data = existingData[0].data.slice(1, 15);
+            if (existingData[0].data.length == dataCountToKeep) {
+                existingData[0].data = existingData[0].data.slice(1, dataCountToKeep);
 
                 if (existingData.length >= 2 && existingData[1].data) {
-                    existingData[1].data = existingData[1].data.slice(1, 15);
+                    existingData[1].data = existingData[1].data.slice(1, dataCountToKeep);
                 }
 
                 if (existingData.length >= 3 && existingData[2].data) {
-                    existingData[2].data = existingData[2].data.slice(1, 15);
+                    existingData[2].data = existingData[2].data.slice(1, dataCountToKeep);
                 }
             }
 
@@ -463,15 +473,15 @@ const initActiveReadWriteChart = function (data, totalActiveReadWrite) {
         }
         else {
             const existingData = activeReadWriteChart.getData();
-            if (existingData[0].data.length == 15) {
-                existingData[0].data = existingData[0].data.slice(1, 15);
+            if (existingData[0].data.length == dataCountToKeep) {
+                existingData[0].data = existingData[0].data.slice(1, dataCountToKeep);
 
                 if (existingData.length >= 2 && existingData[1].data) {
-                    existingData[1].data = existingData[1].data.slice(1, 15);
+                    existingData[1].data = existingData[1].data.slice(1, dataCountToKeep);
                 }
 
                 if (existingData.length >= 3 && existingData[2].data) {
-                    existingData[2].data = existingData[2].data.slice(1, 15);
+                    existingData[2].data = existingData[2].data.slice(1, dataCountToKeep);
                 }
             }
 
@@ -514,15 +524,15 @@ const initNetworkChart = function (data, totalRequests) {
         }
         else {
             const existingData = networkChart.getData();
-            if (existingData[0].data.length == 15) {
-                existingData[0].data = existingData[0].data.slice(1, 15);
+            if (existingData[0].data.length == dataCountToKeep) {
+                existingData[0].data = existingData[0].data.slice(1, dataCountToKeep);
 
                 if (existingData.length >= 2 && existingData[1].data) {
-                    existingData[1].data = existingData[1].data.slice(1, 15);
+                    existingData[1].data = existingData[1].data.slice(1, dataCountToKeep);
                 }
 
                 if (existingData.length >= 3 && existingData[2].data) {
-                    existingData[2].data = existingData[2].data.slice(1, 15);
+                    existingData[2].data = existingData[2].data.slice(1, dataCountToKeep);
                 }
             }
 
@@ -562,11 +572,11 @@ const initConnectionsChart = function (data, availableConnections) {
         }
         else {
             const existingData = connectionsChart.getData();
-            if (existingData[0].data.length == 10) {
-                existingData[0].data = existingData[0].data.slice(1, 10);
+            if (existingData[0].data.length == dataCountToKeep) {
+                existingData[0].data = existingData[0].data.slice(1, dataCountToKeep);
 
                 if (existingData.length >= 2 && existingData[1].data) {
-                    existingData[1].data = existingData[1].data.slice(1, 10);
+                    existingData[1].data = existingData[1].data.slice(1, dataCountToKeep);
                 }
             }
 
@@ -609,15 +619,15 @@ const initMemoryChart = function (data, text) {
         }
         else {
             const existingData = memoryChart.getData();
-            if (existingData[0].data.length == 15) {
-                existingData[0].data = existingData[0].data.slice(1, 15);
+            if (existingData[0].data.length == dataCountToKeep) {
+                existingData[0].data = existingData[0].data.slice(1, dataCountToKeep);
 
                 if (existingData.length >= 2 && existingData[1].data) {
-                    existingData[1].data = existingData[1].data.slice(1, 15);
+                    existingData[1].data = existingData[1].data.slice(1, dataCountToKeep);
                 }
 
                 if (existingData.length >= 3 && existingData[2].data) {
-                    existingData[2].data = existingData[2].data.slice(1, 15);
+                    existingData[2].data = existingData[2].data.slice(1, dataCountToKeep);
                 }
             }
 
@@ -638,8 +648,28 @@ const initMemoryChart = function (data, text) {
     }
 };
 
+const showWhatisNew = function () {
+    const modal = $('#whatsNewModal');
+    modal.on('shown.bs.modal', function () {
+        $('#whatsNewHeader').html("What's new in " + packageJson.version);
+        $("#wizard").steps({
+            enableFinishButton: false,
+            enableCancelButton: false
+        });
+    });
+
+    if (!localStorage.getItem(Enums.LOCAL_STORAGE_KEYS.WHAT_IS_NEW) && Session.get(Helper.strSessionCollectionNames) == undefined) {
+        modal.modal('show');
+    }
+};
+
 Template.databaseStats.events({
-    'click #btnSubscribe'(){
+    'click #btnDontShowWhatsNewAgain'() {
+        localStorage.setItem(Enums.LOCAL_STORAGE_KEYS.WHAT_IS_NEW, "true");
+        $('#whatsNewModal').modal('hide');
+    },
+
+    'click #btnSubscribe'() {
         Ladda.create(document.querySelector('#btnSubscribe')).start();
 
         Meteor.call("handleSubscriber", $('#txtEmailToSubscribe').val(), function (err) {
@@ -669,6 +699,7 @@ Template.databaseStats.onRendered(function () {
         if (settings.ready() && connections.ready()) {
             const fetchedSettings = Settings.findOne();
             if (fetchedSettings.showDBStats && !interval) {
+                dataCountToKeep = (fetchedSettings.maxLiveChartDataPoints && fetchedSettings.maxLiveChartDataPoints > 0) ? fetchedSettings.maxLiveChartDataPoints : 15;
                 interval = Meteor.setInterval(function () {
                     fetchStats();
                     fetchStatus();
@@ -676,6 +707,10 @@ Template.databaseStats.onRendered(function () {
             }
         }
     });
+
+    Meteor.setTimeout(function () {
+        showWhatisNew();
+    }, 500);
 });
 
 Template.databaseStats.onDestroyed(function () {
@@ -696,7 +731,7 @@ Template.databaseStats.helpers({
         }
     },
 
-    getDBStats  () {
+    getDBStats() {
         if (Settings.findOne().showDBStats) {
             if (Session.get(Helper.strSessionDBStats) == undefined) {
                 fetchStats();

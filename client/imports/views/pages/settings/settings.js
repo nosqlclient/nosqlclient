@@ -1,16 +1,41 @@
 import {Template} from "meteor/templating";
+import {Settings} from "/lib/imports/collections";
 import Helper from "/client/imports/helper";
-import {Settings} from "/lib/imports/collections/settings";
-import {loadFile} from "/client/imports/views/layouts/top_navbar/top_navbar";
 import "./settings.html";
 
 const toastr = require('toastr');
+const Ladda = require('ladda');
+/**
+ * Created by RSercan on 9.1.2016.
+ */
+
+const proceedSavingSettings = function () {
+    const settings = {};
+    settings.autoCompleteSamplesCount = $('#inputAutoCompleteSamplesCount').val();
+    settings.autoCompleteShortcut = $('#inputAutocompleteShortcut').val();
+    settings.scale = $("#cmbScale").chosen().val();
+    settings.defaultResultView = $("#cmbResultView").chosen().val();
+    settings.maxAllowedFetchSize = $("#inputMaxAllowedFetchSize").val();
+    settings.socketTimeoutInSeconds = $("#inputSocketTimeout").val();
+    settings.connectionTimeoutInSeconds = $("#inputConnectionTimeout").val();
+    settings.dbStatsScheduler = $("#inputDBStatsScheduler").val();
+    settings.showDBStats = $('#divShowDBStats').iCheck('update')[0].checked;
+    settings.showLiveChat = $('#divShowLiveChat').iCheck('update')[0].checked;
+    settings.mongoBinaryPath = $('#inputMongoExecutable').val() || '';
+    settings.singleTabResultSets = $('#divUseSingleTab').iCheck('update')[0].checked;
+    settings.maxLiveChartDataPoints = $('#inputMaxChartPoints').val();
+
+    Meteor.call('updateSettings', settings, function (err) {
+        if (err) Helper.showMeteorFuncError(err, null, "Couldn't save");
+        else toastr.success('Successfully saved !');
+        Ladda.stopAll();
+    });
+};
 
 Template.settings.onRendered(function () {
-    $('#divAutoCompleteFields, #divShowDBStats, #divShowLiveChat, #divUseSingleTab').iCheck({
+    $('#divShowDBStats, #divShowLiveChat, #divUseSingleTab').iCheck({
         checkboxClass: 'icheckbox_square-green'
     });
-    $('.filestyle').filestyle({});
     $('#cmbScale, #cmbResultView').chosen();
 
     let settings = this.subscribe('settings');
@@ -33,6 +58,8 @@ Template.settings.events({
 const load = function () {
     // since we are using some external plugins such as chosen, icheck we can't load settings directly via meteor
     const settings = Settings.findOne();
+    if (!settings) return;
+
     const cmbScale = $('#cmbScale');
     const cmbResultView = $('#cmbResultView');
 
@@ -42,15 +69,15 @@ const load = function () {
     cmbResultView.val(settings.defaultResultView);
     cmbResultView.trigger("chosen:updated");
 
-    $('#inputDumpPath').val(settings.dumpPath || '');
     $('#inputMaxAllowedFetchSize').val(settings.maxAllowedFetchSize || 0);
     $('#inputSocketTimeout').val(settings.socketTimeoutInSeconds || 0);
     $('#inputConnectionTimeout').val(settings.connectionTimeoutInSeconds || 0);
     $('#inputDBStatsScheduler').val(settings.dbStatsScheduler || 3000);
-    $('#inputAutoCompleteFields').iCheck(settings.autoCompleteFields ? 'check' : 'uncheck');
+    $('#inputAutoCompleteSamplesCount').val(settings.autoCompleteSamplesCount || 50);
     $('#inputShowLiveChat').iCheck(settings.showLiveChat ? 'check' : 'uncheck');
     $('#inputUseSingleTab').iCheck(settings.singleTabResultSets ? 'check' : 'uncheck');
     $('#inputShowDBStats').iCheck(settings.showDBStats ? 'check' : 'uncheck');
-    $('#inputMongoExecutable').siblings('.bootstrap-filestyle').children('input').val(settings.mongoBinaryName || 'mongo');
-
+    $('#inputMongoExecutable').val(settings.mongoBinaryPath || '');
+    $('#inputMaxChartPoints').val(settings.maxLiveChartDataPoints || 15);
+    $('#inputAutocompleteShortcut').val(settings.autoCompleteShortcut || 'Ctrl-Space');
 };

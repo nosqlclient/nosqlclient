@@ -1,7 +1,7 @@
 /**
  * Created by RSercan on 30.12.2015.
  */
-import {Settings} from "/lib/imports/collections/settings";
+import {Settings} from "/lib/imports/collections";
 import {deserialize, serialize} from "./extended_json";
 
 const addOptionToUrl = function (url, option, value) {
@@ -31,23 +31,48 @@ let Helper = function () {
 };
 
 Helper.prototype = {
-    getConnectionUrl (connection, addDB) {
-        if (connection.url) {
-            if (!addDB) {
-                let options = "";
-                if (connection.url.indexOf('?') !== -1) {
-                    options = "?" + connection.url.split('?')[1];
-                }
+    extractDBFromConnectionUrl (connection) {
+        let options = "";
+        if (connection.url.indexOf('?') !== -1) {
+            options = "?" + connection.url.split('?')[1];
+        }
 
-                const splited = connection.url.split('/');
-                if (splited.length <= 3) {
-                    return connection.url += "/" + options;
-                }
-                else {
-                    splited[3] = '';
-                    return splited.join('/') + options;
-                }
-            }
+        const splited = connection.url.split('/');
+        if (splited.length <= 3) {
+            connection.url += "/" + options;
+        }
+        else {
+            splited[3] = '';
+            connection.url = splited.join('/') + options;
+        }
+    },
+
+    changeUsernameAndPasswordFromConnectionUrl (connection, username, password) {
+        let splitedForDash = connection.url.split('//');
+
+        if (connection.url.indexOf('@') !== -1) {
+            let splitedForAt = splitedForDash[1].split('@');
+            let usernameAndPassword = splitedForAt[0].split(':');
+            if (!username && usernameAndPassword[0]) username = usernameAndPassword[0];
+            if (!password && usernameAndPassword.length >= 2 && usernameAndPassword[1]) password = usernameAndPassword[1];
+
+            connection.url = splitedForDash[0] + "//" + username + ":" + password + "@" + splitedForAt[1];
+        }
+        else {
+            connection.url = splitedForDash[0] + "//" + username + ":" + password + "@" + splitedForDash[1];
+        }
+    },
+
+    addAuthSourceToConnectionUrl (connection){
+        if (connection.url.indexOf('authSource') !== -1) return;
+        connection.url += addOptionToUrl(connection.url, 'authSource', connection.databaseName);
+    },
+
+    getConnectionUrl (connection, addDB, username, password, addAuthSource) {
+        if (connection.url) {
+            if (username || password) this.changeUsernameAndPasswordFromConnectionUrl(connection, username, password);
+            if (!addDB) this.extractDBFromConnectionUrl(connection);
+            if (addAuthSource) this.addAuthSourceToConnectionUrl(connection);
 
             return connection.url;
         }
@@ -57,8 +82,12 @@ Helper.prototype = {
         // url
         let connectionUrl = 'mongodb://';
         if (connection.authenticationType) {
-            if (connection[connection.authenticationType].username) connectionUrl += encodeURIComponent(connection[connection.authenticationType].username);
-            if (connection[connection.authenticationType].password) connectionUrl += ':' + encodeURIComponent(connection[connection.authenticationType].password);
+            if (username) connectionUrl += encodeURIComponent(username);
+            else if (connection[connection.authenticationType].username) connectionUrl += encodeURIComponent(connection[connection.authenticationType].username);
+
+            if (password) connectionUrl += ':' + encodeURIComponent(password);
+            else if (connection[connection.authenticationType].password) connectionUrl += ':' + encodeURIComponent(connection[connection.authenticationType].password);
+
             connectionUrl += "@";
         }
         for (let server of connection.servers) {
@@ -90,6 +119,16 @@ Helper.prototype = {
 
         if (connection.ssl && connection.ssl.enabled) connectionUrl += addOptionToUrl(connectionUrl, 'ssl', 'true');
         if (connection.authenticationType) connectionUrl += addOptionToUrl(connectionUrl, 'authMechanism', connection.authenticationType.toUpperCase().replace(new RegExp("_", 'g'), "-"));
+
+        if (addAuthSource) {
+            if (connection.authenticationType === 'mongodb_cr' || connection.authenticationType === 'scram_sha_1') {
+                if (connection[connection.authenticationType].authSource) connectionUrl += addOptionToUrl(connectionUrl, 'authSource', connection[connection.authenticationType].authSource);
+                else connectionUrl += addOptionToUrl(connectionUrl, 'authSource', connection.databaseName);
+            }
+            else if (connection.authenticationType === 'gssapi' || connection.authenticationType === 'plain') {
+                connectionUrl += addOptionToUrl(connectionUrl, 'authSource', '$external');
+            }
+        }
 
         return connectionUrl;
     },

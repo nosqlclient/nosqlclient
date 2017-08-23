@@ -4,7 +4,7 @@ import {ReactiveVar} from "meteor/reactive-var";
 import {Template} from "meteor/templating";
 import {Session} from "meteor/session";
 import {FlowRouter} from "meteor/kadira:flow-router";
-import {Connections} from "/lib/imports/collections/connections";
+import {Connections} from "/lib/imports/collections";
 import Helper from "/client/imports/helper";
 import Enums from "/lib/imports/enums";
 import {connect} from "/client/imports/views/layouts/top_navbar/connections/connections";
@@ -101,8 +101,8 @@ export const renderCollectionNames = function () {
 const showMongoBinaryInfo = function () {
     if (!localStorage.getItem(Enums.LOCAL_STORAGE_KEYS.MONGO_BINARY_INFO)) {
         swal({
-            title: "Mongo Binary",
-            text: "Mongo executable to be used on shell and schema analyzer is configurable, you can change it from <b>Settings</b>",
+            title: "Mongo Tools",
+            text: "Nosqlclient uses mongo binaries and tools for dump/restore, schema analyzer, and shell you can set the directory of binaries from <b>Settings</b>",
             type: "info",
             html: true,
             confirmButtonColor: "#18A689",
@@ -143,16 +143,8 @@ Template.navigation.events({
         showMongoBinaryInfo();
     },
 
-    'click #anchorDatabaseDumpRestore'(e) {
-        e.preventDefault();
-        let connection = Connections.findOne({_id: Session.get(Helper.strSessionConnection)});
-
-        if (connection.ssh && connection.ssh.enable) {
-            toastr.info('Unfortunately, this feature is not usable in SSH connections yet');
-            return;
-        }
-
-        FlowRouter.go('/databaseDumpRestore');
+    'click #anchorDatabaseDumpRestore'() {
+        showMongoBinaryInfo();
     },
 
     'click #btnRefreshCollections' (e) {
@@ -285,6 +277,43 @@ Template.navigation.onRendered(function () {
                                 const collectionName = $(this).context.innerText.substring(1).split(' ')[0];
                                 renameModal.data('collection', collectionName);
                                 renameModal.modal('show');
+                            }
+                        },
+
+                        clone_collection: {
+                            icon: "fa-clone",
+                            name: "Clone",
+                            callback: function () {
+                                const collectionName = $(this).context.innerText.substring(1).split(' ')[0];
+                                swal({
+                                        title: "Collection Name",
+                                        text: "Please type collection name",
+                                        type: "input",
+                                        showCancelButton: true,
+                                        closeOnConfirm: false,
+                                        confirmButtonColor: "#DD6B55",
+                                        inputPlaceholder: "Collection Name",
+                                        inputValue: collectionName
+                                    },
+                                    function (inputValue) {
+                                        if (!inputValue) {
+                                            swal.showInputError("You need to write something!");
+                                            return false;
+                                        }
+
+                                        swal("Creating...", "Please wait while " + inputValue + " is being created, collections will be refreshed automatically !", "info");
+
+                                        Meteor.call("aggregate", collectionName, [{$match: {}}, {$out: inputValue}], {}, Meteor.default_connection._lastSessionId, function (err, result) {
+                                                if (err || result.error) {
+                                                    Helper.showMeteorFuncError(err, result, "Couldn't clone ");
+                                                }
+                                                else {
+                                                    connect(true, "Successfully cloned collection " + collectionName + " as " + inputValue);
+                                                    swal.close();
+                                                }
+                                            }
+                                        );
+                                    });
                             }
                         },
 

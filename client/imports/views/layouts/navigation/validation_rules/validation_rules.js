@@ -1,7 +1,7 @@
 import {Template} from "meteor/templating";
 import {Meteor} from "meteor/meteor";
 import {Session} from "meteor/session";
-import {Connections} from "/lib/imports/collections/connections";
+import {Connections} from "/lib/imports/collections";
 import Helper from "/client/imports/helper";
 import "./validation_rules.html";
 

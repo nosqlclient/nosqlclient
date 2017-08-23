@@ -4,8 +4,7 @@
 import {WebApp} from "meteor/webapp";
 import {Meteor} from "meteor/meteor";
 import {Papa} from "meteor/harrison:papa-parse";
-import {Settings} from "/lib/imports/collections/settings";
-import {Connections} from "/lib/imports/collections/connections";
+import {Settings, Connections} from "/lib/imports/collections";
 import {databasesBySessionId} from "/server/imports/mongodb/methods_common";
 import LOGGER from "/server/imports/internal/logger";
 

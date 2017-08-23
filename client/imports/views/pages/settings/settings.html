@@ -64,7 +64,7 @@
                                         <span class="input-group-addon"> Milliseconds</span>
                                     </div>
                                     <span class="help-block m-b-none">
-                                        Every <strong>configured milliseconds</strong> mongoclient populates statistic charts via querying database.
+                                        Every <strong>configured milliseconds</strong> noqslclient populates statistic charts via querying database.
                                     </span>
                                 </div>
                             </div>
@@ -97,15 +97,20 @@
                             </div>
 
                             <div class="form-group">
-                                <label class="col-lg-3 control-label">Autocomplete feature for selectors</label>
+                                <label class="col-lg-3 control-label">Autocomplete samples count</label>
                                 <div class="col-lg-9">
-                                    <div id="divAutoCompleteFields" class="i-checks">
-                                        <input id="inputAutoCompleteFields" type="checkbox" value=""
-                                               class="form-control"
-                                               checked=""
-                                               style="position: absolute; opacity: 0;"/>
-                                        <span class="help-block m-b-none">Enabling this feature significantly reduces performance on huge collections</span>
-                                    </div>
+                                    <input id="inputAutoCompleteSamplesCount" min="0" required="true" type="number"
+                                           class="form-control">
+                                    <span class="help-block m-b-none">Nosqlclient randomly finds given count data per collection selection to find autocompletion keys, <b>0 disables autocompletion</b></span>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="col-lg-3 control-label">Autocomplete shortcut</label>
+                                <div class="col-lg-9">
+                                    <input id="inputAutocompleteShortcut" required="true" type="text"
+                                           class="form-control">
+                                    <span class="help-block m-b-none">Combination should be seperated by dash. E.g. <b>Ctrl-Space</b>, <b>Alt-A</b>. Shell also uses this combination.</span>
                                 </div>
                             </div>
 
@@ -132,13 +137,12 @@
                                                checked=""
                                                style="position: absolute; opacity: 0;"/>
                                         <span class="help-block m-b-none">
-                                            In case, you're uncomfortable with live chat button you can disable it from here. <b>Requires restart</b>
+                                            In case, you're disturbed with live chat button you can disable it from here. <b>Requires restart</b>
                                          </span>
                                     </div>
                                 </div>
                             </div>
 
-                            <div class="hr-line-dashed"></div>
                             <div class="form-group">
                                 <label class="col-lg-3 control-label">Show database statistics</label>
                                 <div class="col-lg-9">
@@ -155,25 +159,29 @@
                             </div>
 
                             <div class="hr-line-dashed"></div>
-
                             <div class="form-group">
-                                <label class="col-lg-3 control-label">Local dump path</label>
+                                <label class="col-lg-3 control-label">Max. chart points</label>
                                 <div class="col-lg-9">
-                                    <input id="inputDumpPath" required="true" type="text"
+                                    <input id="inputMaxChartPoints" min="15" required="true"
+                                           type="number"
                                            class="form-control">
                                     <span class="help-block m-b-none">
-                                         Database <strong>dumps</strong> will be placed under this directory
+                                        Maximum <b>live</b> chart points to show on database stats
                                     </span>
                                 </div>
                             </div>
 
+                            <div class="hr-line-dashed"></div>
+
                             <div class="form-group">
-                                <label class="col-lg-3 control-label">Mongo executable path</label>
+                                <label class="col-lg-3 control-label">Mongo binaries path</label>
                                 <div class="col-lg-9">
-                                    <input id="inputMongoExecutable" required="true" type="file"
-                                           class="form-control filestyle">
+                                    <input id="inputMongoExecutable" required="true" type="text"
+                                           class="form-control">
                                     <span class="help-block m-b-none">
-                                        <b>By default</b> Mongoclient uses an internal <b>Mongo</b> binary regarding to your OS for <b>shell and schema analyzer</b>
+                                        Set path of mongo binaries <i>(mongo, mongodump, mongorestore, mongoexport, mongoimport)</i> for <b>shell, schema analyzer and dump sections</b><br/>
+                                        <b>Example:</b> <i>/home/sercan/my_apps/mongodb3.4/bin</i><br/>
+                                        Make sure Nosqlclient has read permissions on the folder
                                     </span>
                                 </div>
                             </div>

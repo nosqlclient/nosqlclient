@@ -2,91 +2,79 @@
  * Created by RSercan on 17.1.2016.
  */
 
-import {Connections} from "/lib/imports/collections/connections";
 import {Meteor} from "meteor/meteor";
+import {Dumps} from "/lib/imports/collections";
+import {getProperBinary} from "./methods_common";
 import LOGGER from "../internal/logger";
-import Helper from "./helper";
-import Enums from "/lib/imports/enums";
-import {proceedQueryExecution} from "./methods_collection";
 
-const backup = require('mongodb-backup');
-const restore = require('mongodb-restore');
-const fs = require('fs');
+const spawn = require('cross-spawn');
+
+const executeBinary = function (args, sessionId, binaryName) {
+    LOGGER.info('[' + binaryName + ']', args, sessionId);
+    const binaryPath = getProperBinary(binaryName);
+
+    try {
+        let spawned = spawn(binaryPath, args);
+        spawned.stdout.on('data', Meteor.bindEnvironment(function (data) {
+            if (data.toString()) {
+                Dumps.insert({
+                    'date': Date.now(),
+                    'sessionId': sessionId,
+                    'binary': binaryName,
+                    'message': data.toString()
+                });
+            }
+        }));
+
+        spawned.stderr.on('data', Meteor.bindEnvironment(function (data) {
+            if (data.toString()) {
+                Dumps.insert({
+                    'date': Date.now(),
+                    'sessionId': sessionId,
+                    'binary': binaryName,
+                    'message': data.toString(),
+                    'error': true
+                });
+            }
+        }));
+
+        spawned.on('close', Meteor.bindEnvironment(function () {
+            Dumps.insert({
+                'date': Date.now(),
+                'sessionId': sessionId,
+                'binary': binaryName,
+                'message': 'CLOSED'
+            });
+        }));
+
+        spawned.stdin.end();
+    }
+    catch (ex) {
+        LOGGER.error('[' + binaryName + ']', sessionId, ex);
+        throw new Meteor.Error(ex.message || ex);
+    }
+};
 
 Meteor.methods({
-    mongoimport(blob, collection, sessionId){
-        try {
-            let buffer = new Buffer(blob);
-            LOGGER.info('[mongoimport]', sessionId, collection);
-
-            const methodArray = [
-                {
-                    "insertMany": [JSON.parse(buffer.toString())]
-                }
-            ];
-            return proceedQueryExecution(collection, methodArray, sessionId);
-        } catch (ex) {
-            LOGGER.error('[mongoimport]', sessionId, ex);
-            throw new Meteor.Error(ex.message);
-        }
+    mongodump (args, sessionId){
+        executeBinary(args, sessionId, 'mongodump');
     },
 
-    restoreDump(connectionId, dumpInfo) {
-        const connection = Connections.findOne({_id: connectionId});
-        const connectionUrl = Helper.getConnectionUrl(connection, true);
-        const path = dumpInfo.filePath.substring(0, dumpInfo.filePath.lastIndexOf('/'));
-        const fileName = dumpInfo.filePath.substring(dumpInfo.filePath.lastIndexOf('/') + 1);
-
-        LOGGER.info('[restoreDump]', connectionUrl, JSON.stringify(dumpInfo));
-        try {
-            restore({
-                uri: connectionUrl,
-                root: path,
-                tar: fileName,
-                drop: true,
-                callback: Meteor.bindEnvironment(function () {
-                    dumpInfo.status = Enums.DUMP_STATUS.FINISHED;
-                    Meteor.call('updateDump', dumpInfo);
-                })
-            });
-        }
-        catch (ex) {
-            LOGGER.error('[restoreDump]', ex);
-            dumpInfo.status = Enums.DUMP_STATUS.ERROR;
-            Meteor.call('updateDump', dumpInfo);
-        }
+    mongorestore (args, sessionId){
+        executeBinary(args, sessionId, 'mongorestore');
     },
 
-    takeDump(connectionId, path) {
-        const connection = Connections.findOne({_id: connectionId});
-        const date = new Date();
-        const connectionUrl = Helper.getConnectionUrl(connection, true);
-        const fileName = connection.databaseName + "_" + date.getTime() + ".tar";
-        const fullFilePath = path.trim() + "/" + fileName;
+    mongoexport (args, sessionId){
+        executeBinary(args, sessionId, 'mongoexport');
+    },
 
-        LOGGER.info('[takeDump]', connectionUrl, path, fileName);
-        try {
-            backup({
-                uri: connectionUrl,
-                root: path,
-                logger: true,
-                tar: fileName,
-                callback: Meteor.bindEnvironment(function () {
-                    const stats = fs.statSync(fullFilePath);
-                    LOGGER.info('[takeDump]', 'ended successfully !');
-                    Meteor.call('saveDump', {
-                        filePath: fullFilePath,
-                        date: date,
-                        connectionName: connection.connectionName,
-                        connectionId: connection._id,
-                        sizeInBytes: stats["size"],
-                        status: Enums.DUMP_STATUS.NOT_IMPORTED
-                    });
-                })
-            });
-        }
-        catch (ex) {
-            LOGGER.error('[takeDump]', ex);
-        }
+    mongoimport (args, sessionId){
+        executeBinary(args, sessionId, 'mongoimport');
+    },
+
+    removeDumpLogs(sessionId, binary){
+        LOGGER.info('[removeDumpLogs]', sessionId, binary);
+        if (!binary) Dumps.remove({sessionId: sessionId});
+        else Dumps.remove({sessionId: sessionId, binary: binary});
     }
 });
