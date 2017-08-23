@@ -73,19 +73,7 @@ const clearLogs = function (binary) {
 };
 
 const callBinaryMethod = function (button, binary, argsMethod) {
-    Ladda.create(document.querySelector(button)).start();
-    const args = argsMethod();
-    if (args === null) {
-        Ladda.stopAll();
-        return;
-    }
-
-    Meteor.call(binary, args, Meteor.default_connection._lastSessionId, function (err) {
-        if (err) {
-            Ladda.stopAll();
-            Helper.showMeteorFuncError(err, null, "Couldn't proceed");
-        }
-    });
+    Helper.warnDemoApp();
 };
 
 Template.databaseDumpRestore.onDestroyed(function () {
@@ -131,35 +119,35 @@ Template.databaseDumpRestore.onRendered(function () {
 });
 
 Template.databaseDumpRestore.events({
-    'click #btnExecuteMongodump'(){
+    'click #btnExecuteMongodump'() {
         callBinaryMethod('#btnExecuteMongodump', 'mongodump', getMongodumpArgs);
     },
 
-    'click #btnExecuteMongorestore'(){
+    'click #btnExecuteMongorestore'() {
         callBinaryMethod('#btnExecuteMongorestore', 'mongorestore', getMongorestoreArgs);
     },
 
-    'click #btnExecuteMongoexport'(){
+    'click #btnExecuteMongoexport'() {
         callBinaryMethod('#btnExecuteMongoexport', 'mongoexport', getMongoexportOptions);
     },
 
-    'click #btnExecuteMongoimport'(){
+    'click #btnExecuteMongoimport'() {
         callBinaryMethod('#btnExecuteMongoimport', 'mongoimport', getMongoimportOptions);
     },
 
-    'click #btnClearMongoimportLogs'(){
+    'click #btnClearMongoimportLogs'() {
         clearLogs('mongoimport');
     },
 
-    'click #btnClearMongoexportLogs'(){
+    'click #btnClearMongoexportLogs'() {
         clearLogs('mongoexport');
     },
 
-    'click #btnClearMongodumpLogs'(){
+    'click #btnClearMongodumpLogs'() {
         clearLogs('mongodump');
     },
 
-    'click #btnClearMongorestoreLogs'(){
+    'click #btnClearMongorestoreLogs'() {
         clearLogs('mongorestore');
     }
 });
