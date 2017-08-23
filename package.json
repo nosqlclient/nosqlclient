@@ -1,7 +1,7 @@
 {
   "private": true,
   "name": "mongoclient",
-  "version": "2.1.0",
+  "version": "2.2.0",
   "devDependencies": {
     "eslint": "^4.2.0"
   },
