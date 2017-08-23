@@ -16,7 +16,7 @@ Cross-platform, easy to use, MongoDB 3.4+ support and more features!
 [Read more about name change](https://medium.com/mongoclient/time-to-change-again-8db4dd56b171)
 
 ## Demo
-[Try Demo Application](https://www.nosqlclient.com/demo)
+[Try Demo Application](https://www.nosqlclient.com/demo/)
 
 ## Documentation
 All documentation can be found in https://www.nosqlclient.com/docs
