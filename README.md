@@ -27,7 +27,7 @@ All documentation can be found in https://www.nosqlclient.com/docs
 
 To install latest stable release:
 
-```docker pull mongoclient/mongoclient:2.1.0```
+```docker pull mongoclient/mongoclient:2.2.0```
 
 Then you can run it as a daemon:
 
@@ -42,9 +42,9 @@ To persist your connections and settings simply bind ```/data/db``` directory to
 
 ## Distributions
 
-* [Linux x64](https://github.com/nosqlclient/nosqlclient/releases/download/2.1.0/linux-portable-x64.zip)
-* [Windows x64](https://github.com/nosqlclient/nosqlclient/releases/download/2.1.0/windows-portable-x64.zip)
-* [OSx](https://github.com/nosqlclient/nosqlclient/releases/download/2.1.0/osx-portable.zip)
+* [Linux x64](https://github.com/nosqlclient/nosqlclient/releases/download/2.2.0/linux-portable-x64.zip)
+* [Windows x64](https://github.com/nosqlclient/nosqlclient/releases/download/2.2.0/windows-portable-x64.zip)
+* [OSx](https://github.com/nosqlclient/nosqlclient/releases/download/2.2.0/osx-portable.zip)
 * [More](https://nosqlclient.com/docs/start.html)
 
 
