@@ -21,6 +21,35 @@
 
 ## 2.0.0, 9 April 2017
 - Enterprise edition is finally here
+- File management fixed
+- Made connection/socket timeout overridable while creating/editing connection
+- Responsive datatables
+- Fixed an issue with @ char in db names
+- Switch database fixed while using URL connection
+- Fixed an issue with date queries with space
+- Updated internal mongo binaries to 3.4
+- Reworked connections section, supporting LDAP, Kerberos etc.
+- Resizable main view for left panel
+- Made single tab as configurable for result views
+- Shell is usable now in SSH tunnels
+- Meteor updated to 1.4.2.6
+- Added stored functions management
+- Added index management
+- Added document validation rules
+- Improved create collection/view
+- Added filtering collection names
+- Improved query options for all queries
+- Added delete fies to file management
+- Made shell command resizable
+- Added two new charts (active read/write collection read/write)
+- Made chart scheduler time configurable
+- Fixed a layout problem with huge collection names
+- Added automatic update notification
+- Added save button to find query
+- Added default limit to find query
+- Fixed spawning external mongo binaries for shell, schema analyzer
+- Made live chat configurable
+- Fixed dump path saving
 - More on docs - https://nosqlclient.com/docs/
 
 ## 1.5.0, 28 December 2016
