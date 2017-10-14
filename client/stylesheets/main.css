@@ -194,3 +194,7 @@ tr.selected {
     background-color: #f442cb;
     color: #ffffff;
 }
+
+.ace_text-input {
+    position: absolute !important
+}
