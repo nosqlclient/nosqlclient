@@ -23,7 +23,7 @@
     "jquery-contextmenu": "2.6.1",
     "jsoneditor": "^5.9.6",
     "ladda": "^1.0.0",
-    "meteor-node-stubs": "^0.2.3",
+    "meteor-node-stubs": "^0.3.0",
     "mongodb": "2.2.33",
     "spin.js": "^2.3.2",
     "toastr": "^2.1.2",
