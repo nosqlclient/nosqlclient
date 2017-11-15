@@ -4,7 +4,7 @@
 
 // stuff
 import '/server/imports/internal/startup';
-import '/server/imports/publishers/publisher';
+import '/server/imports/publisher';
 import '/server/imports/webapp';
 
 // methods

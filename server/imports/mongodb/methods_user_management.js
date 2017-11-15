@@ -1,119 +1,114 @@
 /**
  * Created by RSercan on 10.1.2016.
  */
-import {Meteor} from "meteor/meteor";
-import {Actions} from "/lib/imports/collections";
-import LOGGER from "../internal/logger";
+import { Meteor } from 'meteor/meteor';
+import { Actions } from '/lib/imports/collections';
+import LOGGER from '../internal/logger';
 
 const cheerio = require('cheerio');
 
-const fixHrefs = function (url, loadedUrl) {
-    let hrefs = loadedUrl('a[href]');
+const fixHrefs = function fixHrefs(url, loadedUrl) {
+  const hrefs = loadedUrl('a[href]');
 
-    // fix all hrefs
-    hrefs.attr('href', function (i, href) {
-        let tmpUrl = url;
-        while (href.indexOf('..') != -1) {
-            href = href.substring(3);
-            tmpUrl = tmpUrl.substring(0, tmpUrl.lastIndexOf('/'));
-        }
-        return tmpUrl + '/' + href;
-    });
+  // fix all hrefs
+  hrefs.attr('href', (i, href) => {
+    let tmpUrl = url;
+    while (href.indexOf('..') !== -1) {
+      href = href.substring(3);
+      tmpUrl = tmpUrl.substring(0, tmpUrl.lastIndexOf('/'));
+    }
+    return `${tmpUrl}/${href}`;
+  });
 
-    hrefs.each(function () {
-        loadedUrl(this).attr('data-clipboard-text', loadedUrl(this).attr('href'));
-        loadedUrl(this).replaceWith(loadedUrl(this).not('.headerlink'));
-    });
+  hrefs.each(function fixOne() {
+    loadedUrl(this).attr('data-clipboard-text', loadedUrl(this).attr('href'));
+    loadedUrl(this).replaceWith(loadedUrl(this).not('.headerlink'));
+  });
 };
 
-const load = function (url) {
-    return cheerio.load(Meteor.http.get(url).content);
-};
+const load = url => cheerio.load(Meteor.http.get(url).content);
 
 Meteor.methods({
-    getAllActions() {
-        let action = Actions.findOne();
-        if (action && action.actionList) {
-            return action.actionList;
-        }
+  getAllActions() {
+    const action = Actions.findOne();
+    if (action && action.actionList) {
+      return action.actionList;
+    }
 
-        LOGGER.info('[crawl]', 'getAllActions');
+    LOGGER.info('[crawl]', 'getAllActions');
 
-        let url = "https://docs.mongodb.org/manual/reference/privilege-actions";
-        let loadedUrl = load(url);
+    const url = 'https://docs.mongodb.org/manual/reference/privilege-actions';
+    const loadedUrl = load(url);
+    fixHrefs(url, loadedUrl);
+
+    const result = [];
+
+    loadedUrl("dl[class='authaction']").children('dt').each(function dt() {
+      result.push(loadedUrl(this).attr('id').replace('authr.', ''));
+    });
+
+    Meteor.call('saveActions', { actionList: result });
+    return result;
+  },
+
+  getActionInfo(action) {
+    LOGGER.info('[crawl]', 'getAction', action);
+
+    const url = 'https://docs.mongodb.org/manual/reference/privilege-actions';
+    const loadedUrl = load(url);
+    fixHrefs(url, loadedUrl);
+
+    return loadedUrl(`dt[id='${action}']`).parent('dl[class=authaction]').children('dd').html();
+  },
+
+  getRoleInfo(roleName) {
+    LOGGER.info('[crawl]', 'getRoleInfo', roleName);
+
+    const url = 'https://docs.mongodb.org/manual/reference/built-in-roles';
+
+    const loadedUrl = load(`${url}/#${roleName}`);
+    let result = 'It looks like a user-defined role';
+
+    loadedUrl('.authrole').each(function authRole() {
+      if (loadedUrl(this).children('dt').attr('id') === roleName) {
         fixHrefs(url, loadedUrl);
+        result = loadedUrl(this).children('dd').html();
+      }
+    });
 
-        let result = [];
+    return result;
+  },
 
-        loadedUrl("dl[class='authaction']").children('dt').each(function () {
-            result.push(loadedUrl(this).attr('id').replace('authr.', ''));
-        });
+  getResourceInfo(resource) {
+    LOGGER.info('[crawl]', 'getResourceInfo', resource);
 
-        Meteor.call('saveActions', {actionList: result});
-        return result;
-    },
+    const url = 'https://docs.mongodb.org/manual/reference/resource-document';
+    const loadedUrl = load(url);
 
-    getActionInfo(action) {
-        LOGGER.info('[crawl]', 'getAction', action);
+    fixHrefs(url, loadedUrl);
 
-        let url = "https://docs.mongodb.org/manual/reference/privilege-actions";
-        let loadedUrl = load(url);
-        fixHrefs(url, loadedUrl);
+    switch (resource) {
+      case 'cluster':
+        return loadedUrl('div[id=cluster-resource]').html();
 
-        return loadedUrl("dt[id='" + action + "']").parent('dl[class=authaction]').children('dd').html();
-    },
+      case 'anyResource':
+        return loadedUrl('div[id=anyresource]').html();
 
-    getRoleInfo(roleName) {
-        LOGGER.info('[crawl]', 'getRoleInfo', roleName);
+      case 'db+collection':
+        return loadedUrl('div[id=specify-a-collection-of-a-database-as-resource]').html();
 
-        let url = "https://docs.mongodb.org/manual/reference/built-in-roles";
+      case 'db':
+        return loadedUrl('div[id=specify-a-database-as-resource]').html();
 
-        let loadedUrl = load(url + "/#" + roleName);
-        let result = 'It looks like a user-defined role';
+      case 'collection':
+        return loadedUrl('div[id=specify-collections-across-databases-as-resource]').html();
 
-        loadedUrl('.authrole').each(function () {
-            if (loadedUrl(this).children('dt').attr('id') == roleName) {
-                fixHrefs(url, loadedUrl);
-                result = loadedUrl(this).children('dd').html();
-            }
-        });
+      case 'non-system':
+        return loadedUrl('div[id=specify-all-non-system-collections-in-all-databases]').html();
 
-        return result;
-    },
-
-    getResourceInfo(resource) {
-        LOGGER.info('[crawl]', 'getResourceInfo', resource);
-
-        let url = "https://docs.mongodb.org/manual/reference/resource-document";
-        let loadedUrl = load(url);
-
-        fixHrefs(url, loadedUrl);
-
-        if (resource == 'cluster') {
-            return loadedUrl('div[id=cluster-resource]').html();
-        }
-
-        if (resource == 'anyResource') {
-            return loadedUrl('div[id=anyresource]').html();
-        }
-
-        if (resource == 'db+collection') {
-            return loadedUrl('div[id=specify-a-collection-of-a-database-as-resource]').html();
-        }
-
-        if (resource == 'db') {
-            return loadedUrl('div[id=specify-a-database-as-resource]').html();
-        }
-
-        if (resource == 'collection') {
-            return loadedUrl('div[id=specify-collections-across-databases-as-resource]').html();
-        }
-
-        if (resource == 'non-system') {
-            return loadedUrl('div[id=specify-all-non-system-collections-in-all-databases]').html();
-        }
-
+      default:
         return "Couldn't find corresponding resource document in docs.mongodb.org";
     }
+  },
 
 });

@@ -1,18 +1,23 @@
 extends:
-  eslint:recommended
+  airbnb
 
 rules:
-  no-alert
-  camelcase
-  no-duplicate-imports
-  no-useless-constructor
+  import/extensions: 0
+  import/no-unresolved: 0
+  import/no-extraneous-dependencies: 0
+  import/prefer-default-export: 0
+  no-useless-escape: 0
+  import/no-absolute-path: 0
+  no-param-reassign: 0
+  max-len: [2, 200, 4]
+  no-underscore-dangle: 0
+  func-names: 0
+  comma-dangle: 0
+
 
 parserOptions:
+  ecmaVersion: 6
   sourceType: module
-
-ecmaFeatures:
-  modules: true
-  jsx: true
 
 env:
   amd: true

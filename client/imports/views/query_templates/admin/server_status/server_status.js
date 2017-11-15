@@ -1,21 +1,21 @@
-import {Template} from 'meteor/templating';
-import {Meteor} from 'meteor/meteor';
+import { Template } from 'meteor/templating';
+import { Meteor } from 'meteor/meteor';
 import Helper from '/client/imports/helper';
-import {initExecuteQuery} from '/client/imports/views/pages/admin_queries/admin_queries';
+import { initExecuteQuery } from '/client/imports/views/pages/admin_queries/admin_queries';
 
 import './server_status.html';
 
 /**
  * Created by RSercan on 10.1.2016.
  */
-Template.serverStatus.onRendered(function () {
-    Helper.changeRunOnAdminOptionVisibility(false);
+Template.serverStatus.onRendered(() => {
+  Helper.changeRunOnAdminOptionVisibility(false);
 });
 
 Template.serverStatus.executeQuery = function () {
-    initExecuteQuery();
+  initExecuteQuery();
 
-    Meteor.call("serverStatus",Meteor.default_connection._lastSessionId, function (err, result) {
-        Helper.renderAfterQueryExecution(err, result, true);
-    });
+  Meteor.call('serverStatus', Meteor.default_connection._lastSessionId, (err, result) => {
+    Helper.renderAfterQueryExecution(err, result, true);
+  });
 };
