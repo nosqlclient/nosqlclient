@@ -1,12 +1,87 @@
 /* global Async */
 import { Meteor } from 'meteor/meteor';
 import { Logger, Database } from '/server/imports/modules';
+import { Connection } from '/server/imports/core';
 import MongoDBHelper from './helper';
 import MongoDBShell from './shell';
 
-const MongoDB = () => {
+const mongodbApi = require('mongodb');
+const tunnelSsh = require('tunnel-ssh');
+const spawn = require('cross-spawn');
+
+const MongoDB = function () {
   this.dbObjectsBySessionId = {};
+  this.tunnelsBySessionId = {};
 };
+
+function proceedConnectingMongodb(dbName, sessionId, connectionUrl, connectionOptions, done) {
+  if (!connectionOptions) {
+    connectionOptions = {};
+  }
+
+  mongodbApi.MongoClient.connect(connectionUrl, connectionOptions, (mainError, db) => {
+    try {
+      if (mainError || !db) {
+        Logger.error({ message: mainError, metadataToLog: { sessionId, db } });
+        done(mainError, db);
+        if (db) db.close();
+        if (this.tunnelsBySessionId[sessionId]) {
+          this.tunnelsBySessionId[sessionId].close();
+          this.tunnelsBySessionId[sessionId] = null;
+        }
+        return;
+      }
+      this.dbObjectsBySessionId[sessionId] = db.db(dbName);
+      this.dbObjectsBySessionId[sessionId].listCollections().toArray((err, collections) => {
+        done(err, collections);
+      });
+
+      Logger.info({ message: 'connect', metadataToLog: `current sesssion length: ${Object.keys(this.dbObjectsBySessionId).length}` });
+    } catch (exception) {
+      Logger.error({ message: 'connect', exception, metadataTolog: { connectionUrl, connectionOptions, sessionId } });
+      done(new Meteor.Error(exception.message), null);
+      if (db) db.close();
+      if (this.tunnelsBySessionId[sessionId]) {
+        this.tunnelsBySessionId[sessionId].close();
+        this.tunnelsBySessionId[sessionId] = null;
+      }
+    }
+  });
+}
+
+function connectThroughTunnel({ connection, sessionId, done, connectionUrl, connectionOptions, username, password }) {
+  const config = {
+    dstPort: connection.ssh.destinationPort,
+    localPort: connection.ssh.localPort ? connection.ssh.localPort : connection.servers[0].port,
+    host: connection.ssh.host,
+    port: connection.ssh.port,
+    readyTimeout: 99999,
+    username: connection.ssh.username,
+  };
+
+  if (connection.ssh.certificateFile) config.privateKey = Buffer.from(connection.ssh.certificateFile);
+  if (connection.ssh.passPhrase) config.passphrase = connection.ssh.passPhrase;
+  if (connection.ssh.password) config.password = connection.ssh.password;
+
+  Logger.info({ message: 'connect-ssh', metadataToLog: { sessionId, config } });
+  this.tunnelsBySessionId[sessionId] = tunnelSsh(config, Meteor.bindEnvironment((error) => {
+    if (error) {
+      done(new Meteor.Error(error.message), null);
+      return;
+    }
+    proceedConnectingMongodb(connection.databaseName, sessionId, connectionUrl, connectionOptions, done);
+
+    MongoDBShell.connectToShell({ connectionId: connection._id, username, password, sessionId });
+  }));
+
+  this.tunnelsBySessionId[sessionId].on('error', (err) => {
+    if (err) done(new Meteor.Error(err.message), null);
+    if (this.tunnelsBySessionId[sessionId]) {
+      this.tunnelsBySessionId[sessionId].close();
+      this.tunnelsBySessionId[sessionId] = null;
+    }
+  });
+}
 
 MongoDB.prototype = {
   execute({ selectedCollection, methodArray, sessionId, removeCollectionTopology }) {
@@ -28,6 +103,25 @@ MongoDB.prototype = {
 
     const execution = this.dbObjectsBySessionId[sessionId].collection(selectedCollection);
     return MongoDBHelper.proceedMapReduceExecution({ execution, map, reduce, options });
+  },
+
+  connect({ connectionId, username, password, sessionId }) {
+    const connection = Database.readOne({ type: Database.types.Connections, query: { _id: connectionId } });
+    const connectionUrl = Connection.getConnectionUrl(connection, false, username, password);
+    const connectionOptions = Connection.getConnectionOptions(connection);
+    const metadataToLog = { connectionUrl, options: MongoDBHelper.clearConnectionOptionsForLog(connectionOptions), sessionId };
+
+    Logger.info({ message: 'connect', metadataToLog });
+
+    return Async.runSync((done) => {
+      try {
+        if (connection.ssh && connection.ssh.enabled) connectThroughTunnel.call(this, { connection, sessionId, done, connectionUrl, connectionOptions, username, password });
+        else proceedConnectingMongodb(connection.databaseName, sessionId, connectionUrl, connectionOptions, done);
+      } catch (exception) {
+        Logger.error({ message: 'connect-error', exception, metadataToLog });
+        done(new Meteor.Error(exception.message), null);
+      }
+    });
   },
 
   disconnect({ sessionId }) {
@@ -52,13 +146,60 @@ MongoDB.prototype = {
         this.dbObjectsBySessionId[sessionId].collections((err, collections) => {
           MongoDBHelper.keepDroppingCollections(collections, 0, done);
         });
-      } catch (ex) {
-        Logger.error({ message: 'drop-all-collections-error', ex, metadataToLog: { sessionId } });
-        done(new Meteor.Error(ex.message), null);
+      } catch (exception) {
+        Logger.error({ message: 'drop-all-collections-error', exception, metadataToLog: { sessionId } });
+        done(new Meteor.Error(exception.message), null);
       }
     });
-  }
+  },
 
+  analyzeSchema({ connectionId, username, password, collection, sessionId }) {
+    const connectionUrl = Connection.getConnectionUrl(Database.readOne({ type: Database.types.Connections, query: { _id: connectionId } }), true, username, password, true);
+    const mongoPath = MongoDBHelper.getProperBinary('mongo');
+    const args = [connectionUrl, '--quiet', '--eval', `var collection =\"${collection}\", outputFormat=\"json\"`, `${MongoDBHelper.getMongoExternalsPath()}/variety/variety.js_`];
+    const metadataToLog = { sessionId, args, collection };
+
+    Logger.info({ message: 'analyze-schema', metadataToLog });
+    try {
+      const spawned = spawn(mongoPath, args);
+      let message = '';
+      spawned.stdout.on('data', Meteor.bindEnvironment((data) => {
+        if (data.toString()) {
+          message += data.toString();
+        }
+      }));
+
+      spawned.stderr.on('data', Meteor.bindEnvironment((data) => {
+        if (data.toString()) {
+          Database.create({
+            type: Database.types.SchemaAnalyzeResult,
+            document: {
+              date: Date.now(),
+              sessionId,
+              connectionId,
+              message: data.toString(),
+            }
+          });
+        }
+      }));
+
+      spawned.on('close', Meteor.bindEnvironment(() => {
+        Database.create({
+          type: Database.types.SchemaAnalyzeResult,
+          document: {
+            date: Date.now(),
+            sessionId,
+            connectionId,
+            message
+          }
+        });
+      }));
+
+      spawned.stdin.end();
+    } catch (exception) {
+      Error.create({ type: Error.types.SchemaAnalyzeError, exception, metadataToLog });
+    }
+  }
 };
 
 export default new MongoDB();

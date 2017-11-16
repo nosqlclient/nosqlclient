@@ -1,4 +1,4 @@
-const ConnectionHelper = () => {
+const ConnectionHelper = function () {
 
 };
 

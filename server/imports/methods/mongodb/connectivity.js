@@ -27,5 +27,9 @@ Meteor.methods({
 
   disconnect(sessionId) {
     MongoDB.disconnect({ sessionId });
+  },
+
+  connect(connectionId, username, password, sessionId) {
+    MongoDB.connect({ connectionId, username, password, sessionId });
   }
 });

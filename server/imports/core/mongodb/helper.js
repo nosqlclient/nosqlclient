@@ -6,7 +6,7 @@ import ExtendedJSON from './extended_json';
 const os = require('os');
 const fs = require('fs');
 
-const MongoDBHelper = () => {
+const MongoDBHelper = function () {
 };
 
 MongoDBHelper.prototype = {

@@ -12,29 +12,34 @@ const Database = function Database() {
   };
 };
 
+function resolveType(type) {
+  if (Object.prototype.toString.call(type) === '[object String]') return this.types[type];
+  return type;
+}
+
 Database.prototype = {
   create({ type, document }) {
-    return this.types[type].insert(document);
+    return resolveType(type).insert(document);
   },
 
   read({ type, query, queryOptions = {} }) {
-    return this.types[type].find(query, queryOptions).fetch();
+    return resolveType(type).find(query, queryOptions).fetch();
   },
 
   readOne({ type, query, queryOptions = {} }) {
-    return this.types[type].findOne(query, queryOptions);
+    return resolveType(type).findOne(query, queryOptions);
   },
 
   count({ type, query, queryOptions = {} }) {
-    return this.types[type].find(query, queryOptions).count();
+    return resolveType(type).find(query, queryOptions).count();
   },
 
   update({ type, selector, modifier, options = {} }) {
-    return this.types[type].update(selector, modifier, options);
+    return resolveType(type).update(selector, modifier, options);
   },
 
   remove({ type, selector }) {
-    return this.types[type].update(selector);
+    return resolveType(type).update(selector);
   },
 
   // aliases

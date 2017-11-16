@@ -1,11 +1,9 @@
-/**
- * Created by RSercan on 10.1.2016.
- */
 import { Meteor } from 'meteor/meteor';
-import { Actions } from '/lib/imports/collections';
-import LOGGER from '../modules/logger/logger';
+import { Database, Logger } from '/server/imports/modules';
 
 const cheerio = require('cheerio');
+
+const MongoDBUser = function () {};
 
 const fixHrefs = function fixHrefs(url, loadedUrl) {
   const hrefs = loadedUrl('a[href]');
@@ -28,14 +26,14 @@ const fixHrefs = function fixHrefs(url, loadedUrl) {
 
 const load = url => cheerio.load(Meteor.http.get(url).content);
 
-Meteor.methods({
+MongoDBUser.prototype = {
   getAllActions() {
-    const action = Actions.findOne();
+    const action = Database.readOne({ type: Database.types.Actions, query: {} });
     if (action && action.actionList) {
       return action.actionList;
     }
 
-    LOGGER.info('[crawl]', 'getAllActions');
+    Logger.info({ message: 'crawl-getAllActions' });
 
     const url = 'https://docs.mongodb.org/manual/reference/privilege-actions';
     const loadedUrl = load(url);
@@ -47,12 +45,12 @@ Meteor.methods({
       result.push(loadedUrl(this).attr('id').replace('authr.', ''));
     });
 
-    Meteor.call('saveActions', { actionList: result });
+    Database.insert({ type: Database.types.Actions, document: { actionList: result } });
     return result;
   },
 
-  getActionInfo(action) {
-    LOGGER.info('[crawl]', 'getAction', action);
+  getActionInfo({ action }) {
+    Logger.info({ message: 'crawl-getAction', metadataToLog: { action } });
 
     const url = 'https://docs.mongodb.org/manual/reference/privilege-actions';
     const loadedUrl = load(url);
@@ -61,8 +59,8 @@ Meteor.methods({
     return loadedUrl(`dt[id='${action}']`).parent('dl[class=authaction]').children('dd').html();
   },
 
-  getRoleInfo(roleName) {
-    LOGGER.info('[crawl]', 'getRoleInfo', roleName);
+  getRoleInfo({ roleName }) {
+    Logger.info({ message: 'crawl-getRoleInfo', metadataToLog: { roleName } });
 
     const url = 'https://docs.mongodb.org/manual/reference/built-in-roles';
 
@@ -79,8 +77,8 @@ Meteor.methods({
     return result;
   },
 
-  getResourceInfo(resource) {
-    LOGGER.info('[crawl]', 'getResourceInfo', resource);
+  getResourceInfo({ resource }) {
+    Logger.info({ message: 'crawl-getResourceInfo', metadataToLog: { resource } });
 
     const url = 'https://docs.mongodb.org/manual/reference/resource-document';
     const loadedUrl = load(url);
@@ -109,6 +107,7 @@ Meteor.methods({
       default:
         return "Couldn't find corresponding resource document in docs.mongodb.org";
     }
-  },
+  }
+};
 
-});
+export default new MongoDBUser();

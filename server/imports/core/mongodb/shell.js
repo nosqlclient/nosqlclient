@@ -5,7 +5,7 @@ import MongoDBHelper from './helper';
 
 const spawn = require('cross-spawn');
 
-const MongoDBShell = () => {
+const MongoDBShell = function () {
   this.spawnedShellsBySessionId = {};
 };
 

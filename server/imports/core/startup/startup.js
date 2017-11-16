@@ -3,7 +3,7 @@
  */
 import { Meteor } from 'meteor/meteor';
 import { HttpBasicAuth } from 'meteor/jabbslad:basic-auth';
-import { Connection, Settings } from '/server/imports/core';
+import { Connection, Settings } from '/server/imports/core/index';
 
 Meteor.startup(() => {
   if (process.env.MONGOCLIENT_AUTH === 'true') {
@@ -11,10 +11,8 @@ Meteor.startup(() => {
     basicAuth.protect();
   }
 
+  Settings.clearMongoclientData();
   Settings.insertDefault();
-  ShellCommands.remove({});
-  SchemaAnalyzeResult.remove({});
-  Dumps.remove({});
   Connection.migrateConnectionsIfExist();
   Connection.tryInjectDefaultConnection();
 });

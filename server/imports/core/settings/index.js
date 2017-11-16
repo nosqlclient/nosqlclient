@@ -1,10 +1,11 @@
 import { Database, Logger, Error } from '/server/imports/modules';
 import mailchimpAPI from 'meteor/universe:mailchimp-v3-api';
 import { HTTP } from 'meteor/http';
+import moment from 'moment';
 
 const packageJson = require('/package.json');
 
-const Settings = () => {
+const Settings = function () {
 };
 
 Settings.prototype = {
@@ -26,6 +27,22 @@ Settings.prototype = {
     } catch (ex) {
       Error.create({ type: Error.types.InternalError, exception: ex, metadataToLog: file });
     }
+  },
+
+  exportSettings({ res }) {
+    const fileContent = {};
+    fileContent.settings = Settings.findOne();
+    fileContent.connections = Database.read({ type: Database.types.Connections, query: {} });
+    const fileName = `backup_${moment().format('DD_MM_YYYY_HH_mm_ss')}.json`;
+
+    Logger.info({ message: 'exportMongoclient', metadataToLog: { fileContent, fileName } });
+
+    const headers = {
+      'Content-type': 'application/octet-stream',
+      'Content-Disposition': `attachment; filename=${fileName}`,
+    };
+    res.writeHead(200, headers);
+    res.end(JSON.stringify(fileContent));
   },
 
   insertDefault() {
@@ -100,6 +117,31 @@ Settings.prototype = {
       Error.create({ type: Error.types.InternalError, exception: ex, metadataToLog: settings });
     }
   },
+
+  saveQueryHistory(history) {
+    Logger.info({ message: 'saveQueryHistory', metadataToLog: history });
+    const queryHistoryCount = Database.count({
+      type: Database.types.QueryHistory,
+      query: {
+        connectionId: history.connectionId,
+        collectionName: history.collectionName,
+      }
+    });
+
+    if (queryHistoryCount >= 20) {
+      Database.remove({
+        type: Database.types.QueryHistory,
+        selector: { _id: Database.readOne({ type: Database.types.QueryHistory, query: {}, queryOptions: { sort: { data: 1 } } }) } });
+    }
+
+    Database.create({ type: Database.types.QueryHistory, document: history });
+  },
+
+  clearMongoclientData() {
+    Database.remove({ type: Database.types.ShellCommands, selector: {} });
+    Database.remove({ type: Database.types.SchemaAnalyzeResult, selector: {} });
+    Database.remove({ type: Database.types.Dumps, selector: {} });
+  }
 };
 
 export default new Settings();

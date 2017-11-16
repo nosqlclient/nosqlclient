@@ -21,5 +21,9 @@ Meteor.methods({
   importMongoclient(file) {
     Settings.importSettings(file);
     Connection.importConnections(file);
+  },
+
+  saveQueryHistory(history) {
+    Settings.saveQueryHistory(history);
   }
 });

@@ -3,7 +3,7 @@ import ConnectionHelper from './helper';
 
 const mongodbUrlParser = require('parse-mongo-url');
 
-const Connection = () => {
+const Connection = function () {
 };
 
 function addSSLOptions(obj, result) {

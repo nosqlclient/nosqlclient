@@ -13,7 +13,7 @@ const toastr = require('toastr');
 const Ladda = require('ladda');
 
 const ensureFieldsDataForDatatable = function (data) {
-  for (let i = 0; i < data.length; i++) {
+  for (let i = 0; i < data.length; i += 1) {
     if (!data[i].value.types.String) {
       data[i].value.types.String = '';
     }
@@ -142,7 +142,7 @@ Template.schemaAnalyzer.onRendered(function () {
           const jsonData = Helper.convertAndCheckJSON(fields.message);
           if (jsonData.ERROR) {
             toastr.error(fields.message);
-            Meteor.call('removeSchemaAnalyzeResult', Meteor.default_connection._lastSessionId);
+            SchemaAnalyzeResult.remove({ sessionId: Meteor.default_connection._lastSessionId });
             Ladda.stopAll();
             return;
           }
@@ -159,7 +159,7 @@ Template.schemaAnalyzer.onRendered(function () {
 });
 
 Template.schemaAnalyzer.onDestroyed(() => {
-  Meteor.call('removeSchemaAnalyzeResult', Meteor.default_connection._lastSessionId);
+  SchemaAnalyzeResult.remove({ sessionId: Meteor.default_connection._lastSessionId });
 });
 
 Template.schemaAnalyzer.events({
@@ -176,11 +176,13 @@ Template.schemaAnalyzer.events({
 
     Ladda.create(document.querySelector('#btnAnalyzeNow')).start();
 
-    Meteor.call('analyzeSchema', Session.get(Helper.strSessionConnection), Session.get(Helper.strSessionPromptedUsername), Session.get(Helper.strSessionPromptedPassword), collection, Meteor.default_connection._lastSessionId, (err) => {
-      if (err) {
-        Helper.showMeteorFuncError(err, null, "Couldn't analyze collection");
+    Meteor.call('analyzeSchema', Session.get(Helper.strSessionConnection), Session.get(Helper.strSessionPromptedUsername),
+      Session.get(Helper.strSessionPromptedPassword), collection, Meteor.default_connection._lastSessionId, (err) => {
+        if (err) {
+          Helper.showMeteorFuncError(err, null, "Couldn't analyze collection");
+        }
       }
-    });
+    );
   },
 
 });

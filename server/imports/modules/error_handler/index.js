@@ -35,6 +35,30 @@ const ErrorHandler = function ErrorHandler() {
       loggerMessage: 'shell error occured'
     },
 
+    ConnectionError: {
+      Exception: Meteor.Error.bind(this, 1005),
+      defaultMessage: 'connection-error',
+      loggerMessage: 'could not connect to mongodb'
+    },
+
+    SchemaAnalyzeError: {
+      Exception: Meteor.Error.bind(this, 1006),
+      defaultMessage: 'schema-analyze-error',
+      loggerMessage: 'schema analyze failed'
+    },
+
+    BackupError: {
+      Exception: Meteor.Error.bind(this, 1007),
+      defaultMessage: '%s-error',
+      loggerMessage: '%s error occured'
+    },
+
+    GridFSError: {
+      Exception: Meteor.Error.bind(this, 1008),
+      defaultMessage: 'grid-fs-error',
+      loggerMessage: 'error occured during %s'
+    },
+
     InternalError: {
       Exception: Meteor.Error.bind(this, 500),
       defaultMessage: 'internal-server-error',
