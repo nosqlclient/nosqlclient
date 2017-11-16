@@ -170,16 +170,16 @@ Connection.prototype = {
   },
 
   remove(connectionId) {
-    Logger.info({ message: '[removeConnection]', metadataToLog: { connectionId } });
+    Logger.info({ message: 'removeConnection', metadataToLog: { connectionId } });
     Database.remove({ type: Database.types.Connections, selector: { _id: connectionId } });
     Database.remove({ type: Database.types.QueryHistory, selector: { _id: connectionId } });
   },
 
   /* Migrates 1.x version connections to 2.x */
   migrateConnectionsIfExist() {
-    Logger.info({ message: '[migrateConnectionsIfExist]' });
+    Logger.info({ message: 'migrateConnectionsIfExist' });
 
-    const settings = Database.readOne({ type: Database.types.Settings });
+    const settings = Database.readOne({ type: Database.types.Settings, query: {} });
     if (settings.isMigrationDone) return;
 
     const connectionsAfterMigration = [];
@@ -234,7 +234,7 @@ Connection.prototype = {
 
     Database.remove({ type: Database.types.Connections });
     connectionsAfterMigration.forEach(conn => Database.create({ type: Database.types.Connections, document: conn }));
-    Database.update({ type: Database.types.Settings, selector: {}, modifier: { $set: { isMigrationDone: true, } } });
+    Database.update({ type: Database.types.Settings, selector: {}, modifier: { $set: { isMigrationDone: true } } });
   },
 
   tryInjectDefaultConnection() {

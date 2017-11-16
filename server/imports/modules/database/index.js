@@ -39,7 +39,7 @@ Database.prototype = {
   },
 
   remove({ type, selector }) {
-    return resolveType(type).update(selector);
+    return resolveType(type).remove(selector);
   },
 
   // aliases

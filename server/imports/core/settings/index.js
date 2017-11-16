@@ -48,7 +48,7 @@ Settings.prototype = {
   insertDefault() {
     Logger.info({ message: 'insert-default-settings' });
 
-    if (!Database.readOne({ type: Database.types.Settings })) {
+    if (!Database.readOne({ type: Database.types.Settings, query: {} })) {
       Logger.info({ message: 'insert-default-settings', metadataToLog: 'no existing settings found inserting default' });
 
       Database.create({
