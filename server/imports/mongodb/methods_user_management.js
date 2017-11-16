@@ -3,7 +3,7 @@
  */
 import { Meteor } from 'meteor/meteor';
 import { Actions } from '/lib/imports/collections';
-import LOGGER from '../internal/logger';
+import LOGGER from '../modules/logger/logger';
 
 const cheerio = require('cheerio');
 

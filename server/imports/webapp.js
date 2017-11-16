@@ -6,7 +6,7 @@ import { Meteor } from 'meteor/meteor';
 import { Papa } from 'meteor/harrison:papa-parse';
 import { Settings, Connections } from '/lib/imports/collections';
 import { databasesBySessionId } from '/server/imports/mongodb/methods_common';
-import LOGGER from '/server/imports/internal/logger';
+import LOGGER from '/server/imports/modules/logger/logger';
 import moment from 'moment';
 
 const mongodbApi = require('mongodb');
@@ -84,10 +84,10 @@ WebApp.connectHandlers.use('/download', (req, res) => {
   }
 
   try {
-    const filesCollection = databasesBySessionId[sessionId].collection(`${bucketName}.files`);
+    const filesCollection = dbObjectsBySessionId[sessionId].collection(`${bucketName}.files`);
     filesCollection.find({ _id: new mongodbApi.ObjectId(fileId) }).limit(1).next((err, doc) => {
       if (doc) {
-        const bucket = new mongodbApi.GridFSBucket(databasesBySessionId[sessionId], { bucketName });
+        const bucket = new mongodbApi.GridFSBucket(dbObjectsBySessionId[sessionId], { bucketName });
         const headers = {
           'Content-type': 'application/octet-stream',
           'Content-Disposition': `attachment; filename=${encodeURIComponent(doc.filename)}`,

@@ -5,7 +5,6 @@ rules:
   import/extensions: 0
   import/no-unresolved: 0
   import/no-extraneous-dependencies: 0
-  import/prefer-default-export: 0
   no-useless-escape: 0
   import/no-absolute-path: 0
   no-param-reassign: 0
@@ -13,7 +12,8 @@ rules:
   no-underscore-dangle: 0
   func-names: 0
   comma-dangle: 0
-
+  object-curly-newline: 0
+  consistent-return: 0
 
 parserOptions:
   ecmaVersion: 6

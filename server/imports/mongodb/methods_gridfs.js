@@ -3,7 +3,7 @@
  */
 /* global Async */
 import { Meteor } from 'meteor/meteor';
-import LOGGER from '../internal/logger';
+import LOGGER from '../modules/logger/logger';
 import Helper from './helper';
 import { databasesBySessionId } from './methods_common';
 
@@ -17,8 +17,8 @@ Meteor.methods({
 
     const result = Async.runSync((done) => {
       try {
-        const filesCollection = databasesBySessionId[sessionId].collection(`${bucketName}.files`);
-        const chunksCollection = databasesBySessionId[sessionId].collection(`${bucketName}.chunks`);
+        const filesCollection = dbObjectsBySessionId[sessionId].collection(`${bucketName}.files`);
+        const chunksCollection = dbObjectsBySessionId[sessionId].collection(`${bucketName}.chunks`);
 
         filesCollection.find(selector, { _id: 1 }).toArray((firstError, docs) => {
           if (firstError) {
@@ -56,7 +56,7 @@ Meteor.methods({
 
     const result = Async.runSync((done) => {
       try {
-        const bucket = new mongodbApi.GridFSBucket(databasesBySessionId[sessionId], { bucketName });
+        const bucket = new mongodbApi.GridFSBucket(dbObjectsBySessionId[sessionId], { bucketName });
         bucket.delete(new mongodbApi.ObjectId(fileId), (err) => {
           done(err, null);
         });
@@ -78,7 +78,7 @@ Meteor.methods({
 
     const result = Async.runSync((done) => {
       try {
-        const bucket = new mongodbApi.GridFSBucket(databasesBySessionId[sessionId], { bucketName });
+        const bucket = new mongodbApi.GridFSBucket(dbObjectsBySessionId[sessionId], { bucketName });
         bucket.find(selector, { limit }).toArray((err, files) => {
           done(err, files);
         });
@@ -102,7 +102,7 @@ Meteor.methods({
 
     return Async.runSync((done) => {
       try {
-        const bucket = new mongodbApi.GridFSBucket(databasesBySessionId[sessionId], { bucketName });
+        const bucket = new mongodbApi.GridFSBucket(dbObjectsBySessionId[sessionId], { bucketName });
         const uploadStream = bucket.openUploadStream(fileName, {
           metadata: metaData,
           contentType,
@@ -124,7 +124,7 @@ Meteor.methods({
 
     const result = Async.runSync((done) => {
       try {
-        const filesCollection = databasesBySessionId[sessionId].collection(`${bucketName}.files`);
+        const filesCollection = dbObjectsBySessionId[sessionId].collection(`${bucketName}.files`);
         filesCollection.find({ _id: new mongodbApi.ObjectId(fileId) }).limit(1).next((err, doc) => {
           if (doc) {
             done(null, doc);

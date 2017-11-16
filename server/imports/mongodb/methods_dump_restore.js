@@ -5,7 +5,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Dumps } from '/lib/imports/collections';
 import { getProperBinary } from './methods_common';
-import LOGGER from '../internal/logger';
+import LOGGER from '../modules/logger/logger';
 
 const spawn = require('cross-spawn');
 
