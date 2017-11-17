@@ -1,6 +1,6 @@
 /* global Async */
 import { Meteor } from 'meteor/meteor';
-import { Logger, Database } from '/server/imports/modules';
+import { Logger, Database, Error } from '/server/imports/modules';
 import { Connection } from '/server/imports/core';
 import MongoDBHelper from './helper';
 import MongoDBShell from './shell';
@@ -22,8 +22,7 @@ function proceedConnectingMongodb(dbName, sessionId, connectionUrl, connectionOp
   mongodbApi.MongoClient.connect(connectionUrl, connectionOptions, (mainError, db) => {
     try {
       if (mainError || !db) {
-        Logger.error({ message: mainError, metadataToLog: { sessionId, db } });
-        done(mainError, db);
+        done(Error.createWithoutThrow({ type: Error.types.ConnectionError, externalError: mainError, metadataToLog: { sessionId, db } }), db);
         if (db) db.close();
         if (this.tunnelsBySessionId[sessionId]) {
           this.tunnelsBySessionId[sessionId].close();
@@ -36,10 +35,10 @@ function proceedConnectingMongodb(dbName, sessionId, connectionUrl, connectionOp
         done(err, collections);
       });
 
-      Logger.info({ message: 'connect', metadataToLog: `current sesssion length: ${Object.keys(this.dbObjectsBySessionId).length}` });
+      Logger.info({ message: 'connect', metadataToLog: { sessionLength: `${Object.keys(this.dbObjectsBySessionId).length}` } });
     } catch (exception) {
-      Logger.error({ message: 'connect', exception, metadataTolog: { connectionUrl, connectionOptions, sessionId } });
-      done(new Meteor.Error(exception.message), null);
+      done(Error.createWithoutThrow({ type: Error.types.ConnectionError, metadataToLog: { connectionUrl, connectionOptions, sessionId }, externalError: exception }), null);
+
       if (db) db.close();
       if (this.tunnelsBySessionId[sessionId]) {
         this.tunnelsBySessionId[sessionId].close();
@@ -99,7 +98,7 @@ MongoDB.prototype = {
   },
 
   executeMapReduce({ selectedCollection, map, reduce, options, sessionId }) {
-    Logger.info({ message: 'mapreduce-execution', metadataToLog: { selectedCollection, map, reduce, options, sessionId } });
+    Logger.info({ message: 'mapreduce-query-execution', metadataToLog: { selectedCollection, map, reduce, options, sessionId } });
 
     const execution = this.dbObjectsBySessionId[sessionId].collection(selectedCollection);
     return MongoDBHelper.proceedMapReduceExecution({ execution, map, reduce, options });
@@ -118,8 +117,7 @@ MongoDB.prototype = {
         if (connection.ssh && connection.ssh.enabled) connectThroughTunnel.call(this, { connection, sessionId, done, connectionUrl, connectionOptions, username, password });
         else proceedConnectingMongodb.call(this, connection.databaseName, sessionId, connectionUrl, connectionOptions, done);
       } catch (exception) {
-        Logger.error({ message: 'connect-error', exception, metadataToLog });
-        done(new Meteor.Error(exception.message), null);
+        done(Error.createWithoutThrow({ type: Error.types.ConnectionError, metadataToLog, externalError: exception }), null);
       }
     });
   },
@@ -140,15 +138,14 @@ MongoDB.prototype = {
   },
 
   dropAllCollections({ sessionId }) {
-    Logger.info({ message: 'drop-all-collections', sessionId });
+    Logger.info({ message: 'drop-all-collections', metadataTOLog: { sessionId } });
     return Async.runSync((done) => {
       try {
         this.dbObjectsBySessionId[sessionId].collections((err, collections) => {
           MongoDBHelper.keepDroppingCollections(collections, 0, done);
         });
       } catch (exception) {
-        Logger.error({ message: 'drop-all-collections-error', exception, metadataToLog: { sessionId } });
-        done(new Meteor.Error(exception.message), null);
+        done(Error.createWithoutThrow({ type: Error.types.QueryError, message: 'drop-all-collections', metadataToLog: { sessionId }, externalError: exception }), null);
       }
     });
   },
@@ -197,7 +194,7 @@ MongoDB.prototype = {
 
       spawned.stdin.end();
     } catch (exception) {
-      Error.create({ type: Error.types.SchemaAnalyzeError, exception, metadataToLog });
+      Error.create({ type: Error.types.SchemaAnalyzeError, externalError: exception, metadataToLog });
     }
   }
 };

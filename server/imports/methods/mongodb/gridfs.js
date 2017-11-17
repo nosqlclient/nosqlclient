@@ -10,8 +10,8 @@ Meteor.methods({
     return MongoDBGridFS.deleteFile({ bucketName, fileId, sessionId });
   },
 
-  getFileInfos(bucketName, selector, limit, sessionId) {
-    return MongoDBGridFS.getFileInfos({ bucketName, selector, limit, sessionId });
+  getFilesInfo(bucketName, selector, limit, sessionId) {
+    return MongoDBGridFS.getFilesInfo({ bucketName, selector, limit, sessionId });
   },
 
   uploadFile(bucketName, blob, fileName, contentType, metaData, aliases, sessionId) {

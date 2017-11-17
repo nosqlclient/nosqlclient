@@ -33,7 +33,7 @@ MongoDBUser.prototype = {
       return action.actionList;
     }
 
-    Logger.info({ message: 'crawl-getAllActions' });
+    Logger.info({ message: 'crawl-get-all-actions' });
 
     const url = 'https://docs.mongodb.org/manual/reference/privilege-actions';
     const loadedUrl = load(url);
@@ -50,7 +50,7 @@ MongoDBUser.prototype = {
   },
 
   getActionInfo({ action }) {
-    Logger.info({ message: 'crawl-getAction', metadataToLog: { action } });
+    Logger.info({ message: 'crawl-get-action', metadataToLog: { action } });
 
     const url = 'https://docs.mongodb.org/manual/reference/privilege-actions';
     const loadedUrl = load(url);
@@ -60,7 +60,7 @@ MongoDBUser.prototype = {
   },
 
   getRoleInfo({ roleName }) {
-    Logger.info({ message: 'crawl-getRoleInfo', metadataToLog: { roleName } });
+    Logger.info({ message: 'crawl-get-role-info', metadataToLog: { roleName } });
 
     const url = 'https://docs.mongodb.org/manual/reference/built-in-roles';
 
@@ -78,7 +78,7 @@ MongoDBUser.prototype = {
   },
 
   getResourceInfo({ resource }) {
-    Logger.info({ message: 'crawl-getResourceInfo', metadataToLog: { resource } });
+    Logger.info({ message: 'crawl-get-resource-info', metadataToLog: { resource } });
 
     const url = 'https://docs.mongodb.org/manual/reference/resource-document';
     const loadedUrl = load(url);

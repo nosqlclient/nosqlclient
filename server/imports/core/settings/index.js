@@ -10,12 +10,12 @@ const Settings = function () {
 
 Settings.prototype = {
   read() {
-    Logger.info({ message: 'read-setting' });
+    Logger.info({ message: 'read-settings' });
     return Database.readOne({ type: Database.types.Settings, query: {} });
   },
 
   importSettings(file) {
-    Logger.info({ message: 'import-settings-from-file', metadataToLog: file });
+    Logger.info({ message: 'import-mongoclient-settings', metadataToLog: file });
 
     try {
       const mongoclientData = JSON.parse(file);
@@ -25,7 +25,7 @@ Settings.prototype = {
         Database.create({ type: Database.types.Settings, document: mongoclientData.settings });
       }
     } catch (ex) {
-      Error.create({ type: Error.types.InternalError, exception: ex, metadataToLog: file });
+      Error.create({ type: Error.types.InternalError, externalError: ex, metadataToLog: file });
     }
   },
 
@@ -35,7 +35,7 @@ Settings.prototype = {
     fileContent.connections = Database.read({ type: Database.types.Connections, query: {} });
     const fileName = `backup_${moment().format('DD_MM_YYYY_HH_mm_ss')}.json`;
 
-    Logger.info({ message: 'exportMongoclient', metadataToLog: { fileContent, fileName } });
+    Logger.info({ message: 'export-mongoclient-data', metadataToLog: { fileContent, fileName } });
 
     const headers = {
       'Content-type': 'application/octet-stream',
@@ -49,8 +49,6 @@ Settings.prototype = {
     Logger.info({ message: 'insert-default-settings' });
 
     if (!Database.readOne({ type: Database.types.Settings, query: {} })) {
-      Logger.info({ message: 'insert-default-settings', metadataToLog: 'no existing settings found inserting default' });
-
       Database.create({
         type: Database.types.Settings,
         document: {
@@ -72,7 +70,7 @@ Settings.prototype = {
   },
 
   setSubscribed() {
-    Logger.info({ message: 'set-subscribed', metadataToLog: 'setting as subscribed' });
+    Logger.info({ message: 'set-subscribed' });
     Database.update({ type: Database.types.Settings, selector: {}, modifier: { $set: { subscribed: true } } });
   },
 
@@ -89,37 +87,38 @@ Settings.prototype = {
         status: 'subscribed',
       },
     }).then(null, (reason) => {
-      Error.create({ type: Error.types.SubscriptionError, metadataToLog: { statusCode: reason.response.statusCode, title: JSON.parse(reason.response.content).title } });
+      const externalError = JSON.parse(reason.response.content).title;
+      Error.create({ type: Error.types.SubscriptionError, externalError, metadataToLog: { statusCode: reason.response.statusCode, title: externalError } });
     });
   },
 
   checkMongoclientVersion() {
     try {
-      Logger.info({ message: '[checkNosqlclientVersion]' });
+      Logger.info({ message: 'check-version' });
       const response = HTTP.get('https://api.github.com/repos/nosqlclient/nosqlclient/releases/latest', { headers: { 'User-Agent': 'Mongoclient' } });
       if (response && response.data && response.data.name && response.data.name !== packageJson.version) {
         return `There's a new version of mongoclient: ${response.data.name}, <a href='https://github.com/nosqlclient/nosqlclient/releases/latest' target='_blank'>download here</a>, 
            if you're using docker just use pull for the <b>${response.data.name}</b> or <b>latest</b> tag !`;
       }
       return '';
-    } catch (e) {
-      Logger.error({ message: '[checkNosqlclientVersion]', exception: e });
+    } catch (exception) {
+      Logger.error({ message: 'check-version', exception });
       return null;
     }
   },
 
   updateSettings(settings) {
     try {
-      Logger.info({ message: '[updateSettings]', metadataToLog: settings });
+      Logger.info({ message: 'update-settings', metadataToLog: settings });
       Database.remove({ type: Database.types.Settings, selector: {} });
       Database.create({ type: Database.types.Settings, document: settings });
     } catch (ex) {
-      Error.create({ type: Error.types.InternalError, exception: ex, metadataToLog: settings });
+      Error.create({ type: Error.types.InternalError, externalError: ex, metadataToLog: settings });
     }
   },
 
   saveQueryHistory(history) {
-    Logger.info({ message: 'saveQueryHistory', metadataToLog: history });
+    Logger.info({ message: 'save-query-history', metadataToLog: history });
     const queryHistoryCount = Database.count({
       type: Database.types.QueryHistory,
       query: {
@@ -138,7 +137,7 @@ Settings.prototype = {
   },
 
   removeSchemaAnalyzeResult({ sessionId }) {
-    Logger.info({ message: 'removeSchemaAnalyzeResult', metadataToLog: { sessionId } });
+    Logger.info({ message: 'remove-schema-analyze-result', metadataToLog: { sessionId } });
     Database.remove({ type: Database.types.SchemaAnalyzeResult, selector: { sessionId } });
   },
 

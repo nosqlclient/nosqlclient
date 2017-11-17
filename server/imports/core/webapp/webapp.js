@@ -35,7 +35,7 @@ WebApp.connectHandlers.use('/export', (req, res) => {
 
   const result = MongoDB.execute({ selectedCollection, methodArray, sessionId });
   if (result.err || result.result.error) {
-    Logger.error({ message: 'export', metadataToLog: { error: result.err || result.result.error } });
+    Logger.error({ message: 'export-find-result', metadataToLog: { error: result.err || result.result.error } });
     res.writeHead(400);
     res.end(`Query error: ${JSON.stringify(result.err)} ${JSON.stringify(result.result.error)}`);
   } else {

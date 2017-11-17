@@ -1,6 +1,6 @@
 /* global Async */
 import { Meteor } from 'meteor/meteor';
-import { Logger, Database } from '/server/imports/modules';
+import { Logger, Database, Error } from '/server/imports/modules';
 import ExtendedJSON from './extended_json';
 
 const os = require('os');
@@ -82,9 +82,8 @@ MongoDBHelper.prototype = {
             done(firstError, resultCollection);
           }
         });
-      } catch (ex) {
-        Logger.error({ message: 'mapreduce-execution-error', ex, metadataToLog: { map, reduce, options } });
-        done(new Meteor.Error(ex.message), null);
+      } catch (exception) {
+        done(Error.createWithoutThrow({ type: Error.types.QueryError, metadataToLog: { map, reduce, options }, externalError: exception }), null);
       }
     });
 
@@ -100,9 +99,8 @@ MongoDBHelper.prototype = {
 
           execution = this.proceedExecutionStepByStep(entry, last, done, execution);
         }
-      } catch (ex) {
-        Logger.error({ message: 'query-execution-error', ex, metadataToLog: { methodArray, sessionId } });
-        done(new Meteor.Error(ex.message));
+      } catch (exception) {
+        done(Error.createWithoutThrow({ type: Error.types.QueryError, metadataToLog: { methodArray, sessionId }, externalError: exception }), null);
       }
     });
 
@@ -115,7 +113,7 @@ MongoDBHelper.prototype = {
     const settings = Database.readOne({ type: Database.types.Settings, query: {} });
     if (settings.mongoBinaryPath) {
       const dir = `${settings.mongoBinaryPath.replace(/\\/g, '/')}/`;
-      Logger.info({ message: `${binaryName}`, metadataToLog: `checking dir ${dir} for binary ${binaryName}` });
+      Logger.info({ message: `${binaryName}`, metadataToLog: { dir: `${dir}`, binary: `${binaryName}` } });
       const errorMessage = `Binary ${binaryName} not found in ${dir + binaryName}, please set mongo binary path from settings`;
 
       switch (os.platform()) {

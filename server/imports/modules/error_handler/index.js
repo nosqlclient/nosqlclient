@@ -3,60 +3,61 @@ import { Logger } from '/server/imports/modules';
 
 const util = require('util');
 
-const ErrorHandler = function ErrorHandler() {
+const Error = function Error() {
   this.types = {
     ParseUrlError: {
       Exception: Meteor.Error.bind(this, 1000),
-      defaultMessage: 'error-while-parsing-url',
-      loggerMessage: 'could not parse connection url, %s'
+      message: 'parse-url-error'
     },
 
     MissingParameter: {
       Exception: Meteor.Error.bind(this, 1001),
-      defaultMessage: '%s-is-required-for-%s',
-      loggerMessage: '%s is required for %s'
+      message: '%s-is-required-for-%s'
     },
 
     InvalidParameter: {
       Exception: Meteor.Error.bind(this, 1002),
-      defaultMessage: '%s-is-invalid',
-      loggerMessage: '%s is invalid for %s'
+      message: '%s-is-invalid-for-%s'
     },
 
     SubscriptionError: {
       Exception: Meteor.Error.bind(this, 1003),
-      defaultMessage: 'subscription-error',
-      loggerMessage: 'error occured during subscription'
+      message: 'subscribe-error'
     },
 
     ShellError: {
       Exception: Meteor.Error.bind(this, 1004),
-      defaultMessage: 'shell-error',
-      loggerMessage: 'shell error occured'
+      message: 'shell-error'
     },
 
     SchemaAnalyzeError: {
       Exception: Meteor.Error.bind(this, 1005),
-      defaultMessage: 'schema-analyze-error',
-      loggerMessage: 'schema analyze failed'
+      message: 'schema-analyze-error'
     },
 
     BackupError: {
       Exception: Meteor.Error.bind(this, 1006),
-      defaultMessage: '%s-error',
-      loggerMessage: '%s error occured'
+      message: 'backup-%s-error'
     },
 
     GridFSError: {
       Exception: Meteor.Error.bind(this, 1007),
-      defaultMessage: 'grid-fs-error',
-      loggerMessage: 'error occured during %s'
+      message: 'grid-fs-%s-error'
+    },
+
+    ConnectionError: {
+      Exception: Meteor.Error.bind(this, 1007),
+      message: 'connection-error'
+    },
+
+    QueryError: {
+      Exception: Meteor.Error.bind(this, 1009),
+      message: 'query-error'
     },
 
     InternalError: {
       Exception: Meteor.Error.bind(this, 500),
-      defaultMessage: 'internal-server-error',
-      loggerMessage: 'unexpected error occurred'
+      message: 'internal-server-error'
     }
   };
 };
@@ -66,13 +67,37 @@ function resolveType(type) {
   return type;
 }
 
-ErrorHandler.prototype = {
-  create({ type, formatters = [], message, exception, metadataToLog = {} }) {
-    const error = resolveType(type);
-    Logger.error({ message: util.format(error.loggerMessage, ...formatters), metadataToLog });
-    if (exception) Logger.error({ message: util.format(error.loggerMessage, ...formatters), metadataToLog: exception });
-    throw new error.Exception(util.format(message || error.defaultMessage, ...formatters));
+function extractMessage(externalError) {
+  if (!externalError) return '';
+  if (Object.prototype.toString.call(externalError) === '[object String]') return externalError;
+  if (externalError.error) return externalError.error;
+  if (externalError.message) return externalError.message;
+  if (externalError.err) return externalError.err;
+}
+
+function createAndLogError(type, formatters, metadataToLog, externalError = '') {
+  const error = resolveType(type);
+  Logger.error({
+    message: util.format(error.message, ...formatters),
+    metadataToLog: Object.assign({ externalError }, metadataToLog)
+  });
+
+  const details = { message: extractMessage(externalError) };
+  return { error, details };
+}
+
+Error.prototype = {
+  create({ type, formatters = [], externalError, metadataToLog = {} }) {
+    const { error, details } = createAndLogError(type, formatters, metadataToLog, externalError);
+
+    throw new error.Exception(util.format(error.message, ...formatters), details);
   },
+
+  createWithoutThrow({ type, formatters = [], externalError, metadataToLog = {} }) {
+    const { error, details } = createAndLogError(type, formatters, metadataToLog, externalError);
+
+    return new error.Exception(util.format(error.message, ...formatters), details);
+  }
 };
 
-export default new ErrorHandler();
+export default new Error();

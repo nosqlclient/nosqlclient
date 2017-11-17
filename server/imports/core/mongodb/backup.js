@@ -57,7 +57,7 @@ function executeBinary(args, sessionId, binaryName) {
 
     spawned.stdin.end();
   } catch (exception) {
-    Error.create({ type: Error.types.BackupError, formatters: [binaryName], exception, metadataToLog });
+    Error.create({ type: Error.types.BackupError, formatters: [binaryName], externalError: exception, metadataToLog });
   }
 }
 
@@ -79,7 +79,7 @@ Backup.prototype = {
   },
 
   removeDumpLogs({ sessionId, binary }) {
-    Logger.info({ message: 'removeDumpLogs', metadataToLog: { sessionId, binary } });
+    Logger.info({ message: 'remove-dump-logs', metadataToLog: { sessionId, binary } });
     if (!binary) Database.remove({ type: Database.types.Dumps, selector: { sessionId } });
     else Database.remove({ type: Database.types.Dumps, selector: { sessionId, binary } });
   }

@@ -116,7 +116,7 @@ function getRoundedMilisecondsFromSeconds(sec) {
 
 Connection.prototype = {
   importConnections(file) {
-    Logger.info({ message: 'import-connections-from-file', metadataToLog: file });
+    Logger.info({ message: 'import-mongoclient-connections', metadataToLog: { file } });
 
     try {
       const mongoclientData = JSON.parse(file);
@@ -127,20 +127,20 @@ Connection.prototype = {
         }
         this.migrateConnectionsIfExist();
       }
-    } catch (ex) {
-      Error.create({ type: Error.types.InternalError, exception: ex, metadataToLog: file });
+    } catch (exception) {
+      Error.create({ type: Error.types.InternalError, externalError: exception, metadataToLog: file });
     }
   },
 
   save(connection) {
-    Logger.info({ message: 'saveConnection', metadataToLog: connection });
+    Logger.info({ message: 'save-connection', metadataToLog: { connection } });
     if (connection._id) Database.remove({ type: Database.types.Connections, selector: { _id: connection._id } });
 
     Database.create({ type: Database.types.Connections, document: connection });
   },
 
   checkAndClear(connection) {
-    Logger.info({ message: 'checkConnection', metadataToLog: connection });
+    Logger.info({ message: 'check-connection', metadataToLog: { connection } });
     if (connection.url) connection = this.parseUrl(connection);
 
     if (connection.servers.length === 0) Error.create({ type: Error.types.MissingParameter, formatters: ['one-server', 'servers'] });
@@ -152,7 +152,7 @@ Connection.prototype = {
 
   parseUrl(connection) {
     try {
-      Logger.info({ message: 'parseUrl', metadataToLog: connection });
+      Logger.info({ message: 'parse-url', metadataToLog: { connection } });
 
       const parsedUrl = mongodbUrlParser(connection.url);
       connection.options = connection.options || {};
@@ -164,20 +164,20 @@ Connection.prototype = {
       setAuthToConnectionFromParsedUrl(connection, parsedUrl);
 
       return connection;
-    } catch (ex) {
-      Error.create({ type: Error.types.ParseUrlError, exception: ex, metadataToLog: connection });
+    } catch (exception) {
+      Error.create({ type: Error.types.ParseUrlError, externalError: exception, metadataToLog: connection });
     }
   },
 
   remove(connectionId) {
-    Logger.info({ message: 'removeConnection', metadataToLog: { connectionId } });
+    Logger.info({ message: 'remove-connection', metadataToLog: { connectionId } });
     Database.remove({ type: Database.types.Connections, selector: { _id: connectionId } });
     Database.remove({ type: Database.types.QueryHistory, selector: { _id: connectionId } });
   },
 
   /* Migrates 1.x version connections to 2.x */
   migrateConnectionsIfExist() {
-    Logger.info({ message: 'migrateConnectionsIfExist' });
+    Logger.info({ message: 'migrate-connections' });
 
     const settings = Database.readOne({ type: Database.types.Settings, query: {} });
     if (settings.isMigrationDone) return;

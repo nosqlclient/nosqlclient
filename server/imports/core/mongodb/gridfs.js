@@ -1,5 +1,5 @@
 /* global Async */
-import { Logger } from '/server/imports/modules';
+import { Logger, Error } from '/server/imports/modules';
 import { Meteor } from 'meteor/meteor';
 import MongoDB from './index';
 import ExtendedJSON from './extended_json';
@@ -9,10 +9,35 @@ const mongodbApi = require('mongodb');
 const MongoDBGridFS = function () {
 };
 
+function tryDownloadingFile(sessionId, bucketName, fileId, res, metadataToLog) {
+  try {
+    const filesCollection = MongoDB.dbObjectsBySessionId[sessionId].collection(`${bucketName}.files`);
+    filesCollection.find({ _id: new mongodbApi.ObjectId(fileId) }).limit(1).next((err, doc) => {
+      if (doc) {
+        const bucket = new mongodbApi.GridFSBucket(MongoDB.dbObjectsBySessionId[sessionId], { bucketName });
+        const headers = {
+          'Content-type': 'application/octet-stream',
+          'Content-Disposition': `attachment; filename=${encodeURIComponent(doc.filename)}`,
+        };
+        const downloadStream = bucket.openDownloadStream(new mongodbApi.ObjectID(fileId));
+        res.writeHead(200, headers);
+        downloadStream.pipe(res);
+      } else {
+        res.writeHead(400);
+        res.end('File not found !');
+      }
+    });
+  } catch (exception) {
+    Logger.error({ message: 'download-file', metadataToLog, exception });
+    res.writeHead(500);
+    res.end(`Unexpected error: ${exception.message}`);
+  }
+}
+
 MongoDBGridFS.prototype = {
   deleteFiles({ bucketName, selector, sessionId }) {
     const metadataToLog = { bucketName, selector, sessionId };
-    Logger.info({ message: 'deleteFiles', metadataToLog });
+    Logger.info({ message: 'delete-files', metadataToLog });
 
     selector = ExtendedJSON.convertJSONtoBSON(selector);
 
@@ -30,22 +55,21 @@ MongoDBGridFS.prototype = {
           const ids = [];
           docs.forEach(obj => ids.push(obj._id));
 
-          Logger.info({ message: `${JSON.stringify(selector)} removing from ${bucketName}.files`, metadataToLog });
+          Logger.info({ message: 'delete-from-files-collection', metadataToLog });
           filesCollection.deleteMany({ _id: { $in: ids } }, {}, (filesCollectionError) => {
             if (filesCollectionError) {
               done(filesCollectionError, null);
               return;
             }
 
-            Logger.info({ message: `${JSON.stringify(selector)} removing from ${bucketName}.chunks`, metadataToLog });
+            Logger.info({ message: 'delete-from-chunks-collection', metadataToLog });
             chunksCollection.deleteMany({ files_id: { $in: ids } }, (chunksCollectionError) => {
               done(chunksCollectionError, null);
             });
           });
         });
       } catch (exception) {
-        Logger.error({ message: 'delete-files-error', exception, metadataToLog });
-        done(new Meteor.Error(exception.message), null);
+        done(Error.createWithoutThrow({ type: Error.types.GridFSError, formatters: ['delete-files'], metadataToLog, externalError: exception }), null);
       }
     });
 
@@ -54,7 +78,7 @@ MongoDBGridFS.prototype = {
 
   deleteFile({ bucketName, fileId, sessionId }) {
     const metadataToLog = { bucketName, fileId, sessionId };
-    Logger.info({ message: 'deleteFile', metadataToLog });
+    Logger.info({ message: 'delete-file', metadataToLog });
 
     const result = Async.runSync((done) => {
       try {
@@ -63,15 +87,14 @@ MongoDBGridFS.prototype = {
           done(err, null);
         });
       } catch (exception) {
-        Logger.error({ message: 'delete-file-error', exception, metadataToLog });
-        done(new Meteor.Error(exception.message), null);
+        done(Error.createWithoutThrow({ type: Error.types.GridFSError, formatters: ['delete-file'], metadataToLog, externalError: exception }), null);
       }
     });
 
     return ExtendedJSON.convertBSONtoJSON(result);
   },
 
-  getFileInfos({ bucketName, selector, limit, sessionId }) {
+  getFilesInfo({ bucketName, selector, limit, sessionId }) {
     limit = parseInt(limit, 10) || 100;
     selector = selector || {};
 
@@ -87,8 +110,7 @@ MongoDBGridFS.prototype = {
           done(err, files);
         });
       } catch (exception) {
-        Logger.error({ message: 'get-files-info', exception, metadataToLog });
-        done(new Meteor.Error(exception.message), null);
+        done(Error.createWithoutThrow({ type: Error.types.GridFSError, formatters: ['get-files-info'], metadataToLog, externalError: exception }), null);
       }
     });
 
@@ -117,8 +139,7 @@ MongoDBGridFS.prototype = {
           done(null, null);
         });
       } catch (exception) {
-        Logger.error({ message: 'upload-file', exception, metadataToLog });
-        done(new Meteor.Error(exception.message), null);
+        done(Error.createWithoutThrow({ type: Error.types.GridFSError, formatters: ['upload-file'], metadataToLog, externalError: exception }), null);
       }
     });
   },
@@ -138,8 +159,7 @@ MongoDBGridFS.prototype = {
           }
         });
       } catch (exception) {
-        Logger.error({ message: 'get-file', exception, metadataToLog });
-        done(new Meteor.Error(exception.message), null);
+        done(Error.createWithoutThrow({ type: Error.types.GridFSError, formatters: ['get-file'], metadataToLog, externalError: exception }), null);
       }
     });
 
@@ -153,43 +173,16 @@ MongoDBGridFS.prototype = {
     const sessionId = urlParts[2].substr(urlParts[2].indexOf('=') + 1);
     const metadataToLog = { fileId, bucketName, sessionId };
 
-    Logger.info({ message: 'downloadFile', metadataToLog });
+    Logger.info({ message: 'download-file', metadataToLog });
 
     res.charset = 'UTF-8';
     if (!bucketName || !fileId) {
-      Logger.info({ message: 'downloadFile', metadataTolog: 'file not found !' });
       res.writeHead(400);
       res.end('File not found !');
       return;
     }
 
-    try {
-      const filesCollection = MongoDB.dbObjectsBySessionId[sessionId].collection(`${bucketName}.files`);
-      filesCollection.find({ _id: new mongodbApi.ObjectId(fileId) }).limit(1).next((err, doc) => {
-        if (doc) {
-          const bucket = new mongodbApi.GridFSBucket(MongoDB.dbObjectsBySessionId[sessionId], { bucketName });
-          const headers = {
-            'Content-type': 'application/octet-stream',
-            'Content-Disposition': `attachment; filename=${encodeURIComponent(doc.filename)}`,
-          };
-          Logger.info({ message: 'file found and started downloading...', metadataToLog: { headers } });
-          const downloadStream = bucket.openDownloadStream(new mongodbApi.ObjectID(fileId));
-          res.writeHead(200, headers);
-          const pipeStream = downloadStream.pipe(res);
-          pipeStream.on('finish', () => {
-            Logger.info({ message: 'downloadFile', metadataToLog: 'file has been downloaded successfully' });
-          });
-        } else {
-          Logger.info({ message: 'downloadFile', metadataTolog: 'file not found !' });
-          res.writeHead(400);
-          res.end('File not found !');
-        }
-      });
-    } catch (exception) {
-      Logger.error({ message: 'downloadFile', exception });
-      res.writeHead(500);
-      res.end(`Unexpected error: ${exception.message}`);
-    }
+    tryDownloadingFile(sessionId, bucketName, fileId, res, metadataToLog);
   }
 };
 
