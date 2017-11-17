@@ -39,18 +39,18 @@ Meteor.methods({
   },
 
   getAllActions() {
-    MongoDBUser.getAllActions();
+    return MongoDBUser.getAllActions();
   },
 
   getActionInfo(action) {
-    MongoDBUser.getActionInfo({ action });
+    return MongoDBUser.getActionInfo({ action });
   },
 
   getRoleInfo(roleName) {
-    MongoDBUser.getRoleInfo({ roleName });
+    return MongoDBUser.getRoleInfo({ roleName });
   },
 
   getResourceInfo(resource) {
-    MongoDBUser.getResourceInfo({ resource });
+    return MongoDBUser.getResourceInfo({ resource });
   }
 });

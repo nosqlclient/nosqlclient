@@ -15,7 +15,7 @@ Meteor.methods({
   },
 
   uploadFile(bucketName, blob, fileName, contentType, metaData, aliases, sessionId) {
-    MongoDBGridFS.uploadFile({ bucketName, blob, fileName, contentType, metaData, aliases, sessionId });
+    return MongoDBGridFS.uploadFile({ bucketName, blob, fileName, contentType, metaData, aliases, sessionId });
   },
 
   getFile(bucketName, fileId, sessionId) {

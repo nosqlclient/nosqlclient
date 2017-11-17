@@ -469,9 +469,11 @@ Template.navigation.helpers({
 
   getServerList() {
     let result = '';
-    const connection = Connections.findOne({ _id: Session.get(Helper.strSessionConnection) });
-    for (const server of connection.servers) {
-      result += `${server.host}:${server.port}<br/>`;
+    if (Session.get(Helper.strSessionConnection)) {
+      const connection = Connections.findOne({ _id: Session.get(Helper.strSessionConnection) });
+      for (const server of connection.servers) {
+        result += `${server.host}:${server.port}<br/>`;
+      }
     }
 
     return result;

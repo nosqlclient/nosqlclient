@@ -209,7 +209,7 @@ Helper.prototype = {
 
   sortObjectByKey(obj) {
     const keys = [];
-    const sorted_obj = {};
+    const sortedObject = {};
 
     for (const key in obj) {
       if (obj.hasOwnProperty(key)) {
@@ -219,10 +219,10 @@ Helper.prototype = {
 
     keys.sort();
     jQuery.each(keys, (i, key) => {
-      sorted_obj[key] = obj[key];
+      sortedObject[key] = obj[key];
     });
 
-    return sorted_obj;
+    return sortedObject;
   },
 
   convertAndCheckJSON(json) {

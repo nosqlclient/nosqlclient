@@ -696,7 +696,7 @@ Template.connections.events({
 
       Meteor.call('checkAndSaveConnection', connection, (err) => {
         if (err) {
-          toastr.error(err.error);
+          Helper.showMeteorFuncError(err, null, 'could not save connection');
         } else {
           toastr.success('Successfully saved connection');
           populateConnectionsTable();

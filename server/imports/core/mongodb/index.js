@@ -122,7 +122,6 @@ MongoDB.prototype = {
         done(new Meteor.Error(exception.message), null);
       }
     });
-
   },
 
   disconnect({ sessionId }) {

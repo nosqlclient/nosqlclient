@@ -13,7 +13,7 @@ const ErrorHandler = function ErrorHandler() {
 
     MissingParameter: {
       Exception: Meteor.Error.bind(this, 1001),
-      defaultMessage: '%s-is-required',
+      defaultMessage: '%s-is-required-for-%s',
       loggerMessage: '%s is required for %s'
     },
 
@@ -35,26 +35,20 @@ const ErrorHandler = function ErrorHandler() {
       loggerMessage: 'shell error occured'
     },
 
-    ConnectionError: {
-      Exception: Meteor.Error.bind(this, 1005),
-      defaultMessage: 'connection-error',
-      loggerMessage: 'could not connect to mongodb'
-    },
-
     SchemaAnalyzeError: {
-      Exception: Meteor.Error.bind(this, 1006),
+      Exception: Meteor.Error.bind(this, 1005),
       defaultMessage: 'schema-analyze-error',
       loggerMessage: 'schema analyze failed'
     },
 
     BackupError: {
-      Exception: Meteor.Error.bind(this, 1007),
+      Exception: Meteor.Error.bind(this, 1006),
       defaultMessage: '%s-error',
       loggerMessage: '%s error occured'
     },
 
     GridFSError: {
-      Exception: Meteor.Error.bind(this, 1008),
+      Exception: Meteor.Error.bind(this, 1007),
       defaultMessage: 'grid-fs-error',
       loggerMessage: 'error occured during %s'
     },
@@ -67,9 +61,14 @@ const ErrorHandler = function ErrorHandler() {
   };
 };
 
+function resolveType(type) {
+  if (Object.prototype.toString.call(type) === '[object String]') return this.types[type];
+  return type;
+}
+
 ErrorHandler.prototype = {
   create({ type, formatters = [], message, exception, metadataToLog = {} }) {
-    const error = this.types[type];
+    const error = resolveType(type);
     Logger.error({ message: util.format(error.loggerMessage, ...formatters), metadataToLog });
     if (exception) Logger.error({ message: util.format(error.loggerMessage, ...formatters), exception });
     throw new error.Exception(util.format(message || error.defaultMessage, ...formatters));
