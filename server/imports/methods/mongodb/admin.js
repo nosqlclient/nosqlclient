@@ -150,6 +150,6 @@ Meteor.methods({
         createCollection: [collectionName, options]
       }
     ];
-    return MongoDB.executeAdmin({ methodArray, sessionId });
+    return MongoDB.executeAdmin({ methodArray, sessionId, removeCollectionTopology: true });
   }
 });

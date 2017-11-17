@@ -81,21 +81,21 @@ MongoDBShell.prototype = {
     const connection = Database.readOne({ type: Database.types.Connections, query: { _id: connectionId } });
 
     try {
-      if (!this.this.spawnedShellsBySessionId[sessionId]) {
+      if (!this.spawnedShellsBySessionId[sessionId]) {
         const connectionUrl = Connection.getConnectionUrl(connection, false, username, password, true);
         const mongoPath = MongoDBHelper.getProperBinary('mongo');
         Logger.info({ message: 'shell', metadataToLog: { mongoPath, connectionUrl, sessionId } });
-        this.this.spawnedShellsBySessionId[sessionId] = spawn(mongoPath, [connectionUrl]);
-        setEventsToShell(connectionId, sessionId);
+        this.spawnedShellsBySessionId[sessionId] = spawn(mongoPath, [connectionUrl]);
+        setEventsToShell.call(this, connectionId, sessionId);
       }
     } catch (ex) {
-      this.this.spawnedShellsBySessionId[sessionId] = null;
+      this.spawnedShellsBySessionId[sessionId] = null;
       Error.create({ type: Error.types.ShellError, exception: ex, metadataToLog: { connectionId, username, sessionId } });
     }
 
-    if (this.this.spawnedShellsBySessionId[sessionId]) {
+    if (this.spawnedShellsBySessionId[sessionId]) {
       Logger.info({ message: 'shell', metadataToLog: { command: `"use ${connection.databaseName}" on shell`, sessionId } });
-      this.this.spawnedShellsBySessionId[sessionId].stdin.write(`use ${connection.databaseName}\n`);
+      this.spawnedShellsBySessionId[sessionId].stdin.write(`use ${connection.databaseName}\n`);
       return `use ${connection.databaseName}`;
     }
 

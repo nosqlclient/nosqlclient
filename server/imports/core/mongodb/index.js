@@ -91,11 +91,11 @@ MongoDB.prototype = {
     return MongoDBHelper.proceedExecutingQuery({ methodArray, execution, sessionId, removeCollectionTopology });
   },
 
-  executeAdmin({ methodArray, runOnAdminDB, sessionId }) {
+  executeAdmin({ methodArray, runOnAdminDB, sessionId, removeCollectionTopology }) {
     Logger.info({ message: 'admin-query-execution', metadataToLog: { methodArray, runOnAdminDB, sessionId } });
 
     const execution = runOnAdminDB ? this.dbObjectsBySessionId[sessionId].admin() : this.dbObjectsBySessionId[sessionId];
-    return MongoDBHelper.proceedExecutingQuery({ methodArray, execution, sessionId });
+    return MongoDBHelper.proceedExecutingQuery({ methodArray, execution, sessionId, removeCollectionTopology });
   },
 
   executeMapReduce({ selectedCollection, map, reduce, options, sessionId }) {

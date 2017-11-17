@@ -475,7 +475,6 @@ const saveFindEditor = function () {
   }
 
   getChangedObjects(findData, activeEditorValue, deletedObjectIds, updateObjects, addedObjects);
-
   if (deletedObjectIds.length === 0 && updateObjects.length === 0 && addedObjects.length === 0) {
     toastr.info('Nothing to save, all objects are identical with old result');
     Ladda.stopAll();

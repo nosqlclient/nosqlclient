@@ -25,5 +25,9 @@ Meteor.methods({
 
   saveQueryHistory(history) {
     Settings.saveQueryHistory(history);
+  },
+
+  removeSchemaAnalyzeResult(sessionId) {
+    Settings.removeSchemaAnalyzeResult({ sessionId });
   }
 });

@@ -70,7 +70,7 @@ ErrorHandler.prototype = {
   create({ type, formatters = [], message, exception, metadataToLog = {} }) {
     const error = resolveType(type);
     Logger.error({ message: util.format(error.loggerMessage, ...formatters), metadataToLog });
-    if (exception) Logger.error({ message: util.format(error.loggerMessage, ...formatters), exception });
+    if (exception) Logger.error({ message: util.format(error.loggerMessage, ...formatters), metadataToLog: exception });
     throw new error.Exception(util.format(message || error.defaultMessage, ...formatters));
   },
 };

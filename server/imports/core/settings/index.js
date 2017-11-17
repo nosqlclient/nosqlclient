@@ -137,6 +137,11 @@ Settings.prototype = {
     Database.create({ type: Database.types.QueryHistory, document: history });
   },
 
+  removeSchemaAnalyzeResult({ sessionId }) {
+    Logger.info({ message: 'removeSchemaAnalyzeResult', metadataToLog: { sessionId } });
+    Database.remove({ type: Database.types.SchemaAnalyzeResult, selector: { sessionId } });
+  },
+
   clearMongoclientData() {
     Database.remove({ type: Database.types.ShellCommands, selector: {} });
     Database.remove({ type: Database.types.SchemaAnalyzeResult, selector: {} });

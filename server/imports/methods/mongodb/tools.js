@@ -11,7 +11,7 @@ Meteor.methods({
   },
 
   connectToShell(connectionId, username, password, sessionId) {
-    MongoDBShell.connectToShell({ connectionId, username, password, sessionId });
+    return MongoDBShell.connectToShell({ connectionId, username, password, sessionId });
   },
 
   analyzeSchema(connectionId, username, password, collection, sessionId) {

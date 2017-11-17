@@ -142,7 +142,7 @@ Template.schemaAnalyzer.onRendered(function () {
           const jsonData = Helper.convertAndCheckJSON(fields.message);
           if (jsonData.ERROR) {
             toastr.error(fields.message);
-            SchemaAnalyzeResult.remove({ sessionId: Meteor.default_connection._lastSessionId });
+            Meteor.call('removeSchemaAnalyzeResult', Meteor.default_connection._lastSessionId);
             Ladda.stopAll();
             return;
           }
@@ -159,7 +159,7 @@ Template.schemaAnalyzer.onRendered(function () {
 });
 
 Template.schemaAnalyzer.onDestroyed(() => {
-  SchemaAnalyzeResult.remove({ sessionId: Meteor.default_connection._lastSessionId });
+  Meteor.call('removeSchemaAnalyzeResult', Meteor.default_connection._lastSessionId);
 });
 
 Template.schemaAnalyzer.events({

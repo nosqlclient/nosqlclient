@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { Connection } from '/server/imports/core';
 
 Meteor.methods({
-  save(connection) {
+  saveConnection(connection) {
     Connection.save(connection);
   },
 
