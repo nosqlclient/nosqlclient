@@ -109,7 +109,7 @@ MongoDBShell.prototype = {
 
   executeShellCommand({ command, connectionId, username, password, sessionId }) {
     Logger.info({ message: 'shellCommand', metadataToLog: { sessionId, command, connectionId } });
-    if (!this.spawnedShellsBySessionId[sessionId]) this.connectToShell(connectionId, username, password, sessionId);
+    if (!this.spawnedShellsBySessionId[sessionId]) this.connectToShell({ connectionId, username, password, sessionId });
     if (this.spawnedShellsBySessionId[sessionId]) this.spawnedShellsBySessionId[sessionId].stdin.write(`${command}\n`);
   }
 };

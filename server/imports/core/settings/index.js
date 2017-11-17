@@ -31,7 +31,7 @@ Settings.prototype = {
 
   exportSettings({ res }) {
     const fileContent = {};
-    fileContent.settings = Settings.findOne();
+    fileContent.settings = Database.readOne({ type: Database.types.Settings, query: {} });
     fileContent.connections = Database.read({ type: Database.types.Connections, query: {} });
     const fileName = `backup_${moment().format('DD_MM_YYYY_HH_mm_ss')}.json`;
 

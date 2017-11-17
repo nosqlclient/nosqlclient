@@ -15,7 +15,7 @@ Meteor.methods({
   },
 
   updateSettings(settings) {
-    Settings.update(settings);
+    Settings.updateSettings(settings);
   },
 
   importMongoclient(file) {
