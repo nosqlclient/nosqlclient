@@ -30,6 +30,6 @@ Meteor.methods({
   },
 
   connect(connectionId, username, password, sessionId) {
-    MongoDB.connect({ connectionId, username, password, sessionId });
+    return MongoDB.connect({ connectionId, username, password, sessionId });
   }
 });

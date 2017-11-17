@@ -265,7 +265,7 @@ Connection.prototype = {
       return connection.url;
     }
 
-    const settings = Database.readOne({ type: Database.types.Settings });
+    const settings = Database.readOne({ type: Database.types.Settings, query: {} });
 
     // url
     let connectionUrl = 'mongodb://';

@@ -11,7 +11,7 @@ const Settings = function () {
 Settings.prototype = {
   read() {
     Logger.info({ message: 'read-setting' });
-    return Database.readOne({ type: Database.types.Settings });
+    return Database.readOne({ type: Database.types.Settings, query: {} });
   },
 
   importSettings(file) {

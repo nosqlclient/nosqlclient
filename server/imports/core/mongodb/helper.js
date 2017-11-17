@@ -112,7 +112,7 @@ MongoDBHelper.prototype = {
   },
 
   getProperBinary(binaryName) {
-    const settings = Database.readOne({ type: Database.types.Settings });
+    const settings = Database.readOne({ type: Database.types.Settings, query: {} });
     if (settings.mongoBinaryPath) {
       const dir = `${settings.mongoBinaryPath.replace(/\\/g, '/')}/`;
       Logger.info({ message: `${binaryName}`, metadataToLog: `checking dir ${dir} for binary ${binaryName}` });

@@ -69,7 +69,7 @@ function connectThroughTunnel({ connection, sessionId, done, connectionUrl, conn
       done(new Meteor.Error(error.message), null);
       return;
     }
-    proceedConnectingMongodb(connection.databaseName, sessionId, connectionUrl, connectionOptions, done);
+    proceedConnectingMongodb.call(this, connection.databaseName, sessionId, connectionUrl, connectionOptions, done);
 
     MongoDBShell.connectToShell({ connectionId: connection._id, username, password, sessionId });
   }));
@@ -116,12 +116,13 @@ MongoDB.prototype = {
     return Async.runSync((done) => {
       try {
         if (connection.ssh && connection.ssh.enabled) connectThroughTunnel.call(this, { connection, sessionId, done, connectionUrl, connectionOptions, username, password });
-        else proceedConnectingMongodb(connection.databaseName, sessionId, connectionUrl, connectionOptions, done);
+        else proceedConnectingMongodb.call(this, connection.databaseName, sessionId, connectionUrl, connectionOptions, done);
       } catch (exception) {
         Logger.error({ message: 'connect-error', exception, metadataToLog });
         done(new Meteor.Error(exception.message), null);
       }
     });
+
   },
 
   disconnect({ sessionId }) {
