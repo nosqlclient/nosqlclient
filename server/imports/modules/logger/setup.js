@@ -3,7 +3,7 @@
  */
 const winston = require('winston');
 
-export default new (winston.Logger)({
+winston.loggers.add('mongoclient', {
   transports: [
     new (winston.transports.Console)({
       timestamp: true,
@@ -12,5 +12,7 @@ export default new (winston.Logger)({
         return JSON.stringify(metadata);
       }
     })
-  ],
+  ]
 });
+
+export default winston.loggers.get('mongoclient');
