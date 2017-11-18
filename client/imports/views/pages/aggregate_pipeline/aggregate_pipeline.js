@@ -1,8 +1,7 @@
 import { Template } from 'meteor/templating';
-import { Meteor } from 'meteor/meteor';
 import { Session } from 'meteor/session';
 import { FlowRouter } from 'meteor/kadira:flow-router';
-import { initAggregateHistories } from './aggregate_histories/aggregate_histories';
+import { Communicator } from '/client/imports/facades';
 import Enums from '/lib/imports/enums';
 import {
   clarifyTabID,
@@ -12,6 +11,7 @@ import {
 } from '/client/imports/views/pages/browse_collection/browse_collection';
 import Helper from '/client/imports/helper';
 import './aggregate_pipeline.html';
+import { initAggregateHistories } from './aggregate_histories/aggregate_histories';
 
 const toastr = require('toastr');
 const Ladda = require('ladda');
@@ -45,11 +45,11 @@ const setAggregateResult = function (result, selectedCollection, pipeline) {
     // open a new tab
     const tabID = clarifyTabID(Helper.strSessionUsedTabIDsAggregate);
     const tabContent = getResultTabContent(tabID, 'Jsoneditor');
-    const tabTitle = `${selectedCollection } - ${ pipeline.length} stages`;
+    const tabTitle = `${selectedCollection} - ${pipeline.length} stages`;
     setAllTabsInactive();
 
     // set tab href
-    resultTabs.append($(`<li><a href="#tab-${tabID }" data-toggle="tab"><i class="fa fa-book"></i>${tabTitle
+    resultTabs.append($(`<li><a href="#tab-${tabID}" data-toggle="tab"><i class="fa fa-book"></i>${tabTitle
     }<button class="close" type="button" title="Close">×</button></a></li>`));
 
     // set tab content
@@ -99,11 +99,11 @@ const init = function () {
       close_others: {
         name: 'Close Others',
         icon: 'fa-times-circle',
-        callback: function () {
+        callback() {
           const tabId = $(this).children('a').attr('href');
           const resultTabsLi = $('#resultTabs').find('li');
           resultTabsLi.each((idx, li) => {
-            let select = $(li);
+            const select = $(li);
             if (select.children('a').attr('href') !== tabId) {
               $(select.children('a').attr('href')).remove();
               select.remove();
@@ -114,10 +114,10 @@ const init = function () {
       close_all: {
         name: 'Close All Tabs',
         icon: 'fa-times',
-        callback: function () {
+        callback() {
           const resultTabs = $('#resultTabs').find('li');
           resultTabs.each((idx, li) => {
-            let select = $(li);
+            const select = $(li);
             $(select.children('a').attr('href')).remove();
             select.remove();
           });
@@ -128,7 +128,7 @@ const init = function () {
 };
 
 const initCodeMirrorStage = function () {
-  Helper.initializeCodeMirror($(`#wrapper${stageNumbers}`), `txtObjectStage${ stageNumbers}`, false, 50);
+  Helper.initializeCodeMirror($(`#wrapper${stageNumbers}`), `txtObjectStage${stageNumbers}`, false, 50);
 };
 
 const addStageElement = function (query, val) {
@@ -136,7 +136,7 @@ const addStageElement = function (query, val) {
   query = query || cmb.chosen().val();
   if (query) {
     query = (query.indexOf('$') !== -1 ? query : `$${query}`);
-    let liElement = `<li class="success-element ${query}" id="stage${ stageNumbers}">${ query}<a id="remove-stage-element" href="#" data-number="${stageNumbers}" class="pull-right btn btn-xs btn-white"><i class="fa fa-remove"></i> Remove</a><div id="wrapper${stageNumbers }" class="agile-detail">`;
+    let liElement = `<li class="success-element ${query}" id="stage${stageNumbers}">${query}<a id="remove-stage-element" href="#" data-number="${stageNumbers}" class="pull-right btn btn-xs btn-white"><i class="fa fa-remove"></i> Remove</a><div id="wrapper${stageNumbers}" class="agile-detail">`;
 
     const stringInput = `<input type="text" class="form-control" id="txtStringStage${stageNumbers}"/>`;
     const numberInput = `<input id="inputNumberStage${stageNumbers}" min="0" type="number" class="form-control">`;
@@ -173,8 +173,8 @@ const addStageElement = function (query, val) {
     cmb.val('').trigger('chosen:updated');
 
     if (val) {
-      if (initCodeMirror) Helper.setCodeMirrorValue($(`#wrapper${ stageNumbers}`), JSON.stringify(val).replace(/^"(.*)"$/, '$1'), $(`#txtObjectStage${stageNumbers}`));
-      else if (isNumber) $(`#inputNumberStage${ stageNumbers}`).val(val);
+      if (initCodeMirror) Helper.setCodeMirrorValue($(`#wrapper${stageNumbers}`), JSON.stringify(val).replace(/^"(.*)"$/, '$1'), $(`#txtObjectStage${stageNumbers}`));
+      else if (isNumber) $(`#inputNumberStage${stageNumbers}`).val(val);
       else $(`#txtStringStage${stageNumbers}`).val(val.replace(/^"(.*)"$/, '$1'));
     }
 
@@ -237,11 +237,11 @@ Template.aggregatePipeline.onRendered(function () {
 });
 
 Template.aggregatePipeline.events({
-  'click #btnAggregateHistory': function() {
+  'click #btnAggregateHistory': function () {
     $('#aggregateHistoriesModal').modal('show');
   },
 
-  'click #btnExecuteAggregatePipeline': function(e) {
+  'click #btnExecuteAggregatePipeline': function (e) {
     e.preventDefault();
 
     const selectedCollection = $('#cmbCollections').chosen().val();
@@ -267,26 +267,28 @@ Template.aggregatePipeline.events({
       return;
     }
 
+    Communicator.call({
+      methodName: 'aggregate',
+      args: { selectedCollection, pipeline },
+      callback: (err, result) => {
+        if (err || result.error) {
+          Helper.showMeteorFuncError(err, result, "Couldn't execute ");
+        } else {
+          setAggregateResult(result.result, selectedCollection, pipeline);
+          // setResult(result.result);
+          // $('#aggregateResultModal').modal('show');
+        }
 
-    Meteor.call('aggregate', selectedCollection, pipeline, {}, Meteor.default_connection._lastSessionId, (err, result) => {
-      if (err || result.error) {
-        Helper.showMeteorFuncError(err, result, "Couldn't execute ");
-      } else {
-        setAggregateResult(result.result, selectedCollection, pipeline);
-        // setResult(result.result);
-        // $('#aggregateResultModal').modal('show');
+        Ladda.stopAll();
       }
-
-      Ladda.stopAll();
-    },
-    );
+    });
   },
 
-  'change #cmbStageQueries': function() {
+  'change #cmbStageQueries': function () {
     addStageElement();
   },
 
-  'click #remove-stage-element': function(e) {
+  'click #remove-stage-element': function (e) {
     e.preventDefault();
     const stageId = `#stage${$(e.target).data('number')}`;
     $(stageId).remove();

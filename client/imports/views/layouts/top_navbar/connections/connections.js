@@ -6,6 +6,7 @@ import { FlowRouter } from 'meteor/kadira:flow-router';
 import Helper from '/client/imports/helper';
 import { Connections } from '/lib/imports/collections';
 import { loadFile } from '/client/imports/views/layouts/top_navbar/top_navbar';
+import { Communicator } from '/client/imports/facades';
 import './connections.html';
 
 const toastr = require('toastr');
@@ -111,30 +112,34 @@ export const connect = function (isRefresh, message) {
 };
 
 const proceedConnecting = function (isRefresh, message, connection, username, password) {
-  Meteor.call('connect', connection._id, username, password, Meteor.default_connection._lastSessionId, (err, result) => {
-    if (err || result.error) {
-      Helper.showMeteorFuncError(err, result, "Couldn't connect");
-    } else {
-      result.result.sort((a, b) => {
-        if (a.name < b.name) { return -1; } else if (a.name > b.name) { return 1; }
-        return 0;
-      });
+  Communicator.call({
+    methodName: 'connect',
+    args: { connectionId: connection._id, username, password },
+    callback: (err, result) => {
+      if (err || result.error) {
+        Helper.showMeteorFuncError(err, result, "Couldn't connect");
+      } else {
+        result.result.sort((a, b) => {
+          if (a.name < b.name) { return -1; } else if (a.name > b.name) { return 1; }
+          return 0;
+        });
 
-      Session.set(Helper.strSessionCollectionNames, result.result);
+        Session.set(Helper.strSessionCollectionNames, result.result);
 
-      if (!isRefresh) {
-        $('#connectionModal').modal('hide');
-        $('#switchDatabaseModal').modal('hide');
-        $('#promptUsernamePasswordModal').modal('hide');
+        if (!isRefresh) {
+          $('#connectionModal').modal('hide');
+          $('#switchDatabaseModal').modal('hide');
+          $('#promptUsernamePasswordModal').modal('hide');
 
-        FlowRouter.go('/databaseStats');
-      } else if (!message) toastr.success('Successfuly refreshed collections');
-      else toastr.success(message);
+          FlowRouter.go('/databaseStats');
+        } else if (!message) toastr.success('Successfuly refreshed collections');
+        else toastr.success(message);
 
-      Session.set(Helper.strSessionPromptedUsername, username);
-      Session.set(Helper.strSessionPromptedPassword, password);
+        Session.set(Helper.strSessionPromptedUsername, username);
+        Session.set(Helper.strSessionPromptedPassword, password);
 
-      Ladda.stopAll();
+        Ladda.stopAll();
+      }
     }
   });
 };
@@ -575,17 +580,21 @@ Template.connections.events({
   'change #inputUrl': function () {
     const url = $('#inputUrl').val();
     if (url) {
-      Meteor.call('parseUrl', { url }, (err, res) => {
-        if (!err) {
-          prepareFormForUrlParse(res);
-        } else {
-          toastr.error(err.message);
-        }
+      Communicator.call({
+        methodName: 'parseUrl',
+        args: { connection: { url } },
+        callback: (err, res) => {
+          if (!err) {
+            prepareFormForUrlParse(res);
+          } else {
+            toastr.error(err.message);
+          }
 
-        // let blaze initialize
-        Meteor.setTimeout(() => {
-          disableFormsForUri();
-        }, 150);
+          // let blaze initialize
+          Meteor.setTimeout(() => {
+            disableFormsForUri();
+          }, 150);
+        }
       });
     } else {
       enableFormsForUri();
@@ -651,15 +660,20 @@ Template.connections.events({
     Ladda.create(document.querySelector('#btnConnect')).start();
 
     $('#tblConnection').DataTable().$('tr.selected').removeClass('selected');
-    Meteor.call('removeConnection', Session.get(Helper.strSessionConnection), (err) => {
-      if (!err) {
-        Helper.clearSessions();
-        populateConnectionsTable();
-      } else {
-        toastr.error(`unexpected error during connection remove: ${err.message}`);
-      }
 
-      Ladda.stopAll();
+    Communicator.call({
+      methodName: 'removeConnection',
+      args: { connectionId: Session.get(Helper.strSessionConnection) },
+      callback: (err) => {
+        if (!err) {
+          Helper.clearSessions();
+          populateConnectionsTable();
+        } else {
+          toastr.error(`unexpected error during connection remove: ${err.message}`);
+        }
+
+        Ladda.stopAll();
+      }
     });
   },
 
@@ -694,16 +708,20 @@ Template.connections.events({
         connection._id = currentConnection._id;
       }
 
-      Meteor.call('checkAndSaveConnection', connection, (err) => {
-        if (err) {
-          Helper.showMeteorFuncError(err, null, 'could not save connection');
-        } else {
-          toastr.success('Successfully saved connection');
-          populateConnectionsTable();
-          modal.modal('hide');
-        }
+      Communicator.call({
+        methodName: 'checkAndSaveConnection',
+        args: { connection },
+        callback: (err) => {
+          if (err) {
+            Helper.showMeteorFuncError(err, null, 'could not save connection');
+          } else {
+            toastr.success('Successfully saved connection');
+            populateConnectionsTable();
+            modal.modal('hide');
+          }
 
-        Ladda.stopAll();
+          Ladda.stopAll();
+        }
       });
     });
   },

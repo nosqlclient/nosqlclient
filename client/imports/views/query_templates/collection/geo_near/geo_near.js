@@ -1,5 +1,6 @@
 import { Template } from 'meteor/templating';
 import { Meteor } from 'meteor/meteor';
+import { Communicator } from '/client/imports/facades';
 import { Session } from 'meteor/session';
 import Helper from '/client/imports/helper';
 import Enums from '/lib/imports/enums';
@@ -56,8 +57,12 @@ Template.geoNear.executeQuery = function (historyParams) {
     options,
   };
 
-  Meteor.call('geoNear', selectedCollection, xAxis, yAxis, options, Meteor.default_connection._lastSessionId, (err, result) => {
-    Helper.renderAfterQueryExecution(err, result, false, 'geoNear', params, (!historyParams));
+  Communicator.call({
+    methodName: 'geoNear',
+    args: { selectedCollection, xAxis, yAxis, options },
+    callback: (err, result) => {
+      Helper.renderAfterQueryExecution(err, result, false, 'geoNear', params, (!historyParams));
+    }
   });
 };
 

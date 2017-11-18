@@ -1,5 +1,6 @@
 import { Template } from 'meteor/templating';
 import { Meteor } from 'meteor/meteor';
+import { Communicator } from '/client/imports/facades';
 import { Session } from 'meteor/session';
 import Helper from '/client/imports/helper';
 import Enums from '/lib/imports/enums';
@@ -41,18 +42,18 @@ Template.findOneAndUpdate.executeQuery = function (historyParams) {
 
   selector = Helper.convertAndCheckJSON(selector);
   if (selector.ERROR) {
-    toastr.error(`Syntax error on selector: ${  selector.ERROR}`);
+    toastr.error(`Syntax error on selector: ${selector.ERROR}`);
     Ladda.stopAll();
     return;
   }
 
   setObject = Helper.convertAndCheckJSON(setObject);
   if (setObject.ERROR) {
-    toastr.error(`Syntax error on set: ${  setObject.ERROR}`);
+    toastr.error(`Syntax error on set: ${setObject.ERROR}`);
     Ladda.stopAll();
     return;
   }
-  setObject = { '$set': setObject };
+  setObject = { $set: setObject };
 
   if (options.ERROR) {
     toastr.error(options.ERROR);
@@ -66,10 +67,13 @@ Template.findOneAndUpdate.executeQuery = function (historyParams) {
     options,
   };
 
-  Meteor.call('findOneAndUpdate', selectedCollection, selector, setObject, options, Meteor.default_connection._lastSessionId, (err, result) => {
-    Helper.renderAfterQueryExecution(err, result, false, 'findOneAndUpdate', params, (!historyParams));
-  },
-  );
+  Communicator.call({
+    methodName: 'findOneAndUpdate',
+    args: { selectedCollection, selector, setObject, options },
+    callback: (err, result) => {
+      Helper.renderAfterQueryExecution(err, result, false, 'findOneAndUpdate', params, (!historyParams));
+    }
+  });
 };
 
 Template.findOneAndUpdate.renderQuery = function (query) {
@@ -103,8 +107,8 @@ Template.findOneAndUpdate.renderQuery = function (query) {
       // options load
       Meteor.setTimeout(() => {
         for (let i = 0; i < optionsArray.length; i++) {
-          let option = optionsArray[i];
-          let inverted = (_.invert(Enums.FINDONE_MODIFY_OPTIONS));
+          const option = optionsArray[i];
+          const inverted = (_.invert(Enums.FINDONE_MODIFY_OPTIONS));
           if (option === inverted.projection) {
             Helper.setCodeMirrorValue($('#divProject'), JSON.stringify(query.queryParams.options.projection, null, 1));
           }

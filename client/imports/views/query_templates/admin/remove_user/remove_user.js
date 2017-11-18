@@ -1,8 +1,7 @@
 import { Template } from 'meteor/templating';
-import { Meteor } from 'meteor/meteor';
 import Helper from '/client/imports/helper';
 import { initExecuteQuery } from '/client/imports/views/pages/admin_queries/admin_queries';
-
+import { Communicator } from '/client/imports/facades';
 import '/client/imports/views/query_templates_options/username/username.html';
 import './remove_user.html';
 
@@ -19,7 +18,7 @@ Template.removeUser.executeQuery = function () {
   initExecuteQuery();
   const username = $('#inputAddUserUsername').val();
 
-  if (username == null || username.length === 0) {
+  if (!username || username.length === 0) {
     toastr.error('Username can not be empty');
     Ladda.stopAll();
     return;
@@ -27,7 +26,11 @@ Template.removeUser.executeQuery = function () {
 
   const runOnAdminDB = $('#aRunOnAdminDB').iCheck('update')[0].checked;
 
-  Meteor.call('removeUser', username, runOnAdminDB, Meteor.default_connection._lastSessionId, (err, result) => {
-    Helper.renderAfterQueryExecution(err, result, true);
+  Communicator.call({
+    methodName: 'removeUser',
+    args: { username, runOnAdminDB },
+    callback: (err, result) => {
+      Helper.renderAfterQueryExecution(err, result, true);
+    }
   });
 };

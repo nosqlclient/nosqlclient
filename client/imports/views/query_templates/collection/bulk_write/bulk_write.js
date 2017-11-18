@@ -1,6 +1,7 @@
 import { Template } from 'meteor/templating';
 import { Meteor } from 'meteor/meteor';
 import { Session } from 'meteor/session';
+import { Communicator } from '/client/imports/facades';
 import Helper from '/client/imports/helper';
 import Enums from '/lib/imports/enums';
 import { initExecuteQuery } from '/client/imports/views/pages/browse_collection/browse_collection';
@@ -40,7 +41,7 @@ Template.bulkWrite.executeQuery = function (historyParams) {
 
   operations = Helper.convertAndCheckJSON(operations);
   if (operations.ERROR) {
-    toastr.error(`Syntax error on operations: ${  operations.ERROR}`);
+    toastr.error(`Syntax error on operations: ${operations.ERROR}`);
     Ladda.stopAll();
     return;
   }
@@ -50,10 +51,13 @@ Template.bulkWrite.executeQuery = function (historyParams) {
     options,
   };
 
-  Meteor.call('bulkWrite', selectedCollection, operations, options, Meteor.default_connection._lastSessionId, (err, result) => {
-    Helper.renderAfterQueryExecution(err, result, false, 'bulkWrite', params, (!historyParams));
-  },
-  );
+  Communicator.call({
+    methodName: 'bulkWrite',
+    args: { selectedCollection, operations, options },
+    callback: (err, result) => {
+      Helper.renderAfterQueryExecution(err, result, false, 'bulkWrite', params, (!historyParams));
+    }
+  });
 };
 
 
@@ -81,8 +85,8 @@ Template.bulkWrite.renderQuery = function (query) {
     // options load
     Meteor.setTimeout(() => {
       for (let i = 0; i < optionsArray.length; i++) {
-        let option = optionsArray[i];
-        let inverted = (_.invert(Enums.BULK_WRITE_OPTIONS));
+        const option = optionsArray[i];
+        const inverted = (_.invert(Enums.BULK_WRITE_OPTIONS));
         if (option === inverted.ordered) {
           $('#inputOrdered').val(query.queryParams.options.ordered);
         }
@@ -90,6 +94,6 @@ Template.bulkWrite.renderQuery = function (query) {
           $('#divBypassDocumentValidation').iCheck(query.queryParams.options.bypassDocumentValidation ? 'check' : 'uncheck');
         }
       }
-        }, 200);
+    }, 200);
   }
 };

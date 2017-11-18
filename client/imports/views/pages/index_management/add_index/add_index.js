@@ -1,5 +1,6 @@
 import { Template } from 'meteor/templating';
 import { Meteor } from 'meteor/meteor';
+import { Communicator } from '/client/imports/facades';
 import Helper from '/client/imports/helper';
 import { initIndexes } from '../index_management';
 import './add_index.html';
@@ -19,20 +20,24 @@ export const prepareFormForView = function () {
     return;
   }
 
-  Meteor.call('indexInformation', selectedCollection, true, Meteor.default_connection._lastSessionId, (err, indexInformation) => {
-    if (err || indexInformation.error) {
-      Helper.showMeteorFuncError(err, indexInformation, "Couldn't fetch index information");
-    } else {
-      let found = false;
-      for (const index of indexInformation.result) {
-        if (index.name === indexName) {
-          found = true;
-          proceedPreparingFormForView(index);
+  Communicator.call({
+    methodName: 'indexInformation',
+    args: { selectedCollection, isFull: true },
+    callback: (err, indexInformation) => {
+      if (err || indexInformation.error) {
+        Helper.showMeteorFuncError(err, indexInformation, "Couldn't fetch index information");
+      } else {
+        let found = false;
+        for (const index of indexInformation.result) {
+          if (index.name === indexName) {
+            found = true;
+            proceedPreparingFormForView(index);
+          }
         }
-      }
 
-      if (!found) {
-        toastr.error(`Couldn't find index: ${indexName}`);
+        if (!found) {
+          toastr.error(`Couldn't find index: ${indexName}`);
+        }
       }
     }
   });
@@ -363,16 +368,21 @@ Template.addIndex.events({
     setOtherOptionsForIndex(index, ttl, partialFilterExpression, indexName, collation);
 
     command.indexes.push(index);
-    Meteor.call('command', command, false, {}, Meteor.default_connection._lastSessionId, (err, result) => {
-      if (err || result.error) {
-        Helper.showMeteorFuncError(err, result, "Couldn't create index");
-      } else {
-        toastr.success('Successfully created index');
-        initIndexes();
-        $('#addIndexModal').modal('hide');
-      }
 
-      Ladda.stopAll();
+    Communicator.call({
+      methodName: 'command',
+      args: { command, isFull: true },
+      callback: (err, result) => {
+        if (err || result.error) {
+          Helper.showMeteorFuncError(err, result, "Couldn't create index");
+        } else {
+          toastr.success('Successfully created index');
+          initIndexes();
+          $('#addIndexModal').modal('hide');
+        }
+
+        Ladda.stopAll();
+      }
     });
-  },
+  }
 });

@@ -1,5 +1,6 @@
 import { Template } from 'meteor/templating';
 import { Meteor } from 'meteor/meteor';
+import { Communicator } from '/client/imports/facades';
 import Helper from '/client/imports/helper';
 import { Session } from 'meteor/session';
 import Enums from '/lib/imports/enums';
@@ -55,8 +56,12 @@ Template.createIndex.executeQuery = function (historyParams) {
     options,
   };
 
-  Meteor.call('createIndex', selectedCollection, fields, options, Meteor.default_connection._lastSessionId, (err, result) => {
-    Helper.renderAfterQueryExecution(err, result, false, 'createIndex', params, (!historyParams));
+  Communicator.call({
+    methodName: 'createIndex',
+    args: { selectedCollection, fields, options },
+    callback: (err, result) => {
+      Helper.renderAfterQueryExecution(err, result, false, 'createIndex', params, (!historyParams));
+    }
   });
 };
 

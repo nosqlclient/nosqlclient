@@ -1,5 +1,6 @@
 import { Template } from 'meteor/templating';
 import { Meteor } from 'meteor/meteor';
+import { Communicator } from '/client/imports/facades';
 import Helper from '/client/imports/helper';
 import { Session } from 'meteor/session';
 import { initExecuteQuery } from '/client/imports/views/pages/browse_collection/browse_collection';
@@ -22,7 +23,7 @@ Template.delete.executeQuery = function (historyParams) {
 
   selector = Helper.convertAndCheckJSON(selector);
   if (selector.ERROR) {
-    toastr.error(`Syntax error on selector: ${  selector.ERROR}`);
+    toastr.error(`Syntax error on selector: ${selector.ERROR}`);
     Ladda.stopAll();
     return;
   }
@@ -31,10 +32,13 @@ Template.delete.executeQuery = function (historyParams) {
     selector,
   };
 
-  Meteor.call('delete', selectedCollection, selector, Meteor.default_connection._lastSessionId, (err, result) => {
-    Helper.renderAfterQueryExecution(err, result, false, 'delete', params, (!historyParams));
-  },
-  );
+  Communicator.call({
+    methodName: 'delete',
+    args: { selectedCollection, selector },
+    callback: (err, result) => {
+      Helper.renderAfterQueryExecution(err, result, false, 'delete', params, (!historyParams));
+    }
+  });
 };
 
 Template.delete.renderQuery = function (query) {

@@ -1,8 +1,8 @@
 import { Template } from 'meteor/templating';
-import { Meteor } from 'meteor/meteor';
 import { Session } from 'meteor/session';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import Helper from '/client/imports/helper';
+import { Communicator } from '/client/imports/facades';
 import { Connections } from '/lib/imports/collections';
 import { connect, populateConnectionsTable } from '/client/imports/views/layouts/top_navbar/connections/connections';
 import './top_navbar.html';
@@ -84,15 +84,19 @@ Template.topNavbar.events({
     if (importInput.val()) {
       laddaButton.start();
       loadFile(null, importInput, (val) => {
-        Meteor.call('importMongoclient', val, (err) => {
-          if (err) {
-            toastr.error(`Couldn't import: ${err.message}`);
-          } else {
-            toastr.success(`Successfully imported from ${importInput.siblings('.bootstrap-filestyle').children('input').val()}`);
-            $('#importExportMongoclientModal').modal('hide');
-          }
+        Communicator.call({
+          methodName: 'importMongoclient',
+          args: { file: val },
+          callback: (err) => {
+            if (err) {
+              toastr.error(`Couldn't import: ${err.message}`);
+            } else {
+              toastr.success(`Successfully imported from ${importInput.siblings('.bootstrap-filestyle').children('input').val()}`);
+              $('#importExportMongoclientModal').modal('hide');
+            }
 
-          Ladda.stopAll();
+            Ladda.stopAll();
+          }
         });
       }, true);
     }
@@ -142,17 +146,20 @@ Template.topNavbar.events({
 
     Ladda.create(document.querySelector('#btnConnectSwitchedDatabase')).start();
 
-    Meteor.call('listDatabases', Meteor.default_connection._lastSessionId, (err, result) => {
-      if (err || result.error) {
-        Helper.showMeteorFuncError(err, result, "Couldn't fetch databases");
-      } else {
-        result.result.databases.sort((a, b) => {
-          if (a.name < b.name) { return -1; } else if (a.name > b.name) { return 1; }
-          return 0;
-        });
+    Communicator.call({
+      methodName: 'listDatabases',
+      callback: (err, result) => {
+        if (err || result.error) {
+          Helper.showMeteorFuncError(err, result, "Couldn't fetch databases");
+        } else {
+          result.result.databases.sort((a, b) => {
+            if (a.name < b.name) { return -1; } else if (a.name > b.name) { return 1; }
+            return 0;
+          });
 
-        populateSwitchDatabaseTable(result.result.databases);
-        Ladda.stopAll();
+          populateSwitchDatabaseTable(result.result.databases);
+          Ladda.stopAll();
+        }
       }
     });
   },
@@ -176,8 +183,8 @@ Template.topNavbar.events({
     Ladda.create(document.querySelector('#btnConnectSwitchedDatabase')).start();
     const connection = Connections.findOne({ _id: Session.get(Helper.strSessionConnection) });
     connection.databaseName = selector.val();
-    Meteor.call('saveConnection', connection);
 
+    Communicator.call({ methodName: 'saveConnection', args: { connection } });
     connect(false);
   },
 
@@ -227,7 +234,7 @@ Template.topNavbar.events({
   'click #btnDisconnect': function (e) {
     e.preventDefault();
 
-    Meteor.call('disconnect', Meteor.default_connection._lastSessionId);
+    Communicator.call({ methodName: 'disconnect' });
     Helper.clearSessions();
 
     FlowRouter.go('/databaseStats');

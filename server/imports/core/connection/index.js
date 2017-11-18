@@ -6,7 +6,7 @@ const mongodbUrlParser = require('parse-mongo-url');
 const Connection = function () {
 };
 
-function addSSLOptions(obj, result) {
+const addSSLOptions = function (obj, result) {
   if (obj.rootCAFile) {
     result.sslValidate = true;
     result.sslCA = Buffer.from(obj.rootCAFile);
@@ -15,9 +15,9 @@ function addSSLOptions(obj, result) {
   if (obj.certificateKeyFile) result.sslKey = Buffer.from(obj.certificateKeyFile);
   if (obj.passPhrase) result.sslPass = obj.passPhrase;
   if (obj.disableHostnameVerification) result.checkServerIdentity = false;
-}
+};
 
-function setOptionsToConnectionFromParsedUrl(connection, parsedUrl) {
+const setOptionsToConnectionFromParsedUrl = function (connection, parsedUrl) {
   if (parsedUrl.server_options) {
     connection.options.connectionTimeout = (parsedUrl.server_options.socketOptions && parsedUrl.server_options.socketOptions.connectTimeoutMS) ?
       parsedUrl.server_options.socketOptions.connectTimeoutMS : '';
@@ -28,9 +28,9 @@ function setOptionsToConnectionFromParsedUrl(connection, parsedUrl) {
 
   connection.options.replicaSetName = (parsedUrl.rs_options && parsedUrl.rs_options.rs_name) ? parsedUrl.rs_options.rs_name : '';
   connection.options.readPreference = parsedUrl.db_options.read_preference;
-}
+};
 
-function setAuthToConnectionFromParsedUrl(connection, parsedUrl) {
+const setAuthToConnectionFromParsedUrl = function (connection, parsedUrl) {
   connection.authenticationType = parsedUrl.db_options.authMechanism ? parsedUrl.db_options.authMechanism.toLowerCase().replace(new RegExp('-', 'g'), '_') : '';
   if (connection.authenticationType) connection[connection.authenticationType] = {};
   if (parsedUrl.db_options.gssapiServiceName && connection.authenticationType === 'gssapi') connection.gssapi.serviceName = parsedUrl.db_options.gssapiServiceName;
@@ -46,9 +46,9 @@ function setAuthToConnectionFromParsedUrl(connection, parsedUrl) {
   if (connection.authenticationType === 'mongodb_cr' || connection.authenticationType === 'scram_sha_1') {
     connection[connection.authenticationType].authSource = parsedUrl.db_options.authSource ? parsedUrl.db_options.authSource : connection.databaseName;
   }
-}
+};
 
-function checkAuthenticationOfConnection(connection) {
+const checkAuthenticationOfConnection = function (connection) {
   if (connection.authenticationType !== 'scram_sha_1') delete connection.scram_sha_1;
   if (connection.authenticationType !== 'mongodb_cr') delete connection.mongodb_cr;
   if (connection.authenticationType !== 'mongodb_x509') delete connection.mongodb_x509;
@@ -58,9 +58,9 @@ function checkAuthenticationOfConnection(connection) {
   if (connection.mongodb_x509) delete connection.ssl;
   if (connection.ssl && !connection.ssl.enabled) delete connection.ssl;
   if (connection.gssapi && !connection.gssapi.serviceName) Error.create({ type: Error.types.MissingParameter, formatters: ['service-name', 'gssapi'], metadataToLog: connection });
-}
+};
 
-function checkSSHOfConnection(connection) {
+const checkSSHOfConnection = function (connection) {
   if (connection.ssh) {
     if (!connection.ssh.enabled) delete connection.ssh;
     if (!connection.ssh.destinationPort) Error.create({ type: Error.types.MissingParameter, formatters: ['destination-port', 'ssh'], metadataToLog: connection });
@@ -71,9 +71,9 @@ function checkSSHOfConnection(connection) {
       Error.create({ type: Error.types.MissingParameter, formatters: ['certificate-or-password', 'ssh'], metadataToLog: connection });
     }
   }
-}
+};
 
-function migrateSSHPart(oldConnection, connection) {
+const migrateSSHPart = function (oldConnection, connection) {
   if (oldConnection.sshAddress) {
     connection.ssh = {
       enabled: true,
@@ -90,9 +90,9 @@ function migrateSSHPart(oldConnection, connection) {
       connection.ssh.passPhrase = oldConnection.sshPassPhrase;
     }
   }
-}
+};
 
-function migrateSSLPart(oldConnection, connection) {
+const migrateSSLPart = function (oldConnection, connection) {
   if (oldConnection.sslCertificatePath) {
     const objToChange = oldConnection.x509Username ? connection.mongodb_x509 : connection.ssl;
     objToChange.certificateFile = oldConnection.sslCertificate;
@@ -107,12 +107,12 @@ function migrateSSLPart(oldConnection, connection) {
       objToChange.certificateKeyFileName = oldConnection.certificateKeyPath;
     }
   }
-}
+};
 
-function getRoundedMilisecondsFromSeconds(sec) {
+const getRoundedMilisecondsFromSeconds = function (sec) {
   if (sec) return Math.round(sec * 100 * 1000) / 100;
   return '30000';
-}
+};
 
 Connection.prototype = {
   importConnections(file) {

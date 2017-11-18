@@ -1,6 +1,6 @@
 import { Template } from 'meteor/templating';
-import { Meteor } from 'meteor/meteor';
 import { Session } from 'meteor/session';
+import { Communicator } from '/client/imports/facades';
 import { Connections } from '/lib/imports/collections';
 import Helper from '/client/imports/helper';
 import './validation_rules.html';
@@ -33,30 +33,34 @@ const initRules = function () {
   const cmbValidationLevel = $('#cmbValidationLevel');
 
   const connection = Connections.findOne({ _id: Session.get(Helper.strSessionConnection) });
-  Meteor.call('listCollectionNames', connection.databaseName, Meteor.default_connection._lastSessionId, (err, result) => {
-    if (err || result.error) {
-      Helper.showMeteorFuncError(err, result, "Couldn't fetch rules");
-    } else if (result.result) {
-      for (const collection of result.result) {
-        if (collection.name === selectedCollection) {
-          if (collection.options && collection.options.validationAction) {
-            cmbValidationAction.val(collection.options.validationAction).trigger('chosen:updated');
-          }
+  Communicator.call({
+    methodName: 'listCollectionNames',
+    args: { dbName: connection.databaseName },
+    callback: (err, result) => {
+      if (err || result.error) {
+        Helper.showMeteorFuncError(err, result, "Couldn't fetch rules");
+      } else if (result.result) {
+        for (const collection of result.result) {
+          if (collection.name === selectedCollection) {
+            if (collection.options && collection.options.validationAction) {
+              cmbValidationAction.val(collection.options.validationAction).trigger('chosen:updated');
+            }
 
-          if (collection.options && collection.options.validationLevel) {
-            cmbValidationLevel.val(collection.options.validationLevel).trigger('chosen:updated');
-          }
+            if (collection.options && collection.options.validationLevel) {
+              cmbValidationLevel.val(collection.options.validationLevel).trigger('chosen:updated');
+            }
 
-          if (collection.options.validator) {
-            Helper.setCodeMirrorValue($('#divValidator'), JSON.stringify(collection.options.validator, null, 1));
-          } else {
-            Helper.setCodeMirrorValue($('#divValidator'), '');
+            if (collection.options.validator) {
+              Helper.setCodeMirrorValue($('#divValidator'), JSON.stringify(collection.options.validator, null, 1));
+            } else {
+              Helper.setCodeMirrorValue($('#divValidator'), '');
+            }
           }
         }
       }
-    }
 
-    Ladda.stopAll();
+      Ladda.stopAll();
+    }
   });
 };
 
@@ -83,15 +87,19 @@ Template.validationRules.events({
     command.validationLevel = validationLevel;
     command.validationAction = validationAction;
 
-    Meteor.call('command', command, false, {}, Meteor.default_connection._lastSessionId, (err, result) => {
-      if (err || result.error) {
-        Helper.showMeteorFuncError(err, result, "Couldn't save rule");
-      } else {
-        toastr.success('Successfully saved');
-        $('#validationRulesModal').modal('hide');
-      }
+    Communicator.call({
+      methodName: 'command',
+      args: { command },
+      callback: (err, result) => {
+        if (err || result.error) {
+          Helper.showMeteorFuncError(err, result, "Couldn't save rule");
+        } else {
+          toastr.success('Successfully saved');
+          $('#validationRulesModal').modal('hide');
+        }
 
-      Ladda.stopAll();
+        Ladda.stopAll();
+      }
     });
   },
 });

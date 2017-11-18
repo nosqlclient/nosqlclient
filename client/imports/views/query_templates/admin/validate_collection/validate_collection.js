@@ -1,5 +1,5 @@
 import { Template } from 'meteor/templating';
-import { Meteor } from 'meteor/meteor';
+import { Communicator } from '/client/imports/facades';
 import Helper from '/client/imports/helper';
 import { initExecuteQuery } from '/client/imports/views/pages/admin_queries/admin_queries';
 
@@ -20,7 +20,7 @@ Template.validateCollection.executeQuery = function () {
   const collectionName = $('#inputValidateCollection').val();
   let options = Helper.getCodeMirrorValue($('#divOptions'));
 
-  if (collectionName == null || collectionName.length === 0) {
+  if (!collectionName || collectionName.length === 0) {
     toastr.error('CollectionName can not be empty');
     Ladda.stopAll();
     return;
@@ -33,7 +33,11 @@ Template.validateCollection.executeQuery = function () {
     return;
   }
 
-  Meteor.call('validateCollection', collectionName, options, Meteor.default_connection._lastSessionId, (err, result) => {
-    Helper.renderAfterQueryExecution(err, result, true);
+  Communicator.call({
+    methodName: 'validateCollection',
+    args: { collectionName, options },
+    callback: (err, result) => {
+      Helper.renderAfterQueryExecution(err, result, true);
+    }
   });
 };

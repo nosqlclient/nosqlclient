@@ -1,6 +1,7 @@
 import { Template } from 'meteor/templating';
 import { Meteor } from 'meteor/meteor';
 import { Session } from 'meteor/session';
+import { Communicator } from '/client/imports/facades';
 import Helper from '/client/imports/helper';
 import Enums from '/lib/imports/enums';
 import { Settings } from '/lib/imports/collections';
@@ -31,8 +32,12 @@ const proceedFindQuery = function (selectedCollection, selector, cursorOptions, 
     selectedCollection=${selectedCollection}&selector=${JSON.stringify(selector)}&cursorOptions=${JSON.stringify(cursorOptions)}&sessionId=${Meteor.default_connection._lastSessionId}`);
     Ladda.stopAll();
   } else {
-    Meteor.call('find', selectedCollection, selector, cursorOptions, executeExplain, Meteor.default_connection._lastSessionId, (err, result) => {
-      Helper.renderAfterQueryExecution(err, result, false, 'find', params, saveHistory);
+    Communicator.call({
+      methodName: 'find',
+      args: { selectedCollection, selector, cursorOptions, executeExplain },
+      callback: (err, result) => {
+        Helper.renderAfterQueryExecution(err, result, false, 'find', params, saveHistory);
+      }
     });
   }
 };
@@ -92,26 +97,34 @@ Template.find.executeQuery = function (historyParams, exportFormat) {
   // max allowed fetch size  != 0 and there's no project option, check for size
   if (maxAllowedFetchSize && maxAllowedFetchSize !== 0 && !(Enums.CURSOR_OPTIONS.PROJECT in cursorOptions)) {
     // get stats to calculate fetched documents size from avgObjSize (stats could be changed, therefore we can't get it from html )
-    Meteor.call('stats', selectedCollection, {}, Meteor.default_connection._lastSessionId, (statsError, statsResult) => {
-      if (statsError || statsResult.error || !(statsResult.result.avgObjSize)) {
-        // if there's an error, nothing we can do
-        proceedFindQuery(selectedCollection, selector, cursorOptions, (!historyParams), exportFormat);
-      } else if (Enums.CURSOR_OPTIONS.LIMIT in cursorOptions) {
-        const count = cursorOptions.limit;
-        if (checkAverageSize(count, statsResult.result.avgObjSize, maxAllowedFetchSize)) {
+    Communicator.call({
+      methodName: 'stats',
+      args: { selectedCollection },
+      callback: (statsError, statsResult) => {
+        if (statsError || statsResult.error || !(statsResult.result.avgObjSize)) {
+          // if there's an error, nothing we can do
           proceedFindQuery(selectedCollection, selector, cursorOptions, (!historyParams), exportFormat);
-        }
-      } else {
-        Meteor.call('count', selectedCollection, selector, {}, Meteor.default_connection._lastSessionId, (err, result) => {
-          if (err || result.error) {
+        } else if (Enums.CURSOR_OPTIONS.LIMIT in cursorOptions) {
+          const count = cursorOptions.limit;
+          if (checkAverageSize(count, statsResult.result.avgObjSize, maxAllowedFetchSize)) {
             proceedFindQuery(selectedCollection, selector, cursorOptions, (!historyParams), exportFormat);
-          } else {
-            const count = result.result;
-            if (checkAverageSize(count, statsResult.result.avgObjSize, maxAllowedFetchSize)) {
-              proceedFindQuery(selectedCollection, selector, cursorOptions, (!historyParams), exportFormat);
-            }
           }
-        });
+        } else {
+          Communicator.call({
+            methodName: 'count',
+            args: { selectedCollection, selector },
+            callback: (err, result) => {
+              if (err || result.error) {
+                proceedFindQuery(selectedCollection, selector, cursorOptions, (!historyParams), exportFormat);
+              } else {
+                const count = result.result;
+                if (checkAverageSize(count, statsResult.result.avgObjSize, maxAllowedFetchSize)) {
+                  proceedFindQuery(selectedCollection, selector, cursorOptions, (!historyParams), exportFormat);
+                }
+              }
+            }
+          });
+        }
       }
     });
   } else {

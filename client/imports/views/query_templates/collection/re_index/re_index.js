@@ -1,5 +1,5 @@
 import { Template } from 'meteor/templating';
-import { Meteor } from 'meteor/meteor';
+import { Communicator } from '/client/imports/facades';
 import { Session } from 'meteor/session';
 import Helper from '/client/imports/helper';
 import { initExecuteQuery } from '/client/imports/views/pages/browse_collection/browse_collection';
@@ -16,8 +16,12 @@ Template.reIndex.executeQuery = function (historyParams) {
   initExecuteQuery();
   const selectedCollection = Session.get(Helper.strSessionSelectedCollection);
 
-  Meteor.call('reIndex', selectedCollection, Meteor.default_connection._lastSessionId, (err, result) => {
-    Helper.renderAfterQueryExecution(err, result, false, 'reIndex', {}, (!historyParams));
+  Communicator.call({
+    methodName: 'reIndex',
+    args: { selectedCollection },
+    callback: (err, result) => {
+      Helper.renderAfterQueryExecution(err, result, false, 'reIndex', {}, (!historyParams));
+    }
   });
 };
 

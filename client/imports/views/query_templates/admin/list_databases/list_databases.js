@@ -1,6 +1,6 @@
 import { Template } from 'meteor/templating';
-import { Meteor } from 'meteor/meteor';
 import Helper from '/client/imports/helper';
+import { Communicator } from '/client/imports/facades';
 import { initExecuteQuery } from '/client/imports/views/pages/admin_queries/admin_queries';
 
 import './list_databases.html';
@@ -15,7 +15,10 @@ Template.listDatabases.onRendered(() => {
 Template.listDatabases.executeQuery = function () {
   initExecuteQuery();
 
-  Meteor.call('listDatabases', Meteor.default_connection._lastSessionId, (err, result) => {
-    Helper.renderAfterQueryExecution(err, result, true);
+  Communicator.call({
+    methodName: 'listDatabases',
+    callback: (err, result) => {
+      Helper.renderAfterQueryExecution(err, result, true);
+    }
   });
 };

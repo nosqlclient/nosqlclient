@@ -1,8 +1,8 @@
-import './common_options.html';
 import { Template } from 'meteor/templating';
-import { Meteor } from 'meteor/meteor';
 import { $ } from 'meteor/jquery';
 import Helper from '/client/imports/helper';
+import { Communicator } from '/client/imports/facades';
+import './common_options.html';
 
 const Ladda = require('ladda');
 
@@ -16,25 +16,28 @@ const loadDatabases = function (prefix) {
   Ladda.create(document.querySelector('#btnExecuteMongoexport')).start();
   Ladda.create(document.querySelector('#btnExecuteMongoimport')).start();
 
-  Meteor.call('getDatabases', Meteor.default_connection._lastSessionId, (err, result) => {
-    if (err || result.error) {
-      Helper.showMeteorFuncError(err, result, "Couldn't fetch databases, you can add manually");
-    } else {
-      for (let i = 0; i < result.result.length; i++) {
-        cmb.append($('<option></option>')
-          .attr('value', result.result[i].name)
-          .text(result.result[i].name));
+  Communicator.call({
+    methodName: 'getDatabases',
+    callback: (err, result) => {
+      if (err || result.error) {
+        Helper.showMeteorFuncError(err, result, "Couldn't fetch databases, you can add manually");
+      } else {
+        for (let i = 0; i < result.result.length; i++) {
+          cmb.append($('<option></option>')
+            .attr('value', result.result[i].name)
+            .text(result.result[i].name));
+        }
       }
+
+      cmb.chosen({
+        create_option: true,
+        allow_single_deselect: true,
+        persistent_create_option: true,
+        skip_no_results: true,
+      });
+
+      Ladda.stopAll();
     }
-
-    cmb.chosen({
-      create_option: true,
-      allow_single_deselect: true,
-      persistent_create_option: true,
-      skip_no_results: true,
-    });
-
-    Ladda.stopAll();
   });
 };
 
@@ -60,25 +63,29 @@ const loadCollectionsCombo = function (prefix) {
     return;
   }
 
-  Meteor.call('listCollectionNames', db, Meteor.default_connection._lastSessionId, (err, result) => {
-    if (err || result.error) {
-      Helper.showMeteorFuncError(err, result, "Couldn't fetch collection names, you can add manually");
-    } else {
-      for (let i = 0; i < result.result.length; i++) {
-        cmb.append($('<option></option>')
-          .attr('value', result.result[i].name)
-          .text(result.result[i].name));
+  Communicator.call({
+    methodName: 'listCollectionNames',
+    args: { dbName: db },
+    callback: (err, result) => {
+      if (err || result.error) {
+        Helper.showMeteorFuncError(err, result, "Couldn't fetch collection names, you can add manually");
+      } else {
+        for (let i = 0; i < result.result.length; i++) {
+          cmb.append($('<option></option>')
+            .attr('value', result.result[i].name)
+            .text(result.result[i].name));
+        }
       }
-    }
 
-    cmb.chosen({
-      create_option: true,
-      allow_single_deselect: true,
-      persistent_create_option: true,
-      skip_no_results: true,
-    });
-    cmb.trigger('chosen:updated');
-    Ladda.stopAll();
+      cmb.chosen({
+        create_option: true,
+        allow_single_deselect: true,
+        persistent_create_option: true,
+        skip_no_results: true,
+      });
+      cmb.trigger('chosen:updated');
+      Ladda.stopAll();
+    }
   });
 };
 

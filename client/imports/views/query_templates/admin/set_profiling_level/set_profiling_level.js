@@ -1,27 +1,10 @@
 import { Template } from 'meteor/templating';
-import { Meteor } from 'meteor/meteor';
+import { Communicator } from '/client/imports/facades';
 import Helper from '/client/imports/helper';
 import Enums from '/lib/imports/enums';
 import { initExecuteQuery } from '/client/imports/views/pages/admin_queries/admin_queries';
 
 import './set_profiling_level.html';
-
-/**
- * Created by RSercan on 10.1.2016.
- */
-Template.setProfilingLevel.onRendered(() => {
-  initializeOptions();
-  Helper.changeRunOnAdminOptionVisibility(false);
-});
-
-Template.setProfilingLevel.executeQuery = function () {
-  initExecuteQuery();
-  const level = $('#cmbLevel').val();
-
-  Meteor.call('setProfilingLevel', level, Meteor.default_connection._lastSessionId, (err, result) => {
-    Helper.renderAfterQueryExecution(err, result, true);
-  });
-};
 
 const initializeOptions = function () {
   const cmb = $('#cmbLevel');
@@ -32,4 +15,22 @@ const initializeOptions = function () {
   });
 
   cmb.chosen();
+};
+
+Template.setProfilingLevel.onRendered(() => {
+  initializeOptions();
+  Helper.changeRunOnAdminOptionVisibility(false);
+});
+
+Template.setProfilingLevel.executeQuery = function () {
+  initExecuteQuery();
+  const level = $('#cmbLevel').val();
+
+  Communicator.call({
+    methodName: 'setProfilingLevel',
+    args: { level },
+    callback: (err, result) => {
+      Helper.renderAfterQueryExecution(err, result, true);
+    }
+  });
 };

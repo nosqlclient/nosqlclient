@@ -1,7 +1,7 @@
 import { Template } from 'meteor/templating';
-import { Meteor } from 'meteor/meteor';
 import { Session } from 'meteor/session';
 import Helper from '/client/imports/helper';
+import { Communicator } from '/client/imports/facades';
 import { Connections } from '/lib/imports/collections';
 import './manage_users.html';
 
@@ -101,30 +101,33 @@ export const popEditUserModal = function (user) {
     showPrivileges: true,
   };
 
-  Meteor.call('command', userInfoCommand, runOnAdminDB, {}, Meteor.default_connection._lastSessionId, (err, result) => {
-    if (err || result.error) {
-      Helper.showMeteorFuncError(err, result, "Couldn't fetch userInfo");
-    } else {
-      $('#editUserModal').modal('show');
+  Communicator.call({
+    methodName: 'command',
+    args: { command: userInfoCommand, runOnAdminDB },
+    callback: (err, result) => {
+      if (err || result.error) {
+        Helper.showMeteorFuncError(err, result, "Couldn't fetch userInfo");
+      } else {
+        $('#editUserModal').modal('show');
 
-      const user = result.result.users[0];
-      populateUserRolesTable(user.roles);
+        const user = result.result.users[0];
+        populateUserRolesTable(user.roles);
 
-      const inputUsernameSelector = $('#inputUsernameUM');
-      inputUsernameSelector.val(user.user);
-      inputUsernameSelector.prop('disabled', true);
+        const inputUsernameSelector = $('#inputUsernameUM');
+        inputUsernameSelector.val(user.user);
+        inputUsernameSelector.prop('disabled', true);
 
-      const inputPasswordSelector = $('#inputPasswordUM');
-      inputPasswordSelector.val('');
-      inputPasswordSelector.attr('placeholder', 'Leave this blank to keep old one');
+        const inputPasswordSelector = $('#inputPasswordUM');
+        inputPasswordSelector.val('');
+        inputPasswordSelector.attr('placeholder', 'Leave this blank to keep old one');
 
-      if (user.customData) {
-        $('.nav-tabs a[href="#tab-2"]').tab('show');
-        Helper.setCodeMirrorValue($('#divCustomData'), JSON.stringify(user.customData, null, 1));
+        if (user.customData) {
+          $('.nav-tabs a[href="#tab-2"]').tab('show');
+          Helper.setCodeMirrorValue($('#divCustomData'), JSON.stringify(user.customData, null, 1));
+        }
       }
+      Ladda.stopAll();
     }
-
-    Ladda.stopAll();
   });
 };
 
@@ -140,47 +143,49 @@ export const initUsers = function () {
 
   const runOnAdminDB = $('#aRunOnAdminDBToFetchUsers').iCheck('update')[0].checked;
 
-  Meteor.call('command', command, runOnAdminDB, {}, Meteor.default_connection._lastSessionId, (err, result) => {
-    if (err || result.error) {
-      Helper.showMeteorFuncError(err, result, "Couldn't fetch users");
-    } else {
-      const tblUsers = $('#tblUsers');
-      // destroy jquery datatable to prevent reinitialization (https://datatables.net/manual/tech-notes/3)
-      if ($.fn.dataTable.isDataTable('#tblUsers')) {
-        tblUsers.DataTable().destroy();
+  Communicator.call({
+    methodName: 'command',
+    args: { command, runOnAdminDB },
+    callback: (err, result) => {
+      if (err || result.error) {
+        Helper.showMeteorFuncError(err, result, "Couldn't fetch users");
+      } else {
+        const tblUsers = $('#tblUsers');
+        // destroy jquery datatable to prevent reinitialization (https://datatables.net/manual/tech-notes/3)
+        if ($.fn.dataTable.isDataTable('#tblUsers')) {
+          tblUsers.DataTable().destroy();
+        }
+        tblUsers.DataTable({
+          responsive: true,
+          data: populateTableData(result.result.users),
+          columns: [
+            { data: 'user', width: '20%' },
+            { data: 'roles[, ]', width: '65%' },
+          ],
+          columnDefs: [
+            {
+              targets: [2],
+              data: null,
+              width: '5%',
+              defaultContent: '<a href="" title="Show File Info" class="editor_show_custom_data"><i class="fa fa-book text-navy"></i></a>',
+            },
+            {
+              targets: [3],
+              data: null,
+              width: '5%',
+              defaultContent: '<a href="" title="Edit" class="editor_edit"><i class="fa fa-edit text-navy"></i></a>',
+            },
+            {
+              targets: [4],
+              data: null,
+              width: '5%',
+              defaultContent: '<a href="" title="Delete" class="editor_delete_user"><i class="fa fa-remove text-navy"></i></a>',
+            },
+          ],
+        });
       }
-      tblUsers.DataTable({
-        responsive: true,
-        data: populateTableData(result.result.users),
-        columns: [
-          { data: 'user', width: '20%' },
-          { data: 'roles[, ]', width: '65%' },
-        ],
-        columnDefs: [
-          {
-            targets: [2],
-            data: null,
-            width: '5%',
-            defaultContent: '<a href="" title="Show File Info" class="editor_show_custom_data"><i class="fa fa-book text-navy"></i></a>',
-          },
-          {
-            targets: [3],
-            data: null,
-            width: '5%',
-            defaultContent: '<a href="" title="Edit" class="editor_edit"><i class="fa fa-edit text-navy"></i></a>',
-          },
-          {
-            targets: [4],
-            data: null,
-            width: '5%',
-            defaultContent: '<a href="" title="Delete" class="editor_delete_user"><i class="fa fa-remove text-navy"></i></a>',
-          },
-        ],
-      });
+      Ladda.stopAll();
     }
-
-
-    Ladda.stopAll();
   });
 };
 
@@ -229,12 +234,16 @@ Template.manageUsers.events({
         const command = { dropUser: Session.get(Helper.strSessionUsermanagementUser).user };
         const runOnAdminDB = $('#aRunOnAdminDBToFetchUsers').iCheck('update')[0].checked;
 
-        Meteor.call('command', command, runOnAdminDB, {}, Meteor.default_connection._lastSessionId, (err, result) => {
-          if (err || result.error) {
-            Helper.showMeteorFuncError(err, result, "Couldn't drop user");
-          } else {
-            initUsers();
-            toastr.success('Successfuly dropped user !');
+        Communicator.call({
+          methodName: 'command',
+          args: { command, runOnAdminDB },
+          callback: (err, result) => {
+            if (err || result.error) {
+              Helper.showMeteorFuncError(err, result, "Couldn't drop user");
+            } else {
+              initUsers();
+              toastr.success('Successfuly dropped user !');
+            }
           }
         });
       }
@@ -270,16 +279,20 @@ Template.manageUsers.events({
         showPrivileges: true,
       };
 
-      Meteor.call('command', userInfoCommand, runOnAdminDB, {}, Meteor.default_connection._lastSessionId, (err, result) => {
-        if (err || result.error) {
-          Helper.showMeteorFuncError(err, result, "Couldn't fetch userInfo");
-        } else {
-          const user = result.result.users[0];
-          jsonEditor.set(user.customData);
-          $('#customDataModal').modal('show');
-        }
+      Communicator.call({
+        methodName: 'command',
+        args: { command: userInfoCommand, runOnAdminDB },
+        callback: (err, result) => {
+          if (err || result.error) {
+            Helper.showMeteorFuncError(err, result, "Couldn't fetch userInfo");
+          } else {
+            const user = result.result.users[0];
+            jsonEditor.set(user.customData);
+            $('#customDataModal').modal('show');
+          }
 
-        Ladda.stopAll();
+          Ladda.stopAll();
+        }
       });
     }
   },
@@ -332,20 +345,24 @@ Template.manageUsers.events({
     Ladda.create(document.querySelector('#btnApplyAddEditUser')).start();
     const runOnAdminDB = $('#aRunOnAdminDBToFetchUsers').iCheck('update')[0].checked;
 
-    Meteor.call('command', command, runOnAdminDB, {}, Meteor.default_connection._lastSessionId, (err, result) => {
-      if (err || result.error) {
-        Helper.showMeteorFuncError(err, result, "Couldn't update user");
-      } else {
-        initUsers();
-        if (titleSelector.text() == 'Edit User') {
-          toastr.success('Successfuly updated user !');
+    Communicator.call({
+      methodName: 'command',
+      args: { command, runOnAdminDB },
+      callback: (err, result) => {
+        if (err || result.error) {
+          Helper.showMeteorFuncError(err, result, "Couldn't update user");
         } else {
-          toastr.success('Successfuly added user !');
+          initUsers();
+          if (titleSelector.text() == 'Edit User') {
+            toastr.success('Successfuly updated user !');
+          } else {
+            toastr.success('Successfuly added user !');
+          }
+          $('#editUserModal').modal('hide');
         }
-        $('#editUserModal').modal('hide');
-      }
 
-      Ladda.stopAll();
+        Ladda.stopAll();
+      }
     });
   },
 
@@ -388,47 +405,51 @@ Template.manageUsers.events({
     cmb.append($("<optgroup id='optGroupDatabases' label='Databases'></optgroup>"));
     const cmbOptGroupCollection = cmb.find('#optGroupDatabases');
 
-    Meteor.call('getDatabases', Meteor.default_connection._lastSessionId, (err, result) => {
-      if (err || result.error) {
-        Helper.showMeteorFuncError(err, result, "Couldn't fetch databases");
-      } else {
-        for (let i = 0; i < result.result.length; i++) {
-          cmbOptGroupCollection.append($('<option></option>')
-            .attr('value', result.result[i].name)
-            .text(result.result[i].name));
+    Communicator.call({
+      methodName: 'getDatabases',
+      callback: (err, result) => {
+        if (err || result.error) {
+          Helper.showMeteorFuncError(err, result, "Couldn't fetch databases");
+        } else {
+          for (let i = 0; i < result.result.length; i++) {
+            cmbOptGroupCollection.append($('<option></option>')
+              .attr('value', result.result[i].name)
+              .text(result.result[i].name));
+          }
         }
-      }
 
-      cmb.chosen({
-        create_option: true,
-        allow_single_deselect: true,
-        persistent_create_option: true,
-        skip_no_results: true,
-      });
+        cmb.chosen({
+          create_option: true,
+          allow_single_deselect: true,
+          persistent_create_option: true,
+          skip_no_results: true,
+        });
+      }
     });
 
     const runOnAdminDB = $('#aRunOnAdminDBToFetchUsers').iCheck('update')[0].checked;
-    Meteor.call('command', {
-      rolesInfo: 1,
-      showBuiltinRoles: true,
-    }, runOnAdminDB, {}, Meteor.default_connection._lastSessionId, (err, result) => {
-      if (err || result.error) {
-        Helper.showMeteorFuncError(err, result, "Couldn't fetch roles to populate table");
-      } else {
-        const tblCurrentRoles = $('#tblCurrentRoles');
-        // destroy jquery datatable to prevent reinitialization (https://datatables.net/manual/tech-notes/3)
-        if ($.fn.dataTable.isDataTable('#tblCurrentRoles')) {
-          tblCurrentRoles.DataTable().destroy();
+    Communicator.call({
+      methodName: 'command',
+      args: { command: { rolesInfo: 1, showBuiltinRoles: true }, runOnAdminDB },
+      callback: (err, result) => {
+        if (err || result.error) {
+          Helper.showMeteorFuncError(err, result, "Couldn't fetch roles to populate table");
+        } else {
+          const tblCurrentRoles = $('#tblCurrentRoles');
+          // destroy jquery datatable to prevent reinitialization (https://datatables.net/manual/tech-notes/3)
+          if ($.fn.dataTable.isDataTable('#tblCurrentRoles')) {
+            tblCurrentRoles.DataTable().destroy();
+          }
+          tblCurrentRoles.DataTable({
+            responsive: true,
+            data: result.result.roles,
+            columns: [
+              { data: 'role', width: '35%' },
+              { data: 'db', width: '45%' },
+              { data: 'isBuiltin', width: '20%' },
+            ],
+          });
         }
-        tblCurrentRoles.DataTable({
-          responsive: true,
-          data: result.result.roles,
-          columns: [
-            { data: 'role', width: '35%' },
-            { data: 'db', width: '45%' },
-            { data: 'isBuiltin', width: '20%' },
-          ],
-        });
       }
     });
   },

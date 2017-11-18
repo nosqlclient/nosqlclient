@@ -1,5 +1,6 @@
 import { Template } from 'meteor/templating';
 import { Meteor } from 'meteor/meteor';
+import { Communicator } from '/client/imports/facades';
 import { Session } from 'meteor/session';
 import Helper from '/client/imports/helper';
 import Enums from '/lib/imports/enums';
@@ -41,14 +42,14 @@ Template.findOneAndReplace.executeQuery = function (historyParams) {
 
   selector = Helper.convertAndCheckJSON(selector);
   if (selector.ERROR) {
-    toastr.error(`Syntax error on selector: ${  selector.ERROR}`);
+    toastr.error(`Syntax error on selector: ${selector.ERROR}`);
     Ladda.stopAll();
     return;
   }
 
   replaceObject = Helper.convertAndCheckJSON(replaceObject);
   if (replaceObject.ERROR) {
-    toastr.error(`Syntax error on set: ${  replaceObject.ERROR}`);
+    toastr.error(`Syntax error on set: ${replaceObject.ERROR}`);
     Ladda.stopAll();
     return;
   }
@@ -65,10 +66,13 @@ Template.findOneAndReplace.executeQuery = function (historyParams) {
     options,
   };
 
-  Meteor.call('findOneAndReplace', selectedCollection, selector, replaceObject, options, Meteor.default_connection._lastSessionId, (err, result) => {
-    Helper.renderAfterQueryExecution(err, result, false, 'findOneAndReplace', params, (!historyParams));
-  },
-  );
+  Communicator.call({
+    methodName: 'findOneAndReplace',
+    args: { selectedCollection, selector, replaceObject, options },
+    callback: (err, result) => {
+      Helper.renderAfterQueryExecution(err, result, false, 'findOneAndReplace', params, (!historyParams));
+    }
+  });
 };
 
 Template.findOneAndReplace.renderQuery = function (query) {
@@ -102,8 +106,8 @@ Template.findOneAndReplace.renderQuery = function (query) {
       // options load
       Meteor.setTimeout(() => {
         for (let i = 0; i < optionsArray.length; i++) {
-          let option = optionsArray[i];
-          let inverted = (_.invert(Enums.FINDONE_MODIFY_OPTIONS));
+          const option = optionsArray[i];
+          const inverted = (_.invert(Enums.FINDONE_MODIFY_OPTIONS));
           if (option === inverted.projection) {
             Helper.setCodeMirrorValue($('#divProject'), JSON.stringify(query.queryParams.options.projection, null, 1));
           }

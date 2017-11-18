@@ -1,6 +1,7 @@
 import { Template } from 'meteor/templating';
 import { Meteor } from 'meteor/meteor';
 import { Session } from 'meteor/session';
+import { Communicator } from '/client/imports/facades';
 import Helper from '/client/imports/helper';
 import Enums from '/lib/imports/enums';
 import { initExecuteQuery } from '/client/imports/views/pages/browse_collection/browse_collection';
@@ -65,8 +66,12 @@ Template.mapReduce.executeQuery = function (historyParams) {
     options,
   };
 
-  Meteor.call('mapReduce', selectedCollection, map, reduce, options, Meteor.default_connection._lastSessionId, (err, result) => {
-    Helper.renderAfterQueryExecution(err, result, false, 'mapReduce', params, (!historyParams));
+  Communicator.call({
+    methodName: 'mapReduce',
+    args: { selectedCollection, map, reduce, options },
+    callback: (err, result) => {
+      Helper.renderAfterQueryExecution(err, result, false, 'mapReduce', params, (!historyParams));
+    }
   });
 };
 

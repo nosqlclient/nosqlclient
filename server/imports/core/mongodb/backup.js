@@ -7,7 +7,7 @@ const spawn = require('cross-spawn');
 const Backup = function () {
 };
 
-function executeBinary(args, sessionId, binaryName) {
+const executeBinary = function (args, sessionId, binaryName) {
   const binaryPath = MongoDBHelper.getProperBinary(binaryName);
   const metadataToLog = { args, sessionId, binaryPath };
   Logger.info({ message: `${binaryName}`, metadataToLog });
@@ -59,7 +59,7 @@ function executeBinary(args, sessionId, binaryName) {
   } catch (exception) {
     Error.create({ type: Error.types.BackupError, formatters: [binaryName], externalError: exception, metadataToLog });
   }
-}
+};
 
 Backup.prototype = {
   mongodump({ args, sessionId }) {

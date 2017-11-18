@@ -1,6 +1,7 @@
 import { Template } from 'meteor/templating';
 import { Meteor } from 'meteor/meteor';
 import { Session } from 'meteor/session';
+import { Communicator } from '/client/imports/facades';
 import Helper from '/client/imports/helper';
 import Enums from '/lib/imports/enums';
 import { initExecuteQuery } from '/client/imports/views/pages/browse_collection/browse_collection';
@@ -21,7 +22,7 @@ const Ladda = require('ladda');
 const getOptions = function () {
   const result = {};
 
-  if ($.inArray('UPSERT', Session.get(Helper.strSessionSelectedOptions)) != -1) {
+  if ($.inArray('UPSERT', Session.get(Helper.strSessionSelectedOptions)) !== -1) {
     const upsertVal = $('#divUpsert').iCheck('update')[0].checked;
     if (upsertVal) {
       result[Enums.UPDATE_OPTIONS.UPSERT] = upsertVal;
@@ -56,18 +57,18 @@ Template.updateMany.executeQuery = function (historyParams) {
 
   selector = Helper.convertAndCheckJSON(selector);
   if (selector.ERROR) {
-    toastr.error(`Syntax error on selector: ${  selector.ERROR}`);
+    toastr.error(`Syntax error on selector: ${selector.ERROR}`);
     Ladda.stopAll();
     return;
   }
 
   setObject = Helper.convertAndCheckJSON(setObject);
   if (setObject.ERROR) {
-    toastr.error(`Syntax error on set: ${  setObject.ERROR}`);
+    toastr.error(`Syntax error on set: ${setObject.ERROR}`);
     Ladda.stopAll();
     return;
   }
-  setObject = { '$set': setObject };
+  setObject = { $set: setObject };
 
 
   if (options.ERROR) {
@@ -82,10 +83,13 @@ Template.updateMany.executeQuery = function (historyParams) {
     options,
   };
 
-  Meteor.call('updateMany', selectedCollection, selector, setObject, options, Meteor.default_connection._lastSessionId, (err, result) => {
-    Helper.renderAfterQueryExecution(err, result, false, 'updateMany', params, (!historyParams));
-  },
-  );
+  Communicator.call({
+    methodName: 'updateMany',
+    args: { selectedCollection, selector, setObject, options },
+    callback: (err, result) => {
+      Helper.renderAfterQueryExecution(err, result, false, 'updateMany', params, (!historyParams));
+    }
+  });
 };
 
 Template.updateMany.renderQuery = function (query) {
@@ -114,13 +118,13 @@ Template.updateMany.renderQuery = function (query) {
       Meteor.setTimeout(() => {
         $('#cmbUpdateManyOptions').val(optionsArray).trigger('chosen:updated');
         Session.set(Helper.strSessionSelectedOptions, optionsArray);
-            }, 100);
+      }, 100);
 
       // options load
       Meteor.setTimeout(() => {
         for (let i = 0; i < optionsArray.length; i++) {
-          let option = optionsArray[i];
-          let inverted = (_.invert(Enums.UPDATE_OPTIONS));
+          const option = optionsArray[i];
+          const inverted = (_.invert(Enums.UPDATE_OPTIONS));
           if (option === inverted.upsert) {
             $('#divUpsert').iCheck(query.queryParams.options.upsert ? 'check' : 'uncheck');
           }

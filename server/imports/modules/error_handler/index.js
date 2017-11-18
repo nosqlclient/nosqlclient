@@ -62,20 +62,20 @@ const Error = function Error() {
   };
 };
 
-function resolveType(type) {
+const resolveType = function (type) {
   if (Object.prototype.toString.call(type) === '[object String]') return this.types[type];
   return type;
-}
+};
 
-function extractMessage(externalError) {
+const extractMessage = function (externalError) {
   if (!externalError) return '';
   if (Object.prototype.toString.call(externalError) === '[object String]') return externalError;
   if (externalError.error) return externalError.error;
   if (externalError.message) return externalError.message;
   if (externalError.err) return externalError.err;
-}
+};
 
-function createAndLogError(type, formatters, metadataToLog, externalError = '') {
+const createAndLogError = function (type, formatters, metadataToLog, externalError = '') {
   const error = resolveType(type);
   Logger.error({
     message: util.format(error.message, ...formatters),
@@ -84,7 +84,7 @@ function createAndLogError(type, formatters, metadataToLog, externalError = '') 
 
   const details = { message: extractMessage(externalError) };
   return { error, details };
-}
+};
 
 Error.prototype = {
   create({ type, formatters = [], externalError, metadataToLog = {} }) {

@@ -1,7 +1,7 @@
 import { Template } from 'meteor/templating';
-import { Meteor } from 'meteor/meteor';
 import { Session } from 'meteor/session';
 import Helper from '/client/imports/helper';
+import { Communicator } from '/client/imports/facades';
 import { initExecuteQuery } from '/client/imports/views/pages/admin_queries/admin_queries';
 import { $ } from 'meteor/jquery';
 import Enums from '/lib/imports/enums';
@@ -47,15 +47,18 @@ Template.command.executeQuery = function () {
 
   command = Helper.convertAndCheckJSON(command);
   if (command.ERROR) {
-    toastr.error(`Syntax error on command: ${  command.ERROR}`);
+    toastr.error(`Syntax error on command: ${command.ERROR}`);
     Ladda.stopAll();
     return;
   }
 
   const runOnAdminDB = $('#aRunOnAdminDB').iCheck('update')[0].checked;
 
-  Meteor.call('command', command, runOnAdminDB, options, Meteor.default_connection._lastSessionId, (err, result) => {
-    Helper.renderAfterQueryExecution(err, result, true);
-  },
-  );
+  Communicator.call({
+    methodName: 'command',
+    args: { command, runOnAdminDB, options },
+    callback: (err, result) => {
+      Helper.renderAfterQueryExecution(err, result, true);
+    }
+  });
 };

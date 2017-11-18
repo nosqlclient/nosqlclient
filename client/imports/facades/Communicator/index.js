@@ -1,0 +1,93 @@
+import { Meteor } from 'meteor/meteor';
+
+const Communicator = function () {
+  const sessionId = Meteor.default_connection._lastSessionId;
+
+  this.methods = {
+    count: { selectedCollection: '', selector: {}, options: {}, sessionId },
+    find: { selectedCollection: '', selector: {}, cursorOptions: {}, executeExplain: false, sessionId },
+    dropAllCollections: { sessionId },
+    delete: { selectedCollection: '', selector: {}, sessionId },
+    dropCollection: { selectedCollection: '', sessionId },
+    connect: { connectionId: '', username: '', password: '', sessionId },
+    dropDB: { sessionId },
+    aggregate: { selectedCollection: '', pipeline: [], options: {}, sessionId },
+    listCollectionNames: { dbName: '', sessionId },
+    createCollection: { collectionName: '', options: {}, sessionId },
+    command: { command: '', runOnAdminDB: false, options: {}, sessionId },
+    rename: { selectedCollection: '', newName: '', options: {}, sessionId },
+    stats: { selectedCollection: '', options: {}, sessionId },
+    importMongoclient: { file: {} },
+    listDatabases: { sessionId },
+    saveConnection: { connection: {} },
+    disconnect: { sessionId },
+    parseUrl: { connection: {} },
+    removeConnection: { connectionId: '' },
+    checkAndSaveConnection: { connection: {} },
+    saveQueryHistory: { history: {} },
+    saveFindResult: { selectedCollection: '', updateObjects: [], deletedObjectIds: [], addedObjects: [], sessionId },
+    updateOne: { selectedCollection: '', selector: {}, setObject: {}, options: {}, sessionId },
+    checkMongoclientVersion: {},
+    removeDumpLogs: { binary: '', sessionId },
+    mongodump: { args: {}, sessionId },
+    mongorestore: { args: {}, sessionId },
+    mongoexport: { args: {}, sessionId },
+    mongoimport: { args: {}, sessionId },
+    getDatabases: { sessionId },
+    dbStats: { sessionId },
+    serverStatus: { sessionId },
+    top: { sessionId },
+    handleSubscriber: { email: '' },
+    getFile: { bucketName: 'fs', fileId: '', sessionId },
+    getFilesInfo: { bucketName: 'fs', selector: {}, limit: 50, sessionId },
+    deleteFiles: { bucketName: 'fs', selector: {}, sessionId },
+    deleteFile: { bucketName: 'fs', fileId: '', sessionId },
+    uploadFile: { bucketName: 'fs', blob: [], fileName: '', contentType: '', metaData: {}, aliases: [], sessionId },
+    indexInformation: { selectedCollection: '', isFull: false, sessionId },
+    dropIndex: { selectedCollection: '', indexName: '', sessionId },
+    executeShellCommand: { command: '', connectionId: '', username: '', password: '', sessionId },
+    clearShell: { sessionId },
+    connectToShell: { connectionId: '', username: '', password: '', sessionId },
+    removeSchemaAnalyzeResult: { sessionId },
+    analyzeSchema: { connectionId: '', username: '', password: '', collection: '', sessionId },
+    updateSettings: { settings: {} },
+    insertMany: { selectedCollection: '', docs: [], options: {}, sessionId },
+    getActionInfo: { action: '' },
+    getResourceInfo: { resource: '' },
+    getRoleInfo: { roleName: '' },
+    getAllActions: {},
+    addUser: { username: '', password: '', options: {}, runOnAdminDB: false, sessionId },
+    buildInfo: { sessionId },
+    ping: { sessionId },
+    profilingInfo: { sessionId },
+    removeUser: { username: '', runOnAdminDB: false, sessionId },
+    replSetGetStatus: { sessionId },
+    serverInfo: { sessionId },
+    setProfilingLevel: { level: '', sessionId },
+    validateCollection: { collectionName: '', options: {}, sessionId },
+    bulkWrite: { selectedCollection: '', operations: [], options: {}, sessionId },
+    createIndex: { selectedCollection: '', fields: [], options: {}, sessionId },
+    distinct: { selectedCollection: '', selector: {}, fieldName: '', options: {}, sessionId },
+    findOne: { selectedCollection: '', selector: {}, cursorOptions: {}, sessionId },
+    findOneAndDelete: { selectedCollection: '', selector: {}, options: {}, sessionId },
+    findOneAndReplace: { selectedCollection: '', selector: {}, setObject: {}, options: {}, sessionId },
+    findOneAndUpdate: { selectedCollection: '', selector: {}, setObject: {}, options: {}, sessionId },
+    geoHaystackSearch: { selectedCollection: '', xAxis: 0, yAxis: 0, options: {}, sessionId },
+    geoNear: { selectedCollection: '', xAxis: 0, yAxis: 0, options: {}, sessionId },
+    group: { selectedCollection: '', keys: [], condition: {}, initial: {}, reduce: {}, finalize: {}, command: {}, sessionId },
+    isCapped: { selectedCollection: '', sessionId },
+    mapReduce: { selectedCollection: '', map: {}, reduce: {}, options: {}, sessionId },
+    options: { selectedCollection: '', sessionId },
+    reIndex: { selectedCollection: '', sessionId },
+    updateMany: { selectedCollection: '', selector: {}, setObject: {}, options: {}, sessionId }
+  };
+};
+
+Communicator.prototype = {
+  call({ methodName, args = {}, callback }) {
+    return Meteor.call(methodName, Object.assign(this.methods[methodName], args), callback);
+  },
+
+};
+
+export default new Communicator();

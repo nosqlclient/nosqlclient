@@ -4,11 +4,11 @@
 /* global swal */
 /* global _ */
 import { Template } from 'meteor/templating';
-import { Meteor } from 'meteor/meteor';
 import { Session } from 'meteor/session';
 import Helper from '/client/imports/helper';
 import { Settings } from '/lib/imports/collections';
 import { FlowRouter } from 'meteor/kadira:flow-router';
+import { Communicator } from '/client/imports/facades';
 import Enums from '/lib/imports/enums';
 import { initQueryHistories } from '/client/imports/views/pages/browse_collection/query_histories/query_histories';
 import { AceEditor } from 'meteor/arch:ace-editor';
@@ -200,12 +200,17 @@ const saveQueryHistory = function (queryInfo, queryParams) {
     queryParams = {};
   }
 
-  Meteor.call('saveQueryHistory', {
-    connectionId: Session.get(Helper.strSessionConnection),
-    collectionName: Session.get(Helper.strSessionSelectedCollection),
-    queryName: queryInfo,
-    params: JSON.stringify(queryParams),
-    date: new Date(),
+  Communicator.call({
+    methodName: 'saveQueryHistory',
+    args: {
+      history: {
+        connectionId: Session.get(Helper.strSessionConnection),
+        collectionName: Session.get(Helper.strSessionSelectedCollection),
+        queryName: queryInfo,
+        params: JSON.stringify(queryParams),
+        date: new Date(),
+      }
+    }
   });
 };
 
@@ -503,15 +508,18 @@ const saveFindEditor = function () {
 
       const selectedCollection = Session.get(Helper.strSessionSelectedCollection);
 
-      Meteor.call('saveFindResult', selectedCollection, updateObjects, deletedObjectIds, addedObjects, Meteor.default_connection._lastSessionId, (err) => {
-        if (err) {
-          Helper.showMeteorFuncError(err, null, "Couldn't proceed saving find result");
-        } else {
-          toastr.success('Successfully saved !');
-          $(activeTab).data('findData', activeEditorValue);
+      Communicator.call({
+        methodName: 'saveFindResult',
+        args: { selectedCollection, updateObjects, deletedObjectIds, addedObjects },
+        callback: (err) => {
+          if (err) {
+            Helper.showMeteorFuncError(err, null, "Couldn't proceed saving find result");
+          } else {
+            toastr.success('Successfully saved !');
+            $(activeTab).data('findData', activeEditorValue);
+          }
+          Ladda.stopAll();
         }
-
-        Ladda.stopAll();
       });
     }
   });
@@ -542,14 +550,18 @@ const saveEditor = function () {
 
       const selectedCollection = Session.get(Helper.strSessionSelectedCollection);
       if (doc._id) {
-        Meteor.call('updateOne', selectedCollection, { _id: doc._id }, doc, {}, Meteor.default_connection._lastSessionId, (err, result) => {
-          if (err || result.error) {
-            Helper.showMeteorFuncError(err, result, "Couldn't update document");
-          } else {
-            toastr.success('Successfully updated document');
-          }
+        Communicator.call({
+          methodName: 'updateOne',
+          args: { selectedCollection, selector: { _id: doc._id }, setObject: doc },
+          callback: (err, result) => {
+            if (err || result.error) {
+              Helper.showMeteorFuncError(err, result, "Couldn't update document");
+            } else {
+              toastr.success('Successfully updated document');
+            }
 
-          Ladda.stopAll();
+            Ladda.stopAll();
+          }
         });
       } else {
         toastr.error('Could not find _id of document, save failed !');
@@ -579,19 +591,23 @@ const deleteDocument = function () {
 
       const selectedCollection = Session.get(Helper.strSessionSelectedCollection);
       if (doc._id) {
-        Meteor.call('delete', selectedCollection, { _id: doc._id }, Meteor.default_connection._lastSessionId, (err, result) => {
-          if (err || result.error) {
-            Helper.showMeteorFuncError(err, result, "Couldn't delete document");
-          } else {
-            toastr.success('Successfully deleted document');
-            const tabToRemove = $('#resultTabs').find('li.active');
-            tabToRemove.remove();
-            $(tabToRemove.find('a').attr('href')).remove();
+        Communicator.call({
+          methodName: 'delete',
+          args: { selectedCollection, selector: { _id: doc._id } },
+          callback: (err, result) => {
+            if (err || result.error) {
+              Helper.showMeteorFuncError(err, result, "Couldn't delete document");
+            } else {
+              toastr.success('Successfully deleted document');
+              const tabToRemove = $('#resultTabs').find('li.active');
+              tabToRemove.remove();
+              $(tabToRemove.find('a').attr('href')).remove();
 
-            $('#divBrowseCollectionFooter').hide();
+              $('#divBrowseCollectionFooter').hide();
+            }
+
+            Ladda.stopAll();
           }
-
-          Ladda.stopAll();
         });
       } else {
         toastr.error('Could not find _id of document, delete failed !');
@@ -616,9 +632,12 @@ Template.browseCollection.onRendered(function () {
   this.subscribe('queryHistories');
   this.subscribe('mongoclient_update');
 
-  Meteor.call('checkMongoclientVersion', (err, res) => {
-    if (res) {
-      toastr.info(res, 'Update', { timeOut: 0, extendedTimeOut: 0, preventDuplicates: true });
+  Communicator.call({
+    methodName: 'checkMongoclientVersion',
+    callback: (err, res) => {
+      if (res) {
+        toastr.info(res, 'Update', { timeOut: 0, extendedTimeOut: 0, preventDuplicates: true });
+      }
     }
   });
 

@@ -12,10 +12,10 @@ const Database = function Database() {
   };
 };
 
-function resolveType(type) {
+const resolveType = function (type) {
   if (Object.prototype.toString.call(type) === '[object String]') return this.types[type];
   return type;
-}
+};
 
 Database.prototype = {
   create({ type, document }) {

@@ -14,7 +14,7 @@ const MongoDB = function () {
   this.tunnelsBySessionId = {};
 };
 
-function proceedConnectingMongodb(dbName, sessionId, connectionUrl, connectionOptions, done) {
+const proceedConnectingMongodb = function (dbName, sessionId, connectionUrl, connectionOptions, done) {
   if (!connectionOptions) {
     connectionOptions = {};
   }
@@ -46,9 +46,9 @@ function proceedConnectingMongodb(dbName, sessionId, connectionUrl, connectionOp
       }
     }
   });
-}
+};
 
-function connectThroughTunnel({ connection, sessionId, done, connectionUrl, connectionOptions, username, password }) {
+const connectThroughTunnel = function ({ connection, sessionId, done, connectionUrl, connectionOptions, username, password }) {
   const config = {
     dstPort: connection.ssh.destinationPort,
     localPort: connection.ssh.localPort ? connection.ssh.localPort : connection.servers[0].port,
@@ -80,7 +80,7 @@ function connectThroughTunnel({ connection, sessionId, done, connectionUrl, conn
       this.tunnelsBySessionId[sessionId] = null;
     }
   });
-}
+};
 
 MongoDB.prototype = {
   execute({ selectedCollection, methodArray, sessionId, removeCollectionTopology }) {

@@ -1,7 +1,7 @@
 import { Template } from 'meteor/templating';
-import { Meteor } from 'meteor/meteor';
 import { Session } from 'meteor/session';
 import { FlowRouter } from 'meteor/kadira:flow-router';
+import { Communicator } from '/client/imports/facades';
 import Helper from '/client/imports/helper';
 import { Connections } from '/lib/imports/collections';
 import { initUsers, popEditUserModal } from './manage_users/manage_users';
@@ -32,87 +32,98 @@ const initUserTree = function () {
 
   const runOnAdminDB = $('#aRunOnAdminDBToFetchUsers').iCheck('update')[0].checked;
 
-  Meteor.call('command', command, runOnAdminDB, {}, Meteor.default_connection._lastSessionId, (err, result) => {
-    if (err || result.error) {
-      Helper.showMeteorFuncError(err, result, "Couldn't fetch users");
-    } else {
-      const dbName = runOnAdminDB ? 'admin' : connection.databaseName;
-      const children = populateTreeChildrenForUsers(result.result.users);
-      const finalObject = {
-        core: {
-          data: function (node, callback) {
-            if (node.id === '#') {
-              callback([
-                {
-                  text: dbName,
-                  icon: 'fa fa-database',
-                  data: [{ db: true }],
-                  state: {
-                    opened: true,
+  Communicator.call({
+    methodName: 'command',
+    args: { command, runOnAdminDB },
+    callback: (err, result) => {
+      if (err || result.error) {
+        Helper.showMeteorFuncError(err, result, "Couldn't fetch users");
+      } else {
+        const dbName = runOnAdminDB ? 'admin' : connection.databaseName;
+        const children = populateTreeChildrenForUsers(result.result.users);
+        const finalObject = {
+          core: {
+            data(node, callback) {
+              if (node.id === '#') {
+                callback([
+                  {
+                    text: dbName,
+                    icon: 'fa fa-database',
+                    data: [{ db: true }],
+                    state: {
+                      opened: true,
+                    },
+                    children,
                   },
-                  children: children,
-                },
-              ]);
-            } else if (node.data[0].user) {
-              const userInfoCommand = {
-                usersInfo: { user: node.text, db: dbName },
-                showCredentials: true,
-                showPrivileges: true,
-              };
+                ]);
+              } else if (node.data[0].user) {
+                const userInfoCommand = {
+                  usersInfo: { user: node.text, db: dbName },
+                  showCredentials: true,
+                  showPrivileges: true,
+                };
 
-              Meteor.call('command', userInfoCommand, runOnAdminDB, {}, Meteor.default_connection._lastSessionId, (err, result) => {
-                if (err || result.error) {
-                  Helper.showMeteorFuncError(err, result, "Couldn't fetch userInfo");
-                } else {
-                  callback(populateTreeChildrenForRoles(result.result.users[0]));
-                }
-              });
-            } else if (node.data[0].role) {
-              const roleInfoCommand = {
-                rolesInfo: { role: node.data[0].text, db: dbName },
-                showPrivileges: true,
-                showBuiltinRoles: true,
-              };
+                Communicator.call({
+                  methodName: 'command',
+                  args: { command: userInfoCommand, runOnAdminDB },
+                  callback: (userInfoCommandError, userInfoCommandResult) => {
+                    if (userInfoCommandError || userInfoCommandResult.error) {
+                      Helper.showMeteorFuncError(userInfoCommandError, userInfoCommandResult, "Couldn't fetch userInfo");
+                    } else {
+                      callback(populateTreeChildrenForRoles(userInfoCommandResult.result.users[0]));
+                    }
+                  }
+                });
+              } else if (node.data[0].role) {
+                const roleInfoCommand = {
+                  rolesInfo: { role: node.data[0].text, db: dbName },
+                  showPrivileges: true,
+                  showBuiltinRoles: true,
+                };
 
-              Meteor.call('command', roleInfoCommand, runOnAdminDB, {}, Meteor.default_connection._lastSessionId, (err, result) => {
-                if (err || result.error) {
-                  Helper.showMeteorFuncError(err, result, "Couldn't fetch roleInfo");
-                } else {
-                  callback(populateTreeChildrenForPrivileges(result.result.roles[0]));
-                }
-              });
-            }
+                Communicator.call({
+                  methodName: 'command',
+                  args: { command: roleInfoCommand, runOnAdminDB },
+                  callback: (roleInfoCommandError, roleInfoCommandResult) => {
+                    if (roleInfoCommandError || roleInfoCommandResult.error) {
+                      Helper.showMeteorFuncError(roleInfoCommandError, roleInfoCommandResult, "Couldn't fetch roleInfo");
+                    } else {
+                      callback(populateTreeChildrenForPrivileges(roleInfoCommandResult.result.roles[0]));
+                    }
+                  }
+                });
+              }
+            },
           },
-        },
-      };
+        };
 
-      const tree = $('#userTree');
-      tree.jstree(finalObject);
+        const tree = $('#userTree');
+        tree.jstree(finalObject);
 
-      tree.bind('select_node.jstree', (evt, data) => {
-        $('#btnEditUser').hide();
-        $('#btnManageUsers').hide();
-        $('#btnManageRoles').hide();
+        tree.bind('select_node.jstree', (evt, data) => {
+          $('#btnEditUser').hide();
+          $('#btnManageUsers').hide();
+          $('#btnManageRoles').hide();
 
-        if (loading) {
-          tree.jstree(true).deselect_node(data.node);
-          return;
-        }
+          if (loading) {
+            tree.jstree(true).deselect_node(data.node);
+            return;
+          }
 
-        const node = data.instance.get_node(data.selected[0]);
+          const node = data.instance.get_node(data.selected[0]);
 
-        if (node.text == Session.get(Helper.strSessionSelectionUserManagement)) {
-          return;
-        }
+          if (node.text == Session.get(Helper.strSessionSelectionUserManagement)) {
+            return;
+          }
 
-        // clear texts
-        Session.set(Helper.strSessionUsermanagementInfo, '');
-        Session.set(Helper.strSessionSelectionUserManagement, defaultInformationText);
+          // clear texts
+          Session.set(Helper.strSessionUsermanagementInfo, '');
+          Session.set(Helper.strSessionSelectionUserManagement, defaultInformationText);
 
-        Session.set(Helper.strSessionSelectionUserManagement, getNodeInformation(node));
-      },
-      );
-      Ladda.stopAll();
+          Session.set(Helper.strSessionSelectionUserManagement, getNodeInformation(node));
+        });
+        Ladda.stopAll();
+      }
     }
   });
 };
@@ -151,16 +162,15 @@ const getActionInfo = function (action) {
   Ladda.create(document.querySelector('#btnRefreshUsers')).start();
   loading = true;
 
-  Meteor.call('getActionInfo', action, (err, result) => {
-    if (err) {
-      Session.set(Helper.strSessionUsermanagementInfo, err.message);
-    } else {
-      Session.set(Helper.strSessionUsermanagementInfo, result);
+  Communicator.call({
+    methodName: 'getActionInfo',
+    args: { action },
+    callback: (err, result) => {
+      if (err) Session.set(Helper.strSessionUsermanagementInfo, err.message);
+      else Session.set(Helper.strSessionUsermanagementInfo, result);
+      loading = false;
+      Ladda.stopAll();
     }
-
-    loading = false;
-
-    Ladda.stopAll();
   });
 };
 
@@ -168,16 +178,16 @@ const getResourceInfo = function (resourceType) {
   Ladda.create(document.querySelector('#btnRefreshUsers')).start();
   loading = true;
 
-  Meteor.call('getResourceInfo', resourceType, (err, result) => {
-    if (err) {
-      Session.set(Helper.strSessionUsermanagementInfo, err.message);
-    } else {
-      Session.set(Helper.strSessionUsermanagementInfo, result);
+  Communicator.call({
+    methodName: 'getResourceInfo',
+    args: { resource: resourceType },
+    callback: (err, result) => {
+      if (err) Session.set(Helper.strSessionUsermanagementInfo, err.message);
+      else Session.set(Helper.strSessionUsermanagementInfo, result);
+
+      loading = false;
+      Ladda.stopAll();
     }
-
-    loading = false;
-
-    Ladda.stopAll();
   });
 };
 
@@ -185,15 +195,16 @@ const getRoleInfo = function (role) {
   Ladda.create(document.querySelector('#btnRefreshUsers')).start();
   loading = true;
 
-  Meteor.call('getRoleInfo', role, (err, result) => {
-    if (err) {
-      Session.set(Helper.strSessionUsermanagementInfo, err.message);
-    } else {
-      Session.set(Helper.strSessionUsermanagementInfo, result);
-    }
+  Communicator.call({
+    methodName: 'getRoleInfo',
+    args: { roleName: role },
+    callback: (err, result) => {
+      if (err) Session.set(Helper.strSessionUsermanagementInfo, err.message);
+      else Session.set(Helper.strSessionUsermanagementInfo, result);
 
-    loading = false;
-    Ladda.stopAll();
+      loading = false;
+      Ladda.stopAll();
+    }
   });
 };
 

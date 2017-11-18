@@ -1,5 +1,6 @@
 import { Template } from 'meteor/templating';
 import { Meteor } from 'meteor/meteor';
+import { Communicator } from '/client/imports/facades';
 import { Session } from 'meteor/session';
 import Helper from '/client/imports/helper';
 import Enums from '/lib/imports/enums';
@@ -15,7 +16,7 @@ import './stats.html';
 const getOptions = function () {
   const result = {};
 
-  if ($.inArray('SCALE', Session.get(Helper.strSessionSelectedOptions)) != -1) {
+  if ($.inArray('SCALE', Session.get(Helper.strSessionSelectedOptions)) !== -1) {
     const scale = $('#inputScale').val();
     if (scale) {
       result[Enums.STATS_OPTIONS.SCALE] = parseInt(scale);
@@ -56,8 +57,12 @@ Template.stats.executeQuery = function (historyParams) {
     options,
   };
 
-  Meteor.call('stats', selectedCollection, options, Meteor.default_connection._lastSessionId, (err, result) => {
-    Helper.renderAfterQueryExecution(err, result, false, 'stats', params, (!historyParams));
+  Communicator.call({
+    methodName: 'stats',
+    args: { selectedCollection, options },
+    callback: (err, result) => {
+      Helper.renderAfterQueryExecution(err, result, false, 'stats', params, (!historyParams));
+    }
   });
 };
 

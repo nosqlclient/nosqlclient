@@ -9,7 +9,7 @@ const mongodbApi = require('mongodb');
 const MongoDBGridFS = function () {
 };
 
-function tryDownloadingFile(sessionId, bucketName, fileId, res, metadataToLog) {
+const tryDownloadingFile = function (sessionId, bucketName, fileId, res, metadataToLog) {
   try {
     const filesCollection = MongoDB.dbObjectsBySessionId[sessionId].collection(`${bucketName}.files`);
     filesCollection.find({ _id: new mongodbApi.ObjectId(fileId) }).limit(1).next((err, doc) => {
@@ -32,7 +32,7 @@ function tryDownloadingFile(sessionId, bucketName, fileId, res, metadataToLog) {
     res.writeHead(500);
     res.end(`Unexpected error: ${exception.message}`);
   }
-}
+};
 
 MongoDBGridFS.prototype = {
   deleteFiles({ bucketName, selector, sessionId }) {

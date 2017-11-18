@@ -1,11 +1,10 @@
 /**
  * Created by sercan on 14.04.2016.
  */
-/* global _ */
-/* global swal */
+/* global _ swal */
 import { Template } from 'meteor/templating';
-import { Meteor } from 'meteor/meteor';
 import { Session } from 'meteor/session';
+import { Communicator } from '/client/imports/facades';
 import Helper from '/client/imports/helper';
 import { Connections } from '/lib/imports/collections';
 import './manage_roles.html';
@@ -28,23 +27,27 @@ const popEditRoleModal = function (role) {
     showPrivileges: true,
   };
 
-  Meteor.call('command', rolesInfoCommand, runOnAdminDB, {}, Meteor.default_connection._lastSessionId, (err, result) => {
-    if (err || result.error) {
-      Helper.showMeteorFuncError(err, result, "Couldn't fetch roleInfo");
-    } else {
-      const role = result.result.roles[0];
-      populateRolePrivilegesTable(role);
-      populateRolesToInheritTable(role);
+  Communicator.call({
+    methodName: 'command',
+    args: { command: rolesInfoCommand, runOnAdminDB },
+    callback: (err, result) => {
+      if (err || result.error) {
+        Helper.showMeteorFuncError(err, result, "Couldn't fetch roleInfo");
+      } else {
+        const role = result.result.roles[0];
+        populateRolePrivilegesTable(role);
+        populateRolesToInheritTable(role);
 
-      const inputRoleNameSelector = $('#inputRoleUM');
-      inputRoleNameSelector.val(role.role);
-      inputRoleNameSelector.prop('disabled', true);
+        const inputRoleNameSelector = $('#inputRoleUM');
+        inputRoleNameSelector.val(role.role);
+        inputRoleNameSelector.prop('disabled', true);
 
 
-      $('#editRoleModal').modal('show');
+        $('#editRoleModal').modal('show');
+      }
+
+      Ladda.stopAll();
     }
-
-    Ladda.stopAll();
   });
 };
 
@@ -205,56 +208,14 @@ const initResourcesForPrivileges = function (dbToSelect, collectionToSelect) {
 
   const cmbDBGroup = cmb.find('#optDB');
 
-  Meteor.call('getDatabases', Meteor.default_connection._lastSessionId, (err, result) => {
-    if (err || result.error) {
-      Helper.showMeteorFuncError(err, result, "Couldn't fetch databases");
-    } else {
-      for (let i = 0; i < result.result.length; i++) {
-        cmbDBGroup.append($('<option></option>')
-          .attr('value', result.result[i].name)
-          .text(result.result[i].name));
-      }
-    }
-
-    cmb.chosen({
-      create_option: true,
-      allow_single_deselect: true,
-      persistent_create_option: true,
-      skip_no_results: true,
-    });
-
-    if (dbToSelect) {
-      if (dbToSelect != 'anyResource' && dbToSelect != 'cluster' &&
-                cmbDBGroup.find(`option[value = ${dbToSelect}]`).length == 0) {
-        cmbDBGroup.append($('<option></option>')
-          .attr('value', dbToSelect)
-          .text(dbToSelect));
-      }
-
-      cmb.val(dbToSelect);
-    }
-    cmb.trigger('chosen:updated');
-
-    // empty combobox first.
-    initCollectionsForPrivilege(collectionToSelect);
-  });
-};
-
-const initCollectionsForPrivilege = function (collectionToSelect, db, stopLadda) {
-  const cmb = $('#cmbPrivilegeCollection');
-  cmb.empty();
-  cmb.prepend("<option value=''></option>");
-
-  cmb.append($("<optgroup id='optCollections' label='Collections'></optgroup>"));
-  const cmbGroup = cmb.find('#optCollections');
-
-  if (db) {
-    Meteor.call('listCollectionNames', db, Meteor.default_connection._lastSessionId, (err, result) => {
+  Communicator.call({
+    methodName: 'getDatabases',
+    callback: (err, result) => {
       if (err || result.error) {
-        Helper.showMeteorFuncError(err, result, "Couldn't fetch collection names");
+        Helper.showMeteorFuncError(err, result, "Couldn't fetch databases");
       } else {
         for (let i = 0; i < result.result.length; i++) {
-          cmbGroup.append($('<option></option>')
+          cmbDBGroup.append($('<option></option>')
             .attr('value', result.result[i].name)
             .text(result.result[i].name));
         }
@@ -267,18 +228,67 @@ const initCollectionsForPrivilege = function (collectionToSelect, db, stopLadda)
         skip_no_results: true,
       });
 
-      if (collectionToSelect) {
-        if (cmbGroup.find(`option[value = ${collectionToSelect}]`).length == 0) {
-          cmbGroup.append($('<option></option>')
-            .attr('value', collectionToSelect)
-            .text(collectionToSelect));
+      if (dbToSelect) {
+        if (dbToSelect != 'anyResource' && dbToSelect != 'cluster' &&
+          cmbDBGroup.find(`option[value = ${dbToSelect}]`).length == 0) {
+          cmbDBGroup.append($('<option></option>')
+            .attr('value', dbToSelect)
+            .text(dbToSelect));
         }
-        cmb.val(collectionToSelect);
+
+        cmb.val(dbToSelect);
       }
       cmb.trigger('chosen:updated');
 
-      if (stopLadda) {
-        Ladda.stopAll();
+      // empty combobox first.
+      initCollectionsForPrivilege(collectionToSelect);
+    }
+  });
+};
+
+const initCollectionsForPrivilege = function (collectionToSelect, db, stopLadda) {
+  const cmb = $('#cmbPrivilegeCollection');
+  cmb.empty();
+  cmb.prepend("<option value=''></option>");
+
+  cmb.append($("<optgroup id='optCollections' label='Collections'></optgroup>"));
+  const cmbGroup = cmb.find('#optCollections');
+
+  if (db) {
+    Communicator.call({
+      methodName: 'listCollectionNames',
+      args: { dbName: db },
+      callback: (err, result) => {
+        if (err || result.error) {
+          Helper.showMeteorFuncError(err, result, "Couldn't fetch collection names");
+        } else {
+          for (let i = 0; i < result.result.length; i++) {
+            cmbGroup.append($('<option></option>')
+              .attr('value', result.result[i].name)
+              .text(result.result[i].name));
+          }
+        }
+
+        cmb.chosen({
+          create_option: true,
+          allow_single_deselect: true,
+          persistent_create_option: true,
+          skip_no_results: true,
+        });
+
+        if (collectionToSelect) {
+          if (cmbGroup.find(`option[value = ${collectionToSelect}]`).length == 0) {
+            cmbGroup.append($('<option></option>')
+              .attr('value', collectionToSelect)
+              .text(collectionToSelect));
+          }
+          cmb.val(collectionToSelect);
+        }
+        cmb.trigger('chosen:updated');
+
+        if (stopLadda) {
+          Ladda.stopAll();
+        }
       }
     });
   } else {
@@ -310,36 +320,39 @@ const initActionsForPrivilege = function (actions) {
   const cmb = $('#cmbActionsOfPrivilege');
   cmb.empty();
 
-  Meteor.call('getAllActions', (err, result) => {
-    if (err || result.error) {
-      Helper.showMeteorFuncError(err, result, "Couldn't fetch actions from docs.mongodb.org");
-    } else {
-      for (let i = 0; i < result.length; i++) {
-        cmb.append($('<option></option>')
-          .attr('value', result[i])
-          .text(result[i]));
-      }
-    }
-
-    cmb.chosen({
-      create_option: true,
-      persistent_create_option: true,
-      skip_no_results: true,
-    });
-
-    if (actions) {
-      for (let j = 0; j < actions.length; j++) {
-        if (cmb.find(`option[value = ${actions[j]}]`).length == 0) {
+  Communicator.call({
+    methodName: 'getAllActions',
+    callback: (err, result) => {
+      if (err || result.error) {
+        Helper.showMeteorFuncError(err, result, "Couldn't fetch actions from docs.mongodb.org");
+      } else {
+        for (let i = 0; i < result.length; i++) {
           cmb.append($('<option></option>')
-            .attr('value', actions[j])
-            .text(actions[j]));
+            .attr('value', result[i])
+            .text(result[i]));
         }
       }
-      cmb.val(actions);
-    }
 
-    cmb.trigger('chosen:updated');
-    Ladda.stopAll();
+      cmb.chosen({
+        create_option: true,
+        persistent_create_option: true,
+        skip_no_results: true,
+      });
+
+      if (actions) {
+        for (let j = 0; j < actions.length; j++) {
+          if (cmb.find(`option[value = ${actions[j]}]`).length == 0) {
+            cmb.append($('<option></option>')
+              .attr('value', actions[j])
+              .text(actions[j]));
+          }
+        }
+        cmb.val(actions);
+      }
+
+      cmb.trigger('chosen:updated');
+      Ladda.stopAll();
+    }
   });
 };
 
@@ -347,25 +360,28 @@ const initDatabasesForInheritRole = function () {
   const cmb = $('#cmbDatabasesForInheritRole');
   cmb.empty();
 
-  Meteor.call('getDatabases', Meteor.default_connection._lastSessionId, (err, result) => {
-    if (err || result.error) {
-      Helper.showMeteorFuncError(err, result, "Couldn't fetch databases");
-    } else {
-      for (let i = 0; i < result.result.length; i++) {
-        cmb.append($('<option></option>')
-          .attr('value', result.result[i].name)
-          .text(result.result[i].name));
+  Communicator.call({
+    methodName: 'getDatabases',
+    callback: (err, result) => {
+      if (err || result.error) {
+        Helper.showMeteorFuncError(err, result, "Couldn't fetch databases");
+      } else {
+        for (let i = 0; i < result.result.length; i++) {
+          cmb.append($('<option></option>')
+            .attr('value', result.result[i].name)
+            .text(result.result[i].name));
+        }
       }
+
+      cmb.chosen({
+        create_option: true,
+        persistent_create_option: true,
+        skip_no_results: true,
+      });
+
+      cmb.trigger('chosen:updated');
+      initRolesForDBForInheritRole();
     }
-
-    cmb.chosen({
-      create_option: true,
-      persistent_create_option: true,
-      skip_no_results: true,
-    });
-
-    cmb.trigger('chosen:updated');
-    initRolesForDBForInheritRole();
   });
 };
 
@@ -375,28 +391,29 @@ const initRolesForDBForInheritRole = function () {
   cmb.prepend("<option value=''></option>");
 
   const runOnAdminDB = $('#aRunOnAdminDBToFetchUsers').iCheck('update')[0].checked;
-  Meteor.call('command', {
-    rolesInfo: 1,
-    showBuiltinRoles: true,
-  }, runOnAdminDB, {}, Meteor.default_connection._lastSessionId, (err, result) => {
-    if (err || result.error) {
-      Helper.showMeteorFuncError(err, result, "Couldn't fetch roles, please enter one manually");
-    } else {
-      for (let i = 0; i < result.result.roles.length; i++) {
-        cmb.append($('<option></option>')
-          .attr('value', result.result.roles[i].role)
-          .text(result.result.roles[i].role));
+  Communicator.call({
+    methodName: 'command',
+    args: { command: { rolesInfo: 1, showBuiltinRoles: true }, runOnAdminDB },
+    callback: (err, result) => {
+      if (err || result.error) {
+        Helper.showMeteorFuncError(err, result, "Couldn't fetch roles, please enter one manually");
+      } else {
+        for (let i = 0; i < result.result.roles.length; i++) {
+          cmb.append($('<option></option>')
+            .attr('value', result.result.roles[i].role)
+            .text(result.result.roles[i].role));
+        }
       }
+
+      cmb.chosen({
+        create_option: true,
+        persistent_create_option: true,
+        skip_no_results: true,
+      });
+
+      cmb.trigger('chosen:updated');
+      Ladda.stopAll();
     }
-
-    cmb.chosen({
-      create_option: true,
-      persistent_create_option: true,
-      skip_no_results: true,
-    });
-
-    cmb.trigger('chosen:updated');
-    Ladda.stopAll();
   });
 };
 
@@ -438,52 +455,54 @@ export const initRoles = function () {
 
   const runOnAdminDB = $('#aRunOnAdminDBToFetchUsers').iCheck('update')[0].checked;
 
-  Meteor.call('command', command, runOnAdminDB, {}, Meteor.default_connection._lastSessionId, (err, result) => {
-    if (err || result.error) {
-      Helper.showMeteorFuncError(err, result, "Couldn't fetch roles");
-    } else {
-      const tblRoles = $('#tblRoles');
-      // destroy jquery datatable to prevent reinitialization (https://datatables.net/manual/tech-notes/3)
-      if ($.fn.dataTable.isDataTable('#tblRoles')) {
-        tblRoles.DataTable().destroy();
+  Communicator.call({
+    methodName: 'command',
+    args: { command, runOnAdminDB },
+    callback: (err, result) => {
+      if (err || result.error) {
+        Helper.showMeteorFuncError(err, result, "Couldn't fetch roles");
+      } else {
+        const tblRoles = $('#tblRoles');
+        // destroy jquery datatable to prevent reinitialization (https://datatables.net/manual/tech-notes/3)
+        if ($.fn.dataTable.isDataTable('#tblRoles')) {
+          tblRoles.DataTable().destroy();
+        }
+        tblRoles.DataTable({
+          responsive: true,
+          data: result.result.roles,
+          columns: [
+            { data: 'role', width: '35%' },
+            { data: 'db', width: '35%' },
+            { data: 'isBuiltin', width: '20%' },
+          ],
+          columnDefs: [
+            {
+              targets: [3],
+              data: null,
+              width: '5%',
+              render(data, type, full) {
+                if (!full.isBuiltin) {
+                  return '<a href="" title="Edit" class="editor_edit"><i class="fa fa-edit text-navy"></i></a>';
+                }
+                return '<a href="" title="View" class="editor_edit"><i class="fa fa-eye text-navy"></i></a>';
+              },
+            },
+            {
+              targets: [4],
+              data: null,
+              width: '5%',
+              render(data, type, full) {
+                if (!full.isBuiltin) {
+                  return '<a href="" title="Delete" class="editor_delete_role"><i class="fa fa-remove text-navy"></i></a>';
+                }
+                return '<a href="" title="Not Allowed"><i class="fa fa-ban text-navy"></i></a>';
+              },
+            },
+          ],
+        });
       }
-      tblRoles.DataTable({
-        responsive: true,
-        data: result.result.roles,
-        columns: [
-          { data: 'role', width: '35%' },
-          { data: 'db', width: '35%' },
-          { data: 'isBuiltin', width: '20%' },
-        ],
-        columnDefs: [
-          {
-            targets: [3],
-            data: null,
-            width: '5%',
-            render(data, type, full) {
-              if (!full.isBuiltin) {
-                return '<a href="" title="Edit" class="editor_edit"><i class="fa fa-edit text-navy"></i></a>';
-              }
-              return '<a href="" title="View" class="editor_edit"><i class="fa fa-eye text-navy"></i></a>';
-            },
-          },
-          {
-            targets: [4],
-            data: null,
-            width: '5%',
-            render(data, type, full) {
-              if (!full.isBuiltin) {
-                return '<a href="" title="Delete" class="editor_delete_role"><i class="fa fa-remove text-navy"></i></a>';
-              }
-              return '<a href="" title="Not Allowed"><i class="fa fa-ban text-navy"></i></a>';
-            },
-          },
-        ],
-      });
+      Ladda.stopAll();
     }
-
-
-    Ladda.stopAll();
   });
 };
 
@@ -526,12 +545,16 @@ Template.manageRoles.events({
         const command = { dropRole: Session.get(Helper.strSessionUsermanagementRole).role };
         const runOnAdminDB = $('#aRunOnAdminDBToFetchUsers').iCheck('update')[0].checked;
 
-        Meteor.call('command', command, runOnAdminDB, {}, Meteor.default_connection._lastSessionId, (err, result) => {
-          if (err || result.error) {
-            Helper.showMeteorFuncError(err, result, "Couldn't drop role");
-          } else {
-            initRoles();
-            toastr.success('Successfuly dropped role !');
+        Communicator.call({
+          methodName: 'command',
+          args: { command, runOnAdminDB },
+          callback: (err, result) => {
+            if (err || result.error) {
+              Helper.showMeteorFuncError(err, result, "Couldn't drop role");
+            } else {
+              initRoles();
+              toastr.success('Successfuly dropped role !');
+            }
           }
         });
       }
@@ -647,20 +670,22 @@ Template.manageRoles.events({
 
     const runOnAdminDB = $('#aRunOnAdminDBToFetchUsers').iCheck('update')[0].checked;
 
-    Meteor.call('command', command, runOnAdminDB, {}, Meteor.default_connection._lastSessionId, (err, result) => {
-      if (err || result.error) {
-        Helper.showMeteorFuncError(err, result, "Couldn't update role");
-      } else {
-        initRoles();
-        if ($('#addEditRoleModalTitle').text() == 'Edit Role') {
-          toastr.success('Successfuly updated role !');
+    Communicator.call({
+      methodName: 'command',
+      args: { command, runOnAdminDB },
+      callback: (err, result) => {
+        if (err || result.error) {
+          Helper.showMeteorFuncError(err, result, "Couldn't update role");
         } else {
-          toastr.success('Successfuly added role !');
-        }
-        $('#editRoleModal').modal('hide');
-      }
+          initRoles();
+          if ($('#addEditRoleModalTitle').text() === 'Edit Role') toastr.success('Successfuly updated role !');
+          else toastr.success('Successfuly added role !');
 
-      Ladda.stopAll();
+          $('#editRoleModal').modal('hide');
+        }
+
+        Ladda.stopAll();
+      }
     });
   },
 

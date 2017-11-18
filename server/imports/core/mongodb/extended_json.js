@@ -40,14 +40,14 @@ const convertJsonDocumentToBson = function (doc) {
   else if (doc.$undefined) return undefined;
 };
 
-function isBsonDocConvertible(param) {
+const isBsonDocConvertible = function (param) {
   return param !== null && (typeof param === 'object') &&
   Object.prototype.toString.call(param) !== '[object Array]' && convertBsonDocumentToJson(param);
-}
+};
 
-function isJsonDocConvertible(param) {
+const isJsonDocConvertible = function (param) {
   return param !== null && Object.prototype.toString.call(param) === '[object Object]' && convertJsonDocumentToBson(param);
-}
+};
 
 ExtendedJSON.prototype = {
   convertBSONtoJSON(obj) {

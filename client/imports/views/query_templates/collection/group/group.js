@@ -1,9 +1,9 @@
 /**
  * Created by Sercan on 10.12.2016.
  */
-/* global _ */
 import { Template } from 'meteor/templating';
 import { Meteor } from 'meteor/meteor';
+import { Communicator } from '/client/imports/facades';
 import { Session } from 'meteor/session';
 import Helper from '/client/imports/helper';
 import { initExecuteQuery } from '/client/imports/views/pages/browse_collection/browse_collection';
@@ -84,8 +84,12 @@ Template.group.executeQuery = function (historyParams) {
     command,
   };
 
-  Meteor.call('group', selectedCollection, keys, condition, initial, reduce, finalize, command, Meteor.default_connection._lastSessionId, (err, result) => {
-    Helper.renderAfterQueryExecution(err, result, false, 'group', params, (!historyParams));
+  Communicator.call({
+    methodName: 'group',
+    args: { selectedCollection, keys, condition, initial, reduce, finalize, command },
+    callback: (err, result) => {
+      Helper.renderAfterQueryExecution(err, result, false, 'group', params, (!historyParams));
+    }
   });
 };
 

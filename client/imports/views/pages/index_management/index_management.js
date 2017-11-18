@@ -1,12 +1,12 @@
 import { Template } from 'meteor/templating';
-import { Meteor } from 'meteor/meteor';
 import { Session } from 'meteor/session';
 import Helper from '/client/imports/helper';
-import './index_management.html';
+import { Communicator } from '/client/imports/facades';
 import { FlowRouter } from 'meteor/kadira:flow-router';
+import { Settings } from '/lib/imports/collections';
 import { prepareFormForView } from './add_index/add_index';
 import { initialize } from './view_raw/view_raw';
-import { Settings } from '/lib/imports/collections';
+import './index_management.html';
 
 /* global moment */
 /* global swal */
@@ -21,24 +21,36 @@ export const initIndexes = function () {
   }
 
   Ladda.create(document.querySelector('#btnAddIndex')).start();
-  Meteor.call('indexInformation', selectedCollection, true, Meteor.default_connection._lastSessionId, (err, indexInformation) => {
-    if (err || indexInformation.error) {
-      Helper.showMeteorFuncError(err, indexInformation, "Couldn't fetch indexes");
-      Ladda.stopAll();
-    } else {
-      Meteor.call('stats', selectedCollection, {}, Meteor.default_connection._lastSessionId, (statsErr, stats) => {
-        if (statsErr || stats.error) {
-          Helper.showMeteorFuncError(statsErr, stats, "Couldn't fetch indexes");
-          Ladda.stopAll();
-        } else {
-          Meteor.call('aggregate', selectedCollection, [{ $indexStats: {} }], {}, Meteor.default_connection._lastSessionId, (aggregateErr, indexStats) => {
-            const data = populateTableData(indexInformation, stats, indexStats);
+  Communicator.call({
+    methodName: 'indexInformation',
+    args: { selectedCollection, isFull: true },
+    callback: (err, indexInformation) => {
+      if (err || indexInformation.error) {
+        Helper.showMeteorFuncError(err, indexInformation, "Couldn't fetch indexes");
+        Ladda.stopAll();
+      } else {
+        Communicator.call({
+          methodName: 'stats',
+          args: { selectedCollection },
+          callback: (statsErr, stats) => {
+            if (statsErr || stats.error) {
+              Helper.showMeteorFuncError(statsErr, stats, "Couldn't fetch indexes");
+              Ladda.stopAll();
+            } else {
+              Communicator.call({
+                methodName: 'aggregate',
+                args: { selectedCollection, pipeline: [{ $indexStats: {} }] },
+                callback: (aggregateErr, indexStats) => {
+                  const data = populateTableData(indexInformation, stats, indexStats);
 
-            initializeIndexesTable(data);
-            Ladda.stopAll();
-          });
-        }
-      });
+                  initializeIndexesTable(data);
+                  Ladda.stopAll();
+                }
+              });
+            }
+          }
+        });
+      }
     }
   });
 };
@@ -277,15 +289,19 @@ Template.indexManagement.events({
       }, (isConfirm) => {
         if (isConfirm) {
           Ladda.create(document.querySelector('#btnAddIndex')).start();
-          Meteor.call('dropIndex', selectedCollection, indexName, Meteor.default_connection._lastSessionId, (err, result) => {
-            if (err || result.error) {
-              Helper.showMeteorFuncError(err, result, "Couldn't drop index");
-            } else {
-              toastr.success(`Successfully dropped index: ${indexName}`);
-              initIndexes();
-            }
+          Communicator.call({
+            methodName: 'dropIndex',
+            args: { selectedCollection, indexName },
+            callback: (err, result) => {
+              if (err || result.error) {
+                Helper.showMeteorFuncError(err, result, "Couldn't drop index");
+              } else {
+                toastr.success(`Successfully dropped index: ${indexName}`);
+                initIndexes();
+              }
 
-            Ladda.stopAll();
+              Ladda.stopAll();
+            }
           });
         }
       });

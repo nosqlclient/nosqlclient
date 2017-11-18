@@ -1,5 +1,6 @@
 import { Template } from 'meteor/templating';
 import { Meteor } from 'meteor/meteor';
+import { Communicator } from '/client/imports/facades';
 import { Session } from 'meteor/session';
 import Helper from '/client/imports/helper';
 import Enums from '/lib/imports/enums';
@@ -36,12 +37,12 @@ Template.geoHaystackSearch.executeQuery = function (historyParams) {
   const selectedCollection = Session.get(Helper.strSessionSelectedCollection);
   let xAxis = historyParams ? historyParams.xAxis : $('#inputXAxis').val();
   if (xAxis) {
-    xAxis = parseInt(xAxis);
+    xAxis = parseInt(xAxis, 10);
   }
 
   let yAxis = historyParams ? historyParams.yAxis : $('#inputYAxis').val();
   if (yAxis) {
-    yAxis = parseInt(yAxis);
+    yAxis = parseInt(yAxis, 10);
   }
 
   const options = historyParams ? historyParams.options : getOptions();
@@ -58,8 +59,12 @@ Template.geoHaystackSearch.executeQuery = function (historyParams) {
     options,
   };
 
-  Meteor.call('geoHaystackSearch', selectedCollection, xAxis, yAxis, options, Meteor.default_connection._lastSessionId, (err, result) => {
-    Helper.renderAfterQueryExecution(err, result, false, 'geoHaystackSearch', params, (!historyParams));
+  Communicator.call({
+    methodName: 'geoHaystackSearch',
+    args: { selectedCollection, xAxis, yAxis, options },
+    callback: (err, result) => {
+      Helper.renderAfterQueryExecution(err, result, false, 'geoHaystackSearch', params, (!historyParams));
+    }
   });
 };
 

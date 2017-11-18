@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { MongoDB } from '/server/imports/core';
 
 Meteor.methods({
-  listCollectionNames(dbName, sessionId) {
+  listCollectionNames({ dbName, sessionId }) {
     const methodArray = [
       {
         db: [dbName],
@@ -13,7 +13,7 @@ Meteor.methods({
     return MongoDB.executeAdmin({ methodArray, sessionId });
   },
 
-  getDatabases(sessionId) {
+  getDatabases({ sessionId }) {
     const methodArray = [
       {
         listDatabases: []
@@ -25,11 +25,11 @@ Meteor.methods({
     return result;
   },
 
-  disconnect(sessionId) {
+  disconnect({ sessionId }) {
     MongoDB.disconnect({ sessionId });
   },
 
-  connect(connectionId, username, password, sessionId) {
+  connect({ connectionId, username, password, sessionId }) {
     return MongoDB.connect({ connectionId, username, password, sessionId });
   }
 });

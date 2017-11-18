@@ -1,7 +1,7 @@
 import { Template } from 'meteor/templating';
-import { Meteor } from 'meteor/meteor';
 import { Session } from 'meteor/session';
 import { FlowRouter } from 'meteor/kadira:flow-router';
+import { Communicator } from '/client/imports/facades';
 import Helper from '/client/imports/helper';
 import './stored_functions.html';
 
@@ -12,42 +12,46 @@ const Ladda = require('ladda');
 const init = function (isRefresh) {
   Ladda.create(document.querySelector('#btnAddNewStoredFunction')).start();
 
-  Meteor.call('find', 'system.js', {}, {}, false, Meteor.default_connection._lastSessionId, (err, result) => {
-    if (err || result.error) {
-      Helper.showMeteorFuncError(err, result, "Couldn't fetch stored functions");
-    } else {
-      const tblStoredFunctions = $('#tblStoredFunctions');
-      if ($.fn.dataTable.isDataTable('#tblStoredFunctions')) {
-        tblStoredFunctions.DataTable().destroy();
+  Communicator.call({
+    methodName: 'find',
+    args: { selectedCollection: 'system.js' },
+    callback: (err, result) => {
+      if (err || result.error) {
+        Helper.showMeteorFuncError(err, result, "Couldn't fetch stored functions");
+      } else {
+        const tblStoredFunctions = $('#tblStoredFunctions');
+        if ($.fn.dataTable.isDataTable('#tblStoredFunctions')) {
+          tblStoredFunctions.DataTable().destroy();
+        }
+        tblStoredFunctions.DataTable({
+          responsive: true,
+          data: result.result,
+          columns: [
+            { data: '_id' },
+            { data: 'value.$code', sClass: 'hide_column' },
+          ],
+          columnDefs: [
+            {
+              targets: [2],
+              data: null,
+              width: '5%',
+              defaultContent: '<a href="" title="Show/Edit" class="editor_edit"><i class="fa fa-pencil text-navy"></i></a>',
+            },
+            {
+              targets: [3],
+              data: null,
+              width: '5%',
+              defaultContent: '<a href="" title="Delete" class="editor_delete"><i class="fa fa-remove text-navy"></i></a>',
+            },
+          ],
+        });
+        if (isRefresh) {
+          toastr.success('Successfully refreshed !');
+        }
       }
-      tblStoredFunctions.DataTable({
-        responsive: true,
-        data: result.result,
-        columns: [
-          { data: '_id' },
-          { data: 'value.$code', sClass: 'hide_column' },
-        ],
-        columnDefs: [
-          {
-            targets: [2],
-            data: null,
-            width: '5%',
-            defaultContent: '<a href="" title="Show/Edit" class="editor_edit"><i class="fa fa-pencil text-navy"></i></a>',
-          },
-          {
-            targets: [3],
-            data: null,
-            width: '5%',
-            defaultContent: '<a href="" title="Delete" class="editor_delete"><i class="fa fa-remove text-navy"></i></a>',
-          },
-        ],
-      });
-      if (isRefresh) {
-        toastr.success('Successfully refreshed !');
-      }
-    }
 
-    Ladda.stopAll();
+      Ladda.stopAll();
+    }
   });
 };
 
@@ -111,29 +115,37 @@ Template.storedFunctions.events({
     Ladda.create(document.querySelector('#btnSaveStoredFunction')).start();
     if (modal.data('selected')) {
       // edit
-      Meteor.call('updateOne', 'system.js', { _id: data._id }, objectToSave, {}, Meteor.default_connection._lastSessionId, (err, result) => {
-        if (err || result.error) {
-          Helper.showMeteorFuncError(err, result, "Couldn't save");
-        } else {
-          toastr.success('Successfuly updated !');
-          modal.modal('hide');
-          init();
-        }
+      Communicator.call({
+        methodName: 'updateOne',
+        args: { selectedCollection: 'system.js', selector: { _id: data._id }, setObject: objectToSave },
+        callback: (err, result) => {
+          if (err || result.error) {
+            Helper.showMeteorFuncError(err, result, "Couldn't save");
+          } else {
+            toastr.success('Successfuly updated !');
+            modal.modal('hide');
+            init();
+          }
 
-        Ladda.stopAll();
+          Ladda.stopAll();
+        }
       });
     } else {
       // add
-      Meteor.call('insertMany', 'system.js', [objectToSave], {}, Meteor.default_connection._lastSessionId, (err, result) => {
-        if (err || result.error) {
-          Helper.showMeteorFuncError(err, result, "Couldn't insert");
-        } else {
-          toastr.success('Successfuly added new function !');
-          modal.modal('hide');
-          init();
-        }
+      Communicator.call({
+        methodName: 'insertMany',
+        args: { selectedCollection: 'system.js', docs: [objectToSave] },
+        callback: (err, result) => {
+          if (err || result.error) {
+            Helper.showMeteorFuncError(err, result, "Couldn't insert");
+          } else {
+            toastr.success('Successfuly added new function !');
+            modal.modal('hide');
+            init();
+          }
 
-        Ladda.stopAll();
+          Ladda.stopAll();
+        }
       });
     }
   },
@@ -168,15 +180,20 @@ Template.storedFunctions.events({
       }, (isConfirm) => {
         if (isConfirm) {
           Ladda.create(document.querySelector('#btnAddNewStoredFunction')).start();
-          Meteor.call('delete', 'system.js', { _id: name }, Meteor.default_connection._lastSessionId, (err, result) => {
-            if (err || result.error) {
-              Helper.showMeteorFuncError(err, result, "Couldn't delete");
-            } else {
-              toastr.success('Successfuly deleted !');
-              init();
-            }
 
-            Ladda.stopAll();
+          Communicator.call({
+            methodName: 'delete',
+            args: { selectedCollection: 'system.js', selector: { _id: name } },
+            callback: (err, result) => {
+              if (err || result.error) {
+                Helper.showMeteorFuncError(err, result, "Couldn't delete");
+              } else {
+                toastr.success('Successfuly deleted !');
+                init();
+              }
+
+              Ladda.stopAll();
+            }
           });
         }
       });

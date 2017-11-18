@@ -5,6 +5,7 @@ import { Template } from 'meteor/templating';
 import { Meteor } from 'meteor/meteor';
 import { Session } from 'meteor/session';
 import { FlowRouter } from 'meteor/kadira:flow-router';
+import { Communicator } from '/client/imports/facades';
 import Helper from '/client/imports/helper';
 import { SchemaAnalyzeResult } from '/lib/imports/collections';
 import './schema_analyzer.html';
@@ -142,7 +143,7 @@ Template.schemaAnalyzer.onRendered(function () {
           const jsonData = Helper.convertAndCheckJSON(fields.message);
           if (jsonData.ERROR) {
             toastr.error(fields.message);
-            Meteor.call('removeSchemaAnalyzeResult', Meteor.default_connection._lastSessionId);
+            Communicator.call({ methodName: 'removeSchemaAnalyzeResult' });
             Ladda.stopAll();
             return;
           }
@@ -159,7 +160,7 @@ Template.schemaAnalyzer.onRendered(function () {
 });
 
 Template.schemaAnalyzer.onDestroyed(() => {
-  Meteor.call('removeSchemaAnalyzeResult', Meteor.default_connection._lastSessionId);
+  Communicator.call({ methodName: 'removeSchemaAnalyzeResult' });
 });
 
 Template.schemaAnalyzer.events({
@@ -176,13 +177,20 @@ Template.schemaAnalyzer.events({
 
     Ladda.create(document.querySelector('#btnAnalyzeNow')).start();
 
-    Meteor.call('analyzeSchema', Session.get(Helper.strSessionConnection), Session.get(Helper.strSessionPromptedUsername),
-      Session.get(Helper.strSessionPromptedPassword), collection, Meteor.default_connection._lastSessionId, (err) => {
+    Communicator.call({
+      methodName: 'analyzeSchema',
+      args: {
+        connectionId: Session.get(Helper.strSessionConnection),
+        username: Session.get(Helper.strSessionPromptedUsername),
+        password: Session.get(Helper.strSessionPromptedPassword),
+        collection
+      },
+      callback: (err) => {
         if (err) {
           Helper.showMeteorFuncError(err, null, "Couldn't analyze collection");
         }
       }
-    );
+    });
   },
 
 });

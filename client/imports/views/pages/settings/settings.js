@@ -1,5 +1,6 @@
 import { Template } from 'meteor/templating';
 import { Settings } from '/lib/imports/collections';
+import { Communicator } from '/client/imports/facades';
 import Helper from '/client/imports/helper';
 import './settings.html';
 
@@ -25,10 +26,14 @@ const proceedSavingSettings = function () {
   settings.singleTabResultSets = $('#divUseSingleTab').iCheck('update')[0].checked;
   settings.maxLiveChartDataPoints = $('#inputMaxChartPoints').val();
 
-  Meteor.call('updateSettings', settings, (err) => {
-    if (err) Helper.showMeteorFuncError(err, null, "Couldn't save");
-    else toastr.success('Successfully saved !');
-    Ladda.stopAll();
+  Communicator.call({
+    methodName: 'updateSettings',
+    args: { settings },
+    callback: (err) => {
+      if (err) Helper.showMeteorFuncError(err, null, "Couldn't save");
+      else toastr.success('Successfully saved !');
+      Ladda.stopAll();
+    }
   });
 };
 

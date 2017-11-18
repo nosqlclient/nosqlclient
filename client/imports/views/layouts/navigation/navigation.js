@@ -13,6 +13,7 @@ import { resetForm as resetCappedForm } from './convert_capped_collection/conver
 import { resetForm as resetRenameForm } from './rename_collection/rename_collection';
 import { resetForm as resetValidationRulesForm } from './validation_rules/validation_rules';
 import { initializeFilterTable } from './filter_collection/filter_collection';
+import { Communicator } from '/client/imports/facades';
 import './navigation.html';
 import $ from 'jquery';
 
@@ -43,12 +44,15 @@ const dropAllCollections = function () {
     closeOnConfirm: true,
   }, (isConfirm) => {
     if (isConfirm) {
-      Meteor.call('dropAllCollections', Meteor.default_connection._lastSessionId, (err, result) => {
-        if (err || result.error) {
-          Helper.showMeteorFuncError(err, result, "Couldn't drop all collections");
-        } else {
-          renderCollectionNames();
-          toastr.success('Successfully dropped all collections/views except system');
+      Communicator.call({
+        methodName: 'dropAllCollections',
+        callback: (err, result) => {
+          if (err || result.error) {
+            Helper.showMeteorFuncError(err, result, "Couldn't drop all collections");
+          } else {
+            renderCollectionNames();
+            toastr.success('Successfully dropped all collections/views except system');
+          }
         }
       });
     }
@@ -72,44 +76,56 @@ const handleNavigationAndSessions = function () {
   $('#cmbAdminQueries').val('').trigger('chosen:updated');
 };
 
-const clearCollection = function (collectionName) {
-  Meteor.call('delete', collectionName, {}, Meteor.default_connection._lastSessionId, (err, result) => {
-    if (err || result.error) {
-      Helper.showMeteorFuncError(err, result, "Couldn't clear collection");
-    } else {
-      toastr.success(`Successfuly cleared collection: ${collectionName}`);
+const clearCollection = function (selectedCollection) {
+  Communicator.call({
+    methodName: 'delete',
+    args: { selectedCollection },
+    callback: (err, result) => {
+      if (err || result.error) {
+        Helper.showMeteorFuncError(err, result, "Couldn't clear collection");
+      } else {
+        toastr.success(`Successfuly cleared collection: ${selectedCollection}`);
+      }
     }
   });
 };
 
-const dropCollection = function (collectionName) {
-  Meteor.call('dropCollection', collectionName, Meteor.default_connection._lastSessionId, (err, result) => {
-    if (err || result.error) {
-      Helper.showMeteorFuncError(err, result, "Couldn't drop collection");
-    } else {
-      renderCollectionNames();
-      toastr.success(`Successfuly dropped collection: ${collectionName}`);
+const dropCollection = function (selectedCollection) {
+  Communicator.call({
+    methodName: 'delete',
+    args: { selectedCollection },
+    callback: (err, result) => {
+      if (err || result.error) {
+        Helper.showMeteorFuncError(err, result, "Couldn't drop collection");
+      } else {
+        renderCollectionNames();
+        toastr.success(`Successfuly dropped collection: ${selectedCollection}`);
+      }
     }
   });
 };
 
 export const renderCollectionNames = function () {
-  Meteor.call('connect', Session.get(Helper.strSessionConnection), Meteor.default_connection._lastSessionId, (err, result) => {
-    if (err || result.error) {
-      Helper.showMeteorFuncError(err, result, "Couldn't connect");
-    } else {
-      result.result.sort((a, b) => {
-        if (a.name < b.name) { return -1; } else if (a.name > b.name) { return 1; }
-        return 0;
-      });
+  Communicator.call({
+    methodName: 'connect',
+    args: { connectionId: Session.get(Helper.strSessionConnection) },
+    callback: (err, result) => {
+      if (err || result.error) {
+        Helper.showMeteorFuncError(err, result, "Couldn't connect");
+      } else {
+        result.result.sort((a, b) => {
+          if (a.name < b.name) { return -1; } else if (a.name > b.name) { return 1; }
+          return 0;
+        });
 
-      // re-set collection names
-      Session.set(Helper.strSessionCollectionNames, result.result);
-      // set all session values undefined except connection
-      Session.set(Helper.strSessionSelectedQuery, undefined);
-      Session.set(Helper.strSessionSelectedOptions, undefined);
-      Session.set(Helper.strSessionSelectedCollection, undefined);
-      FlowRouter.go('/databaseStats');
+        // re-set collection names
+        Session.set(Helper.strSessionCollectionNames, result.result);
+        // set all session values undefined except connection
+        Session.set(Helper.strSessionSelectedQuery, undefined);
+        Session.set(Helper.strSessionSelectedOptions, undefined);
+        Session.set(Helper.strSessionSelectedCollection, undefined);
+        FlowRouter.go('/databaseStats');
+      }
     }
   });
 };
@@ -184,16 +200,19 @@ Template.navigation.events({
       confirmButtonText: 'Yes, drop it!',
       closeOnConfirm: false,
     }, () => {
-      Meteor.call('dropDB', Meteor.default_connection._lastSessionId, (err, result) => {
-        if (err || result.error) {
-          Helper.showMeteorFuncError(err, result, "Couldn't drop database");
-        } else {
-          Helper.clearSessions();
-          swal({
-            title: 'Dropped!',
-            text: 'Successfuly dropped database ',
-            type: 'success',
-          });
+      Communicator.call({
+        methodName: 'dropDB',
+        callback: (err, result) => {
+          if (err || result.error) {
+            Helper.showMeteorFuncError(err, result, "Couldn't drop database");
+          } else {
+            Helper.clearSessions();
+            swal({
+              title: 'Dropped!',
+              text: 'Successfuly dropped database ',
+              type: 'success',
+            });
+          }
         }
       });
     });
@@ -310,7 +329,7 @@ Template.navigation.onRendered(() => {
               icon: 'fa-clone',
               name: 'Clone',
               callback() {
-                const collectionName = $(this).context.innerText.substring(1).split(' ')[0];
+                const selectedCollection = $(this).context.innerText.substring(1).split(' ')[0];
                 swal(
                   {
                     title: 'Collection Name',
@@ -320,7 +339,7 @@ Template.navigation.onRendered(() => {
                     closeOnConfirm: false,
                     confirmButtonColor: '#DD6B55',
                     inputPlaceholder: 'Collection Name',
-                    inputValue: collectionName,
+                    inputValue: selectedCollection,
                   },
                   (inputValue) => {
                     if (!inputValue) {
@@ -330,12 +349,16 @@ Template.navigation.onRendered(() => {
 
                     swal('Creating...', `Please wait while ${inputValue} is being created, collections will be refreshed automatically !`, 'info');
 
-                    Meteor.call('aggregate', collectionName, [{ $match: {} }, { $out: inputValue }], {}, Meteor.default_connection._lastSessionId, (err, result) => {
-                      if (err || result.error) {
-                        Helper.showMeteorFuncError(err, result, "Couldn't clone ");
-                      } else {
-                        connect(true, `Successfully cloned collection ${collectionName} as ${inputValue}`);
-                        swal.close();
+                    Communicator.call({
+                      methodName: 'aggregate',
+                      args: { selectedCollection, pipeline: [{ $match: {} }, { $out: inputValue }] },
+                      callback: (err, result) => {
+                        if (err || result.error) {
+                          Helper.showMeteorFuncError(err, result, "Couldn't clone ");
+                        } else {
+                          connect(true, `Successfully cloned collection ${selectedCollection} as ${inputValue}`);
+                          swal.close();
+                        }
                       }
                     });
                   }

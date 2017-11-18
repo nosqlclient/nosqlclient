@@ -1,6 +1,7 @@
 import { Template } from 'meteor/templating';
 import { Meteor } from 'meteor/meteor';
 import { Session } from 'meteor/session';
+import { Communicator } from '/client/imports/facades';
 import Helper from '/client/imports/helper';
 import Enums from '/lib/imports/enums';
 import { $ } from 'meteor/jquery';
@@ -31,7 +32,7 @@ const initializeOptions = function () {
 };
 
 Template.distinct.events({
-  'keypress #inputField': function(event) {
+  'keypress #inputField': function (event) {
     if (event.keyCode == 13) {
       Template.distinct.executeQuery();
       return false;
@@ -55,7 +56,7 @@ Template.distinct.executeQuery = function (historyParams) {
 
   selector = Helper.convertAndCheckJSON(selector);
   if (selector.ERROR) {
-    toastr.error(`Syntax error on selector: ${  selector.ERROR}`);
+    toastr.error(`Syntax error on selector: ${selector.ERROR}`);
     Ladda.stopAll();
     return;
   }
@@ -66,10 +67,13 @@ Template.distinct.executeQuery = function (historyParams) {
     options,
   };
 
-  Meteor.call('distinct', selectedCollection, selector, fieldName, options, Meteor.default_connection._lastSessionId, (err, result) => {
-    Helper.renderAfterQueryExecution(err, result, false, 'distinct', params, (!historyParams));
-  },
-  );
+  Communicator.call({
+    methodName: 'distinct',
+    args: { selectedCollection, selector, fieldName, options },
+    callback: (err, result) => {
+      Helper.renderAfterQueryExecution(err, result, false, 'distinct', params, (!historyParams));
+    }
+  });
 };
 
 Template.distinct.renderQuery = function (query) {
@@ -103,8 +107,8 @@ Template.distinct.renderQuery = function (query) {
       // options load
       Meteor.setTimeout(() => {
         for (let i = 0; i < optionsArray.length; i++) {
-          let option = optionsArray[i];
-          let inverted = (_.invert(Enums.DISTINCT_OPTIONS));
+          const option = optionsArray[i];
+          const inverted = (_.invert(Enums.DISTINCT_OPTIONS));
           if (option === inverted.maxTimeMS) {
             $('#inputMaxTimeMs').val(query.queryParams.options.maxTimeMS);
           }

@@ -1,7 +1,7 @@
 import { Template } from 'meteor/templating';
-import { Meteor } from 'meteor/meteor';
 import { Session } from 'meteor/session';
 import { FlowRouter } from 'meteor/kadira:flow-router';
+import { Communicator } from '/client/imports/facades';
 import Helper from '/client/imports/helper';
 import { initFilesInformation } from '../file_management';
 import './upload_file.html';
@@ -52,15 +52,19 @@ export const proceedUploading = function (blob, contentType, metaData, aliases) 
   Ladda.create(document.querySelector('#btnUpload')).start();
   const fileReader = new FileReader();
   fileReader.onload = function (file) {
-    Meteor.call('uploadFile', $('#txtBucketName').val(), new Uint8Array(file.target.result), blob.name, contentType, metaData, aliases, Meteor.default_connection._lastSessionId, (err, result) => {
-      if (err || result.error) {
-        Helper.showMeteorFuncError(err, result, "Couldn't upload file");
-      } else {
-        toastr.success('Successfuly uploaded file');
-        initFilesInformation();
-      }
+    Communicator.call({
+      methodName: 'uploadFile',
+      args: { bucketName: $('#txtBucketName').val(), blob: new Uint8Array(file.target.result), fileName: blob.name, contentType, metaData, aliases },
+      callback: (err, result) => {
+        if (err || result.error) {
+          Helper.showMeteorFuncError(err, result, "Couldn't upload file");
+        } else {
+          toastr.success('Successfuly uploaded file');
+          initFilesInformation();
+        }
 
-      Ladda.stopAll();
+        Ladda.stopAll();
+      }
     });
   };
   fileReader.readAsArrayBuffer(blob);

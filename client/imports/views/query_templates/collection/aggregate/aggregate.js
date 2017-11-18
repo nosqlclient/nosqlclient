@@ -1,6 +1,7 @@
 import { Template } from 'meteor/templating';
 import { Meteor } from 'meteor/meteor';
 import Helper from '/client/imports/helper';
+import { Communicator } from '/client/imports/facades';
 import { Session } from 'meteor/session';
 import Enums from '/lib/imports/enums';
 import { initExecuteQuery } from '/client/imports/views/pages/browse_collection/browse_collection';
@@ -38,7 +39,7 @@ Template.aggregate.executeQuery = function (historyParams) {
 
   pipeline = Helper.convertAndCheckJSON(pipeline);
   if (pipeline.ERROR) {
-    toastr.error(`Syntax error on pipeline: ${  pipeline.ERROR}`);
+    toastr.error(`Syntax error on pipeline: ${pipeline.ERROR}`);
     Ladda.stopAll();
     return;
   }
@@ -54,10 +55,13 @@ Template.aggregate.executeQuery = function (historyParams) {
     options,
   };
 
-  Meteor.call('aggregate', selectedCollection, pipeline, options, Meteor.default_connection._lastSessionId, (err, result) => {
-    Helper.renderAfterQueryExecution(err, result, false, 'aggregate', params, (!historyParams));
-  },
-  );
+  Communicator.call({
+    methodName: 'aggregate',
+    args: { selectedCollection, pipeline, options },
+    callback: (err, result) => {
+      Helper.renderAfterQueryExecution(err, result, false, 'aggregate', params, (!historyParams));
+    }
+  });
 };
 
 Template.aggregate.renderQuery = function (query) {
@@ -85,8 +89,8 @@ Template.aggregate.renderQuery = function (query) {
     // options load
     Meteor.setTimeout(() => {
       for (let i = 0; i < optionsArray.length; i++) {
-        let option = optionsArray[i];
-        let inverted = (_.invert(Enums.AGGREGATE_OPTIONS));
+        const option = optionsArray[i];
+        const inverted = (_.invert(Enums.AGGREGATE_OPTIONS));
         if (option === inverted.collation) {
           Helper.setCodeMirrorValue($('#divCollation'), JSON.stringify(query.queryParams.options.collation, null, 1));
         }

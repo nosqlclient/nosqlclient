@@ -2,11 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { Settings, Connection } from '/server/imports/core';
 
 Meteor.methods({
-  subscribed() {
-    Settings.setSubscribed();
-  },
-
-  handleSubscriber(email) {
+  handleSubscriber({ email }) {
     Settings.subscribe(email);
   },
 
@@ -14,20 +10,20 @@ Meteor.methods({
     Settings.checkMongoclientVersion();
   },
 
-  updateSettings(settings) {
+  updateSettings({ settings }) {
     Settings.updateSettings(settings);
   },
 
-  importMongoclient(file) {
+  importMongoclient({ file }) {
     Settings.importSettings(file);
     Connection.importConnections(file);
   },
 
-  saveQueryHistory(history) {
+  saveQueryHistory({ history }) {
     Settings.saveQueryHistory(history);
   },
 
-  removeSchemaAnalyzeResult(sessionId) {
+  removeSchemaAnalyzeResult({ sessionId }) {
     Settings.removeSchemaAnalyzeResult({ sessionId });
   }
 });

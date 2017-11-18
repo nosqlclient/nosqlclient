@@ -1,5 +1,6 @@
 import { Template } from 'meteor/templating';
 import { Meteor } from 'meteor/meteor';
+import { Communicator } from '/client/imports/facades';
 import { Session } from 'meteor/session';
 import Helper from '/client/imports/helper';
 import { initExecuteQuery } from '/client/imports/views/pages/browse_collection/browse_collection';
@@ -29,8 +30,12 @@ Template.dropIndex.executeQuery = function (historyParams) {
     indexName,
   };
 
-  Meteor.call('dropIndex', selectedCollection, indexName, Meteor.default_connection._lastSessionId, (err, result) => {
-    Helper.renderAfterQueryExecution(err, result, false, 'dropIndex', params, (!historyParams));
+  Communicator.call({
+    methodName: 'dropIndex',
+    args: { selectedCollection, indexName },
+    callback: (err, result) => {
+      Helper.renderAfterQueryExecution(err, result, false, 'dropIndex', params, (!historyParams));
+    }
   });
 };
 

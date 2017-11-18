@@ -4,6 +4,7 @@ import { Meteor } from 'meteor/meteor';
 import Enums from '/lib/imports/enums';
 import { Connections } from '/lib/imports/collections';
 import Helper from '/client/imports/helper';
+import { Communicator } from '/client/imports/facades';
 import './add_collection.html';
 import { getOptions } from './options/add_collection_options';
 import { renderCollectionNames } from '../navigation';
@@ -15,26 +16,30 @@ export const initializeForm = function (collection) {
   Ladda.create(document.querySelector('#btnCreateCollection')).start();
 
   const connection = Connections.findOne({ _id: Session.get(Helper.strSessionConnection) });
-  Meteor.call('listCollectionNames', connection.databaseName, Meteor.default_connection._lastSessionId, (err, result) => {
-    if (err || result.error) {
-      Ladda.stopAll();
-      Helper.showMeteorFuncError(err, result, "Couldn't fetch data");
-      $('#collectionAddModal').modal('hide');
-    } else {
-      Ladda.stopAll();
-      let found = false;
-      if (result.result) {
-        for (const col of result.result) {
-          if (col.name === collection) {
-            prepareShowForm(col);
-            found = true;
+  Communicator.call({
+    methodName: 'listCollectionNames',
+    args: { dbName: connection.databaseName },
+    callback: (err, result) => {
+      if (err || result.error) {
+        Ladda.stopAll();
+        Helper.showMeteorFuncError(err, result, "Couldn't fetch data");
+        $('#collectionAddModal').modal('hide');
+      } else {
+        Ladda.stopAll();
+        let found = false;
+        if (result.result) {
+          for (const col of result.result) {
+            if (col.name === collection) {
+              prepareShowForm(col);
+              found = true;
+            }
           }
         }
-      }
 
-      if (!found) {
-        toastr.warning("Couldn't find collection in response of getCollectionInfos");
-        $('#collectionAddModal').modal('hide');
+        if (!found) {
+          toastr.warning("Couldn't find collection in response of getCollectionInfos");
+          $('#collectionAddModal').modal('hide');
+        }
       }
     }
   });
@@ -324,16 +329,20 @@ Template.addCollection.events({
 
     Ladda.create(document.querySelector('#btnCreateCollection')).start();
 
-    Meteor.call('createCollection', name, options, Meteor.default_connection._lastSessionId, (err, res) => {
-      if (err || (res && res.error)) {
-        Helper.showMeteorFuncError(err, res, "Couldn't create");
-      } else {
-        renderCollectionNames();
-        $('#collectionAddModal').modal('hide');
-        toastr.success(`Successfuly created collection: ${name}`);
-      }
+    Communicator.call({
+      methodName: 'createCollection',
+      args: { collectionName: name, options },
+      callback: (err, res) => {
+        if (err || (res && res.error)) {
+          Helper.showMeteorFuncError(err, res, "Couldn't create");
+        } else {
+          renderCollectionNames();
+          $('#collectionAddModal').modal('hide');
+          toastr.success(`Successfuly created collection: ${name}`);
+        }
 
-      Ladda.stopAll();
+        Ladda.stopAll();
+      }
     });
   },
 });

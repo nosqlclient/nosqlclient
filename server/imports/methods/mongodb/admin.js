@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { MongoDB } from '/server/imports/core';
 
 Meteor.methods({
-  top(sessionId) {
+  top({ sessionId }) {
     const methodArray = [
       {
         executeDbAdminCommand: [{ top: 1 }, {}],
@@ -12,7 +12,7 @@ Meteor.methods({
     return MongoDB.executeAdmin({ methodArray, sessionId });
   },
 
-  dbStats(sessionId) {
+  dbStats({ sessionId }) {
     const methodArray = [
       {
         stats: [],
@@ -22,7 +22,7 @@ Meteor.methods({
     return MongoDB.executeAdmin({ methodArray, sessionId });
   },
 
-  validateCollection(collectionName, options, sessionId) {
+  validateCollection({ collectionName, options, sessionId }) {
     const methodArray = [
       {
         validateCollection: [collectionName, options],
@@ -31,7 +31,7 @@ Meteor.methods({
     return MongoDB.executeAdmin({ methodArray, runOnAdminDB: true, sessionId });
   },
 
-  setProfilingLevel(level, sessionId) {
+  setProfilingLevel({ level, sessionId }) {
     const methodArray = [
       {
         setProfilingLevel: [level],
@@ -40,7 +40,7 @@ Meteor.methods({
     return MongoDB.executeAdmin({ methodArray, runOnAdminDB: true, sessionId });
   },
 
-  serverStatus(sessionId) {
+  serverStatus({ sessionId }) {
     const methodArray = [
       {
         serverStatus: [],
@@ -49,7 +49,7 @@ Meteor.methods({
     return MongoDB.executeAdmin({ methodArray, runOnAdminDB: true, sessionId });
   },
 
-  serverInfo(sessionId) {
+  serverInfo({ sessionId }) {
     const methodArray = [
       {
         serverInfo: [],
@@ -58,7 +58,7 @@ Meteor.methods({
     return MongoDB.executeAdmin({ methodArray, runOnAdminDB: true, sessionId });
   },
 
-  replSetGetStatus(sessionId) {
+  replSetGetStatus({ sessionId }) {
     const methodArray = [
       {
         replSetGetStatus: [],
@@ -67,7 +67,7 @@ Meteor.methods({
     return MongoDB.executeAdmin({ methodArray, runOnAdminDB: true, sessionId });
   },
 
-  removeUser(username, runOnAdminDB, sessionId) {
+  removeUser({ username, runOnAdminDB, sessionId }) {
     const methodArray = [
       {
         removeUser: [username],
@@ -77,7 +77,7 @@ Meteor.methods({
     return MongoDB.executeAdmin({ methodArray, runOnAdminDB, sessionId });
   },
 
-  profilingInfo(sessionId) {
+  profilingInfo({ sessionId }) {
     const methodArray = [
       {
         profilingInfo: [],
@@ -86,7 +86,7 @@ Meteor.methods({
     return MongoDB.executeAdmin({ methodArray, runOnAdminDB: true, sessionId });
   },
 
-  ping(sessionId) {
+  ping({ sessionId }) {
     const methodArray = [
       {
         ping: []
@@ -95,7 +95,7 @@ Meteor.methods({
     return MongoDB.executeAdmin({ methodArray, runOnAdminDB: true, sessionId });
   },
 
-  listDatabases(sessionId) {
+  listDatabases({ sessionId }) {
     const methodArray = [
       {
         listDatabases: []
@@ -104,7 +104,7 @@ Meteor.methods({
     return MongoDB.executeAdmin({ methodArray, runOnAdminDB: true, sessionId });
   },
 
-  command(command, runOnAdminDB, options, sessionId) {
+  command({ command, runOnAdminDB, options, sessionId }) {
     const methodArray = [
       {
         command: [command, options],
@@ -113,7 +113,7 @@ Meteor.methods({
     return MongoDB.executeAdmin({ methodArray, runOnAdminDB, sessionId });
   },
 
-  addUser(username, password, options, runOnAdminDB, sessionId) {
+  addUser({ username, password, options, runOnAdminDB, sessionId }) {
     const methodArray = [
       {
         addUser: [username, password, options]
@@ -122,7 +122,7 @@ Meteor.methods({
     return MongoDB.executeAdmin({ methodArray, runOnAdminDB, sessionId });
   },
 
-  buildInfo(sessionId) {
+  buildInfo({ sessionId }) {
     const methodArray = [
       {
         buildInfo: []
@@ -131,7 +131,7 @@ Meteor.methods({
     return MongoDB.executeAdmin({ methodArray, runOnAdminDB: true, sessionId });
   },
 
-  dropDB(sessionId) {
+  dropDB({ sessionId }) {
     const methodArray = [
       {
         dropDatabase: []
@@ -140,11 +140,11 @@ Meteor.methods({
     return MongoDB.executeAdmin({ methodArray, sessionId });
   },
 
-  dropAllCollections(sessionId) {
+  dropAllCollections({ sessionId }) {
     return MongoDB.dropAllCollections({ sessionId });
   },
 
-  createCollection(collectionName, options, sessionId) {
+  createCollection({ collectionName, options, sessionId }) {
     const methodArray = [
       {
         createCollection: [collectionName, options]

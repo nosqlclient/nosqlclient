@@ -1,6 +1,6 @@
 import { Template } from 'meteor/templating';
-import { Meteor } from 'meteor/meteor';
 import Helper from '/client/imports/helper';
+import { Communicator } from '/client/imports/facades';
 import './rename_collection.html';
 import { renderCollectionNames } from '../navigation';
 
@@ -18,7 +18,7 @@ Template.renameCollection.events({
     Ladda.create(document.querySelector('#btnRenameCollection')).start();
 
     const newName = $('#inputRenameName').val();
-    const collection = $('#renameCollectionModal').data('collection');
+    const selectedCollection = $('#renameCollectionModal').data('collection');
     const options = { dropTarget: $('#divDropTarget').iCheck('update')[0].checked };
 
     if (!newName) {
@@ -26,22 +26,26 @@ Template.renameCollection.events({
       Ladda.stopAll();
       return;
     }
-    if (newName == collection) {
+    if (newName == selectedCollection) {
       toastr.warning('Can not use same name as target name !');
       Ladda.stopAll();
       return;
     }
 
-    Meteor.call('rename', collection, newName, options, Meteor.default_connection._lastSessionId, (err, result) => {
-      if (err || result.error) {
-        Helper.showMeteorFuncError(err, result, "Couldn't rename");
-      } else {
-        toastr.success(`Successfully renamed to: ${newName}`);
-        $('#renameCollectionModal').modal('hide');
-        renderCollectionNames();
-      }
+    Communicator.call({
+      methodName: 'rename',
+      args: { selectedCollection, newName, options },
+      callback: (err, result) => {
+        if (err || result.error) {
+          Helper.showMeteorFuncError(err, result, "Couldn't rename");
+        } else {
+          toastr.success(`Successfully renamed to: ${newName}`);
+          $('#renameCollectionModal').modal('hide');
+          renderCollectionNames();
+        }
 
-      Ladda.stopAll();
+        Ladda.stopAll();
+      }
     });
   },
 });

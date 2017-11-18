@@ -1,5 +1,5 @@
 import { Template } from 'meteor/templating';
-import { Meteor } from 'meteor/meteor';
+import { Communicator } from '/client/imports/facades';
 import { Session } from 'meteor/session';
 import Helper from '/client/imports/helper';
 import Enums from '/lib/imports/enums';
@@ -48,10 +48,14 @@ Template.rename.executeQuery = function () {
   }
 
   if (newName) {
-    Meteor.call('rename', selectedCollection, newName, options, Meteor.default_connection._lastSessionId, (err, result) => {
-      Helper.renderAfterQueryExecution(err, result, false, 'rename');
-      if (err == undefined && result.error == undefined) {
-        renderCollectionnames(newName);
+    Communicator.call({
+      methodName: 'command',
+      args: { selectedCollection, newName, options },
+      callback: (err, result) => {
+        Helper.renderAfterQueryExecution(err, result, false, 'rename');
+        if (!err && !result.error) {
+          renderCollectionnames(newName);
+        }
       }
     });
   } else {
@@ -61,29 +65,33 @@ Template.rename.executeQuery = function () {
 };
 
 const renderCollectionnames = function (newName) {
-  Meteor.call('connect', Session.get(Helper.strSessionConnection), Meteor.default_connection._lastSessionId, (err, result) => {
-    if (err || result.error) {
-      Helper.showMeteorFuncError(err, result, "Couldn't connect");
-    } else {
-      result.result.sort((a, b) => {
-        if (a.name < b.name) { return -1; } else if (a.name > b.name) { return 1; }
-        return 0;
-      });
+  Communicator.call({
+    methodName: 'connect',
+    args: { connectionId: Session.get(Helper.strSessionConnection) },
+    callback: (err, result) => {
+      if (err || result.error) {
+        Helper.showMeteorFuncError(err, result, "Couldn't connect");
+      } else {
+        result.result.sort((a, b) => {
+          if (a.name < b.name) { return -1; } else if (a.name > b.name) { return 1; }
+          return 0;
+        });
 
-      // re-set collection names and selected collection
-      Session.set(Helper.strSessionCollectionNames, result.result);
-      Session.set(Helper.strSessionSelectedCollection, newName);
+        // re-set collection names and selected collection
+        Session.set(Helper.strSessionCollectionNames, result.result);
+        Session.set(Helper.strSessionSelectedCollection, newName);
 
-      // set all session values undefined except connection and collection
-      Session.set(Helper.strSessionSelectedQuery, undefined);
-      Session.set(Helper.strSessionSelectedOptions, undefined);
+        // set all session values undefined except connection and collection
+        Session.set(Helper.strSessionSelectedQuery, undefined);
+        Session.set(Helper.strSessionSelectedOptions, undefined);
+      }
     }
   });
 };
 
 const getOptions = function () {
   const result = {};
-  if ($.inArray('DROP_TARGET', Session.get(Helper.strSessionSelectedOptions)) != -1) {
+  if ($.inArray('DROP_TARGET', Session.get(Helper.strSessionSelectedOptions)) !== -1) {
     const dropTarget = $('#divDropTarget').iCheck('update')[0].checked;
     if (dropTarget) {
       result[Enums.RENAME_OPTIONS.DROP_TARGET] = dropTarget;

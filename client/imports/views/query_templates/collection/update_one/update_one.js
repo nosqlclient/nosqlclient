@@ -1,5 +1,6 @@
 import { Template } from 'meteor/templating';
 import { Meteor } from 'meteor/meteor';
+import { Communicator } from '/client/imports/facades';
 import { Session } from 'meteor/session';
 import Helper from '/client/imports/helper';
 import Enums from '/lib/imports/enums';
@@ -83,8 +84,12 @@ Template.updateOne.executeQuery = function (historyParams) {
     options,
   };
 
-  Meteor.call('updateOne', selectedCollection, selector, setObject, options, Meteor.default_connection._lastSessionId, (err, result) => {
-    Helper.renderAfterQueryExecution(err, result, false, 'updateOne', params, (!historyParams));
+  Communicator.call({
+    methodName: 'updateOne',
+    args: { selectedCollection, selector, setObject, options },
+    callback: (err, result) => {
+      Helper.renderAfterQueryExecution(err, result, false, 'updateOne', params, (!historyParams));
+    }
   });
 };
 

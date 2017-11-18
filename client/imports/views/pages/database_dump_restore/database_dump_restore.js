@@ -9,8 +9,9 @@ import { getMongodumpArgs } from './mongodump_options/mongodump_options';
 import { getMongorestoreArgs } from './mongorestore_options/mongorestore_options';
 import { getMongoexportOptions } from './mongoexport_options/mongoexport_options';
 import { getMongoimportOptions } from './mongoimport_options/mongoimport_options';
-import './common_options/common_options';
 import Helper from '/client/imports/helper';
+import { Communicator } from '/client/imports/facades';
+import './common_options/common_options';
 
 const Ladda = require('ladda');
 const toastr = require('toastr');
@@ -68,7 +69,7 @@ const observeLogs = function () {
 };
 
 const clearLogs = function (binary) {
-  Meteor.call('removeDumpLogs', Meteor.default_connection._lastSessionId, binary);
+  Communicator.call({ methodName: 'removeDumpLogs', args: { binary } });
   Helper.setCodeMirrorValue($(`#${binary}`), '');
 };
 
@@ -79,17 +80,20 @@ const callBinaryMethod = function (button, binary, argsMethod) {
     Ladda.stopAll();
     return;
   }
-
-  Meteor.call(binary, args, Meteor.default_connection._lastSessionId, (err) => {
-    if (err) {
-      Ladda.stopAll();
-      Helper.showMeteorFuncError(err, null, "Couldn't proceed");
+  Communicator.call({
+    methodName: binary,
+    args: { args },
+    callback: (err) => {
+      if (err) {
+        Ladda.stopAll();
+        Helper.showMeteorFuncError(err, null, "Couldn't proceed");
+      }
     }
   });
 };
 
 Template.databaseDumpRestore.onDestroyed(() => {
-  Meteor.call('removeDumpLogs', Meteor.default_connection._lastSessionId);
+  Communicator.call({ methodName: 'removeDumpLogs' });
 });
 
 Template.databaseDumpRestore.onRendered(function () {

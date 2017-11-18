@@ -1,5 +1,5 @@
 import { Template } from 'meteor/templating';
-import { Meteor } from 'meteor/meteor';
+import { Communicator } from '/client/imports/facades';
 import Helper from '/client/imports/helper';
 import './convert_to_capped.html';
 
@@ -26,18 +26,22 @@ Template.convertToCapped.events({
 
     const command = {
       convertToCapped: collection,
-      size: parseInt(size),
+      size: parseInt(size, 10),
     };
 
-    Meteor.call('command', command, false, {}, Meteor.default_connection._lastSessionId, (err, result) => {
-      if (err || result.error) {
-        Helper.showMeteorFuncError(err, result, "Couldn't convert");
-      } else {
-        toastr.success('Successfully converted to capped');
-        $('#convertToCappedModal').modal('hide');
-      }
+    Communicator.call({
+      methodName: 'command',
+      args: { command },
+      callback: (err, result) => {
+        if (err || result.error) {
+          Helper.showMeteorFuncError(err, result, "Couldn't convert");
+        } else {
+          toastr.success('Successfully converted to capped');
+          $('#convertToCappedModal').modal('hide');
+        }
 
-      Ladda.stopAll();
+        Ladda.stopAll();
+      }
     });
   },
 });

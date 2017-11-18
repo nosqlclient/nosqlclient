@@ -1,5 +1,5 @@
 import { Template } from 'meteor/templating';
-import { Meteor } from 'meteor/meteor';
+import { Communicator } from '/client/imports/facades';
 import Helper from '/client/imports/helper';
 import { initExecuteQuery } from '/client/imports/views/pages/admin_queries/admin_queries';
 
@@ -15,7 +15,10 @@ Template.ping.onRendered(() => {
 Template.ping.executeQuery = function () {
   initExecuteQuery();
 
-  Meteor.call('ping', Meteor.default_connection._lastSessionId, (err, result) => {
-    Helper.renderAfterQueryExecution(err, result, true);
+  Communicator.call({
+    methodName: 'ping',
+    callback: (err, result) => {
+      Helper.renderAfterQueryExecution(err, result, true);
+    }
   });
 };

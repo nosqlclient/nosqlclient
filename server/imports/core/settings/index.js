@@ -86,7 +86,9 @@ Settings.prototype = {
         email_address: email,
         status: 'subscribed',
       },
-    }).then(null, (reason) => {
+    }).then(() => {
+      this.setSubscribed();
+    }, (reason) => {
       const externalError = JSON.parse(reason.response.content).title;
       Error.create({ type: Error.types.SubscriptionError, externalError, metadataToLog: { statusCode: reason.response.statusCode, title: externalError } });
     });

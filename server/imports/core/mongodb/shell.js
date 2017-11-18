@@ -9,7 +9,7 @@ const MongoDBShell = function () {
   this.spawnedShellsBySessionId = {};
 };
 
-function setEventsToShell(connectionId, sessionId) {
+const setEventsToShell = function (connectionId, sessionId) {
   Logger.info({ message: 'shell-event-bind', metadataToLog: { connectionId, sessionId } });
 
   this.spawnedShellsBySessionId[sessionId].on('error', Meteor.bindEnvironment((error) => {
@@ -74,7 +74,7 @@ function setEventsToShell(connectionId, sessionId) {
       Database.remove({ type: Database.types.ShellCommands, selector: { sessionId } });
     }, 500);
   }));
-}
+};
 
 MongoDBShell.prototype = {
   connectToShell({ connectionId, username, password, sessionId }) {

@@ -4,7 +4,7 @@
 import { Blaze } from 'meteor/blaze';
 import { Template } from 'meteor/templating';
 import { Session } from 'meteor/session';
-import { Meteor } from 'meteor/meteor';
+import { Communicator } from '/client/imports/facades';
 import { $ } from 'meteor/jquery';
 import { Connections, Settings } from '/lib/imports/collections';
 import { setAdminResult } from '/client/imports/views/pages/admin_queries/admin_queries';
@@ -307,25 +307,30 @@ Helper.prototype = {
       return;
     }
 
-    Meteor.call('count', selectedCollection, {}, {}, Meteor.default_connection._lastSessionId, (err, result) => {
-      if (err || result.error) {
-        this.showMeteorFuncError(err, result, "Couldn't fetch distinct fields");
-        Ladda.stopAll();
-      } else {
-        const count = result.result;
-        Meteor.call('find', selectedCollection, {}, {
-          limit: countToTake,
-          skip: Math.round(Math.random() * count),
-        }, false, Meteor.default_connection._lastSessionId, (err, samples) => {
-          if (err || samples.error) {
-            this.showMeteorFuncError(err, samples, "Couldn't fetch distinct fields");
-          } else {
-            const keys = this.findKeysOfObject(samples.result);
-            Session.set(this.strSessionDistinctFields, keys);
-          }
-
+    Communicator.call({
+      methodName: 'count',
+      args: { selectedCollection },
+      callback: (countError, result) => {
+        if (countError || result.error) {
+          this.showMeteorFuncError(countError, result, "Couldn't fetch distinct fields");
           Ladda.stopAll();
-        });
+        } else {
+          const count = result.result;
+
+          Communicator.call({
+            methodName: 'find',
+            args: { selectedCollection, cursorOptions: { limit: countToTake, skip: Math.round(Math.random() * count) } },
+            callback: (err, samples) => {
+              if (err || samples.error) {
+                this.showMeteorFuncError(err, samples, "Couldn't fetch distinct fields");
+              } else {
+                const keys = this.findKeysOfObject(samples.result);
+                Session.set(this.strSessionDistinctFields, keys);
+              }
+              Ladda.stopAll();
+            }
+          });
+        }
       }
     });
   },

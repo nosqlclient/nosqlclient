@@ -5,10 +5,11 @@ import { Template } from 'meteor/templating';
 import { Meteor } from 'meteor/meteor';
 import { Session } from 'meteor/session';
 import { FlowRouter } from 'meteor/kadira:flow-router';
+import { Communicator } from '/client/imports/facades';
 import { initShellHistories } from './shell_histories/shell_histories';
 import Enums from '/lib/imports/enums';
 import Helper from '/client/imports/helper';
-import { ShellCommands, Settings } from '/lib/imports/collections';
+import { Settings, ShellCommands } from '/lib/imports/collections';
 import './mc_shell.html';
 
 const CodeMirror = require('codemirror');
@@ -131,9 +132,18 @@ const initializeCommandCodeMirror = function () {
       cm.foldCode(cm.getCursor());
     },
     Enter(cm) {
-      Meteor.call('executeShellCommand', cm.getValue(), Session.get(Helper.strSessionConnection), Session.get(Helper.strSessionPromptedUsername), Session.get(Helper.strSessionPromptedPassword), Meteor.default_connection._lastSessionId, (err) => {
-        if (err) Helper.showMeteorFuncError(err, null, "Couldn't execute shell command");
-        else addCommandToHistory(cm.getValue());
+      Communicator.call({
+        methodName: 'executeShellCommand',
+        args: {
+          command: cm.getValue,
+          connectionId: Session.get(Helper.strSessionConnection),
+          username: Session.get(Helper.strSessionPromptedUsername),
+          password: Session.get(Helper.strSessionPromptedPassword)
+        },
+        callback: (err) => {
+          if (err) Helper.showMeteorFuncError(err, null, "Couldn't execute shell command");
+          else addCommandToHistory(cm.getValue());
+        }
       });
     },
   };
@@ -179,7 +189,8 @@ const initializeCommandCodeMirror = function () {
 Template.mcShell.events({
   'click #btnClearShell': function () {
     Helper.setCodeMirrorValue($('#divShellResult'), '');
-    Meteor.call('clearShell', Meteor.default_connection._lastSessionId);
+
+    Communicator.call({ methodName: 'clearShell' });
   },
 
   'click #btnShowShellHistories': function () {
@@ -236,9 +247,17 @@ Template.mcShell.onRendered(function () {
     }
   });
 
-  Meteor.call('connectToShell', Session.get(Helper.strSessionConnection), Session.get(Helper.strSessionPromptedUsername), Session.get(Helper.strSessionPromptedPassword), Meteor.default_connection._lastSessionId, (err, result) => {
-    if (err || result.error) Helper.showMeteorFuncError(err, result, "Couldn't connect via shell");
-    else addCommandToHistory(result);
+  Communicator.call({
+    methodName: 'connectToShell',
+    args: {
+      connectionId: Session.get(Helper.strSessionConnection),
+      username: Session.get(Helper.strSessionPromptedUsername),
+      password: Session.get(Helper.strSessionPromptedPassword)
+    },
+    callback: (err, result) => {
+      if (err || result.error) Helper.showMeteorFuncError(err, result, "Couldn't connect via shell");
+      else addCommandToHistory(result);
+    }
   });
 });
 

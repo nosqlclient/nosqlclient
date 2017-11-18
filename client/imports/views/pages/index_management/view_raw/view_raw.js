@@ -1,6 +1,6 @@
 import { Template } from 'meteor/templating';
-import { Meteor } from 'meteor/meteor';
 import Helper from '/client/imports/helper';
+import { Communicator } from '/client/imports/facades';
 import './view_raw.html';
 
 const toastr = require('toastr');
@@ -18,25 +18,29 @@ export const initialize = function () {
   }
 
   Ladda.create(document.querySelector('#btnCloseRawViewModal')).start();
-  Meteor.call('indexInformation', selectedCollection, true, Meteor.default_connection._lastSessionId, (err, indexInformation) => {
-    if (err || indexInformation.error) {
-      Helper.showMeteorFuncError(err, indexInformation, "Couldn't fetch index information");
-    } else {
-      let found = false;
-      for (const index of indexInformation.result) {
-        if (index.name === indexName) {
-          found = true;
-          Helper.setCodeMirrorValue($('#divViewRaw'), JSON.stringify(index, null, 1), $('#txtViewRaw'));
-          $('#viewRawTitle').html(index.name);
+  Communicator.call({
+    methodName: 'indexInformation',
+    args: { selectedCollection, isFull: true },
+    callback: (err, indexInformation) => {
+      if (err || indexInformation.error) {
+        Helper.showMeteorFuncError(err, indexInformation, "Couldn't fetch index information");
+      } else {
+        let found = false;
+        for (const index of indexInformation.result) {
+          if (index.name === indexName) {
+            found = true;
+            Helper.setCodeMirrorValue($('#divViewRaw'), JSON.stringify(index, null, 1), $('#txtViewRaw'));
+            $('#viewRawTitle').html(index.name);
+          }
+        }
+
+        if (!found) {
+          toastr.error(`Couldn't find index: ${indexName}`);
         }
       }
 
-      if (!found) {
-        toastr.error(`Couldn't find index: ${indexName}`);
-      }
+      Ladda.stopAll();
     }
-
-    Ladda.stopAll();
   });
 };
 

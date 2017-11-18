@@ -1,6 +1,7 @@
 import { Template } from 'meteor/templating';
 import { Meteor } from 'meteor/meteor';
 import Helper from '/client/imports/helper';
+import { Communicator } from '/client/imports/facades';
 import { Session } from 'meteor/session';
 import Enums from '/lib/imports/enums';
 import { initExecuteQuery } from '/client/imports/views/pages/browse_collection/browse_collection';
@@ -38,7 +39,7 @@ Template.count.executeQuery = function (historyParams) {
 
   selector = Helper.convertAndCheckJSON(selector);
   if (selector.ERROR) {
-    toastr.error(`Syntax error on selector: ${  selector.ERROR}`);
+    toastr.error(`Syntax error on selector: ${selector.ERROR}`);
     Ladda.stopAll();
     return;
   }
@@ -48,10 +49,13 @@ Template.count.executeQuery = function (historyParams) {
     options,
   };
 
-  Meteor.call('count', selectedCollection, selector, options, Meteor.default_connection._lastSessionId, (err, result) => {
-    Helper.renderAfterQueryExecution(err, result, false, 'count', params, (!historyParams));
-  },
-  );
+  Communicator.call({
+    methodName: 'count',
+    args: { selectedCollection, selector, options },
+    callback: (err, result) => {
+      Helper.renderAfterQueryExecution(err, result, false, 'count', params, (!historyParams));
+    }
+  });
 };
 
 Template.count.renderQuery = function (query) {
@@ -78,8 +82,8 @@ Template.count.renderQuery = function (query) {
     // options load
     Meteor.setTimeout(() => {
       for (let i = 0; i < optionsArray.length; i++) {
-        let option = optionsArray[i];
-        let inverted = (_.invert(Enums.COUNT_OPTIONS));
+        const option = optionsArray[i];
+        const inverted = (_.invert(Enums.COUNT_OPTIONS));
         if (option === inverted.maxTimeMS) {
           $('#inputMaxTimeMs').val(query.queryParams.options.maxTimeMS);
         }

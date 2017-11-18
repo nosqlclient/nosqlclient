@@ -3,8 +3,9 @@ import { Meteor } from 'meteor/meteor';
 import { Session } from 'meteor/session';
 import Helper from '/client/imports/helper';
 import { Settings } from '/lib/imports/collections';
-import './database_stats.html';
 import Enums from '/lib/imports/enums';
+import { Communicator } from '/client/imports/facades';
+import './database_stats.html';
 
 require('datatables.net')(window, $);
 require('datatables.net-buttons')(window, $);
@@ -83,13 +84,16 @@ const lineOptions = {
 const fetchStats = function () {
   if (Session.get(Helper.strSessionCollectionNames) != undefined) {
     const settings = Settings.findOne();
-    Meteor.call('dbStats', Meteor.default_connection._lastSessionId, (err, result) => {
-      if (err || result.error) {
-        Helper.showMeteorFuncError(err, result, "Couldn't execute dbStats");
-        Session.set(Helper.strSessionDBStats, undefined);
-      } else {
-        convertInformationsToCorrectUnit(result.result, settings);
-        Session.set(Helper.strSessionDBStats, result.result);
+    Communicator.call({
+      methodName: 'dbStats',
+      callback: (err, result) => {
+        if (err || result.error) {
+          Helper.showMeteorFuncError(err, result, "Couldn't execute dbStats");
+          Session.set(Helper.strSessionDBStats, undefined);
+        } else {
+          convertInformationsToCorrectUnit(result.result, settings);
+          Session.set(Helper.strSessionDBStats, result.result);
+        }
       }
     });
   }
@@ -117,40 +121,46 @@ const fetchStatus = function () {
   if (Session.get(Helper.strSessionCollectionNames) != undefined) {
     const settings = Settings.findOne();
     if (settings) {
-      Meteor.call('serverStatus', Meteor.default_connection._lastSessionId, (err, result) => {
-        if (err || result.error) {
-          const errorMessage = result.error ? result.error.message : err.message;
-          $('#errorMessage').text(`Successfully connected but, couldn't fetch server status: ${errorMessage}`);
-          Session.set(Helper.strSessionServerStatus, undefined);
-        } else {
-          Session.set(Helper.strSessionServerStatus, result.result);
-          const memoryData = [],
-            connectionsData = [],
-            networkData = [],
-            opCountersData = [],
-            queuedReadWriteData = [],
-            activeReadWriteData = [];
-          const memoryText = populateMemoryData(result.result, memoryData, settings);
-          const availableConnections = populateConnectionData(result.result, connectionsData);
-          const totalRequests = populateNetworkData(result.result, networkData, settings);
-          populateOPCountersData(result.result, opCountersData);
-          const totalQueuedReadWrite = poopulateQueuedReadWriteData(result.result, queuedReadWriteData);
-          const totalActiveReadWrite = poopulateActiveReadWriteData(result.result, activeReadWriteData);
+      Communicator.call({
+        methodName: 'serverStatus',
+        callback: (err, result) => {
+          if (err || result.error) {
+            const errorMessage = result.error ? result.error.message : err.message;
+            $('#errorMessage').text(`Successfully connected but, couldn't fetch server status: ${errorMessage}`);
+            Session.set(Helper.strSessionServerStatus, undefined);
+          } else {
+            Session.set(Helper.strSessionServerStatus, result.result);
+            const memoryData = [],
+              connectionsData = [],
+              networkData = [],
+              opCountersData = [],
+              queuedReadWriteData = [],
+              activeReadWriteData = [];
+            const memoryText = populateMemoryData(result.result, memoryData, settings);
+            const availableConnections = populateConnectionData(result.result, connectionsData);
+            const totalRequests = populateNetworkData(result.result, networkData, settings);
+            populateOPCountersData(result.result, opCountersData);
+            const totalQueuedReadWrite = poopulateQueuedReadWriteData(result.result, queuedReadWriteData);
+            const totalActiveReadWrite = poopulateActiveReadWriteData(result.result, activeReadWriteData);
 
-          initMemoryChart(memoryData, memoryText);
-          initConnectionsChart(connectionsData, availableConnections);
-          initNetworkChart(networkData, totalRequests);
-          initOperationCountersChart(opCountersData);
-          initQueuedReadWriteChart(queuedReadWriteData, totalQueuedReadWrite);
-          initActiveReadWriteChart(activeReadWriteData, totalActiveReadWrite);
+            initMemoryChart(memoryData, memoryText);
+            initConnectionsChart(connectionsData, availableConnections);
+            initNetworkChart(networkData, totalRequests);
+            initOperationCountersChart(opCountersData);
+            initQueuedReadWriteChart(queuedReadWriteData, totalQueuedReadWrite);
+            initActiveReadWriteChart(activeReadWriteData, totalActiveReadWrite);
+          }
         }
       });
 
-      Meteor.call('top', Meteor.default_connection._lastSessionId, (err, result) => {
-        if (result && result.result && result.result.totals) {
-          const collectionReadWriteData = populateTopReadWriteData(result.result.totals);
-          initCollectionsReadWriteTable(collectionReadWriteData);
-          previousTopData = result.result.totals;
+      Communicator.call({
+        methodName: 'top',
+        callback: (err, result) => {
+          if (result && result.result && result.result.totals) {
+            const collectionReadWriteData = populateTopReadWriteData(result.result.totals);
+            initCollectionsReadWriteTable(collectionReadWriteData);
+            previousTopData = result.result.totals;
+          }
         }
       });
     }
@@ -671,15 +681,15 @@ Template.databaseStats.events({
   'click #btnSubscribe': function () {
     Ladda.create(document.querySelector('#btnSubscribe')).start();
 
-    Meteor.call('handleSubscriber', $('#txtEmailToSubscribe').val(), (err) => {
-      if (err) {
-        toastr.error(`Failed: ${err.message}`);
-      } else {
-        Meteor.call('subscribed');
-        toastr.success('Thank you for subscription !');
-      }
+    Communicator.call({
+      methodName: 'handleSubscriber',
+      args: { email: $('#txtEmailToSubscribe').val() },
+      callback: (err) => {
+        if (err) toastr.error(`Failed: ${err.message}`);
+        else toastr.success('Thank you for subscription !');
 
-      Ladda.stopAll();
+        Ladda.stopAll();
+      }
     });
   },
 });

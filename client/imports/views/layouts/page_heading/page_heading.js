@@ -3,6 +3,7 @@ import { Meteor } from 'meteor/meteor';
 import { Session } from 'meteor/session';
 import Helper from '/client/imports/helper';
 import { Settings } from '/lib/imports/collections';
+import { Communicator } from '/client/imports/facades';
 import './page_heading.html';
 
 const Ladda = require('ladda');
@@ -65,13 +66,17 @@ Template.pageHeading.helpers({
       // get distinct field keys for auto complete on every collection change.
       Helper.getDistinctKeysForAutoComplete(selectedCollection);
 
-      Meteor.call('stats', selectedCollection, {}, Meteor.default_connection._lastSessionId, (err, result) => {
-        if (err || result.error) {
-          $('#divCollectionInfo').html(`<div class="row"><div class="col-lg-7"><b>Couldn't fetch stats:</b></div><div class="col-lg-5">${Helper.getErrorMessage(err, result)}</div></div>`);
-        } else {
-          populateCollectionInfo(result.result, settings);
+      Communicator.call({
+        methodName: 'stats',
+        args: { selectedCollection },
+        callback: (err, result) => {
+          if (err || result.error) {
+            $('#divCollectionInfo').html(`<div class="row"><div class="col-lg-7"><b>Couldn't fetch stats:</b></div><div class="col-lg-5">${Helper.getErrorMessage(err, result)}</div></div>`);
+          } else {
+            populateCollectionInfo(result.result, settings);
+          }
+          Ladda.stopAll();
         }
-        Ladda.stopAll();
       });
     }, 150);
   },

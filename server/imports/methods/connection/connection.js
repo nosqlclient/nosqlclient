@@ -2,22 +2,22 @@ import { Meteor } from 'meteor/meteor';
 import { Connection } from '/server/imports/core';
 
 Meteor.methods({
-  saveConnection(connection) {
+  saveConnection({ connection }) {
     Connection.save(connection);
   },
 
-  checkAndSaveConnection(connection) {
+  checkAndSaveConnection({ connection }) {
     Connection.checkAndClear(connection);
     connection.databaseName = connection.databaseName || 'admin';
 
     Connection.save(connection);
   },
 
-  parseUrl(connection) {
+  parseUrl({ connection }) {
     return Connection.parseUrl(connection);
   },
 
-  removeConnection(connectionId) {
+  removeConnection({ connectionId }) {
     Connection.remove(connectionId);
   },
 });

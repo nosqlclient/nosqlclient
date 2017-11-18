@@ -1,6 +1,7 @@
 import { Template } from 'meteor/templating';
 import { Meteor } from 'meteor/meteor';
 import { Session } from 'meteor/session';
+import { Communicator } from '/client/imports/facades';
 import Helper from '/client/imports/helper';
 import Enums from '/lib/imports/enums';
 import { initExecuteQuery } from '/client/imports/views/pages/browse_collection/browse_collection';
@@ -42,7 +43,7 @@ Template.findOneAndDelete.executeQuery = function (historyParams) {
 
   selector = Helper.convertAndCheckJSON(selector);
   if (selector.ERROR) {
-    toastr.error(`Syntax error on selector: ${  selector.ERROR}`);
+    toastr.error(`Syntax error on selector: ${selector.ERROR}`);
     Ladda.stopAll();
     return;
   }
@@ -58,10 +59,13 @@ Template.findOneAndDelete.executeQuery = function (historyParams) {
     options,
   };
 
-  Meteor.call('findOneAndDelete', selectedCollection, selector, options, Meteor.default_connection._lastSessionId, (err, result) => {
-    Helper.renderAfterQueryExecution(err, result, false, 'findOneAndDelete', params, (!historyParams));
-  },
-  );
+  Communicator.call({
+    methodName: 'findOneAndDelete',
+    args: { selectedCollection, selector, options },
+    callback: (err, result) => {
+      Helper.renderAfterQueryExecution(err, result, false, 'findOneAndDelete', params, (!historyParams));
+    }
+  });
 };
 
 
@@ -90,8 +94,8 @@ Template.findOneAndDelete.renderQuery = function (query) {
       // options load
       Meteor.setTimeout(() => {
         for (let i = 0; i < optionsArray.length; i++) {
-          let option = optionsArray[i];
-          let inverted = (_.invert(Enums.FINDONE_MODIFY_OPTIONS));
+          const option = optionsArray[i];
+          const inverted = (_.invert(Enums.FINDONE_MODIFY_OPTIONS));
           if (option === inverted.projection) {
             Helper.setCodeMirrorValue($('#divProject'), JSON.stringify(query.queryParams.options.projection, null, 1));
           }
