@@ -1,5 +1,5 @@
 import { Template } from 'meteor/templating';
-import Helper from '/client/imports/helper';
+import Helper from '/client/imports/helpers/helper';
 import { Communicator } from '/client/imports/facades';
 import './view_raw.html';
 

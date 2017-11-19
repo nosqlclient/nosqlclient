@@ -5,13 +5,16 @@
   "devDependencies": {
     "eslint": "^4.9.0",
     "eslint-config-airbnb": "^16.1.0",
+    "eslint-import-resolver-meteor": "^0.4.0",
     "eslint-plugin-import": "^2.7.0",
     "eslint-plugin-jsx-a11y": "^6.0.2",
+    "eslint-plugin-meteor": "^4.1.4",
     "eslint-plugin-react": "^7.4.0"
   },
   "dependencies": {
     "babel-runtime": "^6.18.0",
     "bootstrap-filestyle": "^1.2.1",
+    "bson": "^1.0.4",
     "cheerio": "0.22.0",
     "codemirror": "^5.17.0",
     "cross-spawn": "^5.1.0",

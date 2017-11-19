@@ -2,7 +2,7 @@ import { Template } from 'meteor/templating';
 import { Meteor } from 'meteor/meteor';
 import { Session } from 'meteor/session';
 import { Communicator } from '/client/imports/facades';
-import Helper from '/client/imports/helper';
+import Helper from '/client/imports/helpers/helper';
 import Enums from '/lib/imports/enums';
 import { $ } from 'meteor/jquery';
 import { initExecuteQuery } from '/client/imports/views/pages/browse_collection/browse_collection';

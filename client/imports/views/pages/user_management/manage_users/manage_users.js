@@ -1,6 +1,6 @@
 import { Template } from 'meteor/templating';
 import { Session } from 'meteor/session';
-import Helper from '/client/imports/helper';
+import Helper from '/client/imports/helpers/helper';
 import { Communicator } from '/client/imports/facades';
 import { Connections } from '/lib/imports/collections';
 import './manage_users.html';

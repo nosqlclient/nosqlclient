@@ -5,7 +5,7 @@ import { Template } from 'meteor/templating';
 import { Meteor } from 'meteor/meteor';
 import { Session } from 'meteor/session';
 import { FlowRouter } from 'meteor/kadira:flow-router';
-import Helper from '/client/imports/helper';
+import Helper from '/client/imports/helpers/helper';
 import './query_wizard.html';
 import { $ } from 'meteor/jquery';
 

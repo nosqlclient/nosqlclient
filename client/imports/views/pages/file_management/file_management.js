@@ -6,7 +6,7 @@ import { Template } from 'meteor/templating';
 import { Meteor } from 'meteor/meteor';
 import { Session } from 'meteor/session';
 import { FlowRouter } from 'meteor/kadira:flow-router';
-import Helper from '/client/imports/helper';
+import Helper from '/client/imports/helpers/helper';
 import { Communicator } from '/client/imports/facades';
 import { getSelectorValue } from '/client/imports/views/query_templates_options/selector/selector';
 import './upload_file/upload_file';

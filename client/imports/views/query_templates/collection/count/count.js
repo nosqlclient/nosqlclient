@@ -1,6 +1,6 @@
 import { Template } from 'meteor/templating';
 import { Meteor } from 'meteor/meteor';
-import Helper from '/client/imports/helper';
+import Helper from '/client/imports/helpers/helper';
 import { Communicator } from '/client/imports/facades';
 import { Session } from 'meteor/session';
 import Enums from '/lib/imports/enums';

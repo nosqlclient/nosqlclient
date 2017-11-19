@@ -5,13 +5,11 @@
 /* global _ */
 import { Template } from 'meteor/templating';
 import { Session } from 'meteor/session';
-import Helper from '/client/imports/helper';
-import { Settings } from '/lib/imports/collections';
+import Helper from '/client/imports/helpers/helper';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Communicator } from '/client/imports/facades';
 import Enums from '/lib/imports/enums';
 import { initQueryHistories } from '/client/imports/views/pages/browse_collection/query_histories/query_histories';
-import { AceEditor } from 'meteor/arch:ace-editor';
 import '/client/imports/views/query_templates/collection/aggregate/aggregate';
 import '/client/imports/views/query_templates/collection/bulk_write/bulk_write';
 import '/client/imports/views/query_templates/collection/count/count';
@@ -40,228 +38,13 @@ import '/client/imports/views/query_templates/collection/group/group';
 import '../../query_templates/collection/find/query_wizard/query_wizard';
 import './browse_collection.html';
 
-const JSONEditor = require('jsoneditor');
-
 const toastr = require('toastr');
 const Ladda = require('ladda');
 require('jquery-contextmenu');
 
-const getEditor = function (tabID) {
-  const tabView = $(`#tab-${tabID}`);
-  if (!tabView.data('jsoneditor')) {
-    const jsonEditor = new JSONEditor(document.getElementById('activeJsonEditor'), {
-      mode: 'tree',
-      modes: ['code', 'form', 'text', 'tree', 'view'],
-      search: true,
-    });
-
-    tabView.data('jsoneditor', jsonEditor);
-  }
-
-  return tabView.data('jsoneditor');
-};
-
-export const clarifyTabID = function (sessionKey = Helper.strSessionUsedTabIDs) {
-  let result = 1;
-  let tabIDArray = Session.get(sessionKey);
-  if (!tabIDArray || tabIDArray.length === 0) {
-    tabIDArray = [result];
-    Session.set(sessionKey, tabIDArray);
-    return result;
-  }
-
-  result = tabIDArray[tabIDArray.length - 1] + 1;
-
-  tabIDArray.push(result);
-  Session.set(sessionKey, tabIDArray);
-  return result;
-};
-
-export const setAllTabsInactive = function () {
-  $('#resultTabContents').each(function () {
-    const otherTab = $(this);
-    otherTab.removeClass('active');
-    if (otherTab.find('#divActiveJsonEditor').length !== 0) {
-      // set all tabs different IDs to prevent setting result to existing editor.
-      const uniqueID = new Date().getTime();
-      otherTab.find('#divActiveJsonEditor').attr('id', `divActiveJsonEditor-${uniqueID}`);
-      otherTab.find('#activeJsonEditor').attr('id', `activeJsonEditor-${uniqueID}`);
-      otherTab.find('#divActiveAceEditor').attr('id', `divActiveAceEditor-${uniqueID}`);
-      otherTab.find('#activeAceEditor').attr('id', `activeAceEditor-${uniqueID}`);
-    }
-  });
-};
-
-export const setResultToEditors = function (tabID, result, queryParams, queryInfo) {
-  // set json editor
-  getEditor(tabID).set(result);
-
-  // set ace
-  AceEditor.instance('activeAceEditor', {
-    mode: 'javascript',
-    theme: 'dawn',
-  }, (editor) => {
-    editor.$blockScrolling = Infinity;
-    editor.setOptions({
-      fontSize: '12pt',
-      showPrintMargin: false,
-    });
-    editor.setValue(JSON.stringify(result, null, '\t'), -1);
-  });
-
-  const activeTab = $(`#tab-${tabID}`);
-
-  // cache query data
-  activeTab.data('query', {
-    queryInfo,
-    queryParams,
-  });
-
-  // cache find data for save button
-  if (queryInfo === 'find') {
-    activeTab.data('findData', result);
-  }
-};
-
-const clearQueryIfAdmin = function () {
-  $.each(Enums.ADMIN_QUERY_TYPES, (key, value) => {
-    if (value === Session.get(Helper.strSessionSelectedQuery)) {
-      Session.set(Helper.strSessionSelectedQuery, null);
-      Session.set(Helper.strSessionSelectedOptions, null);
-    }
-  });
-};
-
-const getWhichResultViewShowing = function () {
-  const jsonViews = $('div[id^="divActiveJsonEditor"]');
-  const aceViews = $('div[id^="divActiveAceEditor"]');
-
-  let whichIsDisplayed = 'none';
-  jsonViews.each(function () {
-    if ($(this).css('display') !== 'none') {
-      whichIsDisplayed = 'jsonEditor';
-    }
-  });
-
-  aceViews.each(function () {
-    if ($(this).css('display') !== 'none') {
-      whichIsDisplayed = 'aceEditor';
-    }
-  });
-
-  return whichIsDisplayed;
-};
-
-export const getResultTabContent = function (tabID, defaultView) {
-  const jsonEditorHtml = `<div class="tab-pane fade in active" id="tab-${tabID}">` +
-    '<div id="divActiveJsonEditor" class="form-group"> ' +
-    '<div id="activeJsonEditor" style="width: 100%;height:500px" class="col-lg-12"> ' +
-    '</div> </div> ' +
-    '<div id="divActiveAceEditor" class="form-group" style="display: none"> ' +
-    '<div class="col-lg-12"> ' +
-    '<pre id="activeAceEditor" style="height: 500px"></pre> ' +
-    '</div> </div> </div>';
-
-  const aceEditorHtml = `<div class="tab-pane fade in active" id="tab-${tabID}">` +
-    '<div id="divActiveJsonEditor" class="form-group" style="display:none;"> ' +
-    '<div id="activeJsonEditor" style="width: 100%;height:500px" class="col-lg-12"> ' +
-    '</div> </div> ' +
-    '<div id="divActiveAceEditor" class="form-group"> ' +
-    '<div class="col-lg-12"> ' +
-    '<pre id="activeAceEditor" style="height: 500px"></pre> ' +
-    '</div> </div> </div>';
-
-  const whichIsDisplayed = getWhichResultViewShowing();
-  let result;
-
-  if (whichIsDisplayed === 'none') {
-    const defaultIsAce = (defaultView !== 'Jsoneditor');
-    if (!defaultIsAce) {
-      result = jsonEditorHtml;
-    } else {
-      result = aceEditorHtml;
-    }
-  } else if (whichIsDisplayed === 'jsonEditor') {
-    result = jsonEditorHtml;
-  } else {
-    result = aceEditorHtml;
-  }
-
-  return result;
-};
-
 export const initExecuteQuery = function () {
   // loading button
   Ladda.create(document.querySelector('#btnExecuteQuery')).start();
-};
-
-const saveQueryHistory = function (queryInfo, queryParams) {
-  if (!queryParams) {
-    queryParams = {};
-  }
-
-  Communicator.call({
-    methodName: 'saveQueryHistory',
-    args: {
-      history: {
-        connectionId: Session.get(Helper.strSessionConnection),
-        collectionName: Session.get(Helper.strSessionSelectedCollection),
-        queryName: queryInfo,
-        params: JSON.stringify(queryParams),
-        date: new Date(),
-      }
-    }
-  });
-};
-
-export const setQueryResult = function (result, queryInfo, queryParams, saveHistory) {
-  const jsonEditor = $('#divActiveJsonEditor');
-  const aceEditor = $('#divActiveAceEditor');
-  const settings = Settings.findOne();
-
-  if (jsonEditor.css('display') === 'none' && aceEditor.css('display') === 'none') {
-    // there's only one tab, set results
-    if (settings.defaultResultView === 'Jsoneditor') {
-      jsonEditor.show('slow');
-    } else {
-      aceEditor.show('slow');
-    }
-    setResultToEditors(1, result, queryParams, queryInfo);
-  } else {
-    // close all if setting for single tab is enabled
-    const resultTabs = $('#resultTabs');
-    if (settings.singleTabResultSets) {
-      resultTabs.find('li').each((idx, li) => {
-        const select = $(li);
-        $(select.children('a').attr('href')).remove();
-        select.remove();
-      });
-
-      $('#divBrowseCollectionFooter').hide();
-      $('#divBrowseCollectionFindFooter').hide();
-    }
-
-    // open a new tab
-    const tabID = clarifyTabID();
-    const tabContent = getResultTabContent(tabID, settings.defaultResultView);
-    const tabTitle = `${queryInfo} - ${Session.get(Helper.strSessionSelectedCollection)}`;
-    setAllTabsInactive();
-
-    // set tab href
-    resultTabs.append($(`<li><a href="#tab-${tabID}" data-toggle="tab"><i class="fa fa-book"></i>${tabTitle
-    }<button class="close" type="button" title="Close">×</button></a></li>`));
-
-    // set tab content
-    $('#resultTabContents').append(tabContent);
-
-    // show last tab
-    const lastTab = resultTabs.find('a:last');
-    lastTab.tab('show');
-
-    setResultToEditors(tabID, result, queryParams, queryInfo);
-  }
-
-  if (saveHistory) saveQueryHistory(queryInfo, queryParams);
 };
 
 const cmbQueriesChangeEvent = function () {
@@ -296,24 +79,6 @@ const getActiveTabHeader = () => {
   const text = $('#resultTabs').find('li.active').find('a').text();
   if (text && text.indexOf(' ') !== -1) {
     return text.substring(0, text.indexOf(' '));
-  }
-};
-
-const getActiveEditorValue = () => {
-  const resultTabs = $('#resultTabs');
-  const resultContents = $('#resultTabContents');
-
-  const whichIsDisplayed = getWhichResultViewShowing();
-  if (whichIsDisplayed === 'aceEditor') {
-    const foundAceEditor = resultContents.find('div.active').find('pre').attr('id');
-    if (foundAceEditor) {
-      return AceEditor.instance(foundAceEditor).getValue();
-    }
-  } else if (whichIsDisplayed === 'jsonEditor') {
-    const tabId = resultTabs.find('li.active').find('a').attr('href');
-    if ($(tabId).data('jsoneditor')) {
-      return JSON.stringify($(tabId).data('jsoneditor').get());
-    }
   }
 };
 

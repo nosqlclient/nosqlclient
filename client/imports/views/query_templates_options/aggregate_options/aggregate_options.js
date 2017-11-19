@@ -2,7 +2,7 @@
  * Created by sercan on 09.12.2016.
  */
 import { Template } from 'meteor/templating';
-import Helper from '/client/imports/helper';
+import Helper from '/client/imports/helpers/helper';
 import Enums from '/lib/imports/enums';
 import { Session } from 'meteor/session';
 import { $ } from 'meteor/jquery';

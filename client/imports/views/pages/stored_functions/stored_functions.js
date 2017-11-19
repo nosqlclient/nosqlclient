@@ -2,7 +2,7 @@ import { Template } from 'meteor/templating';
 import { Session } from 'meteor/session';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Communicator } from '/client/imports/facades';
-import Helper from '/client/imports/helper';
+import Helper from '/client/imports/helpers/helper';
 import './stored_functions.html';
 
 const toastr = require('toastr');

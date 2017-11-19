@@ -1,7 +1,7 @@
 import { Template } from 'meteor/templating';
 import { Session } from 'meteor/session';
 import { FlowRouter } from 'meteor/kadira:flow-router';
-import Helper from '/client/imports/helper';
+import Helper from '/client/imports/helpers/helper';
 import Enums from '/lib/imports/enums';
 import './shell_histories.html';
 

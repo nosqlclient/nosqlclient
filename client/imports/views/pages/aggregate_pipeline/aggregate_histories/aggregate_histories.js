@@ -2,7 +2,7 @@ import { Template } from 'meteor/templating';
 import { Session } from 'meteor/session';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { renderQuery } from '../aggregate_pipeline';
-import Helper from '/client/imports/helper';
+import Helper from '/client/imports/helpers/helper';
 import Enums from '/lib/imports/enums';
 import './aggregate_histories.html';
 

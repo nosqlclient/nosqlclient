@@ -1,5 +1,5 @@
 import { Template } from 'meteor/templating';
-import Helper from '/client/imports/helper';
+import Helper from '/client/imports/helpers/helper';
 import Enums from '/lib/imports/enums';
 import { Communicator } from '/client/imports/facades';
 import { initExecuteQuery } from '/client/imports/views/pages/admin_queries/admin_queries';

@@ -1,9 +1,9 @@
 import { Template } from 'meteor/templating';
 import { Session } from 'meteor/session';
 import Enums from '/lib/imports/enums';
-import Helper from '/client/imports/helper';
-import './add_collection_options.html';
+import Helper from '/client/imports/helpers/helper';
 import $ from 'jquery';
+import './add_collection_options.html';
 
 export const getOptions = function () {
   const result = {};

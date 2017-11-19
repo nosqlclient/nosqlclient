@@ -1,6 +1,6 @@
 import { Template } from 'meteor/templating';
 import { Communicator } from '/client/imports/facades';
-import Helper from '/client/imports/helper';
+import Helper from '/client/imports/helpers/helper';
 import './convert_to_capped.html';
 
 const toastr = require('toastr');

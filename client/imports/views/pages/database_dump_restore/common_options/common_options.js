@@ -1,6 +1,6 @@
 import { Template } from 'meteor/templating';
 import { $ } from 'meteor/jquery';
-import Helper from '/client/imports/helper';
+import Helper from '/client/imports/helpers/helper';
 import { Communicator } from '/client/imports/facades';
 import './common_options.html';
 

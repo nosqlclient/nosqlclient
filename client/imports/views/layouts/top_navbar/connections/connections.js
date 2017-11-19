@@ -3,7 +3,7 @@ import { Meteor } from 'meteor/meteor';
 import { Session } from 'meteor/session';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { FlowRouter } from 'meteor/kadira:flow-router';
-import Helper from '/client/imports/helper';
+import Helper from '/client/imports/helpers/helper';
 import { Connections } from '/lib/imports/collections';
 import { loadFile } from '/client/imports/views/layouts/top_navbar/top_navbar';
 import { Communicator } from '/client/imports/facades';

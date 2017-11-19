@@ -1,6 +1,3 @@
-/**
- * Created by RSercan on 29.12.2015.
- */
 const Enums = function () {
   this.LOCAL_STORAGE_KEYS = {
     MONGO_BINARY_INFO: 'mongoclient-mongo-binary-220-warn',
@@ -174,6 +171,12 @@ const Enums = function () {
     UPSERT: 'upsert',
     RETURN_ORIGINAL: 'returnOriginal',
   };
+};
+
+Enums.prototype = {
+  get(key) {
+    return this[key];
+  }
 };
 
 export default new Enums();

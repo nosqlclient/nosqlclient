@@ -1,6 +1,6 @@
 import { $ } from 'meteor/jquery';
 import './mongodump_options.html';
-import Helper from '/client/imports/helper';
+import Helper from '/client/imports/helpers/helper';
 
 const toastr = require('toastr');
 

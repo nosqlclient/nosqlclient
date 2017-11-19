@@ -3,7 +3,7 @@ import { Session } from 'meteor/session';
 import { Meteor } from 'meteor/meteor';
 import Enums from '/lib/imports/enums';
 import { Connections } from '/lib/imports/collections';
-import Helper from '/client/imports/helper';
+import Helper from '/client/imports/helpers/helper';
 import { Communicator } from '/client/imports/facades';
 import './add_collection.html';
 import { getOptions } from './options/add_collection_options';

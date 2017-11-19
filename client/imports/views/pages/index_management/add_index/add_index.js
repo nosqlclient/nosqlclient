@@ -1,7 +1,7 @@
 import { Template } from 'meteor/templating';
 import { Meteor } from 'meteor/meteor';
 import { Communicator } from '/client/imports/facades';
-import Helper from '/client/imports/helper';
+import Helper from '/client/imports/helpers/helper';
 import { initIndexes } from '../index_management';
 import './add_index.html';
 

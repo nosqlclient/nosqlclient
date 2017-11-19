@@ -1,13 +1,8 @@
 import { Template } from 'meteor/templating';
 import { Session } from 'meteor/session';
 import { FlowRouter } from 'meteor/kadira:flow-router';
-import Helper from '/client/imports/helper';
-import { Settings } from '/lib/imports/collections';
+import Helper from '/client/imports/helpers/helper';
 import Enums from '/lib/imports/enums';
-import { AceEditor } from 'meteor/arch:ace-editor';
-
-
-// queries
 import '/client/imports/views/query_templates/admin/add_user/add_user';
 import '/client/imports/views/query_templates/admin/build_info/build_info';
 import '/client/imports/views/query_templates/admin/command/command';
@@ -25,14 +20,9 @@ import './admin_queries.html';
 
 const toastr = require('toastr');
 const Ladda = require('ladda');
-const JSONEditor = require('jsoneditor');
-/**
- * Created by RSercan on 10.1.2016.
- */
-
 
 Template.adminQueries.onRendered(function () {
-  if (Session.get(Helper.strSessionCollectionNames) == undefined) {
+  if (!Session.get(Helper.strSessionCollectionNames)) {
     FlowRouter.go('/databaseStats');
     return;
   }
@@ -77,11 +67,11 @@ Template.adminQueries.events({
     const jsonView = $('#divJsonEditor');
     const aceView = $('#divAceEditor');
 
-    if (jsonView.css('display') == 'none' && aceView.css('display') == 'none') {
+    if (jsonView.css('display') === 'none' && aceView.css('display') === 'none') {
       return;
     }
 
-    if (jsonView.css('display') == 'none') {
+    if (jsonView.css('display') === 'none') {
       aceView.hide();
       jsonView.show('slow');
     } else {
@@ -144,45 +134,4 @@ Template.adminQueries.helpers({
 
 export const initExecuteQuery = function () {
   Ladda.create(document.querySelector('#btnExecuteAdminQuery')).start();
-};
-
-export const setAdminResult = function (result) {
-  // set json editor
-  getEditor().set(result);
-
-  // set ace editor
-  AceEditor.instance('aceeditor', {
-    mode: 'javascript',
-    theme: 'dawn',
-  }, (editor) => {
-    editor.$blockScrolling = Infinity;
-    editor.setOptions({
-      fontSize: '12pt',
-      showPrintMargin: false,
-    });
-    editor.setValue(JSON.stringify(result, null, '\t'), -1);
-  });
-
-  const jsonEditor = $('#divJsonEditor');
-  const aceEditor = $('#divAceEditor');
-  if (jsonEditor.css('display') == 'none' && aceEditor.css('display') == 'none') {
-    const settings = Settings.findOne();
-    if (settings.defaultResultView == 'Jsoneditor') {
-      jsonEditor.show('slow');
-    } else {
-      aceEditor.show('slow');
-    }
-  }
-};
-
-let jsonEditor;
-const getEditor = function () {
-  if ($('.jsoneditor').length == 0) {
-    jsonEditor = new JSONEditor(document.getElementById('jsoneditor'), {
-      mode: 'tree',
-      modes: ['code', 'form', 'text', 'tree', 'view'],
-      search: true,
-    });
-  }
-  return jsonEditor;
 };

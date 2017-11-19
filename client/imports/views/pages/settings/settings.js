@@ -1,7 +1,7 @@
 import { Template } from 'meteor/templating';
 import { Settings } from '/lib/imports/collections';
 import { Communicator } from '/client/imports/facades';
-import Helper from '/client/imports/helper';
+import Helper from '/client/imports/helpers/helper';
 import './settings.html';
 
 const toastr = require('toastr');

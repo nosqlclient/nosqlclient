@@ -5,7 +5,7 @@ import { Template } from 'meteor/templating';
 import { Session } from 'meteor/session';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Connections } from '/lib/imports/collections';
-import Helper from '/client/imports/helper';
+import Helper from '/client/imports/helpers/helper';
 import Enums from '/lib/imports/enums';
 import { connect } from '/client/imports/views/layouts/top_navbar/connections/connections';
 import { initializeForm, resetForm } from './add_collection/add_collection';

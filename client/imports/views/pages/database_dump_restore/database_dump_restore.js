@@ -9,7 +9,7 @@ import { getMongodumpArgs } from './mongodump_options/mongodump_options';
 import { getMongorestoreArgs } from './mongorestore_options/mongorestore_options';
 import { getMongoexportOptions } from './mongoexport_options/mongoexport_options';
 import { getMongoimportOptions } from './mongoimport_options/mongoimport_options';
-import Helper from '/client/imports/helper';
+import Helper from '/client/imports/helpers/helper';
 import { Communicator } from '/client/imports/facades';
 import './common_options/common_options';
 

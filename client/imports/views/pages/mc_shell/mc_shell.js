@@ -8,7 +8,7 @@ import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Communicator } from '/client/imports/facades';
 import { initShellHistories } from './shell_histories/shell_histories';
 import Enums from '/lib/imports/enums';
-import Helper from '/client/imports/helper';
+import Helper from '/client/imports/helpers/helper';
 import { Settings, ShellCommands } from '/lib/imports/collections';
 import './mc_shell.html';
 

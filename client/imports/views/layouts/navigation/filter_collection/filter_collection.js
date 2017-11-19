@@ -1,6 +1,6 @@
 import { Template } from 'meteor/templating';
 import { Session } from 'meteor/session';
-import Helper from '/client/imports/helper';
+import Helper from '/client/imports/helpers/helper';
 import './filter_collection.html';
 import { excludedCollectionsByFilter, filterRegex, setExcludedCollectionsByFilter, setFilterRegex } from '../navigation';
 import $ from 'jquery';

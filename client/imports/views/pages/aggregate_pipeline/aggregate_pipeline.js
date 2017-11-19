@@ -9,7 +9,7 @@ import {
   setAllTabsInactive,
   setResultToEditors,
 } from '/client/imports/views/pages/browse_collection/browse_collection';
-import Helper from '/client/imports/helper';
+import Helper from '/client/imports/helpers/helper';
 import './aggregate_pipeline.html';
 import { initAggregateHistories } from './aggregate_histories/aggregate_histories';
 

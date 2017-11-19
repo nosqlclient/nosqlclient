@@ -1,7 +1,7 @@
 import { Template } from 'meteor/templating';
 import { Meteor } from 'meteor/meteor';
 import { Session } from 'meteor/session';
-import Helper from '/client/imports/helper';
+import Helper from '/client/imports/helpers/helper';
 import { Settings } from '/lib/imports/collections';
 import Enums from '/lib/imports/enums';
 import { Communicator } from '/client/imports/facades';

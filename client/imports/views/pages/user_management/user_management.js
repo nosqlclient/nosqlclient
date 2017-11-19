@@ -2,7 +2,7 @@ import { Template } from 'meteor/templating';
 import { Session } from 'meteor/session';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Communicator } from '/client/imports/facades';
-import Helper from '/client/imports/helper';
+import Helper from '/client/imports/helpers/helper';
 import { Connections } from '/lib/imports/collections';
 import { initUsers, popEditUserModal } from './manage_users/manage_users';
 import { initRoles } from './manage_roles/manage_roles';

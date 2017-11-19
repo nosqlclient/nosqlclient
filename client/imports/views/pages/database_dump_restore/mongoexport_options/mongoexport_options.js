@@ -1,6 +1,6 @@
 import { $ } from 'meteor/jquery';
 import './mongoexport_options.html';
-import Helper from '/client/imports/helper';
+import Helper from '/client/imports/helpers/helper';
 import { Template } from 'meteor/templating';
 
 const toastr = require('toastr');

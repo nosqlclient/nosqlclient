@@ -1,5 +1,5 @@
 import { Template } from 'meteor/templating';
-import Helper from '/client/imports/helper';
+import Helper from '/client/imports/helpers/helper';
 import { proceedUploading } from '../upload_file/upload_file';
 
 import './file_info.html';
