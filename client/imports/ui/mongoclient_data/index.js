@@ -8,11 +8,10 @@ const MongoclientData = function () {
 
 MongoclientData.prototype = {
   proceedImportExport() {
-    const laddaButton = Notification.start('#btnProceedImportExport');
     const importInput = $('#inputImportBackupFile');
 
     if (importInput.val()) {
-      laddaButton.start();
+      Notification.start('#btnProceedImportExport');
       Helper.loadFile(null, importInput, (val) => {
         Communicator.call({
           methodName: 'importMongoclient',
