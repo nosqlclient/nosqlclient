@@ -31,10 +31,71 @@ const proceedQueryExecution = function (methodName, args, isAdmin = true, queryP
 };
 
 const renderCodeMirror = function (divSelector, value) {
-// let codemirror initialize
   Meteor.setTimeout(() => {
     UIComponents.Editor.setCodeMirrorValue(divSelector, JSON.stringify(value, null, 1));
   }, 100);
+};
+
+const renderFunction = function (divSelector, val) {
+  Meteor.setTimeout(() => {
+    const str = JSON.stringify(val, null, 1).replace(/\\n/g, '\n');
+    UIComponents.Editor.setCodeMirrorValue(divSelector, str.substring(1, str.length - 1));
+  }, 100);
+};
+
+const renderInput = function (inputField, val) {
+  Meteor.setTimeout(() => {
+    inputField.val(val);
+  }, 100);
+};
+
+const renderBoolean = function (divSelector, val) {
+  Meteor.setTimeout(() => {
+    divSelector.iCheck(val ? 'check' : 'uncheck');
+  }, 100);
+};
+
+const checkStringInput = function (variable, name) {
+  if (!variable) {
+    Notification.error(`${name} can not be empty`);
+    return false;
+  }
+
+  return true;
+};
+
+const checkErrorField = function (obj) {
+  if (obj.ERROR) {
+    Notification.error(obj.ERROR);
+    return false;
+  }
+
+  return true;
+};
+
+const checkFunction = function (obj, fieldName) {
+  if (!obj) {
+    Notification.error(`Syntax error on ${fieldName}, not a valid function`);
+    return false;
+  }
+
+  return true;
+};
+
+const getFromHistoryOrEditor = function (historyParams, divSelector, historyField = 'selector') {
+  let result;
+  if (historyParams) result = ExtendedJSON.convertAndCheckJSON(JSON.stringify(historyParams[historyField]));
+  else result = ExtendedJSON.convertAndCheckJSON(UIComponents.Editor.getCodeMirrorValue(divSelector));
+
+  return result;
+};
+
+const getFromHistoryOrEditorAsFunction = function (historyParams, divSelector, historyField) {
+  let result;
+  if (historyParams) result = JSON.stringify(historyParams[historyField]).parseFunction();
+  else result = UIComponents.Editor.getCodeMirrorValue(divSelector).parseFunction();
+
+  return result;
 };
 
 const renderOptionsArray = function (options, optionEnum, cmbSelector) {
@@ -121,18 +182,9 @@ Querying.prototype = {
       const username = $('#inputAddUserUsername').val();
       const password = $('#inputAddUserPassword').val();
 
-      if (!username) {
-        Notification.error('Username can not be empty');
-        return;
-      }
-      if (!password) {
-        Notification.error('Password can not be empty');
-        return;
-      }
-      if (options.ERROR) {
-        Notification.error(options.ERROR);
-        return;
-      }
+      if (!checkStringInput(username, 'username')) return;
+      if (!checkStringInput(password, 'password')) return;
+      if (!checkErrorField(options)) return;
 
       const runOnAdminDB = $('#aRunOnAdminDB').iCheck('update')[0].checked;
       proceedQueryExecution('addUser', { username, password, runOnAdminDB, options });
@@ -145,14 +197,10 @@ Querying.prototype = {
 
     executeCommandQuery() {
       Notification.start('#btnExecuteAdminQuery');
-      let command = UIComponents.Editor.getCodeMirrorValue($('#divCommand'));
+      const command = ExtendedJSON.convertAndCheckJSON(UIComponents.Editor.getCodeMirrorValue($('#divCommand')));
       const options = QueryingOptions.getOptions(Enums.COMMAND_OPTIONS);
 
-      command = ExtendedJSON.convertAndCheckJSON(command);
-      if (command.ERROR) {
-        Notification.error(`Syntax error on command: ${command.ERROR}`);
-        return;
-      }
+      if (!checkErrorField(command)) return;
 
       const runOnAdminDB = $('#aRunOnAdminDB').iCheck('update')[0].checked;
       proceedQueryExecution('command', { command, runOnAdminDB, options });
@@ -177,10 +225,7 @@ Querying.prototype = {
       Notification.start('#btnExecuteAdminQuery');
       const username = $('#inputAddUserUsername').val();
 
-      if (!username || username.length === 0) {
-        Notification.error('Username can not be empty');
-        return;
-      }
+      if (!checkStringInput(username, 'username')) return;
 
       const runOnAdminDB = $('#aRunOnAdminDB').iCheck('update')[0].checked;
       proceedQueryExecution('profilingInfo', { username, runOnAdminDB });
@@ -203,25 +248,16 @@ Querying.prototype = {
 
     executeSetProfilingLevelQuery() {
       Notification.start('#btnExecuteAdminQuery');
-      const level = $('#cmbLevel').val();
-      proceedQueryExecution('setProfilingLevel', { level });
+      proceedQueryExecution('setProfilingLevel', { level: $('#cmbLevel').val() });
     },
 
     executeValidateCollectionQuery() {
       Notification.start('#btnExecuteAdminQuery');
       const collectionName = $('#inputValidateCollection').val();
-      let options = UIComponents.Editor.getCodeMirrorValue($('#divOptions'));
+      const options = ExtendedJSON.convertAndCheckJSON(UIComponents.Editor.getCodeMirrorValue($('#divOptions')));
 
-      if (!collectionName || collectionName.length === 0) {
-        Notification.error('CollectionName can not be empty');
-        return;
-      }
-
-      options = ExtendedJSON.convertAndCheckJSON(options);
-      if (options.ERROR) {
-        Notification.error(`Syntax error on options: ${options.ERROR}`);
-        return;
-      }
+      if (!checkStringInput(collectionName, 'collectionName')) return;
+      if (!checkErrorField(options)) return;
 
       proceedQueryExecution('validateCollection', { collectionName, options });
     }
@@ -232,18 +268,11 @@ Querying.prototype = {
       execute(historyParams) {
         Notification.start('#btnExecuteQuery');
         const selectedCollection = SessionManager.get(SessionManager.strSessionSelectedCollection);
-        let pipeline = historyParams ? JSON.stringify(historyParams.pipeline) : UIComponents.Editor.getCodeMirrorValue($('#divPipeline'));
+        const pipeline = getFromHistoryOrEditor(historyParams, $('#divPipeline'), 'pipeline');
         const options = historyParams ? historyParams.options : QueryingOptions.getOptions(Enums.AGGREGATE_OPTIONS);
 
-        pipeline = ExtendedJSON.convertAndCheckJSON(pipeline);
-        if (pipeline.ERROR) {
-          Notification.error(`Syntax error on pipeline: ${pipeline.ERROR}`);
-          return;
-        }
-        if (options.ERROR) {
-          Notification.error(options.ERROR);
-          return;
-        }
+        if (!checkErrorField(pipeline)) return;
+        if (!checkErrorField(options)) return;
 
         proceedQueryExecution('aggregate', { selectedCollection, pipeline, options }, false, { pipeline, options }, (!historyParams));
       },
@@ -273,14 +302,10 @@ Querying.prototype = {
       execute(historyParams) {
         Notification.start('#btnExecuteQuery');
         const selectedCollection = SessionManager.get(SessionManager.strSessionSelectedCollection);
-        let operations = historyParams ? JSON.stringify(historyParams.selector) : UIComponents.Editor.getCodeMirrorValue($('#divBulkWrite'));
+        const operations = getFromHistoryOrEditor(historyParams, $('#divBulkWrite'));
         const options = historyParams ? historyParams.options : QueryingOptions.getOptions(Enums.BULK_WRITE_OPTIONS);
 
-        operations = ExtendedJSON.convertAndCheckJSON(operations);
-        if (operations.ERROR) {
-          Notification.error(`Syntax error on operations: ${operations.ERROR}`);
-          return;
-        }
+        if (!checkErrorField(operations)) return;
 
         proceedQueryExecution('bulkWrite', { selectedCollection, operations, options }, false, { selector: operations, options }, (!historyParams));
       },
@@ -307,14 +332,10 @@ Querying.prototype = {
       execute(historyParams) {
         Notification.start('#btnExecuteQuery');
         const selectedCollection = SessionManager.get(SessionManager.strSessionSelectedCollection);
-        let selector = historyParams ? JSON.stringify(historyParams.selector) : UIComponents.Editor.getCodeMirrorValue($('#divSelector'));
+        const selector = getFromHistoryOrEditor(historyParams, $('#divSelector'));
         const options = historyParams ? historyParams.options : QueryingOptions.getOptions(Enums.COUNT_OPTIONS);
 
-        selector = ExtendedJSON.convertAndCheckJSON(selector);
-        if (selector.ERROR) {
-          Notification.error(`Syntax error on selector: ${selector.ERROR}`);
-          return;
-        }
+        if (!checkErrorField(selector)) return;
 
         proceedQueryExecution('count', { selectedCollection, selector, options }, false, { selector, options }, (!historyParams));
       },
@@ -344,17 +365,10 @@ Querying.prototype = {
         Notification.start('#btnExecuteQuery');
         const selectedCollection = SessionManager.get(SessionManager.strSessionSelectedCollection);
         const options = historyParams ? historyParams.options : QueryingOptions.getOptions(Enums.CREATE_INDEX_OPTIONS);
-        let fields = historyParams ? JSON.stringify(historyParams.fields) : UIComponents.Editor.getCodeMirrorValue($('#divFields'));
+        const fields = getFromHistoryOrEditor(historyParams, $('#divFields'), 'fields');
 
-        fields = ExtendedJSON.convertAndCheckJSON(fields);
-        if (fields.ERROR) {
-          Notification.error(`Syntax error on index field: ${fields.ERROR}`);
-          return;
-        }
-        if (options.ERROR) {
-          Notification.error(options.ERROR);
-          return;
-        }
+        if (!checkErrorField(fields)) return;
+        if (!checkErrorField(options)) return;
 
         proceedQueryExecution('createIndex', { selectedCollection, fields, options }, false, { fields, options }, (!historyParams));
       },
@@ -389,13 +403,9 @@ Querying.prototype = {
       execute(historyParams) {
         Notification.start('#btnExecuteQuery');
         const selectedCollection = SessionManager.get(SessionManager.strSessionSelectedCollection);
-        let selector = historyParams ? JSON.stringify(historyParams.selector) : UIComponents.Editor.getCodeMirrorValue($('#divSelector'));
+        const selector = getFromHistoryOrEditor(historyParams, $('#divSelector'));
 
-        selector = ExtendedJSON.convertAndCheckJSON(selector);
-        if (selector.ERROR) {
-          Notification.error(`Syntax error on selector: ${selector.ERROR}`);
-          return;
-        }
+        if (!checkErrorField(selector)) return;
 
         proceedQueryExecution('delete', { selectedCollection, selector }, false, { selector }, (!historyParams));
       },
@@ -408,27 +418,18 @@ Querying.prototype = {
       execute(historyParams) {
         Notification.start('#btnExecuteQuery');
         const selectedCollection = SessionManager.get(SessionManager.strSessionSelectedCollection);
-        let selector = historyParams ? JSON.stringify(historyParams.selector) : UIComponents.Editor.getCodeMirrorValue($('#divSelector'));
+        const selector = getFromHistoryOrEditor(historyParams, $('#divSelector'));
         const fieldName = historyParams ? historyParams.fieldName : $('#inputField').val();
         const options = historyParams ? historyParams.options : QueryingOptions.getOptions(Enums.DISTINCT_OPTIONS);
 
-        selector = ExtendedJSON.convertAndCheckJSON(selector);
-        if (selector.ERROR) {
-          Notification.error(`Syntax error on selector: ${selector.ERROR}`);
-          return;
-        }
+        if (!checkErrorField(selector)) return;
 
         proceedQueryExecution('distinct', { selectedCollection, selector, fieldName, options }, false, { selector, fieldName, options }, (!historyParams));
       },
 
       render(query) {
         if (query.queryParams.selector) renderCodeMirror($('#divSelector'), query.queryParams.selector);
-
-        if (query.queryParams.fieldName) {
-          Meteor.setTimeout(() => {
-            $('#inputField').val(query.queryParams.fieldName);
-          }, 100);
-        }
+        if (query.queryParams.fieldName) renderInput($('#inputField'), query.queryParams.fieldName);
 
         if (query.queryParams.options) {
           const optionsArray = renderOptionsArray(query.queryParams.options, Enums.DISTINCT_OPTIONS, $('#cmbDistinctOptions'));
@@ -454,11 +455,7 @@ Querying.prototype = {
         proceedQueryExecution('dropIndex', { selectedCollection, indexName }, false, { indexName }, (!historyParams));
       },
       render(query) {
-        if (query.queryParams.indexName) {
-          Meteor.setTimeout(() => {
-            $('#inputIndexName').val(query.queryParams.indexName);
-          }, 100);
-        }
+        if (query.queryParams.indexName) renderInput($('#inputIndexName'), query.queryParams.indexName);
       }
     },
 
@@ -467,13 +464,13 @@ Querying.prototype = {
         if (exportFormat) {
           window.open(`export?format=${exportFormat}&
     selectedCollection=${selectedCollection}&selector=${JSON.stringify(selector)}&cursorOptions=${JSON.stringify(cursorOptions)}&sessionId=${Meteor.default_connection._lastSessionId}`);
+
           Notification.stopAll();
         } else {
           const executeExplain = $('#inputExecuteExplain').iCheck('update')[0].checked;
           proceedQueryExecution('find', { selectedCollection, selector, cursorOptions, executeExplain }, false, { selector, cursorOptions, executeExplain }, saveHistory);
         }
       },
-
       checkAverageSize(count, avgObjSize, maxAllowedFetchSize) {
         const totalBytes = (count * avgObjSize) / (1024 * 1024);
         const totalMegabytes = Math.round(totalBytes * 100) / 100;
@@ -485,23 +482,15 @@ Querying.prototype = {
 
         return true;
       },
-
       execute(historyParams, exportFormat) {
         Notification.start('#btnExecuteQuery');
         const selectedCollection = SessionManager.get(SessionManager.strSessionSelectedCollection);
         const maxAllowedFetchSize = Math.round(ReactivityProvider.findOne(ReactivityProvider.types.Settings).maxAllowedFetchSize * 100) / 100;
         const cursorOptions = historyParams ? historyParams.cursorOptions : QueryingOptions.getOptions(Enums.CURSOR_OPTIONS);
-        let selector = historyParams ? JSON.stringify(historyParams.selector) : UIComponents.Editor.getCodeMirrorValue($('#divSelector'));
+        const selector = getFromHistoryOrEditor(historyParams, $('#divSelector'));
 
-        selector = ExtendedJSON.convertAndCheckJSON(selector);
-        if (selector.ERROR) {
-          Notification.error(`Syntax error on selector: ${selector.ERROR}`);
-          return;
-        }
-        if (cursorOptions.ERROR) {
-          Notification.error(cursorOptions.ERROR);
-          return;
-        }
+        if (!checkErrorField(selector)) return;
+        if (!checkErrorField(cursorOptions)) return;
 
         // max allowed fetch size  != 0 and there's no project option, check for size
         if (maxAllowedFetchSize && maxAllowedFetchSize !== 0 && !(Enums.CURSOR_OPTIONS.PROJECT in cursorOptions)) {
@@ -557,9 +546,7 @@ Querying.prototype = {
           }, 200);
         }
 
-        Meteor.setTimeout(() => {
-          $('#divExecuteExplain').iCheck(query.queryParams.executeExplain ? 'check' : 'uncheck');
-        }, 100);
+        renderBoolean($('#divExecuteExplain'), query.queryParams.executeExplain);
       }
     },
 
@@ -568,17 +555,10 @@ Querying.prototype = {
         Notification.start('#btnExecuteQuery');
         const selectedCollection = SessionManager.get(SessionManager.strSessionSelectedCollection);
         const cursorOptions = historyParams ? historyParams.cursorOptions : QueryingOptions.getOptions(Enums.CURSOR_OPTIONS);
-        let selector = historyParams ? JSON.stringify(historyParams.selector) : UIComponents.Editor.getCodeMirrorValue($('#divSelector'));
-        selector = ExtendedJSON.convertAndCheckJSON(selector);
-        if (selector.ERROR) {
-          Notification.error(`Syntax error on selector: ${selector.ERROR}`);
-          return;
-        }
+        const selector = getFromHistoryOrEditor(historyParams, $('#divSelector'));
 
-        if (cursorOptions.ERROR) {
-          Notification.error(cursorOptions.ERROR);
-          return;
-        }
+        if (!checkErrorField(selector)) return;
+        if (!checkErrorField(cursorOptions)) return;
 
         proceedQueryExecution('findOne', { selectedCollection, selector, cursorOptions }, false, { selector, cursorOptions }, (!historyParams));
       },
@@ -609,16 +589,10 @@ Querying.prototype = {
         Notification.start('#btnExecuteQuery');
         const selectedCollection = SessionManager.get(SessionManager.strSessionSelectedCollection);
         const options = historyParams ? historyParams.options : QueryingOptions.getOptions(Enums.FINDONE_MODIFY_OPTIONS);
-        let selector = historyParams ? JSON.stringify(historyParams.selector) : UIComponents.Editor.getCodeMirrorValue($('#divSelector'));
-        selector = ExtendedJSON.convertAndCheckJSON(selector);
-        if (selector.ERROR) {
-          Notification.error(`Syntax error on selector: ${selector.ERROR}`);
-          return;
-        }
-        if (options.ERROR) {
-          Notification.error(options.ERROR);
-          return;
-        }
+        const selector = getFromHistoryOrEditor(historyParams, $('#divSelector'));
+
+        if (!checkErrorField(selector)) return;
+        if (!checkErrorField(options)) return;
 
         proceedQueryExecution('findOneAndDelete', { selectedCollection, selector, options }, false, { selector, options }, (!historyParams));
       },
@@ -647,24 +621,12 @@ Querying.prototype = {
         Notification.start('#btnExecuteQuery');
         const selectedCollection = SessionManager.get(SessionManager.strSessionSelectedCollection);
         const options = historyParams ? historyParams.options : QueryingOptions.getOptions(Enums.FINDONE_MODIFY_OPTIONS);
-        let selector = historyParams ? JSON.stringify(historyParams.selector) : UIComponents.Editor.getCodeMirrorValue($('#divSelector'));
-        selector = ExtendedJSON.convertAndCheckJSON(selector);
-        if (selector.ERROR) {
-          Notification.error(`Syntax error on selector: ${selector.ERROR}`);
-          return;
-        }
+        const selector = getFromHistoryOrEditor(historyParams, $('#divSelector'));
+        const replaceObject = getFromHistoryOrEditor(historyParams, $('#divReplacement'), 'replaceObject');
 
-        let replaceObject = historyParams ? JSON.stringify(historyParams.replaceObject) : UIComponents.Editor.getCodeMirrorValue($('#divReplacement'));
-        replaceObject = ExtendedJSON.convertAndCheckJSON(replaceObject);
-        if (replaceObject.ERROR) {
-          Notification.error(`Syntax error on set: ${replaceObject.ERROR}`);
-          return;
-        }
-
-        if (options.ERROR) {
-          Notification.error(options.ERROR);
-          return;
-        }
+        if (!checkErrorField(selector)) return;
+        if (!checkErrorField(replaceObject)) return;
+        if (!checkErrorField(options)) return;
 
         proceedQueryExecution('findOneAndReplace', { selectedCollection, selector, replaceObject, options }, false, { selector, replaceObject, options }, (!historyParams));
       },
@@ -697,20 +659,12 @@ Querying.prototype = {
         Notification.start('#btnExecuteQuery');
         const selectedCollection = SessionManager.get(SessionManager.strSessionSelectedCollection);
         const options = historyParams ? historyParams.options : QueryingOptions.getOptions(Enums.FINDONE_MODIFY_OPTIONS);
-        let selector = historyParams ? JSON.stringify(historyParams.selector) : UIComponents.Editor.getCodeMirrorValue($('#divSelector'));
-        let setObject = historyParams ? JSON.stringify(historyParams.setObject) : UIComponents.Editor.getCodeMirrorValue($('#divSet'));
-        selector = ExtendedJSON.convertAndCheckJSON(selector);
-        if (selector.ERROR) {
-          Notification.error(`Syntax error on selector: ${selector.ERROR}`);
-          return;
-        }
+        const selector = getFromHistoryOrEditor(historyParams, $('#divSelector'));
+        let setObject = getFromHistoryOrEditor(historyParams, $('#divSet'), 'setObject');
 
-        setObject = ExtendedJSON.convertAndCheckJSON(setObject);
-        if (setObject.ERROR) {
-          Notification.error(`Syntax error on set: ${setObject.ERROR}`);
-          return;
-        }
-        setObject = { $set: setObject };
+        if (!checkErrorField(selector)) return;
+        if (!checkErrorField(setObject)) return;
+        if (!setObject.$set) setObject = { $set: setObject };
 
         if (options.ERROR) {
           Notification.error(options.ERROR);
@@ -749,7 +703,6 @@ Querying.prototype = {
         const selectedCollection = SessionManager.get(SessionManager.strSessionSelectedCollection);
         let xAxis = historyParams ? historyParams.xAxis : $('#inputXAxis').val();
         if (xAxis) xAxis = parseInt(xAxis, 10);
-
         let yAxis = historyParams ? historyParams.yAxis : $('#inputYAxis').val();
         if (yAxis) yAxis = parseInt(yAxis, 10);
 
@@ -840,10 +793,10 @@ Querying.prototype = {
         Notification.start('#btnExecuteQuery');
         const selectedCollection = SessionManager.get(SessionManager.strSessionSelectedCollection);
         let keys = historyParams ? JSON.stringify(historyParams.keys) : UIComponents.Editor.getCodeMirrorValue($('#divKeys'));
-        let condition = historyParams ? JSON.stringify(historyParams.condition) : UIComponents.Editor.getCodeMirrorValue($('#divCondition'));
-        let initial = historyParams ? JSON.stringify(historyParams.initial) : UIComponents.Editor.getCodeMirrorValue($('#divInitial'));
-        const reduce = historyParams ? JSON.stringify(historyParams.reduce) : UIComponents.Editor.getCodeMirrorValue($('#divReduce'));
-        const finalize = historyParams ? JSON.stringify(historyParams.finalize) : UIComponents.Editor.getCodeMirrorValue($('#divFinalize'));
+        const condition = getFromHistoryOrEditor(historyParams, $('#divCondition'), 'condition');
+        const initial = getFromHistoryOrEditor(historyParams, $('#divInitial'), 'initial');
+        const reduce = getFromHistoryOrEditorAsFunction(historyParams, $('#divReduce'), 'reduce');
+        const finalize = getFromHistoryOrEditorAsFunction(historyParams, $('#divFinalize'), 'finalize');
         const command = $('#inputCommand').iCheck('update')[0].checked;
 
         if (keys.startsWith('function')) {
@@ -859,27 +812,10 @@ Querying.prototype = {
           }
         }
 
-        condition = ExtendedJSON.convertAndCheckJSON(condition);
-        if (condition.ERROR) {
-          Notification.error(`Syntax error on condition: ${condition.ERROR}`);
-          return;
-        }
-
-        initial = ExtendedJSON.convertAndCheckJSON(initial);
-        if (initial.ERROR) {
-          Notification.error(`Syntax error on initial: ${initial.ERROR}`);
-          return;
-        }
-
-        if (!reduce.parseFunction()) {
-          Notification.error('Syntax error on reduce, not a valid function');
-          return;
-        }
-
-        if (!finalize.parseFunction()) {
-          Notification.error('Syntax error on finalize, not a valid function');
-          return;
-        }
+        if (!checkErrorField(condition)) return;
+        if (!checkErrorField(initial)) return;
+        if (!checkFunction(reduce, 'reduce')) return;
+        if (!checkFunction(finalize, 'finalize')) return;
 
         proceedQueryExecution('group', { selectedCollection, keys, condition, initial, reduce, finalize, command }, false, { keys, condition, initial, reduce, finalize, command }, (!historyParams));
       },
@@ -897,14 +833,9 @@ Querying.prototype = {
 
         if (query.queryParams.condition) renderCodeMirror($('#divCondition'), query.queryParams.condition);
         if (query.queryParams.initial) renderCodeMirror($('#divInitial'), query.queryParams.initial);
-        if (query.queryParams.reduce) renderCodeMirror($('#divReduce'), query.queryParams.reduce);
-        if (query.queryParams.finalize) renderCodeMirror($('#divFinalize'), query.queryParams.finalize);
-
-        if (query.queryParams.command) {
-          Meteor.setTimeout(() => {
-            $('#divCommand').iCheck(query.queryParams.options.command ? 'check' : 'uncheck');
-          }, 100);
-        }
+        if (query.queryParams.reduce) renderFunction($('#divReduce'), query.queryParams.reduce);
+        if (query.queryParams.finalize) renderFunction($('#divFinalize'), query.queryParams.finalize);
+        if (query.queryParams.command) renderBoolean($('#divCommand'), query.queryParams.options.command);
       }
     },
 
@@ -927,14 +858,10 @@ Querying.prototype = {
       execute(historyParams) {
         Notification.start('#btnExecuteQuery');
         const selectedCollection = SessionManager.get(SessionManager.strSessionSelectedCollection);
-        let docs = historyParams ? JSON.stringify(historyParams.docs) : UIComponents.Editor.getCodeMirrorValue($('#divDocs'));
+        const docs = getFromHistoryOrEditor(historyParams, $('#divDocs'), 'docs');
         const options = historyParams ? historyParams.options : QueryingOptions.getOptions(Enums.INSERT_MANY_OPTIONS);
 
-        docs = ExtendedJSON.convertAndCheckJSON(docs);
-        if (docs.ERROR) {
-          Notification.error(`Syntax error on docs: ${docs.ERROR}`);
-          return;
-        }
+        if (!checkErrorField(docs)) return;
 
         proceedQueryExecution('insertMany', { selectedCollection, docs, options }, false, { docs, options }, (!historyParams));
       },
@@ -971,38 +898,18 @@ Querying.prototype = {
         Notification.start('#btnExecuteQuery');
         const selectedCollection = SessionManager.get(SessionManager.strSessionSelectedCollection);
         const options = historyParams ? historyParams.options : QueryingOptions.getOptions(Enums.MAP_REDUCE_OPTIONS);
-        const map = historyParams ? JSON.stringify(historyParams.map) : UIComponents.Editor.getCodeMirrorValue($('#divMap'));
-        const reduce = historyParams ? JSON.stringify(historyParams.reduce) : UIComponents.Editor.getCodeMirrorValue($('#divReduce'));
+        const map = getFromHistoryOrEditorAsFunction(historyParams, $('#divMap'), 'map');
+        const reduce = getFromHistoryOrEditorAsFunction(historyParams, $('#divReduce'), 'reduce');
 
-        if (!map.parseFunction()) {
-          Notification.error('Syntax error on map, not a valid function');
-          return;
-        }
-        if (!reduce.parseFunction()) {
-          Notification.error('Syntax error on reduce, not a valid function');
-          return;
-        }
-        if (options.ERROR) {
-          Notification.error(options.ERROR);
-          return;
-        }
+        if (!checkFunction(reduce, 'reduce')) return;
+        if (!checkFunction(map, 'map')) return;
+        if (checkErrorField(options)) return;
 
         proceedQueryExecution('mapReduce', { selectedCollection, map, reduce, options }, false, { map, reduce, options }, (!historyParams));
       },
       render(query) {
-        if (query.queryParams.map) {
-          Meteor.setTimeout(() => {
-            const str = JSON.stringify(query.queryParams.map, null, 1).replace(/\\n/g, '\n');
-            UIComponents.Editor.setCodeMirrorValue($('#divMap'), str.substring(1, str.length - 1));
-          }, 100);
-        }
-
-        if (query.queryParams.reduce) {
-          Meteor.setTimeout(() => {
-            const str = JSON.stringify(query.queryParams.reduce, null, 1).replace(/\\n/g, '\n');
-            UIComponents.Editor.setCodeMirrorValue($('#divReduce'), str.substring(1, str.length - 1));
-          }, 100);
-        }
+        if (query.queryParams.map) renderFunction($('#divMap'), query.queryParams.map);
+        if (query.queryParams.reduce) renderFunction($('#divReduce'), query.queryParams.reduce);
 
         if (query.queryParams.options) {
           const optionsArray = renderOptionsArray(query.queryParams.options, Enums.MAP_REDUCE_OPTIONS, $('#cmbMapReduceOptions'));
@@ -1123,26 +1030,14 @@ Querying.prototype = {
         Notification.start('#btnExecuteQuery');
         const selectedCollection = SessionManager.get(SessionManager.strSessionSelectedCollection);
         const options = historyParams ? historyParams.options : QueryingOptions.getOptions(Enums.UPDATE_OPTIONS);
-        let selector = historyParams ? JSON.stringify(historyParams.selector) : UIComponents.Editor.getCodeMirrorValue($('#divSelector'));
-        let setObject = historyParams ? JSON.stringify(historyParams.setObject) : UIComponents.Editor.getCodeMirrorValue($('#divSet'));
+        const selector = getFromHistoryOrEditor(historyParams, $('#divSelector'));
+        let setObject = getFromHistoryOrEditor(historyParams, $('#divSet'), 'setObject');
 
-        selector = ExtendedJSON.convertAndCheckJSON(selector);
-        if (selector.ERROR) {
-          Notification.error(`Syntax error on selector: ${selector.ERROR}`);
-          return;
-        }
+        if (!checkErrorField(selector)) return;
+        if (!checkErrorField(options)) return;
+        if (!checkErrorField(setObject)) return;
 
-        setObject = ExtendedJSON.convertAndCheckJSON(setObject);
-        if (setObject.ERROR) {
-          Notification.error(`Syntax error on set: ${setObject.ERROR}`);
-          return;
-        }
-        setObject = { $set: setObject };
-
-        if (options.ERROR) {
-          Notification.error(options.ERROR);
-          return;
-        }
+        if (!setObject.$set) setObject = { $set: setObject };
 
         proceedQueryExecution('updateMany', { selectedCollection, selector, setObject, options }, false, { selector, setObject, options }, (!historyParams));
       },
@@ -1170,24 +1065,14 @@ Querying.prototype = {
         Notification.start('#btnExecuteQuery');
         const selectedCollection = SessionManager.get(SessionManager.strSessionSelectedCollection);
         const options = historyParams ? historyParams.options : QueryingOptions.getOptions(Enums.UPDATE_OPTIONS);
-        let selector = historyParams ? JSON.stringify(historyParams.selector) : UIComponents.Editor.getCodeMirrorValue($('#divSelector'));
-        let setObject = historyParams ? JSON.stringify(historyParams.setObject) : UIComponents.Editor.getCodeMirrorValue($('#divSet'));
+        const selector = getFromHistoryOrEditor(historyParams, $('#divSelector'));
+        let setObject = getFromHistoryOrEditor(historyParams, $('#divSet'), 'setObject');
 
-        selector = ExtendedJSON.convertAndCheckJSON(selector);
-        if (selector.ERROR) {
-          Notification.error(`Syntax error on selector: ${selector.ERROR}`);
-          return;
-        }
-        setObject = ExtendedJSON.convertAndCheckJSON(setObject);
-        if (setObject.ERROR) {
-          Notification.error(`Syntax error on set: ${setObject.ERROR}`);
-          return;
-        }
-        setObject = { $set: setObject };
-        if (options.ERROR) {
-          Notification.error(options.ERROR);
-          return;
-        }
+        if (!checkErrorField(selector)) return;
+        if (!checkErrorField(options)) return;
+        if (!checkErrorField(setObject)) return;
+
+        if (!setObject.$set) setObject = { $set: setObject };
 
         proceedQueryExecution('updateOne', { selectedCollection, selector, setObject, options }, false, { selector, setObject, options }, (!historyParams));
       },
