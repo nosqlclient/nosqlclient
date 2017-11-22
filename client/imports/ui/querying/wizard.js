@@ -4,7 +4,7 @@ const QueryWizard = function () {
   this.step = 1;
   this.selectedOption = null;
   this.fieldName = null;
-  this.this.txtValue = null;
+  this.txtValue = null;
   this.regexOptions = null;
   this.redirectText = "I'm redirecting you with your query, just press Execute";
 };
