@@ -1,26 +1,22 @@
 import { Template } from 'meteor/templating';
-import Helper from '/client/imports/helpers/helper';
-import Enums from '/lib/imports/enums';
-import { Session } from 'meteor/session';
 import { $ } from 'meteor/jquery';
+import { UIComponents } from '/client/imports/modules';
 import '/client/imports/views/query_templates_options/sort/sort';
 import '/client/imports/views/query_templates_options/limit/limit.html';
 import '/client/imports/views/query_templates_options/selector/selector';
 import '/client/imports/views/query_templates_options/bypass_document_validation/bypass_document_validation';
 import './map_reduce_options.html';
-/**
- * Created by RSercan on 3.1.2016.
- */
+
 Template.out.onRendered(() => {
-  Helper.initializeCodeMirror($('#divOut'), 'txtOut');
+  UIComponents.Editor.initializeCodeMirror({ divSelector: $('#divOut'), txtAreaId: 'txtOut' });
 });
 
 Template.scope.onRendered(() => {
-  Helper.initializeCodeMirror($('#divScope'), 'txtScope');
+  UIComponents.Editor.initializeCodeMirror({ divSelector: $('#divScope'), txtAreaId: 'txtScope' });
 });
 
 Template.finalize.onRendered(() => {
-  Helper.initializeCodeMirror($('#divFinalize'), 'txtFinalize');
+  UIComponents.Editor.initializeCodeMirror({ divSelector: $('#divFinalize'), txtAreaId: 'txtFinalize' });
 });
 
 Template.jsMode.onRendered(() => {
@@ -40,45 +36,3 @@ Template.verbose.onRendered(() => {
     checkboxClass: 'icheckbox_square-green',
   });
 });
-
-export const getOptions = function () {
-  const result = {};
-  Helper.checkAndAddOption('OUT', $('#divOut'), result, Enums.MAP_REDUCE_OPTIONS);
-  Helper.checkCodeMirrorSelectorForOption('QUERY', result, Enums.MAP_REDUCE_OPTIONS);
-  Helper.checkAndAddOption('SORT', $('#divSort'), result, Enums.MAP_REDUCE_OPTIONS);
-  Helper.checkAndAddOption('SCOPE', $('#divScope'), result, Enums.MAP_REDUCE_OPTIONS);
-
-  if ($.inArray('FINALIZE', Session.get(Helper.strSessionSelectedOptions)) != -1) {
-    const finalize = Helper.getCodeMirrorValue($('#divFinalize'));
-    if (finalize.parseFunction() == null) {
-      result.ERROR = 'Syntax Error on finalize, not a valid ';
-      return;
-    }
-  }
-
-  if ($.inArray('LIMIT', Session.get(Helper.strSessionSelectedOptions)) != -1) {
-    const limit = $('#inputLimit').val();
-    if (limit) {
-      result[Enums.MAP_REDUCE_OPTIONS.LIMIT] = parseInt(limit);
-    }
-  }
-
-
-  if ($.inArray('VERBOSE', Session.get(Helper.strSessionSelectedOptions)) != -1) {
-    result[Enums.MAP_REDUCE_OPTIONS.VERBOSE] = $('#divVerbose').iCheck('update')[0].checked;
-  }
-
-  if ($.inArray('KEEP_TEMP', Session.get(Helper.strSessionSelectedOptions)) != -1) {
-    result[Enums.MAP_REDUCE_OPTIONS.KEEP_TEMP] = $('#divKeepTemp').iCheck('update')[0].checked;
-  }
-
-  if ($.inArray('JS_MODE', Session.get(Helper.strSessionSelectedOptions)) != -1) {
-    result[Enums.MAP_REDUCE_OPTIONS.JS_MODE] = $('#divJsMode').iCheck('update')[0].checked;
-  }
-
-  if ($.inArray('BYPASS_DOCUMENT_VALIDATION', Session.get(Helper.strSessionSelectedOptions)) != -1) {
-    result[Enums.MAP_REDUCE_OPTIONS.BYPASS_DOCUMENT_VALIDATION] = $('#divBypassDocumentValidation').iCheck('update')[0].checked;
-  }
-
-  return result;
-};

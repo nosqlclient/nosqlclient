@@ -1,11 +1,8 @@
-/**
- * Created by RSercan on 3.1.2016.
- */
 import { Template } from 'meteor/templating';
-import Helper from '/client/imports/helpers/helper';
+import { UIComponents } from '/client/imports/modules';
 
 import './collation.html';
 
 Template.collation.onRendered(() => {
-  Helper.initializeCodeMirror($('#divCollation'), 'txtCollation');
+  UIComponents.Editor.initializeCodeMirror({ divSelector: $('#divCollation'), txtAreaId: 'txtCollation' });
 });

@@ -1,10 +1,7 @@
 import { Template } from 'meteor/templating';
-import Helper from '/client/imports/helpers/helper';
-
+import { UIComponents } from '/client/imports/modules';
 import './min.html';
-/**
- * Created by RSercan on 2.1.2016.
- */
+
 Template.min.onRendered(() => {
-  Helper.initializeCodeMirror($('#divMin'), 'txtMin');
+  UIComponents.Editor.initializeCodeMirror({ divSelector: $('#divMin'), txtAreaId: 'txtMin' });
 });

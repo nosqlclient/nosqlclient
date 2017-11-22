@@ -1,11 +1,7 @@
 import { Template } from 'meteor/templating';
-import Helper from '/client/imports/helpers/helper';
-
+import { UIComponents } from '/client/imports/modules';
 import './set.html';
 
-/**
- * Created by sercan on 06.01.2016.
- */
 Template.set.onRendered(() => {
-  Helper.initializeCodeMirror($('#divSet'), 'txtSet');
+  UIComponents.Editor.initializeCodeMirror({ divSelector: $('#divSet'), txtAreaId: 'txtSet' });
 });

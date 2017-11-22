@@ -3,7 +3,7 @@ import '/client/imports/views/layouts/navigation/navigation';
 import '/client/imports/views/layouts/top_navbar/top_navbar';
 import '/client/imports/views/layouts/footer/footer.html';
 import { Settings } from '/lib/imports/collections';
-import Enums from '/lib/imports/enums';
+import { Enums } from '/client/imports/modules';
 import './main.html';
 
 const toastr = require('toastr');
@@ -108,7 +108,7 @@ const doUIStuff = function () {
   });
 };
 
-Template.mainLayout.rendered = function () {
+Template.mainLayout.onRendered(() => {
   $(document).idleTimer(30 * 60 * 1000);
   $(document).on('idle.idleTimer', () => {
     // toastr.info('You are idle for 30 minutes :(', 'Idle');
@@ -132,4 +132,4 @@ Template.mainLayout.rendered = function () {
       }
     }
   });
-};
+});

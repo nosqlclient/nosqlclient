@@ -20,6 +20,14 @@ const resolveType = function (type) {
 ReactivityProvider.prototype = {
   findOne(type, query = {}) {
     return resolveType(type).findOne(query);
+  },
+
+  find(type, query = {}, options = {}) {
+    return resolveType(type).find(query, options).fetch();
+  },
+
+  observeChanges(type, query = {}, options = {}, callbacks) {
+    resolveType(type).find(query, options).observeChanges(callbacks);
   }
 };
 

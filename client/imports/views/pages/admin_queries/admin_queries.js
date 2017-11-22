@@ -1,8 +1,7 @@
 import { Template } from 'meteor/templating';
-import { Session } from 'meteor/session';
 import { FlowRouter } from 'meteor/kadira:flow-router';
+import { Enums, SessionManager, Notification } from '/client/imports/modules';
 import Helper from '/client/imports/helpers/helper';
-import Enums from '/lib/imports/enums';
 import '/client/imports/views/query_templates/admin/add_user/add_user';
 import '/client/imports/views/query_templates/admin/build_info/build_info';
 import '/client/imports/views/query_templates/admin/command/command';
@@ -18,11 +17,8 @@ import '/client/imports/views/query_templates/admin/validate_collection/validate
 
 import './admin_queries.html';
 
-const toastr = require('toastr');
-const Ladda = require('ladda');
-
 Template.adminQueries.onRendered(function () {
-  if (!Session.get(Helper.strSessionCollectionNames)) {
+  if (!SessionManager.get(SessionManager.strSessionCollectionNames)) {
     FlowRouter.go('/databaseStats');
     return;
   }
@@ -55,12 +51,10 @@ Template.adminQueries.onRendered(function () {
 
 Template.adminQueries.events({
   'change #cmbAdminQueries': function () {
-    Session.set(Helper.strSessionSelectedOptions, []);
+    SessionManager.set(SessionManager.strSessionSelectedOptions, []);
 
     const value = $('#cmbAdminQueries').find(':selected').text();
-    if (value) {
-      Session.set(Helper.strSessionSelectedQuery, value);
-    }
+    if (value) SessionManager.set(Helper.strSessionSelectedQuery, value);
   },
 
   'click #btnSwitchView': function () {
@@ -80,22 +74,19 @@ Template.adminQueries.events({
     }
   },
   'click #btnExecuteAdminQuery': function () {
-    const queryTemplate = Session.get(Helper.strSessionSelectedQuery);
-    if (queryTemplate) {
-      Template[queryTemplate].executeQuery();
-    } else {
-      toastr.warning('Select Query', 'Please select a query first ');
-    }
+    const queryTemplate = SessionManager.get(Helper.strSessionSelectedQuery);
+    if (queryTemplate) Template[queryTemplate].executeQuery();
+    else Notification.warning('Select Query', 'Please select a query first ');
   },
 });
 
 Template.adminQueries.helpers({
   getQueryTemplate() {
-    return Session.get(Helper.strSessionSelectedQuery);
+    return SessionManager.get(SessionManager.strSessionSelectedQuery);
   },
 
   getHelpBlockForSelectedQuery() {
-    switch (Session.get(Helper.strSessionSelectedQuery)) {
+    switch (SessionManager.get(SessionManager.strSessionSelectedQuery)) {
       case Enums.ADMIN_QUERY_TYPES.ADD_USER:
         return 'Add a user to the database';
 
@@ -129,9 +120,5 @@ Template.adminQueries.helpers({
       default:
         return '';
     }
-  },
+  }
 });
-
-export const initExecuteQuery = function () {
-  Ladda.create(document.querySelector('#btnExecuteAdminQuery')).start();
-};

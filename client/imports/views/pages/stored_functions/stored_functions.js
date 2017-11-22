@@ -1,153 +1,33 @@
 import { Template } from 'meteor/templating';
-import { Session } from 'meteor/session';
 import { FlowRouter } from 'meteor/kadira:flow-router';
-import { Communicator } from '/client/imports/facades';
-import Helper from '/client/imports/helpers/helper';
+import { SessionManager } from '/client/imports/modules';
+import { StoredFunctions } from '/client/imports/ui';
 import './stored_functions.html';
 
-const toastr = require('toastr');
-const Ladda = require('ladda');
-
-/* global swal */
-const init = function (isRefresh) {
-  Ladda.create(document.querySelector('#btnAddNewStoredFunction')).start();
-
-  Communicator.call({
-    methodName: 'find',
-    args: { selectedCollection: 'system.js' },
-    callback: (err, result) => {
-      if (err || result.error) {
-        Helper.showMeteorFuncError(err, result, "Couldn't fetch stored functions");
-      } else {
-        const tblStoredFunctions = $('#tblStoredFunctions');
-        if ($.fn.dataTable.isDataTable('#tblStoredFunctions')) {
-          tblStoredFunctions.DataTable().destroy();
-        }
-        tblStoredFunctions.DataTable({
-          responsive: true,
-          data: result.result,
-          columns: [
-            { data: '_id' },
-            { data: 'value.$code', sClass: 'hide_column' },
-          ],
-          columnDefs: [
-            {
-              targets: [2],
-              data: null,
-              width: '5%',
-              defaultContent: '<a href="" title="Show/Edit" class="editor_edit"><i class="fa fa-pencil text-navy"></i></a>',
-            },
-            {
-              targets: [3],
-              data: null,
-              width: '5%',
-              defaultContent: '<a href="" title="Delete" class="editor_delete"><i class="fa fa-remove text-navy"></i></a>',
-            },
-          ],
-        });
-        if (isRefresh) {
-          toastr.success('Successfully refreshed !');
-        }
-      }
-
-      Ladda.stopAll();
-    }
-  });
-};
 
 Template.storedFunctions.onRendered(function () {
-  if (Session.get(Helper.strSessionCollectionNames) == undefined) {
+  if (!SessionManager.get(SessionManager.strSessionCollectionNames)) {
     FlowRouter.go('/databaseStats');
     return;
   }
-
   const settings = this.subscribe('settings');
   const connections = this.subscribe('connections');
-  const modal = $('#editStoredFunctionModal');
-  modal.on('shown.bs.modal', () => {
-    const divStoredFunction = $('#divStoredFunction');
-    Helper.initializeCodeMirror(divStoredFunction, 'txtStoredFunction');
-    if (modal.data('selected')) {
-      const data = modal.data('selected');
-      $('#storedFunctionModalTitle').html(data._id);
-      $('#inputStoredFunctionName').val(data._id);
-      Helper.setCodeMirrorValue(divStoredFunction, data.value.$code, $('#txtStoredFunction'));
-    } else {
-      $('#storedFunctionModalTitle').html('Add Stored Function');
-      $('#inputStoredFunctionName').val('');
-      Helper.setCodeMirrorValue(divStoredFunction, '', $('#txtStoredFunction'));
-    }
-  });
+
+  StoredFunctions.prepareEditModal();
 
   this.autorun(() => {
-    if (settings.ready() && connections.ready()) {
-      Helper.initiateDatatable($('#tblStoredFunctions'), Helper.strSessionSelectedStoredFunction, true);
-      init();
-    }
+    if (settings.ready() && connections.ready()) StoredFunctions.init();
   });
 });
 
 
 Template.storedFunctions.events({
   'click #btnRefreshStoredFunctions': function () {
-    init(true);
+    StoredFunctions.init(true);
   },
 
   'click #btnSaveStoredFunction': function () {
-    const modal = $('#editStoredFunctionModal');
-
-    const functionVal = Helper.getCodeMirrorValue($('#divStoredFunction'));
-    if (functionVal.parseFunction() == null) {
-      toastr.error('Syntax error on function value, not a valid function');
-      return;
-    }
-    const name = $('#inputStoredFunctionName').val();
-    if (!name) {
-      toastr.error('Name is required !');
-      return;
-    }
-    const data = modal.data('selected');
-
-    const objectToSave = { value: {} };
-    objectToSave._id = name;
-    objectToSave.value.$code = functionVal;
-
-    Ladda.create(document.querySelector('#btnSaveStoredFunction')).start();
-    if (modal.data('selected')) {
-      // edit
-      Communicator.call({
-        methodName: 'updateOne',
-        args: { selectedCollection: 'system.js', selector: { _id: data._id }, setObject: objectToSave },
-        callback: (err, result) => {
-          if (err || result.error) {
-            Helper.showMeteorFuncError(err, result, "Couldn't save");
-          } else {
-            toastr.success('Successfuly updated !');
-            modal.modal('hide');
-            init();
-          }
-
-          Ladda.stopAll();
-        }
-      });
-    } else {
-      // add
-      Communicator.call({
-        methodName: 'insertMany',
-        args: { selectedCollection: 'system.js', docs: [objectToSave] },
-        callback: (err, result) => {
-          if (err || result.error) {
-            Helper.showMeteorFuncError(err, result, "Couldn't insert");
-          } else {
-            toastr.success('Successfuly added new function !');
-            modal.modal('hide');
-            init();
-          }
-
-          Ladda.stopAll();
-        }
-      });
-    }
+    StoredFunctions.save();
   },
 
   'click #btnAddNewStoredFunction': function () {
@@ -157,7 +37,7 @@ Template.storedFunctions.events({
   },
 
   'click .editor_edit': function () {
-    const data = Session.get(Helper.strSessionSelectedStoredFunction);
+    const data = SessionManager.get(SessionManager.strSessionSelectedStoredFunction);
     if (data) {
       const modal = $('#editStoredFunctionModal');
       modal.data('selected', data);
@@ -165,39 +45,9 @@ Template.storedFunctions.events({
     }
   },
 
-  'click .editor_delete': function (e) {
-    e.preventDefault();
-    const name = Session.get(Helper.strSessionSelectedStoredFunction)._id;
-    if (name) {
-      swal({
-        title: 'Are you sure ?',
-        text: 'You can NOT recover this function afterwards, are you sure ?',
-        type: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#DD6B55',
-        confirmButtonText: 'Yes!',
-        cancelButtonText: 'No',
-      }, (isConfirm) => {
-        if (isConfirm) {
-          Ladda.create(document.querySelector('#btnAddNewStoredFunction')).start();
-
-          Communicator.call({
-            methodName: 'delete',
-            args: { selectedCollection: 'system.js', selector: { _id: name } },
-            callback: (err, result) => {
-              if (err || result.error) {
-                Helper.showMeteorFuncError(err, result, "Couldn't delete");
-              } else {
-                toastr.success('Successfuly deleted !');
-                init();
-              }
-
-              Ladda.stopAll();
-            }
-          });
-        }
-      });
-    }
-  },
+  'click .editor_delete': function (event) {
+    event.preventDefault();
+    StoredFunctions.delete();
+  }
 
 });

@@ -1,11 +1,17 @@
-import { Querying, SessionManager, Notification, ErrorHandler } from '/client/imports/modules';
+import { Querying, SessionManager } from '/client/imports/modules';
 import { ReactivityProvider } from '/client/imports/facades';
-import { AceEditor } from 'meteor/arch:ace-editor';
 import { Blaze } from 'meteor/blaze';
-import UIComponentsHelper from './helper';
+import $ from 'jquery';
+import Helper from '/client/imports/helpers/helper';
 
 const CodeMirror = require('codemirror');
 
+require('datatables.net')(window, $);
+require('datatables.net-buttons')(window, $);
+require('datatables.net-responsive')(window, $);
+require('datatables.net-bs')(window, $);
+require('datatables.net-buttons-bs')(window, $);
+require('datatables.net-responsive-bs')(window, $);
 require('/node_modules/codemirror/mode/javascript/javascript.js');
 require('/node_modules/codemirror/addon/fold/brace-fold.js');
 require('/node_modules/codemirror/addon/fold/comment-fold.js');
@@ -20,6 +26,27 @@ require('/node_modules/codemirror/addon/hint/show-hint.js');
 const UIComponents = function () {};
 
 UIComponents.prototype = {
+  initICheck(selector) {
+    selector.iCheck({
+      checkboxClass: 'icheckbox_square-green',
+    });
+  },
+
+  initializeOptionsCombobox(cmb, enums, sessionKey) {
+    $.each(Helper.sortObjectByKey(enums), (key, value) => {
+      cmb.append($('<option></option>')
+        .attr('value', key)
+        .text(value));
+    });
+    cmb.chosen();
+    cmb.on('change', (evt, params) => {
+      const array = SessionManager.get(sessionKey);
+      if (params.deselected) array.remove(params.deselected);
+      else array.push(params.selected);
+      SessionManager.set(sessionKey, array);
+    });
+  },
+
   getParentTemplateName(levels = 1) {
     let view = Blaze.currentView;
     while (view) {
@@ -31,20 +58,12 @@ UIComponents.prototype = {
     }
   },
 
-  changeRunOnAdminOptionVisibility(show) {
-    if (show) {
-      $('#aRunOnAdminDB').show();
-    } else {
-      $('#aRunOnAdminDB').hide();
-    }
-  },
-
   initializeCollectionsCombobox() {
     const cmb = $('#cmbCollections');
     cmb.append($("<optgroup id='optGroupCollections' label='Collections'></optgroup>"));
     const cmbOptGroupCollection = cmb.find('#optGroupCollections');
 
-    const collectionNames = SessionManager.get(SessionManager.keys.strSessionCollectionNames);
+    const collectionNames = SessionManager.get(SessionManager.strSessionCollectionNames);
     $.each(collectionNames, (index, value) => {
       cmbOptGroupCollection.append($('<option></option>')
         .attr('value', value.name)
@@ -56,43 +75,6 @@ UIComponents.prototype = {
       const selectedCollection = params.selected;
       if (selectedCollection) Querying.getDistinctKeysForAutoComplete(selectedCollection);
     });
-  },
-
-  renderAfterQueryExecution(err, result, isAdmin, queryInfo, queryParams, saveHistory) {
-    if (err || result.error) ErrorHandler.showMeteorFuncError(err, result, "Couldn't execute query");
-    else {
-      if (isAdmin) UIComponentsHelper.setAdminResult(result.result);
-      else UIComponentsHelper.setQueryResult(result.result, queryInfo, queryParams, saveHistory);
-
-      Notification.stop();
-    }
-  },
-
-  clearQueryIfAdmin() {
-    $.each(this.ADMIN_QUERY_TYPES, (key, value) => {
-      if (value === SessionManager.get(SessionManager.keys.strSessionSelectedQuery)) {
-        SessionManager.set(SessionManager.keys.strSessionSelectedQuery, null);
-        SessionManager.set(SessionManager.keys.strSessionSelectedOptions, null);
-      }
-    });
-  },
-
-  getActiveEditorValue() {
-    const resultTabs = $('#resultTabs');
-    const resultContents = $('#resultTabContents');
-
-    const whichIsDisplayed = UIComponentsHelper.getWhichResultViewShowing();
-    if (whichIsDisplayed === 'aceEditor') {
-      const foundAceEditor = resultContents.find('div.active').find('pre').attr('id');
-      if (foundAceEditor) {
-        return AceEditor.instance(foundAceEditor).getValue();
-      }
-    } else if (whichIsDisplayed === 'jsonEditor') {
-      const tabId = resultTabs.find('li.active').find('a').attr('href');
-      if ($(tabId).data('jsoneditor')) {
-        return JSON.stringify($(tabId).data('jsoneditor').get());
-      }
-    }
   },
 
   DataTable: {
@@ -111,22 +93,24 @@ UIComponents.prototype = {
       }
     },
 
-    initiateDatatable(selector, sessionKey, noDeleteEvent) {
+    initiateDatatable({ selector, sessionKey, clickCallback, noDeleteEvent }) {
       selector.find('tbody').on('click', 'tr', function () {
         const table = selector.DataTable();
-        if ($(this).hasClass('selected')) {
-          $(this).removeClass('selected');
-        } else {
-          table.$('tr.selected').removeClass('selected');
-          $(this).addClass('selected');
-        }
+        this.doTableRowSelectable(table, $(this));
 
-        if (table.row(this).data() && sessionKey) {
-          SessionManager.set(sessionKey, table.row(this).data());
+        if (table.row(this).data()) {
+          if (sessionKey) SessionManager.set(sessionKey, table.row(this).data());
+          clickCallback(table);
         }
       });
 
       if (!noDeleteEvent) this.attachDeleteTableRowEvent(selector);
+    },
+
+    setupDatatable({ selectorString, columns, columnDefs = [], data, autoWidth = true, lengthMenu = [5, 10, 20] }) {
+      const selector = $(selectorString);
+      if ($.fn.dataTable.isDataTable(selectorString)) selector.DataTable().destroy();
+      selector.DataTable({ responsive: true, destroy: true, stateSave: true, autoWidth, data, columns, columnDefs, lengthMenu });
     }
   },
 
@@ -139,14 +123,29 @@ UIComponents.prototype = {
       });
     },
 
-    initializeCodeMirror(divSelector, txtAreaId, keepValue, height = 100, noResize) {
+    setCodeMirrorAutoCompletion(method, outList) {
+      CodeMirror.hint.javascript = (editor) => {
+        const cursor = editor.getCursor();
+        const currentLine = editor.getLine(cursor.line);
+        let start = cursor.ch;
+        let end = start;
+        while (end < currentLine.length && /[\w.$]+/.test(currentLine.charAt(end))) end += 1;
+        while (start && /[\w.$]+/.test(currentLine.charAt(start - 1))) start -= 1;
+        const curWord = (start !== end) && currentLine.slice(start, end);
+        const list = method ? method(editor.getValue(), curWord) : outList;
+        const regex = new RegExp(`^${curWord}`, 'i');
+        return {
+          list: (!curWord ? list : list.filter(item => item.match(regex))).sort(),
+          from: CodeMirror.Pos(cursor.line, start),
+          to: CodeMirror.Pos(cursor.line, end),
+        };
+      };
+    },
+
+    initializeCodeMirror({ divSelector, txtAreaId, keepValue = false, height = 100, noResize = false, extraKeysToAppend = {}, autoCompleteListMethod }) {
       const autoCompleteShortcut = ReactivityProvider.findOne(ReactivityProvider.types.Settings).autoCompleteShortcut || 'Ctrl-Space';
       let codeMirror;
-      const extraKeys = {
-        'Ctrl-Q': function (cm) {
-          cm.foldCode(cm.getCursor());
-        },
-      };
+      const extraKeys = Object.assign(extraKeysToAppend, { 'Ctrl-Q': function (cm) { cm.foldCode(cm.getCursor()); } });
       extraKeys[autoCompleteShortcut] = 'autocomplete';
 
       if (!divSelector.data('editor')) {
@@ -163,39 +162,18 @@ UIComponents.prototype = {
 
         if (keepValue) {
           codeMirror.on('change', () => {
-            SessionManager.set(SessionManager.keys.strSessionSelectorValue, codeMirror.getValue());
+            SessionManager.set(SessionManager.strSessionSelectorValue, codeMirror.getValue());
           });
         }
 
         codeMirror.setSize('%100', height);
-
-        CodeMirror.hint.javascript = (editor) => {
-          const list = SessionManager.get(SessionManager.keys.strSessionDistinctFields) || [];
-          const cursor = editor.getCursor();
-          const currentLine = editor.getLine(cursor.line);
-          let start = cursor.ch;
-          let end = start;
-          while (end < currentLine.length && /[\w.$]+/.test(currentLine.charAt(end))) end += 1;
-          while (start && /[\w.$]+/.test(currentLine.charAt(start - 1))) start -= 1;
-          const curWord = (start !== end) && currentLine.slice(start, end);
-          const regex = new RegExp(`^${curWord}`, 'i');
-          return {
-            list: (!curWord ? list : list.filter(item => item.match(regex))).sort(),
-            from: CodeMirror.Pos(cursor.line, start),
-            to: CodeMirror.Pos(cursor.line, end),
-          };
-        };
-
+        this.setCodeMirrorAutoCompletion(autoCompleteListMethod, (SessionManager.get(SessionManager.strSessionDistinctFields) || []));
         divSelector.data('editor', codeMirror);
 
         if (!noResize) this.doCodeMirrorResizable(codeMirror);
-      } else {
-        codeMirror = divSelector.data('editor');
-      }
+      } else codeMirror = divSelector.data('editor');
 
-      if (keepValue && SessionManager.get(SessionManager.keys.strSessionSelectorValue)) {
-        codeMirror.setValue(SessionManager.get(SessionManager.keys.strSessionSelectorValue));
-      }
+      if (keepValue && SessionManager.get(SessionManager.strSessionSelectorValue)) codeMirror.setValue(SessionManager.get(SessionManager.strSessionSelectorValue));
 
       codeMirror.refresh();
     },
@@ -213,10 +191,6 @@ UIComponents.prototype = {
         return divSelector.data('editor').getValue();
       }
       return '';
-    },
-
-    getSelectorValue() {
-      return this.getCodeMirrorValue($('#divSelector'));
     }
   }
 
