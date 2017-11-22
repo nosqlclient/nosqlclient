@@ -5,8 +5,12 @@ import { ReactivityProvider } from '/client/imports/facades';
 import { Enums, Notification, SessionManager } from '/client/imports/modules';
 import { CollectionUtil, CollectionFilter, Connection } from '/client/imports/ui';
 import $ from 'jquery';
+import './add_collection/add_collection';
+import './convert_capped_collection/convert_to_capped';
+import './rename_collection/rename_collection';
+import './validation_rules/validation_rules';
+import './filter_collection/filter_collection';
 import './navigation.html';
-
 
 Template.navigation.events({
   'click .anchor-skin': function (event) {

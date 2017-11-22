@@ -1,5 +1,5 @@
 import { Template } from 'meteor/templating';
-import { $ } from 'meteor/jquery';
+import $ from 'jquery';
 import { Querying } from '/client/imports/ui';
 import { Enums } from '/client/imports/modules';
 import './rename.html';

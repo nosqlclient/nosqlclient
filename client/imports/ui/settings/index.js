@@ -1,4 +1,4 @@
-import { Communicator } from '/client/imports/facades';
+import { Communicator, ReactivityProvider } from '/client/imports/facades';
 import { ErrorHandler, Notification } from '/client/imports/modules';
 
 const Settings = function () {};
@@ -34,7 +34,7 @@ Settings.prototype = {
 
   init() {
     // since we are using some external plugins such as chosen, icheck we can't load settings directly via meteor
-    const settings = Settings.findOne();
+    const settings = ReactivityProvider.findOne(ReactivityProvider.types.Settings);
     if (!settings) return;
 
     const cmbScale = $('#cmbScale');

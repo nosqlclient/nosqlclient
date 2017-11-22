@@ -1,5 +1,5 @@
 import { Template } from 'meteor/templating';
-import { $ } from 'meteor/jquery';
+import $ from 'jquery';
 import { UIComponents } from '/client/imports/modules';
 import '/client/imports/views/query_templates_options/max_distance/max_distance.html';
 import '/client/imports/views/query_templates_options/limit/limit.html';

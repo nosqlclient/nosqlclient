@@ -1,5 +1,5 @@
 import { Template } from 'meteor/templating';
-import { $ } from 'meteor/jquery';
+import $ from 'jquery';
 import '/client/imports/views/query_templates_options/collation/collation';
 import '/client/imports/views/query_templates_options/bypass_document_validation/bypass_document_validation';
 import '/client/imports/views/query_templates_options/max_time_ms/max_time_ms.html';

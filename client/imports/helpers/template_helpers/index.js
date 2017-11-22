@@ -1,8 +1,7 @@
 import { Template } from 'meteor/templating';
 import { ReactivityProvider } from '/client/imports/facades';
 import { SessionManager } from '/client/imports/modules';
-import { $ } from 'meteor/jquery';
-
+import $ from 'jquery';
 Template.registerHelper('getConfiguredAutoCompletionKey', () => ReactivityProvider.findOne(ReactivityProvider.types.Settings).autoCompleteShortcut || 'Ctrl-Space');
 
 Template.registerHelper('isOptionSelected', (option, sessionVar) => {

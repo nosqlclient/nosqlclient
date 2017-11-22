@@ -2,6 +2,7 @@ import { Communicator, ReactivityProvider } from '/client/imports/facades';
 import { SessionManager, ErrorHandler, Notification, Enums, Querying } from '/client/imports/modules';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { CollectionAdd, CollectionValidationRules, CollectionRename, CollectionFilter, CollectionConversion, Connection } from '/client/imports/ui';
+import $ from 'jquery';
 
 const CollectionUtil = function () {
 

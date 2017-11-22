@@ -1,7 +1,7 @@
 import { Template } from 'meteor/templating';
 import { Querying } from '/client/imports/ui';
 import { Enums } from '/client/imports/modules';
-import { $ } from 'meteor/jquery';
+import $ from 'jquery';
 
 import './stats.html';
 

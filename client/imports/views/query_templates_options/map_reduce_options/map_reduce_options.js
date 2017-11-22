@@ -1,5 +1,5 @@
 import { Template } from 'meteor/templating';
-import { $ } from 'meteor/jquery';
+import $ from 'jquery';
 import { UIComponents } from '/client/imports/modules';
 import '/client/imports/views/query_templates_options/sort/sort';
 import '/client/imports/views/query_templates_options/limit/limit.html';

@@ -3,10 +3,8 @@ import '/client/imports/views/layouts/navigation/navigation';
 import '/client/imports/views/layouts/top_navbar/top_navbar';
 import '/client/imports/views/layouts/footer/footer.html';
 import { Settings } from '/lib/imports/collections';
-import { Enums } from '/client/imports/modules';
+import { Enums, Notification } from '/client/imports/modules';
 import './main.html';
-
-const toastr = require('toastr');
 
 const fixHeight = function () {
   const body = $('body');
@@ -108,13 +106,13 @@ const doUIStuff = function () {
   });
 };
 
-Template.mainLayout.onRendered(() => {
+Template.mainLayout.onRendered(function () {
   $(document).idleTimer(30 * 60 * 1000);
   $(document).on('idle.idleTimer', () => {
     // toastr.info('You are idle for 30 minutes :(', 'Idle');
   });
   $(document).on('active.idleTimer', () => {
-    toastr.success('Welcome back !', 'We missed you');
+    Notification.success('Welcome back !', 'We missed you');
   });
 
   doUIStuff();

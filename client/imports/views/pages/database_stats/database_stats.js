@@ -5,9 +5,6 @@ import { Enums, SessionManager } from '/client/imports/modules';
 import { ReactivityProvider } from '/client/imports/facades';
 import './database_stats.html';
 
-require('bootstrap-filestyle');
-
-
 Template.databaseStats.events({
   'click #btnDontShowWhatsNewAgain': function () {
     localStorage.setItem(Enums.LOCAL_STORAGE_KEYS.WHAT_IS_NEW, 'true');

@@ -1,5 +1,5 @@
 import { Template } from 'meteor/templating';
-import { $ } from 'meteor/jquery';
+import $ from 'jquery';
 import '/client/imports/views/query_templates_options/min/min';
 import '/client/imports/views/query_templates_options/max/max';
 import '/client/imports/views/query_templates_options/collation/collation';

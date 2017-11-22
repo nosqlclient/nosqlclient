@@ -2,6 +2,7 @@ import { Template } from 'meteor/templating';
 import { UIComponents, Notification, SessionManager } from '/client/imports/modules';
 import { MongoclientData, Connection } from '/client/imports/ui';
 import $ from 'jquery';
+import './connections/connections';
 import './top_navbar.html';
 
 require('bootstrap-filestyle');

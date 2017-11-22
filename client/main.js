@@ -3,7 +3,6 @@ import '/client/imports/views/layouts/not_found/not_found.html';
 import '/client/imports/views/layouts/main/main';
 import '/client/imports/views/layouts/page_heading/page_heading';
 
-
 // pages
 import '/client/imports/views/pages/settings/settings';
 import '/client/imports/views/pages/user_management/user_management';
