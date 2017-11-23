@@ -15,17 +15,20 @@ CollectionUtil.prototype = {
       text: 'You will not be able to recover this database!',
       type: 'warning',
       showCancelButton: true,
-    }, () => {
-      Communicator.call({
-        methodName: 'dropDB',
-        callback: (err, result) => {
-          if (err || result.error) ErrorHandler.showMeteorFuncError(err, result, "Couldn't drop database");
-          else {
-            SessionManager.clear();
-            Notification.success('Successfuly dropped database');
-          }
+      callback: (isConfirm) => {
+        if (isConfirm) {
+          Communicator.call({
+            methodName: 'dropDB',
+            callback: (err, result) => {
+              if (err || result.error) ErrorHandler.showMeteorFuncError(err, result, "Couldn't drop database");
+              else {
+                SessionManager.clear();
+                Notification.success('Successfuly dropped database');
+              }
+            }
+          });
         }
-      });
+      }
     });
   },
 
@@ -81,19 +84,20 @@ CollectionUtil.prototype = {
       text: `${selectedCollection} collection will be dropped, are you sure ?`,
       type: 'warning',
       confirmButtonText: 'Yes, drop it!',
-    }, (isConfirm) => {
-      if (isConfirm) {
-        Communicator.call({
-          methodName: 'delete',
-          args: { selectedCollection },
-          callback: (err, result) => {
-            if (err || result.error) ErrorHandler.showMeteorFuncError(err, result, "Couldn't drop collection");
-            else {
-              this.renderCollectionNames();
-              Notification.success(`Successfuly dropped collection: ${selectedCollection}`);
+      callback: (isConfirm) => {
+        if (isConfirm) {
+          Communicator.call({
+            methodName: 'delete',
+            args: { selectedCollection },
+            callback: (err, result) => {
+              if (err || result.error) ErrorHandler.showMeteorFuncError(err, result, "Couldn't drop collection");
+              else {
+                this.renderCollectionNames();
+                Notification.success(`Successfuly dropped collection: ${selectedCollection}`);
+              }
             }
-          }
-        });
+          });
+        }
       }
     });
   },
@@ -137,8 +141,9 @@ CollectionUtil.prototype = {
         text: 'Nosqlclient uses mongo binaries and tools for dump/restore, schema analyzer, and shell you can set the directory of binaries from <b>Settings</b>',
         type: 'info',
         confirmButtonText: "Cool, don't show again!",
-      }, (isConfirm) => {
-        if (isConfirm) localStorage.setItem(Enums.LOCAL_STORAGE_KEYS.MONGO_BINARY_INFO, 'true');
+        callback: (isConfirm) => {
+          if (isConfirm) localStorage.setItem(Enums.LOCAL_STORAGE_KEYS.MONGO_BINARY_INFO, 'true');
+        }
       });
     }
   },

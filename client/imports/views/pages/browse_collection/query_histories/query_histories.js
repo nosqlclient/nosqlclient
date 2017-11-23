@@ -12,8 +12,8 @@ Template.queryHistories.onRendered(() => {
 
   UIComponents.DataTable.initiateDatatable({
     selector: $('#tblQueryHistories'),
-    clickCallback: (table) => {
-      const selectedId = table.row(this).data()._id;
+    clickCallback: (table, row) => {
+      const selectedId = row.data()._id;
       SessionManager.set(SessionManager.strSessionSelectedQueryHistory, ReactivityProvider.findOne(ReactivityProvider.types.QueryHistory, { _id: selectedId }));
       $('#btnExecuteAgain').prop('disabled', false);
     },

@@ -228,7 +228,7 @@ UserManagementUsers.prototype = {
   initiateRoleToAddTable() {
     UIComponents.DataTable.initiateDatatable({
       selector: $('#tblCurrentRoles'),
-      clickCallback: (table) => { $('#inputAddRoleToUserRolename').val(table.row(this).data().role); $('#cmbDatabasesForAddRoleToUser').val(table.row(this).data().db).trigger('chosen:updated'); },
+      clickCallback: (table, row) => { $('#inputAddRoleToUserRolename').val(row.data().role); $('#cmbDatabasesForAddRoleToUser').val(row.data().db).trigger('chosen:updated'); },
       noDeleteEvent: false
     });
   },

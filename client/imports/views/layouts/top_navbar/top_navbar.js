@@ -13,7 +13,11 @@ Template.topNavbar.onRendered(function () {
   this.autorun(() => {
     if (connections.ready()) {
       $('.filestyle').filestyle({});
-      UIComponents.DataTable.initiateDatatable({ selector: $('#tblSwitchDatabases'), noDeleteEvent: true });
+      UIComponents.DataTable.initiateDatatable({
+        selector: $('#tblSwitchDatabases'),
+        clickCallback: (table, row) => { $('#inputDatabaseNameToSwitch').val(row.data().name); },
+        noDeleteEvent: true
+      });
       $('#versionText').html(packageJson.version);
     }
   });

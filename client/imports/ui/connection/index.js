@@ -47,7 +47,11 @@ Connection.prototype = {
             return 0;
           });
 
-          UIComponents.DataTable.setupDatatable({ selectorString: '#tblSwitchDatabases', columns: [{ data: 'name' }], data: result.result.databases });
+          UIComponents.DataTable.setupDatatable({
+            selectorString: '#tblSwitchDatabases',
+            columns: [{ data: 'name' }],
+            data: result.result.databases
+          });
           Notification.stop();
         }
       }
