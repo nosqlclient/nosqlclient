@@ -62,6 +62,41 @@ const DBStats = function () {
   };
 };
 
+const mergeChartData = function (existingData, data, dataCountToKeep) {
+  if (existingData[0].data.length >= dataCountToKeep) {
+    existingData[0].data = existingData[0].data.slice(1, dataCountToKeep);
+
+    if (existingData.length >= 2 && existingData[1].data) existingData[1].data = existingData[1].data.slice(1, dataCountToKeep);
+    if (existingData.length >= 3 && existingData[2].data) existingData[2].data = existingData[2].data.slice(1, dataCountToKeep);
+  }
+
+  existingData[0].data.push(...data[0].data);
+  if (existingData.length >= 2 && existingData[1].data && data[1].data) existingData[1].data.push(...data[1].data);
+  if (existingData.length >= 3 && existingData[2].data && data[2].data) existingData[2].data.push(...data[2].data);
+
+  return existingData;
+};
+
+const getCorrectScales = function (settings) {
+  let scale = 1;
+  let text = 'MB';
+  switch (settings.scale) {
+    case 'KiloBytes':
+      scale = 1024;
+      text = 'KB';
+      break;
+    case 'MegaBytes':
+      scale = 1024 * 1024;
+      text = 'MB';
+      break;
+    default:
+      scale = 1;
+      text = 'Bytes';
+      break;
+  }
+  return { scale, text };
+};
+
 DBStats.prototype = {
   clear() {
     if (this.interval) {
@@ -102,7 +137,7 @@ DBStats.prototype = {
         callback: (err, result) => {
           if (err || result.error) {
             ErrorHandler.showMeteorFuncError(err, result, "Couldn't execute dbStats");
-            SessionManager.set(SessionManager.strSessionDBStats, undefined);
+            SessionManager.set(SessionManager.strSessionDBStats, null);
           } else {
             this.convertInformationsToCorrectUnit(result.result, settings);
             SessionManager.set(SessionManager.strSessionDBStats, result.result);
@@ -138,7 +173,7 @@ DBStats.prototype = {
             if (err || result.error) {
               const errorMessage = result.error ? result.error.message : err.message;
               $('#errorMessage').text(`Successfully connected but, couldn't fetch server status: ${errorMessage}`);
-              SessionManager.set(SessionManager.strSessionServerStatus, undefined);
+              SessionManager.set(SessionManager.strSessionServerStatus, null);
             } else {
               SessionManager.set(SessionManager.strSessionServerStatus, result.result);
               const memoryData = []; const connectionsData = []; const networkData = []; const opCountersData = []; const queuedReadWriteData = []; const activeReadWriteData = [];
@@ -224,13 +259,13 @@ DBStats.prototype = {
           previousWriteCount = writeCount;
         }
 
-        const calculatedReadTime = Number((readTime - previousReadTime) / (readCount - previousReadCount)).toFixed(2);
-        const calculatedWriteTime = Number((writeTime - previousWriteTime) / (writeCount - previousWriteCount)).toFixed(2);
+        const calculatedReadTime = Number((readTime - previousReadTime) / (readCount - previousReadCount));
+        const calculatedWriteTime = Number((writeTime - previousWriteTime) / (writeCount - previousWriteCount));
 
         result.push({
           collection: collectionName,
-          read: Number.isNaN(calculatedReadTime) ? 0 : calculatedReadTime,
-          write: Number.isNaN(calculatedWriteTime) ? 0 : calculatedWriteTime,
+          read: Number.isNaN(calculatedReadTime) ? 0 : calculatedReadTime.toFixed(2),
+          write: Number.isNaN(calculatedWriteTime) ? 0 : calculatedWriteTime.toFixed(2),
         });
       }
     });
@@ -272,22 +307,7 @@ DBStats.prototype = {
       const bytesInData = []; const bytesOutData = [];
       const time = new Date().getTime();
 
-      let scale = 1;
-      let text = 'MB';
-      switch (settings.scale) {
-        case 'KiloBytes':
-          scale = 1024;
-          text = 'KB';
-          break;
-        case 'MegaBytes':
-          scale = 1024 * 1024;
-          text = 'MB';
-          break;
-        default:
-          scale = 1;
-          text = 'Bytes';
-          break;
-      }
+      const { scale, text } = getCorrectScales(settings);
 
       bytesInData.push([time, Math.round((result.network.bytesIn / scale) * 100) / 100]);
       bytesOutData.push([time, Math.round((result.network.bytesOut / scale) * 100) / 100]);
@@ -301,22 +321,7 @@ DBStats.prototype = {
 
   populateMemoryData(result, data, settings) {
     if (result.mem) {
-      let scale = 1;
-      let text = 'MB';
-      switch (settings.scale) {
-        case 'KiloBytes':
-          scale = 1024;
-          text = 'KB';
-          break;
-        case 'Bytes':
-          scale = 1024 * 1024;
-          text = 'Bytes';
-          break;
-        default:
-          scale = 1;
-          text = 'MB';
-          break;
-      }
+      const { scale, text } = getCorrectScales(settings);
 
       const virtualMemData = []; const mappedMemData = []; const residentMemData = [];
       const time = new Date().getTime();
@@ -335,26 +340,12 @@ DBStats.prototype = {
   },
 
   convertInformationsToCorrectUnit(stats, settings) {
-    let scale = 1024;
-    let text = 'Bytes';
-    switch (settings.scale) {
-      case 'MegaBytes':
-        scale = 1024 * 1024;
-        text = 'MBs';
-        break;
-      case 'KiloBytes':
-        scale = 1024;
-        text = 'KBs';
-        break;
-      default:
-        scale = 1;
-        text = 'Bytes';
-        break;
-    }
-    stats.dataSize = Number.isNaN(Number(stats.dataSize / scale).toFixed(2)) ? `0 ${text}` : `${Number(stats.dataSize / scale).toFixed(2)} ${text}`;
-    stats.storageSize = Number.isNaN(Number(stats.storageSize / scale).toFixed(2)) ? `0 ${text}` : `${Number(stats.storageSize / scale).toFixed(2)} ${text}`;
-    stats.indexSize = Number.isNaN(Number(stats.indexSize / scale).toFixed(2)) ? `0 ${text}` : `${Number(stats.indexSize / scale).toFixed(2)} ${text}`;
-    stats.fileSize = Number.isNaN(Number(stats.fileSize / scale).toFixed(2)) ? `0 ${text}` : `${Number(stats.fileSize / scale).toFixed(2)} ${text}`;
+    const { scale, text } = getCorrectScales(settings);
+
+    stats.dataSize = Number.isNaN(Number(stats.dataSize / scale)) ? `0 ${text}` : `${Number(stats.dataSize / scale).toFixed(2)} ${text}`;
+    stats.storageSize = Number.isNaN(Number(stats.storageSize / scale)) ? `0 ${text}` : `${Number(stats.storageSize / scale).toFixed(2)} ${text}`;
+    stats.indexSize = Number.isNaN(Number(stats.indexSize / scale)) ? `0 ${text}` : `${Number(stats.indexSize / scale).toFixed(2)} ${text}`;
+    stats.fileSize = Number.isNaN(Number(stats.fileSize / scale)) ? `0 ${text}` : `${Number(stats.fileSize / scale).toFixed(2)} ${text}`;
   },
 
   initOperationCountersChart(data) {
@@ -416,25 +407,9 @@ DBStats.prototype = {
           this.queuedReadWriteChart = null;
         }
       } else {
-        const existingData = this.queuedReadWriteChart.getData();
-        if (existingData[0].data.length === this.dataCountToKeep) {
-          existingData[0].data = existingData[0].data.slice(1, this.dataCountToKeep);
+        const mergedData = mergeChartData(this.queuedReadWriteChart.getData(), data, this.dataCountToKeep);
 
-          if (existingData.length >= 2 && existingData[1].data) {
-            existingData[1].data = existingData[1].data.slice(1, this.dataCountToKeep);
-          }
-
-          if (existingData.length >= 3 && existingData[2].data) {
-            existingData[2].data = existingData[2].data.slice(1, this.dataCountToKeep);
-          }
-        }
-
-        existingData[0].data.push.apply(...data[0].data);
-
-        if (existingData.length >= 2 && existingData[1].data && data[1].data) existingData[1].data.push.apply(...data[1].data);
-        if (existingData.length >= 3 && existingData[2].data && data[2].data) existingData[2].data.push.apply(...data[2].data);
-
-        this.queuedReadWriteChart.setData(existingData);
+        this.queuedReadWriteChart.setData(mergedData);
         this.queuedReadWriteChart.setupGrid();
         this.queuedReadWriteChart.draw();
       }
@@ -462,20 +437,9 @@ DBStats.prototype = {
           this.activeReadWriteChart = null;
         }
       } else {
-        const existingData = this.activeReadWriteChart.getData();
-        if (existingData[0].data.length === this.dataCountToKeep) {
-          existingData[0].data = existingData[0].data.slice(1, this.dataCountToKeep);
+        const mergedData = mergeChartData(this.activeReadWriteChart.getData(), data, this.dataCountToKeep);
 
-          if (existingData.length >= 2 && existingData[1].data) existingData[1].data = existingData[1].data.slice(1, this.dataCountToKeep);
-          if (existingData.length >= 3 && existingData[2].data) existingData[2].data = existingData[2].data.slice(1, this.dataCountToKeep);
-        }
-
-        existingData[0].data.push.apply(...data[0].data);
-
-        if (existingData.length >= 2 && existingData[1].data && data[1].data) existingData[1].data.push.apply(...data[1].data);
-        if (existingData.length >= 3 && existingData[2].data && data[2].data) existingData[2].data.push.apply(...data[2].data);
-
-        this.activeReadWriteChart.setData(existingData);
+        this.activeReadWriteChart.setData(mergedData);
         this.activeReadWriteChart.setupGrid();
         this.activeReadWriteChart.draw();
       }
@@ -500,19 +464,9 @@ DBStats.prototype = {
           this.networkChart = null;
         }
       } else {
-        const existingData = this.networkChart.getData();
-        if (existingData[0].data.length === this.dataCountToKeep) {
-          existingData[0].data = existingData[0].data.slice(1, this.dataCountToKeep);
+        const mergedData = mergeChartData(this.networkChart.getData(), data, this.dataCountToKeep);
 
-          if (existingData.length >= 2 && existingData[1].data) existingData[1].data = existingData[1].data.slice(1, this.dataCountToKeep);
-          if (existingData.length >= 3 && existingData[2].data)existingData[2].data = existingData[2].data.slice(1, this.dataCountToKeep);
-        }
-
-        existingData[0].data.push.apply(...data[0].data);
-        if (existingData.length >= 2 && existingData[1].data && data[1].data) existingData[1].data.push.apply(...data[1].data);
-        if (existingData.length >= 3 && existingData[2].data && data[2].data) existingData[2].data.push.apply(...data[2].data);
-
-        this.networkChart.setData(existingData);
+        this.networkChart.setData(mergedData);
         this.networkChart.setupGrid();
         this.networkChart.draw();
       }
@@ -536,20 +490,9 @@ DBStats.prototype = {
           this.connectionsChart = null;
         }
       } else {
-        const existingData = this.connectionsChart.getData();
-        if (existingData[0].data.length === this.dataCountToKeep) {
-          existingData[0].data = existingData[0].data.slice(1, this.dataCountToKeep);
+        const mergedData = mergeChartData(this.connectionsChart.getData(), data, this.dataCountToKeep);
 
-          if (existingData.length >= 2 && existingData[1].data) {
-            existingData[1].data = existingData[1].data.slice(1, this.dataCountToKeep);
-          }
-        }
-
-        existingData[0].data.push.apply(...data[0].data);
-
-        if (existingData.length >= 2 && existingData[1].data && data[1].data) existingData[1].data.push.apply(...data[1].data);
-
-        this.connectionsChart.setData(existingData);
+        this.connectionsChart.setData(mergedData);
         this.connectionsChart.setupGrid();
         this.connectionsChart.draw();
       }
@@ -578,20 +521,9 @@ DBStats.prototype = {
           this.memoryChart = null;
         }
       } else {
-        const existingData = this.memoryChart.getData();
-        if (existingData[0].data.length === this.dataCountToKeep) {
-          existingData[0].data = existingData[0].data.slice(1, this.dataCountToKeep);
+        const mergedData = mergeChartData(this.memoryChart.getData(), data, this.dataCountToKeep);
 
-          if (existingData.length >= 2 && existingData[1].data) existingData[1].data = existingData[1].data.slice(1, this.dataCountToKeep);
-          if (existingData.length >= 3 && existingData[2].data) existingData[2].data = existingData[2].data.slice(1, this.dataCountToKeep);
-        }
-
-        existingData[0].data.push.apply(...data[0].data);
-
-        if (existingData.length >= 2 && existingData[1].data && data[1].data) existingData[1].data.push.apply(...data[1].data);
-        if (existingData.length >= 3 && existingData[2].data && data[2].data) existingData[2].data.push.apply(...data[2].data);
-
-        this.memoryChart.setData(existingData);
+        this.memoryChart.setData(mergedData);
         this.memoryChart.setupGrid();
         this.memoryChart.draw();
       }
