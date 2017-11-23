@@ -11,7 +11,7 @@ Template.manageUsers.onRendered(() => {
 
   $('a[data-toggle="tab"]').on('shown.bs.tab', (e) => {
     const target = $(e.target).attr('href');
-    if (target === '#tab-2') UIComponents.DataTable.initializeCodeMirror({ selector: $('#divCustomData'), txtAreaId: 'txtCustomData' });
+    if (target === '#tab-2') UIComponents.Editor.initializeCodeMirror({ divSelector: $('#divCustomData'), txtAreaId: 'txtCustomData' });
   });
 });
 

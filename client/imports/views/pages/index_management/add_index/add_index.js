@@ -17,14 +17,13 @@ Template.addIndex.onRendered(() => {
 
   $('#accordion').on('show.bs.collapse', () => {
     Meteor.setTimeout(() => {
-      const divSelector = $('#divPartial');
-      UIComponents.Editor.initializeCodeMirror(divSelector, 'txtPartial');
+      UIComponents.Editor.initializeCodeMirror({ divSelector: $('#divPartial'), txtAreaId: 'txtPartial' });
     }, 150);
   });
 
   $('a[data-toggle="tab"]').on('shown.bs.tab', (e) => {
     const target = $(e.target).attr('href');
-    if (target === '#tab-4-indexes-collation') UIComponents.Editor.initializeCodeMirror($('#divCollationAddIndex'), 'txtCollationAddIndex');
+    if (target === '#tab-4-indexes-collation') UIComponents.Editor.initializeCodeMirror({ divSelector: $('#divCollationAddIndex'), txtAreaId: 'txtCollationAddIndex' });
     else if (target === '#tab-2-text-options') IndexManagement.prepareFieldWeights();
   });
 });

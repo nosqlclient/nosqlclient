@@ -465,7 +465,7 @@ Querying.prototype = {
           window.open(`export?format=${exportFormat}&
     selectedCollection=${selectedCollection}&selector=${JSON.stringify(selector)}&cursorOptions=${JSON.stringify(cursorOptions)}&sessionId=${Meteor.default_connection._lastSessionId}`);
 
-          Notification.stopAll();
+          Notification.stop();
         } else {
           const executeExplain = $('#inputExecuteExplain').iCheck('update')[0].checked;
           proceedQueryExecution('find', { selectedCollection, selector, cursorOptions, executeExplain }, false, { selector, cursorOptions, executeExplain }, saveHistory);

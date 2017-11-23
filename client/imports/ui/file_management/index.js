@@ -29,7 +29,7 @@ FileManagement.prototype = {
     Notification.start('#btnUpload');
 
     const fileReader = new FileReader();
-    fileReader.onload = function (file) {
+    fileReader.onload = (file) => {
       Communicator.call({
         methodName: 'uploadFile',
         args: { bucketName: $('#txtBucketName').val(), blob: new Uint8Array(file.target.result), fileName: blob.name, contentType, metaData, aliases },
@@ -76,7 +76,7 @@ FileManagement.prototype = {
     }
 
     Communicator.call({
-      methodName: 'getFileInfos',
+      methodName: 'getFilesInfo',
       args: { selector, limit: $('#txtFileFetchLimit').val(), bucketName: $('#txtBucketName').val() },
       callback: (err, result) => {
         if (err || result.error) {

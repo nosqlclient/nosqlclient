@@ -163,7 +163,7 @@ Backup.prototype = {
   },
 
   getMongodumpArgs() {
-    const result = null;
+    const result = [];
 
     const args = $('#cmbMongodumpArgs').val();
     if (!args) return [];

@@ -141,7 +141,7 @@ CollectionAdd.prototype = {
       skip_no_results: true,
     }).trigger('chosen:updated');
 
-    UIComponents.Editor.initializeCodeMirror($('#divViewPipeline'), 'txtViewPipeline');
+    UIComponents.Editor.initializeCodeMirror({ divSelector: $('#divViewPipeline'), txtAreaId: 'txtViewPipeline' });
   },
 
   setStorageEngineAndValidator(col) {

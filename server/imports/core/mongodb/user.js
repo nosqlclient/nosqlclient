@@ -29,9 +29,7 @@ const load = url => cheerio.load(Meteor.http.get(url).content);
 MongoDBUser.prototype = {
   getAllActions() {
     const action = Database.readOne({ type: Database.types.Actions, query: {} });
-    if (action && action.actionList) {
-      return action.actionList;
-    }
+    if (action && action.actionList && action.actionList.length > 0) return action.actionList;
 
     Logger.info({ message: 'crawl-get-all-actions' });
 
@@ -45,6 +43,7 @@ MongoDBUser.prototype = {
       result.push(loadedUrl(this).attr('id').replace('authr.', ''));
     });
 
+    Database.remove({ type: Database.types.Actions, selector: {} });
     Database.insert({ type: Database.types.Actions, document: { actionList: result } });
     return result;
   },

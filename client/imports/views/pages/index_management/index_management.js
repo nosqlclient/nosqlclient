@@ -2,6 +2,8 @@ import { Template } from 'meteor/templating';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { IndexManagement } from '/client/imports/ui';
 import { SessionManager, UIComponents, Notification } from '/client/imports/modules';
+import './add_index/add_index';
+import './view_raw/view_raw';
 import './index_management.html';
 
 Template.indexManagement.onRendered(function () {

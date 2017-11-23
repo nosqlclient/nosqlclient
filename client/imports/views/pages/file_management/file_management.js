@@ -2,6 +2,7 @@ import { Template } from 'meteor/templating';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { SessionManager, UIComponents } from '/client/imports/modules';
 import { FileManagement } from '/client/imports/ui';
+import '/client/imports/views/query_templates_options/selector/selector';
 import './upload_file/upload_file';
 import './file_info/file_info';
 import './file_management.html';

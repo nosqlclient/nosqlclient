@@ -131,7 +131,7 @@ UserManagementUsers.prototype = {
           $('#editUserModal').modal('hide');
         }
 
-        Notification.stopAll();
+        Notification.stop();
       }
     });
   },

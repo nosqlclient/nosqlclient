@@ -43,14 +43,18 @@ IndexManagement.prototype = {
     $('#inputIndexName').val(index.name);
     $('#btnSaveIndex').prop('disabled', true);
 
-    Object.keys(index.key).forEach((key) => {
-      if (key !== '_fts' && key !== '_ftsx') this.addField(key, `${index.key[key]}`);
-    });
+    if (index.key) {
+      Object.keys(index.key).forEach((key) => {
+        if (key !== '_fts' && key !== '_ftsx') this.addField(key, `${index.key[key]}`);
+      });
+    }
 
-    Object.keys(index.weights).forEach((weight) => {
-      this.addFieldWeight(weight, `${index.weights[weight]}`);
-      this.addField(weight, 'text');
-    });
+    if (index.weights) {
+      Object.keys(index.weights).forEach((weight) => {
+        this.addFieldWeight(weight, `${index.weights[weight]}`);
+        this.addField(weight, 'text');
+      });
+    }
 
     if (index.collation) UIComponents.Editor.setCodeMirrorValue($('#divCollationAddIndex'), JSON.stringify(index.collation), $('#txtCollationAddIndex'));
     if (index.partialFilterExpression) UIComponents.Editor.setCodeMirrorValue($('#divPartial'), JSON.stringify(index.partialFilterExpression), $('#txtPartial'));
@@ -119,14 +123,15 @@ IndexManagement.prototype = {
     const divFieldSelector = $('.divField');
 
     // add weights for TEXT index fields
-    divFieldSelector.forEach((divField) => {
-      divField = $(divField);
+    Object.keys(divFieldSelector).forEach((key) => {
+      const divField = $(divFieldSelector[key]);
       const fieldVal = divField.find('.cmbIndexTypes').val();
       const fieldName = divField.find('.txtFieldName').val();
 
       if (fieldVal && fieldVal === 'text') {
         let found = false;
-        divFieldWeight.forEach((weightField) => {
+        Object.keys(divFieldWeight).forEach((divFieldWeightKey) => {
+          const weightField = divFieldWeight[divFieldWeightKey];
           if ($(weightField).find('.txtFieldWeightName').val() === fieldName) found = true;
         });
         if (!found && fieldName) this.addFieldWeight(fieldName);
@@ -134,13 +139,13 @@ IndexManagement.prototype = {
     });
 
     // clear missing TEXT index fields from weights
-    divFieldWeight.forEach((div) => {
-      div = $(div);
+    Object.keys(divFieldWeight).forEach((key) => {
+      const div = $(divFieldWeight[key]);
       const weightName = div.find('.txtFieldWeightName').val();
 
       let found = false;
-      divFieldSelector.forEach((divField) => {
-        divField = $(divField);
+      Object.keys(divFieldSelector).forEach((divFieldKey) => {
+        const divField = $(divFieldSelector[divFieldKey]);
         const fieldName = divField.find('.txtFieldName').val();
         const fieldVal = divField.find('.cmbIndexTypes').val();
 
@@ -152,8 +157,9 @@ IndexManagement.prototype = {
 
   setOptionsForTextIndex(index) {
     index.weights = {};
-    $('.divFieldWeight').forEach((divFieldWeight) => {
-      divFieldWeight = $(divFieldWeight);
+    const divSelector = $('.divFieldWeight');
+    Object.keys(divSelector).forEach((key) => {
+      const divFieldWeight = $(divSelector[key]);
       const fieldName = divFieldWeight.find('.txtFieldWeightName').val();
       const fieldVal = divFieldWeight.find('.txtFieldWeight').val();
       if (fieldName && fieldVal) index.weights[fieldName] = parseInt(fieldVal, 10);
@@ -220,8 +226,9 @@ IndexManagement.prototype = {
     const index = { key: {} };
     let textExists = false; let twodExists = false; let twodSphereExists = false; let geoHaystackExists = false;
 
-    $('.divField').forEach((divField) => {
-      divField = $(divField);
+    const divFieldSelector = $('.divField');
+    Object.keys(divFieldSelector).forEach((key) => {
+      const divField = $(divFieldSelector[key]);
       const fieldName = divField.find('.txtFieldName').val();
       let fieldVal = divField.find('.cmbIndexTypes').val();
       const descendingVal = (fieldVal === '-1' ? -1 : fieldVal);
