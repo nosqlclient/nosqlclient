@@ -66,7 +66,8 @@ Shell.prototype = {
     matched = matched ? matched.join('') : '';
     editorValue = !editorValue ? editorValue : matched;
 
-    switch (this.analyzeEditorValue(editorValue)) {
+    const analyzedResult = this.analyzeEditorValue(editorValue);
+    switch (analyzedResult) {
       case 'collection':
         this.lastRegex = ['aggregate(', 'bulkWrite(', 'count(', 'copyTo(',
           'craeteIndex(', 'dataSize(', 'deleteOne(', 'deleteMany(',
@@ -131,7 +132,7 @@ Shell.prototype = {
   },
 
   init() {
-    $('#shellHistoriesModal').on('shown.bs.modal', () => { Shell.initShellHistories(); });
+    $('#shellHistoriesModal').on('shown.bs.modal', () => { this.initShellHistories(); });
 
     const divResult = $('#divShellResult');
     const divCommand = $('#divShellCommand');
@@ -162,6 +163,7 @@ Shell.prototype = {
         }
       });
 
+    const self = this;
     Communicator.call({
       methodName: 'connectToShell',
       args: {
@@ -171,25 +173,26 @@ Shell.prototype = {
       },
       callback: (err, result) => {
         if (err || result.error) ErrorHandler.showMeteorFuncError(err, result, "Couldn't connect via shell");
-        else this.addCommandToHistory(result);
+        else self.addCommandToHistory(result);
       }
     });
   },
 
   initializeCommandCodeMirror() {
+    const self = this;
     const extraKeysToAppend = {
       Enter(cm) {
         Communicator.call({
           methodName: 'executeShellCommand',
           args: {
-            command: cm.getValue,
+            command: cm.getValue(),
             connectionId: SessionManager.get(SessionManager.strSessionConnection)._id,
             username: SessionManager.get(SessionManager.strSessionPromptedUsername),
             password: SessionManager.get(SessionManager.strSessionPromptedPassword)
           },
           callback: (err) => {
             if (err) ErrorHandler.showMeteorFuncError(err, null, "Couldn't execute shell command");
-            else this.addCommandToHistory(cm.getValue());
+            else self.addCommandToHistory(cm.getValue());
           }
         });
       }
@@ -200,7 +203,7 @@ Shell.prototype = {
       txtAreaId: 'txtShellCommand',
       height: 50,
       extraKeysToAppend,
-      autoCompleteListMethod: this.gatherCommandAutoCompletions
+      autoCompleteListMethod: this.gatherCommandAutoCompletions.bind(this)
     });
   }
 };

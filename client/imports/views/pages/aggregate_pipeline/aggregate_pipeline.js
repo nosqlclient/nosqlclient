@@ -2,6 +2,8 @@ import { Template } from 'meteor/templating';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { SessionManager, UIComponents } from '/client/imports/modules';
 import { Aggregate } from '/client/imports/ui';
+import '/client/imports/views/query_templates_options/aggregate_options/aggregate_options';
+import './aggregate_histories/aggregate_histories';
 import './aggregate_pipeline.html';
 
 Template.aggregatePipeline.onRendered(function () {
@@ -40,9 +42,9 @@ Template.aggregatePipeline.events({
     Aggregate.addStageElement();
   },
 
-  'click #remove-stage-element': function (e) {
-    e.preventDefault();
-    const stageId = `#stage${$(e.target).data('number')}`;
+  'click #remove-stage-element': function (event) {
+    event.preventDefault();
+    const stageId = `#stage${$(event.target).data('number')}`;
     $(stageId).remove();
   },
 });

@@ -54,7 +54,7 @@ Template.adminQueries.events({
     SessionManager.set(SessionManager.strSessionSelectedOptions, []);
 
     const value = $('#cmbAdminQueries').find(':selected').text();
-    if (value) SessionManager.set(Helper.strSessionSelectedQuery, value);
+    if (value) SessionManager.set(SessionManager.strSessionSelectedQuery, value);
   },
 
   'click #btnSwitchView': function () {
@@ -74,7 +74,7 @@ Template.adminQueries.events({
     }
   },
   'click #btnExecuteAdminQuery': function () {
-    const queryTemplate = SessionManager.get(Helper.strSessionSelectedQuery);
+    const queryTemplate = SessionManager.get(SessionManager.strSessionSelectedQuery);
     if (queryTemplate) Template[queryTemplate].executeQuery();
     else Notification.warning('Select Query', 'Please select a query first ');
   },

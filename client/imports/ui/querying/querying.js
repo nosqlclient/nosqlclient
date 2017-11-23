@@ -115,54 +115,54 @@ Querying.prototype = {
   initOptions(optionEnum, showRunOnAdmin) {
     switch (optionEnum) {
       case Enums.ADD_USER_OPTIONS:
-        initOptions($('#cmbAddUserOptions'), Enums.ADD_USER_OPTIONS, showRunOnAdmin);
+        initOptions.call(this, $('#cmbAddUserOptions'), Enums.ADD_USER_OPTIONS, showRunOnAdmin);
         break;
       case Enums.COMMAND_OPTIONS:
-        initOptions($('#cmbCommandOptions'), Enums.COMMAND_OPTIONS, showRunOnAdmin);
+        initOptions.call(this, $('#cmbCommandOptions'), Enums.COMMAND_OPTIONS, showRunOnAdmin);
         break;
       case Enums.PROFILING_LEVELS:
-        initOptions($('#cmbLevel'), Enums.PROFILING_LEVELS, showRunOnAdmin);
+        initOptions.call(this, $('#cmbLevel'), Enums.PROFILING_LEVELS, showRunOnAdmin);
         break;
       case Enums.AGGREGATE_OPTIONS:
-        initOptions($('#cmbAggregateOptions'), Enums.AGGREGATE_OPTIONS, showRunOnAdmin);
+        initOptions.call(this, $('#cmbAggregateOptions'), Enums.AGGREGATE_OPTIONS, showRunOnAdmin);
         break;
       case Enums.BULK_WRITE_OPTIONS:
-        initOptions($('#cmbBulkWriteOptions'), Enums.BULK_WRITE_OPTIONS, showRunOnAdmin);
+        initOptions.call(this, $('#cmbBulkWriteOptions'), Enums.BULK_WRITE_OPTIONS, showRunOnAdmin);
         break;
       case Enums.COUNT_OPTIONS:
-        initOptions($('#cmbCountOptions'), Enums.COUNT_OPTIONS, showRunOnAdmin);
+        initOptions.call(this, $('#cmbCountOptions'), Enums.COUNT_OPTIONS, showRunOnAdmin);
         break;
       case Enums.DISTINCT_OPTIONS:
-        initOptions($('#cmbDistinctOptions'), Enums.COMMAND_OPTIONS, showRunOnAdmin);
+        initOptions.call(this, $('#cmbDistinctOptions'), Enums.COMMAND_OPTIONS, showRunOnAdmin);
         break;
       case Enums.CREATE_INDEX_OPTIONS:
-        initOptions($('#cmbCreateIndexOptions'), Enums.CREATE_INDEX_OPTIONS, showRunOnAdmin);
+        initOptions.call(this, $('#cmbCreateIndexOptions'), Enums.CREATE_INDEX_OPTIONS, showRunOnAdmin);
         break;
       case Enums.CURSOR_OPTIONS:
-        initOptions($('#cmbFindCursorOptions'), Enums.CURSOR_OPTIONS, showRunOnAdmin);
-        initOptions($('#cmbFindOneCursorOptions'), Enums.CURSOR_OPTIONS, showRunOnAdmin);
+        initOptions.call(this, $('#cmbFindCursorOptions'), Enums.CURSOR_OPTIONS, showRunOnAdmin);
+        initOptions.call(this, $('#cmbFindOneCursorOptions'), Enums.CURSOR_OPTIONS, showRunOnAdmin);
         break;
       case Enums.GEO_HAYSTACK_SEARCH_OPTIONS:
-        initOptions($('#cmbGeoHaystackSearchOptions'), Enums.GEO_HAYSTACK_SEARCH_OPTIONS, showRunOnAdmin);
+        initOptions.call(this, $('#cmbGeoHaystackSearchOptions'), Enums.GEO_HAYSTACK_SEARCH_OPTIONS, showRunOnAdmin);
         break;
       case Enums.GEO_NEAR_OPTIONS:
-        initOptions($('#cmbGeoNearOptions'), Enums.GEO_NEAR_OPTIONS, showRunOnAdmin);
+        initOptions.call(this, $('#cmbGeoNearOptions'), Enums.GEO_NEAR_OPTIONS, showRunOnAdmin);
         break;
       case Enums.INSERT_MANY_OPTIONS:
-        initOptions($('#cmbInsertManyOptions'), Enums.INSERT_MANY_OPTIONS, showRunOnAdmin);
+        initOptions.call(this, $('#cmbInsertManyOptions'), Enums.INSERT_MANY_OPTIONS, showRunOnAdmin);
         break;
       case Enums.MAP_REDUCE_OPTIONS:
-        initOptions($('#cmbMapReduceOptions'), Enums.MAP_REDUCE_OPTIONS, showRunOnAdmin);
+        initOptions.call(this, $('#cmbMapReduceOptions'), Enums.MAP_REDUCE_OPTIONS, showRunOnAdmin);
         break;
       case Enums.RENAME_OPTIONS:
-        initOptions($('#cmbRenameOptions'), Enums.RENAME_OPTIONS, showRunOnAdmin);
+        initOptions.call(this, $('#cmbRenameOptions'), Enums.RENAME_OPTIONS, showRunOnAdmin);
         break;
       case Enums.STATS_OPTIONS:
-        initOptions($('#cmbStatsOptions'), Enums.STATS_OPTIONS, showRunOnAdmin);
+        initOptions.call(this, $('#cmbStatsOptions'), Enums.STATS_OPTIONS, showRunOnAdmin);
         break;
       case Enums.UPDATE_OPTIONS:
-        initOptions($('#cmbUpdateManyOptions'), Enums.UPDATE_OPTIONS, showRunOnAdmin);
-        initOptions($('#cmbUpdateOneOptions'), Enums.UPDATE_OPTIONS, showRunOnAdmin);
+        initOptions.call(this, $('#cmbUpdateManyOptions'), Enums.UPDATE_OPTIONS, showRunOnAdmin);
+        initOptions.call(this, $('#cmbUpdateOneOptions'), Enums.UPDATE_OPTIONS, showRunOnAdmin);
         break;
 
       default: break;
@@ -228,12 +228,12 @@ Querying.prototype = {
       if (!checkStringInput(username, 'username')) return;
 
       const runOnAdminDB = $('#aRunOnAdminDB').iCheck('update')[0].checked;
-      proceedQueryExecution('profilingInfo', { username, runOnAdminDB });
+      proceedQueryExecution('removeUser', { username, runOnAdminDB });
     },
 
     executeReplSetGetStatusQuery() {
       Notification.start('#btnExecuteAdminQuery');
-      proceedQueryExecution('command');
+      proceedQueryExecution('replSetGetStatus');
     },
 
     executeServerInfoQuery() {
@@ -248,7 +248,7 @@ Querying.prototype = {
 
     executeSetProfilingLevelQuery() {
       Notification.start('#btnExecuteAdminQuery');
-      proceedQueryExecution('setProfilingLevel', { level: $('#cmbLevel').val() });
+      proceedQueryExecution('setProfilingLevel', { level: $('#cmbLevel').find('option:selected').text() });
     },
 
     executeValidateCollectionQuery() {
