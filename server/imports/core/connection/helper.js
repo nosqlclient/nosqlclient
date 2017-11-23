@@ -20,16 +20,25 @@ ConnectionHelper.prototype = {
 
   extractDBFromConnectionUrl(connection) {
     let options = '';
-    if (connection.url.indexOf('?') !== -1) {
-      options = `?${connection.url.split('?')[1]}`;
-    }
+    if (connection.url.indexOf('?') !== -1) options = `?${connection.url.split('?')[1]}`;
 
     const splited = connection.url.split('/');
-    if (splited.length <= 3) {
-      connection.url += `/${options}`;
-    } else {
+    if (splited.length <= 3) connection.url += `/${options}`;
+    else {
       splited[3] = '';
       connection.url = splited.join('/') + options;
+    }
+  },
+
+  putCorrectDBToConnectionUrl(connection) {
+    let options = '';
+    if (connection.url.indexOf('?') !== -1) options = `?${connection.url.split('?')[1]}`;
+
+    const splited = connection.url.split('/');
+    if (splited.length <= 3) connection.url += `/${connection.databaseName}${options}`;
+    else {
+      splited[3] = '';
+      connection.url = splited.join('/') + connection.databaseName + options;
     }
   },
 

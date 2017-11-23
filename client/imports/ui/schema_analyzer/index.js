@@ -24,6 +24,7 @@ SchemaAnalyzer.prototype = {
     this.ensureFieldsDataForDatatable(data);
     UIComponents.DataTable.setupDatatable({
       selectorString: '#tblFieldsDetails',
+      data,
       columns: [
         {
           title: 'Field Name',
@@ -91,7 +92,7 @@ SchemaAnalyzer.prototype = {
 
   init() {
     UIComponents.initializeCollectionsCombobox();
-
+    const self = this;
     ReactivityProvider.observeChanges(
       ReactivityProvider.types.SchemaAnalyzeResult,
       {
@@ -109,7 +110,7 @@ SchemaAnalyzer.prototype = {
           }
 
           Notification.start('#btnAnalyzeNow');
-          this.populateFieldsTable(jsonData);
+          self.populateFieldsTable(jsonData);
           $('#divFieldsDetails').show();
           Notification.stop();
         }

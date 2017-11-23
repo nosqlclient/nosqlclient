@@ -20,7 +20,7 @@ Notification.prototype = {
   },
 
   warning(message, options) {
-    this.warning({ type: 'warning', message, options });
+    this.notify({ type: 'warning', message, options });
     ladda.stopAll();
   },
 

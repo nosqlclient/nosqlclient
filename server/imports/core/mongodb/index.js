@@ -106,7 +106,7 @@ MongoDB.prototype = {
 
   connect({ connectionId, username, password, sessionId }) {
     const connection = Database.readOne({ type: Database.types.Connections, query: { _id: connectionId } });
-    const connectionUrl = Connection.getConnectionUrl(connection, false, username, password);
+    const connectionUrl = Connection.getConnectionUrl(connection, username, password);
     const connectionOptions = Connection.getConnectionOptions(connection);
     const metadataToLog = { connectionUrl, options: MongoDBHelper.clearConnectionOptionsForLog(connectionOptions), sessionId };
 
@@ -151,7 +151,8 @@ MongoDB.prototype = {
   },
 
   analyzeSchema({ connectionId, username, password, collection, sessionId }) {
-    const connectionUrl = Connection.getConnectionUrl(Database.readOne({ type: Database.types.Connections, query: { _id: connectionId } }), true, username, password, true);
+    const connection = Database.readOne({ type: Database.types.Connections, query: { _id: connectionId } });
+    const connectionUrl = Connection.getConnectionUrl(connection, username, password, true, true);
     const mongoPath = MongoDBHelper.getProperBinary('mongo');
     const args = [connectionUrl, '--quiet', '--eval', `var collection =\"${collection}\", outputFormat=\"json\"`, `${MongoDBHelper.getMongoExternalsPath()}/variety/variety.js_`];
     const metadataToLog = { sessionId, args, collection };

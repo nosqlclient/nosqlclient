@@ -256,10 +256,11 @@ Connection.prototype = {
     Database.create({ type: Database.types.Connections, document: connection });
   },
 
-  getConnectionUrl(connection, addDB, username, password, addAuthSource) {
+  getConnectionUrl(connection, username, password, addAuthSource, keepDB) {
     if (connection.url) {
       if (username || password) ConnectionHelper.changeUsernameAndPasswordFromConnectionUrl(connection, username, password);
-      if (!addDB) ConnectionHelper.extractDBFromConnectionUrl(connection);
+      if (!keepDB) ConnectionHelper.extractDBFromConnectionUrl(connection);
+      else ConnectionHelper.putCorrectDBToConnectionUrl(connection);
       if (addAuthSource) ConnectionHelper.addAuthSourceToConnectionUrl(connection);
 
       return connection.url;
@@ -282,7 +283,7 @@ Connection.prototype = {
 
     if (connectionUrl.endsWith(',')) connectionUrl = connectionUrl.substring(0, connectionUrl.length - 1);
     connectionUrl += '/';
-    if (addDB) connectionUrl += connection.databaseName;
+    if (keepDB) connectionUrl += connection.databaseName;
 
     // options
     if (connection.authenticationType === 'mongodb_cr' || connection.authenticationType === 'scram_sha_1') {
