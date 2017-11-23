@@ -101,7 +101,7 @@ UIComponents.prototype = {
 
         if (table.row(this).data()) {
           if (sessionKey) SessionManager.set(sessionKey, table.row(this).data());
-          clickCallback(table);
+          if (clickCallback) clickCallback(table);
         }
       });
 
