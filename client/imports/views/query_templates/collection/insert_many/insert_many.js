@@ -1,6 +1,7 @@
 import { Template } from 'meteor/templating';
 import { Querying } from '/client/imports/ui';
 import { Enums, UIComponents } from '/client/imports/modules';
+import '/client/imports/views/query_templates_options/insert_many_options/insert_many_options';
 import './insert_many.html';
 
 Template.insertMany.onRendered(() => {

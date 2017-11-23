@@ -1,6 +1,7 @@
 import { Template } from 'meteor/templating';
 import { Querying } from '/client/imports/ui';
 import { Enums } from '/client/imports/modules';
+import '/client/imports/views/query_templates_options/findone_modify_options/findone_modify_options';
 import './findone_and_delete.html';
 
 Template.findOneAndDelete.onRendered(() => {

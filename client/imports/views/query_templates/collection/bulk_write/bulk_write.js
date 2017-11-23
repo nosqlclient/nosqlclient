@@ -1,6 +1,7 @@
 import { Template } from 'meteor/templating';
 import { Enums, UIComponents } from '/client/imports/modules';
 import { Querying } from '/client/imports/ui';
+import '/client/imports/views/query_templates_options/bulk_write_options/bulk_write_options';
 import './bulk_write.html';
 
 Template.bulkWrite.onRendered(() => {

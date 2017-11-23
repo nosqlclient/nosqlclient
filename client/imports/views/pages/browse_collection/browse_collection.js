@@ -1,6 +1,3 @@
-/**
- * Created by RSercan on 29.12.2015.
- */
 import { Template } from 'meteor/templating';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { QueryRender, Editor } from '/client/imports/ui';
@@ -31,6 +28,7 @@ import '/client/imports/views/query_templates/collection/update_many/update_many
 import '/client/imports/views/query_templates/collection/update_one/update_one';
 import '/client/imports/views/query_templates/collection/group/group';
 import '../../query_templates/collection/find/query_wizard/query_wizard';
+import './query_histories/query_histories';
 import './browse_collection.html';
 
 

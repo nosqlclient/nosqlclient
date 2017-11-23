@@ -164,7 +164,9 @@ Querying.prototype = {
         initOptions.call(this, $('#cmbUpdateManyOptions'), Enums.UPDATE_OPTIONS, showRunOnAdmin);
         initOptions.call(this, $('#cmbUpdateOneOptions'), Enums.UPDATE_OPTIONS, showRunOnAdmin);
         break;
-
+      case Enums.FINDONE_MODIFY_OPTIONS:
+        initOptions.call(this, $('#cmbFindOneModifyOptions'), Enums.UPDATE_OPTIONS, showRunOnAdmin);
+        break;
       default: break;
     }
   },

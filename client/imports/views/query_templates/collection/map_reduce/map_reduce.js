@@ -1,6 +1,7 @@
 import { Template } from 'meteor/templating';
 import { Querying } from '/client/imports/ui';
 import { Enums, UIComponents } from '/client/imports/modules';
+import '/client/imports/views/query_templates_options/map_reduce_options/map_reduce_options';
 import './map_reduce.html';
 
 

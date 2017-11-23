@@ -1,6 +1,7 @@
 import { Template } from 'meteor/templating';
 import { Querying } from '/client/imports/ui';
 import { Enums } from '/client/imports/modules';
+import '/client/imports/views/query_templates_options/cursor_options/cursor_options';
 import './findone.html';
 
 Template.findOne.onRendered(() => {

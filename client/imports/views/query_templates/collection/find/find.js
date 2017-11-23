@@ -2,6 +2,7 @@ import { Template } from 'meteor/templating';
 import { Querying } from '/client/imports/ui';
 import { Enums, SessionManager } from '/client/imports/modules';
 import '/client/imports/views/query_templates_options/explain/explain';
+import '/client/imports/views/query_templates_options/cursor_options/cursor_options';
 import './find.html';
 
 Template.find.onRendered(() => {
