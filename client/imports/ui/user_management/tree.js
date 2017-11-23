@@ -8,7 +8,7 @@ const UserManagementTree = function () {
 
 UserManagementTree.prototype = {
   init() {
-    Notification.start('#btnRefreshUsers').start();
+    Notification.start('#btnRefreshUsers');
 
     const chckRunOnAdminDB = $('#aRunOnAdminDBToFetchUsers');
     chckRunOnAdminDB.iCheck({
@@ -33,7 +33,7 @@ UserManagementTree.prototype = {
     };
 
     const runOnAdminDB = $('#aRunOnAdminDBToFetchUsers').iCheck('update')[0].checked;
-
+    const self = this;
     Communicator.call({
       methodName: 'command',
       args: { command, runOnAdminDB },
@@ -69,7 +69,7 @@ UserManagementTree.prototype = {
                     args: { command: userInfoCommand, runOnAdminDB },
                     callback: (userInfoCommandError, userInfoCommandResult) => {
                       if (userInfoCommandError || userInfoCommandResult.error) ErrorHandler.showMeteorFuncError(userInfoCommandError, userInfoCommandResult, "Couldn't fetch userInfo");
-                      else callback(this.populateTreeChildrenForRoles(userInfoCommandResult.result.users[0]));
+                      else callback(self.populateTreeChildrenForRoles(userInfoCommandResult.result.users[0]));
                     }
                   });
                 } else if (node.data[0].role) {
@@ -84,7 +84,7 @@ UserManagementTree.prototype = {
                     args: { command: roleInfoCommand, runOnAdminDB },
                     callback: (roleInfoCommandError, roleInfoCommandResult) => {
                       if (roleInfoCommandError || roleInfoCommandResult.error) ErrorHandler.showMeteorFuncError(roleInfoCommandError, roleInfoCommandResult, "Couldn't fetch roleInfo");
-                      else callback(this.populateTreeChildrenForPrivileges(roleInfoCommandResult.result.roles[0]));
+                      else callback(self.populateTreeChildrenForPrivileges(roleInfoCommandResult.result.roles[0]));
                     }
                   });
                 }
@@ -122,7 +122,7 @@ UserManagementTree.prototype = {
 
   getNodeInformation(node) {
     if (!node.data || node.data[0].db || node.data[0].user) {
-      if (!node.data[0]) return this.defaultInformationText;
+      if (!node.data || !node.data[0]) return this.defaultInformationText;
 
       if (node.data[0].user) {
         SessionManager.set(SessionManager.strSessionUsermanagementManageSelection, node.text);

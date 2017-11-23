@@ -2,6 +2,8 @@ import { Template } from 'meteor/templating';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { SessionManager, Notification } from '/client/imports/modules';
 import { UserManagementTree, UserManagementUsers, UserManagementRoles } from '/client/imports/ui';
+import './manage_users/manage_users';
+import './manage_roles/manage_roles';
 import './user_management.html';
 
 Template.userManagement.onRendered(function () {
