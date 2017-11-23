@@ -956,7 +956,7 @@ Querying.prototype = {
       renderCollectionnames(newName) {
         Communicator.call({
           methodName: 'connect',
-          args: { connectionId: SessionManager.get(SessionManager.strSessionConnection) },
+          args: { connectionId: SessionManager.get(SessionManager.strSessionConnection)._id },
           callback: (err, result) => {
             if (err || result.error) ErrorHandler.showMeteorFuncError(err, result, "Couldn't connect");
             else {

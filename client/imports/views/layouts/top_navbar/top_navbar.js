@@ -110,7 +110,7 @@ Template.topNavbar.events({
 
   'click #btnConnect': function () {
     // loading button
-    Notification.create('#btnConnect');
+    Notification.start('#btnConnect');
     Connection.connect(false);
   },
 

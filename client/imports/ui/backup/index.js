@@ -14,9 +14,9 @@ Backup.prototype = {
     cmb.prepend("<option value=''></option>");
 
     Notification.start('#btnExecuteMongodump');
-    Notification.create('#btnExecuteMongorestore');
-    Notification.create('#btnExecuteMongoexport');
-    Notification.create('#btnExecuteMongoimport');
+    Notification.start('#btnExecuteMongorestore');
+    Notification.start('#btnExecuteMongoexport');
+    Notification.start('#btnExecuteMongoimport');
 
     Communicator.call({
       methodName: 'getDatabases',
@@ -44,9 +44,9 @@ Backup.prototype = {
 
   loadCollectionsCombo(prefix) {
     Notification.start('#btnExecuteMongodump');
-    Notification.create('#btnExecuteMongorestore');
-    Notification.create('#btnExecuteMongoexport');
-    Notification.create('#btnExecuteMongoimport');
+    Notification.start('#btnExecuteMongorestore');
+    Notification.start('#btnExecuteMongoexport');
+    Notification.start('#btnExecuteMongoimport');
 
     const cmb = $(`#${prefix}--collection`);
     cmb.empty();
@@ -251,7 +251,7 @@ Backup.prototype = {
 
     // wait till --host input gets ready
     Meteor.setTimeout(() => {
-      const connection = ReactivityProvider.findOne(ReactivityProvider.types.Connections, { _id: SessionManager.get(SessionManager.strSessionConnection) });
+      const connection = ReactivityProvider.findOne(ReactivityProvider.types.Connections, { _id: SessionManager.get(SessionManager.strSessionConnection)._id });
       let hostStr = '';
       connection.servers.forEach((server) => { hostStr += `${server.host}:${server.port},`; });
       if (hostStr.endsWith(',')) hostStr = hostStr.substr(0, hostStr.length - 1);

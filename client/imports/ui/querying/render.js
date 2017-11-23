@@ -65,7 +65,7 @@ QueryRender.prototype = {
   initQueryHistories() {
     Notification.start('#btnExecuteAgain');
 
-    const connectionId = SessionManager.get(SessionManager.strSessionConnection);
+    const connectionId = SessionManager.get(SessionManager.strSessionConnection)._id;
     const selectedCollection = SessionManager.get(SessionManager.strSessionSelectedCollection);
     const queryHistories = ReactivityProvider.find(ReactivityProvider.types.QueryHistory, { connectionId, collectionName: selectedCollection }, { sort: { date: -1 } });
 
@@ -108,7 +108,7 @@ QueryRender.prototype = {
       methodName: 'saveQueryHistory',
       args: {
         history: {
-          connectionId: SessionManager.get(SessionManager.strSessionConnection),
+          connectionId: SessionManager.get(SessionManager.strSessionConnection)._id,
           collectionName: SessionManager.get(SessionManager.strSessionSelectedCollection),
           queryName: queryInfo,
           params: JSON.stringify(queryParams),

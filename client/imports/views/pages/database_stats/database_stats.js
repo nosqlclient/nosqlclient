@@ -47,7 +47,7 @@ Template.databaseStats.helpers({
   },
 
   getServerStatus() {
-    if (ReactivityProvider.findOne(ReactivityProvider.types.Settings).findOne().showDBStats) {
+    if (ReactivityProvider.findOne(ReactivityProvider.types.Settings).showDBStats) {
       if (!SessionManager.get(SessionManager.strSessionServerStatus)) DBStats.fetchStatus();
 
       return SessionManager.get(SessionManager.strSessionServerStatus);
@@ -55,7 +55,7 @@ Template.databaseStats.helpers({
   },
 
   getDBStats() {
-    if (ReactivityProvider.findOne(ReactivityProvider.types.Settings).findOne().showDBStats) {
+    if (ReactivityProvider.findOne(ReactivityProvider.types.Settings).showDBStats) {
       if (!SessionManager.get(SessionManager.strSessionDBStats)) DBStats.fetchStats();
 
       return SessionManager.get(SessionManager.strSessionDBStats);

@@ -2,6 +2,7 @@ import { Template } from 'meteor/templating';
 import { ReactivityProvider } from '/client/imports/facades';
 import { SessionManager } from '/client/imports/modules';
 import $ from 'jquery';
+
 Template.registerHelper('getConfiguredAutoCompletionKey', () => ReactivityProvider.findOne(ReactivityProvider.types.Settings).autoCompleteShortcut || 'Ctrl-Space');
 
 Template.registerHelper('isOptionSelected', (option, sessionVar) => {
@@ -12,10 +13,10 @@ Template.registerHelper('isOptionSelected', (option, sessionVar) => {
 
 Template.registerHelper('getConnection', () => {
   if (SessionManager.get(SessionManager.strSessionConnection)) {
-    return ReactivityProvider.findOne(ReactivityProvider.types.Connections, { _id: SessionManager.get(SessionManager.strSessionConnection) });
+    return ReactivityProvider.findOne(ReactivityProvider.types.Connections, { _id: SessionManager.get(SessionManager.strSessionConnection)._id });
   }
 });
 
 Template.registerHelper('getSelectedCollection', () => SessionManager.get(SessionManager.strSessionSelectedCollection));
 
-Template.registerHelper('isConnected', () => (!!SessionManager.get(SessionManager.strSessionCollectionNames)));
+Template.registerHelper('isConnected', () => !!SessionManager.get(SessionManager.strSessionCollectionNames));

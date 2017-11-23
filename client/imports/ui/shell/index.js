@@ -141,7 +141,7 @@ Shell.prototype = {
     ReactivityProvider.observeChanges(
       ReactivityProvider.types.ShellCommands,
       {
-        connectionId: SessionManager.get(SessionManager.strSessionConnection),
+        connectionId: SessionManager.get(SessionManager.strSessionConnection)._id,
         sessionId: Meteor.default_connection._lastSessionId,
       },
       { sort: { date: -1 } },
@@ -165,7 +165,7 @@ Shell.prototype = {
     Communicator.call({
       methodName: 'connectToShell',
       args: {
-        connectionId: SessionManager.get(SessionManager.strSessionConnection),
+        connectionId: SessionManager.get(SessionManager.strSessionConnection)._id,
         username: SessionManager.get(SessionManager.strSessionPromptedUsername),
         password: SessionManager.get(SessionManager.strSessionPromptedPassword)
       },
@@ -183,7 +183,7 @@ Shell.prototype = {
           methodName: 'executeShellCommand',
           args: {
             command: cm.getValue,
-            connectionId: SessionManager.get(SessionManager.strSessionConnection),
+            connectionId: SessionManager.get(SessionManager.strSessionConnection)._id,
             username: SessionManager.get(SessionManager.strSessionPromptedUsername),
             password: SessionManager.get(SessionManager.strSessionPromptedPassword)
           },

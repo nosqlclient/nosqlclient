@@ -151,7 +151,7 @@ UserManagementRoles.prototype = {
       Notification.warning('Cannot add inherit roles to builtin roles !');
       return;
     }
-    Notification.create('#btnAddInheritRole');
+    Notification.start('#btnAddInheritRole');
 
     this.initDatabasesForInheritRole();
     $('#addRoleToInherit').modal('show');
@@ -205,7 +205,7 @@ UserManagementRoles.prototype = {
 
     Notification.start('#btnCloseUMRoles');
 
-    const connection = ReactivityProvider.findOne(ReactivityProvider.types.Connections, { _id: SessionManager.get(SessionManager.strSessionConnection) });
+    const connection = ReactivityProvider.findOne(ReactivityProvider.types.Connections, { _id: SessionManager.get(SessionManager.strSessionConnection)._id });
     const runOnAdminDB = $('#aRunOnAdminDBToFetchUsers').iCheck('update')[0].checked;
     const dbName = runOnAdminDB ? 'admin' : connection.databaseName;
     const roleName = role || SessionManager.get(SessionManager.strSessionUsermanagementRole).role;

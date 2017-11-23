@@ -95,7 +95,7 @@ SchemaAnalyzer.prototype = {
     ReactivityProvider.observeChanges(
       ReactivityProvider.types.SchemaAnalyzeResult,
       {
-        connectionId: SessionManager.get(SessionManager.strSessionConnection),
+        connectionId: SessionManager.get(SessionManager.strSessionConnection)._id,
         sessionId: Meteor.default_connection._lastSessionId,
       },
       { sort: { date: -1 } },
@@ -136,7 +136,7 @@ SchemaAnalyzer.prototype = {
     Communicator.call({
       methodName: 'analyzeSchema',
       args: {
-        connectionId: SessionManager.get(SessionManager.strSessionConnection),
+        connectionId: SessionManager.get(SessionManager.strSessionConnection)._id,
         username: SessionManager.get(SessionManager.strSessionPromptedUsername),
         password: SessionManager.get(SessionManager.strSessionPromptedPassword),
         collection

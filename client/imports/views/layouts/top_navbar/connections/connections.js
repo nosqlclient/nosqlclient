@@ -98,7 +98,7 @@ Template.connections.events({
   'click .editor_edit': function () {
     $('#addEditConnectionModalTitle').text('Edit Connection');
     const modal = $('#addEditConnectionModal');
-    modal.data('edit', SessionManager.get(SessionManager.strSessionConnection));
+    modal.data('edit', SessionManager.get(SessionManager.strSessionConnection)._id);
     modal.data('clone', '');
     modal.modal('show');
   },
@@ -106,7 +106,7 @@ Template.connections.events({
   'click .editor_duplicate': function () {
     $('#addEditConnectionModalTitle').text('Clone Connection');
     const modal = $('#addEditConnectionModal');
-    modal.data('clone', SessionManager.get(SessionManager.strSessionConnection));
+    modal.data('clone', SessionManager.get(SessionManager.strSessionConnection)._id);
     modal.data('edit', '');
     modal.modal('show');
   },

@@ -26,7 +26,7 @@ UserManagementTree.prototype = {
     $('#btnManageUsers').hide();
     $('#btnManageRoles').hide();
 
-    const connection = ReactivityProvider.findOne(ReactivityProvider.types.Connections, { _id: SessionManager.get(SessionManager.strSessionConnection) });
+    const connection = ReactivityProvider.findOne(ReactivityProvider.types.Connections, { _id: SessionManager.get(SessionManager.strSessionConnection)._id });
     const command = {
       usersInfo: 1,
       showCredentials: true,

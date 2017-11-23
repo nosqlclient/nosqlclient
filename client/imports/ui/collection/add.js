@@ -254,7 +254,7 @@ CollectionAdd.prototype = {
     $('#cmbCollectionOrView, #cmbCollectionsAddCollection, #cmbAddCollectionViewOptions, #cmbValidationActionAddCollection, #cmbValidationLevelAddCollection')
       .find('option').prop('selected', false).trigger('chosen:updated');
     $('#collectionAddModalTitle').text('Create Collection/View');
-    $('#spanColName').text(ReactivityProvider.findOne(ReactivityProvider.types.Connections, { _id: SessionManager.get(SessionManager.strSessionConnection) }).connectionName);
+    $('#spanColName').text(ReactivityProvider.findOne(ReactivityProvider.types.Connections, { _id: SessionManager.get(SessionManager.strSessionConnection)._id }).connectionName);
     $('#btnCreateCollection').prop('disabled', false);
 
     SessionManager.set(SessionManager.strSessionSelectedAddCollectionOptions, []);
@@ -290,7 +290,7 @@ CollectionAdd.prototype = {
   initializeForm(collection) {
     Notification.start('#btnCreateCollection');
 
-    const connection = ReactivityProvider.findOne(ReactivityProvider.types.Connections, { _id: SessionManager.get(SessionManager.strSessionConnection) });
+    const connection = ReactivityProvider.findOne(ReactivityProvider.types.Connections, { _id: SessionManager.get(SessionManager.strSessionConnection)._id });
     Communicator.call({
       methodName: 'listCollectionNames',
       args: { dbName: connection.databaseName },

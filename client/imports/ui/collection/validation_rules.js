@@ -25,7 +25,7 @@ CollectionValidationRules.prototype = {
     const cmbValidationAction = $('#cmbValidationAction');
     const cmbValidationLevel = $('#cmbValidationLevel');
 
-    const connection = ReactivityProvider.findOne(ReactivityProvider.types.Connections, { _id: SessionManager.get(SessionManager.strSessionConnection) });
+    const connection = ReactivityProvider.findOne(ReactivityProvider.types.Connections, { _id: SessionManager.get(SessionManager.strSessionConnection)._id });
     Communicator.call({
       methodName: 'listCollectionNames',
       args: { dbName: connection.databaseName },

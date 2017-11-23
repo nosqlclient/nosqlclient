@@ -153,7 +153,7 @@ UserManagementUsers.prototype = {
         editorDiv.data('jsoneditor', jsonEditor);
       }
 
-      const connection = ReactivityProvider.findOne(ReactivityProvider.types.Connections, { _id: SessionManager.get(SessionManager.strSessionConnection) });
+      const connection = ReactivityProvider.findOne(ReactivityProvider.types.Connections, { _id: SessionManager.get(SessionManager.strSessionConnection)._id });
       const runOnAdminDB = $('#aRunOnAdminDBToFetchUsers').iCheck('update')[0].checked;
       const dbName = runOnAdminDB ? 'admin' : connection.databaseName;
 
@@ -270,7 +270,7 @@ UserManagementUsers.prototype = {
 
     Notification.start('#btnCloseUMDB');
 
-    const connection = ReactivityProvider.findOne(ReactivityProvider.types.Connections, { _id: SessionManager.get(SessionManager.strSessionConnection) });
+    const connection = ReactivityProvider.findOne(ReactivityProvider.types.Connections, { _id: SessionManager.get(SessionManager.strSessionConnection)._id });
     const runOnAdminDB = $('#aRunOnAdminDBToFetchUsers').iCheck('update')[0].checked;
     const dbName = runOnAdminDB ? 'admin' : connection.databaseName;
     const username = user || SessionManager.get(SessionManager.strSessionUsermanagementUser).user;

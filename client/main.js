@@ -20,3 +20,6 @@ import '/client/imports/views/pages/database_stats/database_stats';
 
 // routes
 import '/lib/imports/router';
+
+// template helpers
+import '/client/imports/helpers/template_helpers/index';

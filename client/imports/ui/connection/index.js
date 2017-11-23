@@ -25,7 +25,7 @@ Connection.prototype = {
     }
 
     Notification.start('#btnConnectSwitchedDatabase');
-    const connection = ReactivityProvider.findOne(ReactivityProvider.types.Connections, { _id: SessionManager.get(SessionManager.strSessionConnection) });
+    const connection = ReactivityProvider.findOne(ReactivityProvider.types.Connections, { _id: SessionManager.get(SessionManager.strSessionConnection)._id });
     connection.databaseName = selector.val();
 
     Communicator.call({ methodName: 'saveConnection', args: { connection } });
@@ -65,7 +65,7 @@ Connection.prototype = {
           else Notification.error(err.message);
 
           // let blaze initialize
-          Meteor.setTimeout(() => { tis.disableFormsForUri(); }, 150);
+          Meteor.setTimeout(() => { this.disableFormsForUri(); }, 150);
         }
       });
     } else this.enableFormsForUri();
@@ -131,7 +131,7 @@ Connection.prototype = {
   },
 
   connect(isRefresh, message) {
-    const connection = ReactivityProvider.findOne(ReactivityProvider.types.Connections, { _id: SessionManager.get(SessionManager.strSessionConnection) });
+    const connection = ReactivityProvider.findOne(ReactivityProvider.types.Connections, { _id: SessionManager.get(SessionManager.strSessionConnection)._id });
     if (!connection) {
       Notification.warning('Please select a connection first !');
       return;
@@ -271,7 +271,7 @@ Connection.prototype = {
   },
 
   prepareFormForEdit() {
-    const connection = ReactivityProvider.findOne(ReactivityProvider.types.Connections, { _id: SessionManager.get(SessionManager.strSessionConnection) });
+    const connection = ReactivityProvider.findOne(ReactivityProvider.types.Connections, { _id: SessionManager.get(SessionManager.strSessionConnection)._id });
 
     $('#addEditModalSmall').html(connection.connectionName);
     $('#inputConnectionName').val(connection.connectionName);
@@ -396,8 +396,9 @@ Connection.prototype = {
   },
 
   fillHostFields(connection) {
-    $('.divHostField').forEach((divField) => {
-      divField = $(divField);
+    const hostFields = $('.divHostField');
+    Object.keys(hostFields).forEach((key) => {
+      const divField = $(hostFields[key]);
       const host = divField.find('.txtHostName').val();
       let port = divField.find('.txtPort').val();
       port = port ? parseInt(port, 10) : '';
@@ -565,7 +566,7 @@ Connection.prototype = {
 
     Communicator.call({
       methodName: 'removeConnection',
-      args: { connectionId: SessionManager.get(SessionManager.strSessionConnection) },
+      args: { connectionId: SessionManager.get(SessionManager.strSessionConnection)._id },
       callback: (err) => {
         if (!err) {
           SessionManager.clear();
@@ -582,13 +583,9 @@ Connection.prototype = {
     const modal = $('#addEditConnectionModal');
     const oldCollectionId = modal.data('edit') ? modal.data('edit') : modal.data('clone');
     let currentConnection = {};
-    if (oldCollectionId) {
-      currentConnection = ReactivityProvider.findOne(ReactivityProvider.types.Connections, { _id: oldCollectionId });
-    }
+    if (oldCollectionId) currentConnection = ReactivityProvider.findOne(ReactivityProvider.types.Connections, { _id: oldCollectionId });
     this.populateConnection(currentConnection, (connection) => {
-      if (modal.data('edit')) {
-        connection._id = currentConnection._id;
-      }
+      if (modal.data('edit')) connection._id = currentConnection._id;
 
       Communicator.call({
         methodName: 'checkAndSaveConnection',

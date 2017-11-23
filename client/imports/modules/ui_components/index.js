@@ -94,9 +94,10 @@ UIComponents.prototype = {
     },
 
     initiateDatatable({ selector, sessionKey, clickCallback, noDeleteEvent }) {
+      const self = this;
       selector.find('tbody').on('click', 'tr', function () {
         const table = selector.DataTable();
-        this.doTableRowSelectable(table, $(this));
+        self.doTableRowSelectable(table, $(this));
 
         if (table.row(this).data()) {
           if (sessionKey) SessionManager.set(sessionKey, table.row(this).data());

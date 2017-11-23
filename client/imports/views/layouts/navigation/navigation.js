@@ -25,7 +25,7 @@ Template.navigation.events({
 
   'click #anchorShell': function (event) {
     event.preventDefault();
-    const connection = ReactivityProvider.findOne(ReactivityProvider.types.Connections, { _id: SessionManager.get(SessionManager.strSessionConnection) });
+    const connection = ReactivityProvider.findOne(ReactivityProvider.types.Connections, { _id: SessionManager.get(SessionManager.strSessionConnection)._id });
 
     if (connection.ssl && connection.ssl.enable) {
       Notification.info('Unfortunately, this feature is not usable in SSL connections yet');
@@ -114,7 +114,7 @@ Template.navigation.helpers({
   getServerList() {
     let result = '';
     if (SessionManager.get(SessionManager.strSessionConnection)) {
-      const connection = ReactivityProvider.findOne(ReactivityProvider.types.Connections, { _id: SessionManager.get(SessionManager.strSessionConnection) });
+      const connection = ReactivityProvider.findOne(ReactivityProvider.types.Connections, { _id: SessionManager.get(SessionManager.strSessionConnection)._id });
       if (connection) connection.servers.forEach((server) => { result += `${server.host}:${server.port}<br/>`; });
     }
 
@@ -130,7 +130,7 @@ Template.navigation.helpers({
   },
 
   filtered() {
-    return CollectionUtil.isFiltered();
+    return CollectionFilter.isFiltered();
   },
 
   getCollectionNames() {
