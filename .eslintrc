@@ -10,6 +10,7 @@ settings:
   import/core-modules: [ meteor ]
 
 rules:
+  meteor/no-session: 0
   import/prefer-default-export: 0
   import/extensions: 0
   no-useless-escape: 0
