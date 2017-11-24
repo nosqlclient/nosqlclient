@@ -267,7 +267,7 @@ CollectionAdd.prototype = {
       return;
     }
 
-    const options = CollectionAdd.gatherOptions();
+    const options = this.gatherOptions();
     if (!options) return;
 
     Notification.start('#btnCreateCollection');

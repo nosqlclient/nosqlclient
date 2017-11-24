@@ -887,7 +887,7 @@ Querying.prototype = {
         Notification.start('#btnExecuteQuery');
         const selectedCollection = SessionManager.get(SessionManager.strSessionSelectedCollection);
 
-        proceedQueryExecution('insertMany', { selectedCollection }, false, { });
+        proceedQueryExecution('isCapped', { selectedCollection }, false, { });
       }
     },
 

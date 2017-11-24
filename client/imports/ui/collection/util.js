@@ -87,7 +87,7 @@ CollectionUtil.prototype = {
       callback: (isConfirm) => {
         if (isConfirm) {
           Communicator.call({
-            methodName: 'delete',
+            methodName: 'dropCollection',
             args: { selectedCollection },
             callback: (err, result) => {
               if (err || result.error) ErrorHandler.showMeteorFuncError(err, result, "Couldn't drop collection");
@@ -149,10 +149,9 @@ CollectionUtil.prototype = {
   },
 
   clearCollection(selectedCollection) {
-    const collectionName = $(this).context.innerText.substring(1).split(' ')[0];
     Notification.modal({
       title: 'Are you sure?',
-      text: `${collectionName} collection's all data will be wiped, are you sure ?`,
+      text: `${selectedCollection} collection's all data will be wiped, are you sure ?`,
       type: 'warning',
       confirmButtonText: 'Yes, clear it!',
       callback: (isConfirm) => {
@@ -188,6 +187,7 @@ CollectionUtil.prototype = {
   },
 
   prepareContextMenuItems(addCollectionModal, convertToCappedModal, renameModal, validationRulesModal, filterModal) {
+    const self = this;
     return {
       manage_collection: {
         name: 'Manage',
@@ -233,7 +233,7 @@ CollectionUtil.prototype = {
             name: 'Clone',
             callback() {
               const selectedCollection = $(this).context.innerText.substring(1).split(' ')[0];
-              CollectionUtil.cloneCollection(selectedCollection);
+              self.cloneCollection(selectedCollection);
             }
           },
 
@@ -253,7 +253,7 @@ CollectionUtil.prototype = {
             callback() {
               if ($(this) && $(this).context && $(this).context.innerText) {
                 const collectionName = $(this).context.innerText.substring(1).split(' ')[0];
-                CollectionUtil.clearCollection(collectionName);
+                self.clearCollection(collectionName);
               } else Notification.warning('No collection selected !');
             }
           }
@@ -299,7 +299,7 @@ CollectionUtil.prototype = {
         callback() {
           if ($(this) && $(this).context && $(this).context.innerText) {
             const collectionName = $(this).context.innerText.substring(1).split(' ')[0];
-            CollectionUtil.dropCollection(collectionName);
+            self.dropCollection(collectionName);
           } else Notification.warning('No collection selected !');
         },
       },
@@ -307,7 +307,7 @@ CollectionUtil.prototype = {
         name: 'Drop All Collections',
         icon: 'fa-ban',
         callback() {
-          CollectionUtil.dropAllCollections();
+          self.dropAllCollections();
         },
       },
     };
@@ -377,7 +377,7 @@ CollectionUtil.prototype = {
   prepareContextMenuModals() {
     const filterModal = $('#collectionFilterModal');
     filterModal.on('shown.bs.modal', () => {
-      CollectionUtil.initializeFilterTable();
+      CollectionFilter.initializeFilterTable();
     });
 
     const addCollectionModal = $('#collectionAddModal');

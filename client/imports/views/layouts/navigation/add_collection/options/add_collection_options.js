@@ -10,7 +10,7 @@ Template.addCollectionOptions.helpers({
 });
 
 Template.indexOptionDefaults.onRendered(() => {
-  UIComponents.Editor.initializeCodeMirror($('#divIndexOptionDefaults'), 'txtIndexOptionDefaults');
+  UIComponents.Editor.initializeCodeMirror({ divSelector: $('#divIndexOptionDefaults'), txtAreaId: 'txtIndexOptionDefaults' });
 });
 
 Template.flags.onRendered(() => {

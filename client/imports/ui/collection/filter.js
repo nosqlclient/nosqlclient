@@ -24,6 +24,7 @@ CollectionFilter.prototype = {
   },
 
   initializeFilterTable() {
+    const self = this;
     const collectionNames = SessionManager.get(SessionManager.strSessionCollectionNames);
     collectionNames.forEach((obj) => {
       if (!obj.type) obj.type = 'collection';
@@ -31,6 +32,7 @@ CollectionFilter.prototype = {
 
     UIComponents.DataTable.setupDatatable({
       selectorString: '#tblCollectionFilter',
+      data: collectionNames,
       columns: [
         { data: 'name' },
         { data: 'type' },
@@ -41,9 +43,7 @@ CollectionFilter.prototype = {
           data: null,
           width: '10%',
           render(data) {
-            if ($.inArray(data.name, this.excludedCollectionsByFilter.get()) === -1) {
-              return `<input name="${data.name}" type="checkbox" checked="checked">`;
-            }
+            if ($.inArray(data.name, self.excludedCollectionsByFilter.get()) === -1) return `<input name="${data.name}" type="checkbox" checked="checked">`;
 
             return `<input name="${data.name}" type="checkbox">`;
           },

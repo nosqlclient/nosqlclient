@@ -18,7 +18,7 @@ import '/client/imports/views/query_templates/collection/geo_haystack_search/geo
 import '/client/imports/views/query_templates/collection/geo_near/geo_near';
 import '/client/imports/views/query_templates/collection/index_information/index_information';
 import '/client/imports/views/query_templates/collection/insert_many/insert_many';
-import '/client/imports/views/query_templates/collection/is_capped/isCapped';
+import '/client/imports/views/query_templates/collection/is_capped/is_capped';
 import '/client/imports/views/query_templates/collection/map_reduce/map_reduce';
 import '/client/imports/views/query_templates/collection/options/options';
 import '/client/imports/views/query_templates/collection/re_index/re_index';
