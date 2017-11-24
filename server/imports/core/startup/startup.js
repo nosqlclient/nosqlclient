@@ -1,6 +1,3 @@
-/**
- * Created by RSercan on 17.1.2016.
- */
 import { Meteor } from 'meteor/meteor';
 import { HttpBasicAuth } from 'meteor/jabbslad:basic-auth';
 import { Connection, Settings } from '/server/imports/core/index';

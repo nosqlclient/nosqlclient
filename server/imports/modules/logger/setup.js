@@ -1,6 +1,3 @@
-/**
- * Created by RSercan on 5.3.2016.
- */
 const winston = require('winston');
 
 winston.loggers.add('mongoclient', {

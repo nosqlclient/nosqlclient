@@ -1,10 +1,9 @@
-/**
- * Created by Sercan on 26.10.2016.
- */
 import { WebApp } from 'meteor/webapp';
 import { Papa } from 'meteor/harrison:papa-parse';
 import { Logger } from '/server/imports/modules';
 import { MongoDBGridFS, MongoDB, Settings } from '../index';
+
+const dot = require('dot-object');
 
 WebApp.connectHandlers.use('/exportMongoclient', (req, res) => {
   Settings.exportSettings({ res });
@@ -14,14 +13,14 @@ WebApp.connectHandlers.use('/export', (req, res) => {
   const urlParts = decodeURI(req.url).split('&');
   const format = urlParts[0].substr(urlParts[0].indexOf('=') + 1);
   const selectedCollection = urlParts[1].substr(urlParts[1].indexOf('=') + 1);
-  const selector = urlParts[2].substr(urlParts[2].indexOf('=') + 1);
-  const cursorOptions = urlParts[3].substr(urlParts[3].indexOf('=') + 1);
+  const selector = JSON.parse(urlParts[2].substr(urlParts[2].indexOf('=') + 1));
+  const cursorOptions = JSON.parse(urlParts[3].substr(urlParts[3].indexOf('=') + 1));
   const sessionId = urlParts[4].substr(urlParts[4].indexOf('=') + 1);
 
   const methodArray = [
     {
       find: [selector],
-    },
+    }
   ];
   Object.keys(cursorOptions).forEach((key) => {
     if (cursorOptions[key]) {
@@ -48,7 +47,11 @@ WebApp.connectHandlers.use('/export', (req, res) => {
       res.end(JSON.stringify(result.result));
     } else if (format === 'CSV') {
       res.writeHead(200, headers);
-      res.end(Papa.unparse(result.result, { delimiter: ';', newLine: '\n' }));
+      const exportValue = [];
+      result.result.forEach((item) => {
+        exportValue.push(dot.dot(item));
+      });
+      res.end(Papa.unparse(exportValue, { delimiter: ';', newLine: '\n' }));
     } else {
       res.writeHead(400);
       res.end(`Unsupported format: ${format}`);
