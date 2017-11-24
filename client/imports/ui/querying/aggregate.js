@@ -215,7 +215,7 @@ Aggregate.prototype = {
   addPipelineToHistory(collection, pipeline) {
     let oldOnes = localStorage.getItem(Enums.LOCAL_STORAGE_KEYS.AGGREGATE_COMMAND_HISTORY) || '[]';
     if (oldOnes) oldOnes = JSON.parse(oldOnes);
-    if (oldOnes.length >= 20) oldOnes.splice(0, oldOnes.length - 19);
+    if (oldOnes.length >= 50) oldOnes.splice(0, oldOnes.length - 19);
 
     oldOnes.push({ pipeline, collection, date: new Date() });
     localStorage.setItem(Enums.LOCAL_STORAGE_KEYS.AGGREGATE_COMMAND_HISTORY, JSON.stringify(oldOnes));

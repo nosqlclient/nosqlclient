@@ -521,7 +521,7 @@ Querying.prototype = {
               }
             }
           });
-        } else this.proceedFindQuery(selectedCollection, selector, cursorOptions, false, exportFormat);
+        } else this.proceedFindQuery(selectedCollection, selector, cursorOptions, (!historyParams), exportFormat);
       },
 
       render(query) {

@@ -129,7 +129,7 @@ Settings.prototype = {
       }
     });
 
-    if (queryHistoryCount >= 20) {
+    if (queryHistoryCount >= 50) {
       Database.remove({
         type: Database.types.QueryHistory,
         selector: { _id: Database.readOne({ type: Database.types.QueryHistory, query: {}, queryOptions: { sort: { data: 1 } } }) } });
