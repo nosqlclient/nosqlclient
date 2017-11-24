@@ -8,5 +8,5 @@ Template.findOneAndUpdate.onRendered(() => {
   Querying.initOptions(Enums.FINDONE_MODIFY_OPTIONS);
 });
 
-Template.findOneAndUpdate.executeQuery = Querying.Collection.FindOneAndUpdate.execute;
-Template.findOneAndUpdate.renderQuery = Querying.Collection.FindOneAndUpdate.render;
+Template.findOneAndUpdate.executeQuery = Querying.Collection.FindOneAndUpdate.execute.bind(Querying.Collection.FindOneAndUpdate);
+Template.findOneAndUpdate.renderQuery = Querying.Collection.FindOneAndUpdate.render.bind(Querying.Collection.FindOneAndUpdate);

@@ -9,5 +9,5 @@ Template.createIndex.onRendered(() => {
   Querying.initOptions(Enums.CREATE_INDEX_OPTIONS);
 });
 
-Template.createIndex.executeQuery = Querying.Collection.CreateIndex.execute;
-Template.createIndex.renderQuery = Querying.Collection.CreateIndex.render;
+Template.createIndex.executeQuery = Querying.Collection.CreateIndex.execute.bind(Querying.Collection.CreateIndex);
+Template.createIndex.renderQuery = Querying.Collection.CreateIndex.render.bind(Querying.Collection.CreateIndex);

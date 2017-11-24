@@ -8,5 +8,5 @@ Template.indexInformation.onRendered(() => {
   });
 });
 
-Template.indexInformation.executeQuery = Querying.Collection.IndexInformation.execute;
-Template.indexInformation.renderQuery = Querying.Collection.IndexInformation.render;
+Template.indexInformation.executeQuery = Querying.Collection.IndexInformation.execute.bind(Querying.Collection.IndexInformation);
+Template.indexInformation.renderQuery = Querying.Collection.IndexInformation.render.bind(Querying.Collection.IndexInformation);

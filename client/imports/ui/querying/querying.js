@@ -341,7 +341,6 @@ Querying.prototype = {
 
         proceedQueryExecution('count', { selectedCollection, selector, options }, false, { selector, options }, (!historyParams));
       },
-
       render(query) {
         if (query.queryParams && query.queryParams.selector) renderCodeMirror($('#divSelector'), query.queryParams.selector);
 
@@ -374,7 +373,6 @@ Querying.prototype = {
 
         proceedQueryExecution('createIndex', { selectedCollection, fields, options }, false, { fields, options }, (!historyParams));
       },
-
       render(query) {
         if (query.queryParams.fields) renderCodeMirror($('#divFields'), query.queryParams.fields);
 
@@ -428,7 +426,6 @@ Querying.prototype = {
 
         proceedQueryExecution('distinct', { selectedCollection, selector, fieldName, options }, false, { selector, fieldName, options }, (!historyParams));
       },
-
       render(query) {
         if (query.queryParams.selector) renderCodeMirror($('#divSelector'), query.queryParams.selector);
         if (query.queryParams.fieldName) renderInput($('#inputField'), query.queryParams.fieldName);
@@ -526,6 +523,7 @@ Querying.prototype = {
           });
         } else this.proceedFindQuery(selectedCollection, selector, cursorOptions, false, exportFormat);
       },
+
       render(query) {
         if (query.queryParams.selector) renderCodeMirror($('#divSelector'), query.queryParams.selector);
 
@@ -632,7 +630,6 @@ Querying.prototype = {
 
         proceedQueryExecution('findOneAndReplace', { selectedCollection, selector, replaceObject, options }, false, { selector, replaceObject, options }, (!historyParams));
       },
-
       render(query) {
         if (query.queryParams.selector) renderCodeMirror($('#divSelector'), query.queryParams.selector);
         if (query.queryParams.replaceObject) renderCodeMirror($('#divReplacement'), query.queryParams.replaceObject);
@@ -675,7 +672,6 @@ Querying.prototype = {
 
         proceedQueryExecution('findOneAndUpdate', { selectedCollection, selector, setObject, options }, false, { selector, setObject, options }, (!historyParams));
       },
-
       render(query) {
         if (query.queryParams.selector) renderCodeMirror($('#divSelector'), query.queryParams.selector);
         if (query.queryParams.setObject) renderCodeMirror($('#divSet'), query.queryParams.setObject);

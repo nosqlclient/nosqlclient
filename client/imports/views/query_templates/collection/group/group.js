@@ -15,5 +15,5 @@ Template.group.onRendered(() => {
   });
 });
 
-Template.group.executeQuery = Querying.Collection.Group.execute;
-Template.group.renderQuery = Querying.Collection.Group.render;
+Template.group.executeQuery = Querying.Collection.Group.execute.bind(Querying.Collection.Group);
+Template.group.renderQuery = Querying.Collection.Group.render.bind(Querying.Collection.Group);

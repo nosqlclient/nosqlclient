@@ -8,5 +8,5 @@ Template.count.onRendered(() => {
   Querying.initOptions(Enums.COUNT_OPTIONS);
 });
 
-Template.count.executeQuery = Querying.Collection.Count.execute;
-Template.count.renderQuery = Querying.Collection.Count.render;
+Template.count.executeQuery = Querying.Collection.Count.execute.bind(Querying.Collection.Count);
+Template.count.renderQuery = Querying.Collection.Count.render.bind(Querying.Collection.Count);

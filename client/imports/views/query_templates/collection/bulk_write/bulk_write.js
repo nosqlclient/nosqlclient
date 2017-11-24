@@ -9,5 +9,5 @@ Template.bulkWrite.onRendered(() => {
   Querying.initOptions(Enums.BULK_WRITE_OPTIONS);
 });
 
-Template.bulkWrite.executeQuery = Querying.Collection.BulkWrite.execute;
-Template.bulkWrite.renderQuery = Querying.Collection.BulkWrite.render;
+Template.bulkWrite.executeQuery = Querying.Collection.BulkWrite.execute.bind(Querying.Collection.BulkWrite);
+Template.bulkWrite.renderQuery = Querying.Collection.BulkWrite.render.bind(Querying.Collection.BulkWrite);

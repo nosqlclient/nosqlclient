@@ -7,4 +7,4 @@ Template.setProfilingLevel.onRendered(() => {
   Querying.initOptions(Enums.PROFILING_LEVELS);
 });
 
-Template.setProfilingLevel.executeQuery = Querying.Admin.executeSetProfilingLevelQuery;
+Template.setProfilingLevel.executeQuery = Querying.Admin.executeSetProfilingLevelQuery.bind(Querying.Admin);

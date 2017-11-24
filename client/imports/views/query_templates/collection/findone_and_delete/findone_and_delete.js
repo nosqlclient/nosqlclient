@@ -16,5 +16,5 @@ Template.findOneAndDelete.onRendered(() => {
   } */
 });
 
-Template.findOneAndDelete.executeQuery = Querying.Collection.FindOneAndDelete.execute;
-Template.findOneAndDelete.renderQuery = Querying.Collection.FindOneAndDelete.render;
+Template.findOneAndDelete.executeQuery = Querying.Collection.FindOneAndDelete.execute.bind(Querying.Collection.FindOneAndDelete);
+Template.findOneAndDelete.renderQuery = Querying.Collection.FindOneAndDelete.render.bind(Querying.Collection.FindOneAndDelete);

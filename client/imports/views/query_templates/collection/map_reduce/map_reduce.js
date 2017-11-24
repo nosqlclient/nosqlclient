@@ -11,5 +11,5 @@ Template.mapReduce.onRendered(() => {
   Querying.initOptions(Enums.MAP_REDUCE_OPTIONS);
 });
 
-Template.mapReduce.executeQuery = Querying.Collection.MapReduce.execute;
-Template.mapReduce.renderQuery = Querying.Collection.MapReduce.render;
+Template.mapReduce.executeQuery = Querying.Collection.MapReduce.execute.bind(Querying.Collection.MapReduce);
+Template.mapReduce.renderQuery = Querying.Collection.MapReduce.render.bind(Querying.Collection.MapReduce);

@@ -9,4 +9,4 @@ Template.addUser.onRendered(() => {
   Querying.initOptions(Enums.ADD_USER_OPTIONS, true);
 });
 
-Template.addUser.executeQuery = Querying.Admin.executeAddUserQuery;
+Template.addUser.executeQuery = Querying.Admin.executeAddUserQuery.bind(Querying.Admin);

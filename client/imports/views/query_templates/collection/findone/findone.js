@@ -17,5 +17,5 @@ Template.findOne.onRendered(() => {
   */
 });
 
-Template.findOne.executeQuery = Querying.Collection.FindOne.execute;
-Template.findOne.renderQuery = Querying.Collection.FindOne.render;
+Template.findOne.executeQuery = Querying.Collection.FindOne.execute.bind(Querying.Collection.FindOne);
+Template.findOne.renderQuery = Querying.Collection.FindOne.render.bind(Querying.Collection.FindOne);

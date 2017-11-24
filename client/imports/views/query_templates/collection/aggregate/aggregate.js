@@ -8,5 +8,5 @@ Template.aggregate.onRendered(() => {
   Querying.initOptions(Enums.AGGREGATE_OPTIONS);
 });
 
-Template.aggregate.executeQuery = Querying.Collection.Aggregate.execute;
-Template.aggregate.renderQuery = Querying.Collection.Aggregate.render;
+Template.aggregate.executeQuery = Querying.Collection.Aggregate.execute.bind(Querying.Collection.Aggregate);
+Template.aggregate.renderQuery = Querying.Collection.Aggregate.render.bind(Querying.Collection.Aggregate);

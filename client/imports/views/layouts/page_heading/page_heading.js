@@ -8,7 +8,7 @@ Template.pageHeading.helpers({
   home: 'databaseStats',
 
   getCollectionInformation() {
-    if (UIComponents.getParentTemplateName(1) !== 'browseCollection' || !SessionManager.get(SessionManager.strSessionSelectedCollection)) {
+    if (!SessionManager.get(SessionManager.strSessionSelectedCollection)) {
       $('#divCollectionInfo').html('');
       return;
     }

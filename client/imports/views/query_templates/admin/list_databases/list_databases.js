@@ -6,4 +6,4 @@ Template.listDatabases.onRendered(() => {
   Querying.setVisibilityOfRunOnAdminCheckbox(false);
 });
 
-Template.listDatabases.executeQuery = Querying.Admin.executeListDatabasesQuery;
+Template.listDatabases.executeQuery = Querying.Admin.executeListDatabasesQuery.bind(Querying.Admin);

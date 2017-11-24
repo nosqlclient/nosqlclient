@@ -8,4 +8,4 @@ Template.validateCollection.onRendered(() => {
   Querying.setVisibilityOfRunOnAdminCheckbox(false);
 });
 
-Template.validateCollection.executeQuery = Querying.Admin.executeValidateCollectionQuery;
+Template.validateCollection.executeQuery = Querying.Admin.executeValidateCollectionQuery.bind(Querying.Admin);

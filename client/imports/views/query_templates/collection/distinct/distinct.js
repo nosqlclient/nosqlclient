@@ -17,5 +17,5 @@ Template.distinct.onRendered(() => {
   },
 }); */
 
-Template.distinct.executeQuery = Querying.Collection.Distinct.execute;
-Template.distinct.renderQuery = Querying.Collection.Distinct.render;
+Template.distinct.executeQuery = Querying.Collection.Distinct.execute.bind(Querying.Collection.Distinct);
+Template.distinct.renderQuery = Querying.Collection.Distinct.render.bind(Querying.Collection.Distinct);

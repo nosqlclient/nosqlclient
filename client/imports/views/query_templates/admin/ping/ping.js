@@ -6,4 +6,4 @@ Template.ping.onRendered(() => {
   Querying.setVisibilityOfRunOnAdminCheckbox(false);
 });
 
-Template.ping.executeQuery = Querying.Admin.executePingQuery;
+Template.ping.executeQuery = Querying.Admin.executePingQuery.bind(Querying.Admin);

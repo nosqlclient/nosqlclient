@@ -8,5 +8,5 @@ Template.geoHaystackSearch.onRendered(() => {
   Querying.initOptions(Enums.GEO_HAYSTACK_SEARCH_OPTIONS);
 });
 
-Template.geoHaystackSearch.executeQuery = Querying.Collection.GeoHayStackSearch.execute;
-Template.geoHaystackSearch.renderQuery = Querying.Collection.GeoHayStackSearch.render;
+Template.geoHaystackSearch.executeQuery = Querying.Collection.GeoHayStackSearch.execute.bind(Querying.Collection.GeoHayStackSearch);
+Template.geoHaystackSearch.renderQuery = Querying.Collection.GeoHayStackSearch.render.bind(Querying.Collection.GeoHayStackSearch);

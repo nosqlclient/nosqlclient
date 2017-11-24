@@ -6,4 +6,4 @@ Template.replSetGetStatus.onRendered(() => {
   Querying.setVisibilityOfRunOnAdminCheckbox(false);
 });
 
-Template.replSetGetStatus.executeQuery = Querying.Admin.executeReplSetGetStatusQuery;
+Template.replSetGetStatus.executeQuery = Querying.Admin.executeReplSetGetStatusQuery.bind(Querying.Admin);

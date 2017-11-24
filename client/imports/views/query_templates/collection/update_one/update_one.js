@@ -9,5 +9,5 @@ Template.updateOne.onRendered(() => {
   Querying.initOptions(Enums.UPDATE_OPTIONS);
 });
 
-Template.updateOne.executeQuery = Querying.Collection.UpdateOne.execute;
-Template.updateOne.renderQuery = Querying.Collection.UpdateOne.render;
+Template.updateOne.executeQuery = Querying.Collection.UpdateOne.execute.bind(Querying.Collection.UpdateOne);
+Template.updateOne.renderQuery = Querying.Collection.UpdateOne.render.bind(Querying.Collection.UpdateOne);

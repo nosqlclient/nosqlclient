@@ -12,5 +12,5 @@ Template.find.onRendered(() => {
   SessionManager.set(SessionManager.strSessionSelectedOptions, ['LIMIT']);
 });
 
-Template.find.executeQuery = Querying.Collection.Find.execute;
-Template.find.renderQuery = Querying.Collection.Find.render;
+Template.find.executeQuery = Querying.Collection.Find.execute.bind(Querying.Collection.Find);
+Template.find.renderQuery = Querying.Collection.Find.render.bind(Querying.Collection.Find);

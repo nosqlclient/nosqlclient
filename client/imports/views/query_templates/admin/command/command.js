@@ -10,4 +10,4 @@ Template.command.onRendered(() => {
   Querying.initOptions(Enums.COMMAND_OPTIONS, true);
 });
 
-Template.command.executeQuery = Querying.Admin.executeCommandQuery;
+Template.command.executeQuery = Querying.Admin.executeCommandQuery.bind(Querying.Admin);

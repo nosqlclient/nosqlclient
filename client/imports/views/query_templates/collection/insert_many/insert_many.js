@@ -9,5 +9,5 @@ Template.insertMany.onRendered(() => {
   Querying.initOptions(Enums.INSERT_MANY_OPTIONS);
 });
 
-Template.insertMany.executeQuery = Querying.Collection.InsertMany.execute;
-Template.insertMany.renderQuery = Querying.Collection.InsertMany.render;
+Template.insertMany.executeQuery = Querying.Collection.InsertMany.execute.bind(Querying.Collection.InsertMany);
+Template.insertMany.renderQuery = Querying.Collection.InsertMany.render.bind(Querying.Collection.InsertMany);

@@ -7,4 +7,4 @@ Template.removeUser.onRendered(() => {
   Querying.setVisibilityOfRunOnAdminCheckbox(true);
 });
 
-Template.removeUser.executeQuery = Querying.Admin.executeRemoveUserQuery;
+Template.removeUser.executeQuery = Querying.Admin.executeRemoveUserQuery.bind(Querying.Admin);

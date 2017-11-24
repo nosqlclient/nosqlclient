@@ -15,4 +15,4 @@ Template.dropTarget.onRendered(() => {
 });
 
 
-Template.rename.executeQuery = Querying.Collection.Rename.execute;
+Template.rename.executeQuery = Querying.Collection.Rename.execute.bind(Querying.Collection.Rename);

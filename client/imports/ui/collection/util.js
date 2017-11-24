@@ -318,9 +318,7 @@ CollectionUtil.prototype = {
 
     Meteor.setTimeout(() => {
       const btnExecuteQuery = document.querySelector('#btnExecuteQuery');
-      if (!settings || !btnExecuteQuery) {
-        return;
-      }
+      if (!settings || !btnExecuteQuery) return;
 
       Notification.start('#btnExecuteQuery');
       const selectedCollection = SessionManager.get(SessionManager.strSessionSelectedCollection);
@@ -363,13 +361,13 @@ CollectionUtil.prototype = {
     let resultString = `<div class="row"><div class="col-lg-7"><b>Count:</b></div><div class="col-lg-5">${statsResult.count}</div></div>`;
     resultString += `<div class="row"><div class="col-lg-7"><b>Index Count:</b></div><div class="col-lg-5">${statsResult.nindexes}</div></div>`;
 
-    const size = Number.isNaN(Number(statsResult.size / scale).toFixed(2)) ? '0.00' : Number(statsResult.size / scale).toFixed(2);
+    const size = Number.isNaN(Number(statsResult.size / scale)) ? '0.00' : Number(statsResult.size / scale).toFixed(2);
     resultString += `<div class="row"><div class="col-lg-7"><b>Size:</b></div><div class="col-lg-5">${size} ${text}</div></div>`;
 
-    const totalIndexSize = Number.isNaN(Number(statsResult.totalIndexSize / scale).toFixed(2)) ? '0.00' : Number(statsResult.totalIndexSize / scale).toFixed(2);
+    const totalIndexSize = Number.isNaN(Number(statsResult.totalIndexSize / scale)) ? '0.00' : Number(statsResult.totalIndexSize / scale).toFixed(2);
     resultString += `<div class="row"><div class="col-lg-7"><b>Total Index Size:</b></div><div class="col-lg-5">${totalIndexSize} ${text}</div></div>`;
 
-    const avgObjSize = Number.isNaN(Number(statsResult.avgObjSize / scale).toFixed(2)) ? '0.00' : Number(statsResult.avgObjSize / scale).toFixed(2);
+    const avgObjSize = Number.isNaN(Number(statsResult.avgObjSize / scale)) ? '0.00' : Number(statsResult.avgObjSize / scale).toFixed(2);
     resultString += `<div class="row"><div class="col-lg-7"><b>Average Object Size:</b></div><div class="col-lg-5">${avgObjSize} ${text}</div></div>`;
     resultString += `<div class="row"><div class="col-lg-7"><b>Is Capped:</b></div><div class="col-lg-5">${statsResult.capped}</div></div>`;
 

@@ -6,4 +6,4 @@ Template.serverStatus.onRendered(() => {
   Querying.setVisibilityOfRunOnAdminCheckbox(false);
 });
 
-Template.serverStatus.executeQuery = Querying.Admin.executeServerStatusQuery;
+Template.serverStatus.executeQuery = Querying.Admin.executeServerStatusQuery.bind(Querying.Admin);

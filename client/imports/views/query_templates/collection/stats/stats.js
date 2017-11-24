@@ -15,5 +15,5 @@ Template.scale.onRendered(() => {
   });
 });
 
-Template.stats.executeQuery = Querying.Collection.Stats.execute;
-Template.stats.renderQuery = Querying.Collection.Stats.render;
+Template.stats.executeQuery = Querying.Collection.Stats.execute.bind(Querying.Collection.Stats);
+Template.stats.renderQuery = Querying.Collection.Stats.render.bind(Querying.Collection.Stats);

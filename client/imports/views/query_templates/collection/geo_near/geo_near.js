@@ -8,5 +8,5 @@ Template.geoNear.onRendered(() => {
   Querying.initOptions(Enums.GEO_NEAR_OPTIONS);
 });
 
-Template.geoNear.executeQuery = Querying.Collection.GeoNear.execute;
-Template.geoNear.renderQuery = Querying.Collection.GeoNear.render;
+Template.geoNear.executeQuery = Querying.Collection.GeoNear.execute.bind(Querying.Collection.GeoNear);
+Template.geoNear.renderQuery = Querying.Collection.GeoNear.render.bind(Querying.Collection.GeoNear);

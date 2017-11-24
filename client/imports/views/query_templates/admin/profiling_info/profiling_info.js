@@ -6,4 +6,4 @@ Template.profilingInfo.onRendered(() => {
   Querying.setVisibilityOfRunOnAdminCheckbox(false);
 });
 
-Template.profilingInfo.executeQuery = Querying.Admin.executeProfilingInfoQuery;
+Template.profilingInfo.executeQuery = Querying.Admin.executeProfilingInfoQuery.bind(Querying.Admin);

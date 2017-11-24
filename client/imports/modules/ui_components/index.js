@@ -47,17 +47,6 @@ UIComponents.prototype = {
     });
   },
 
-  getParentTemplateName(levels = 1) {
-    let view = Blaze.currentView;
-    while (view) {
-      levels -= 1;
-      if (view.name.indexOf('Template.') !== -1 && !levels) {
-        return view.name.substring(view.name.indexOf('.') + 1);
-      }
-      view = view.parentView;
-    }
-  },
-
   initializeCollectionsCombobox() {
     const cmb = $('#cmbCollections');
     cmb.append($("<optgroup id='optGroupCollections' label='Collections'></optgroup>"));
