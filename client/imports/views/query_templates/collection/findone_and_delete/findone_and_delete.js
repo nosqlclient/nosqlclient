@@ -5,15 +5,7 @@ import '/client/imports/views/query_templates_options/findone_modify_options/fin
 import './findone_and_delete.html';
 
 Template.findOneAndDelete.onRendered(() => {
-  Querying.initOptions(Enums.FINDONE_MODIFY_OPTIONS);
-
-  // TODO
-  // upsert and returnOriginal and upsert are not for delete
-  /* if (value != Enums.FINDONE_MODIFY_OPTIONS.UPSERT && value != Enums.FINDONE_MODIFY_OPTIONS.RETURN_ORIGINAL) {
-    cmb.append($('<option></option>')
-      .attr('value', key)
-      .text(value));
-  } */
+  Querying.initOptions(Enums.FINDONE_MODIFY_OPTIONS, false, Enums.FINDONE_MODIFY_OPTIONS.UPSERT, Enums.FINDONE_MODIFY_OPTIONS.RETURN_ORIGINAL);
 });
 
 Template.findOneAndDelete.executeQuery = Querying.Collection.FindOneAndDelete.execute.bind(Querying.Collection.FindOneAndDelete);
