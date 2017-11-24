@@ -37,6 +37,7 @@ QueryRender.prototype = {
   renderAfterQueryExecution(err, result, isAdmin, queryInfo, queryParams, saveHistory) {
     if (err || result.error) ErrorHandler.showMeteorFuncError(err, result, "Couldn't execute query");
     else {
+      result.result = result.result || '';
       if (isAdmin) this.setAdminResult(result.result);
       else this.setQueryResult(result.result, queryInfo, queryParams, saveHistory);
 

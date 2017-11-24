@@ -9,7 +9,7 @@ Template.rename.onRendered(() => {
 });
 
 Template.dropTarget.onRendered(() => {
-  $('#divDropTarget').iCheck({
+  $('.i-checks').iCheck({
     checkboxClass: 'icheckbox_square-green',
   });
 });

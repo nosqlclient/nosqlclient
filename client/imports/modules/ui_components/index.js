@@ -1,6 +1,5 @@
 import { Querying, SessionManager } from '/client/imports/modules';
 import { ReactivityProvider } from '/client/imports/facades';
-import { Blaze } from 'meteor/blaze';
 import $ from 'jquery';
 import Helper from '/client/imports/helpers/helper';
 
