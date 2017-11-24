@@ -85,6 +85,7 @@ UserManagementRoles.prototype = {
         }
 
         this.invalidate();
+        return this;
       });
 
       privilegesTableSelector.draw();
