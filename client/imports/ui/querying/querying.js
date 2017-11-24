@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { Enums, Notification, ExtendedJSON, UIComponents, SessionManager, ErrorHandler } from '/client/imports/modules';
-import { QueryRender, QueryingOptions } from '/client/imports/ui';
+import { QueryRender, QueryingOptions, CollectionUtil } from '/client/imports/ui';
 import { Communicator, ReactivityProvider } from '/client/imports/facades';
 import Helper from '/client/imports/helpers/helper';
 
@@ -951,30 +951,6 @@ Querying.prototype = {
     },
 
     Rename: {
-      renderCollectionnames(newName) {
-        Communicator.call({
-          methodName: 'connect',
-          args: { connectionId: SessionManager.get(SessionManager.strSessionConnection)._id },
-          callback: (err, result) => {
-            if (err || result.error) ErrorHandler.showMeteorFuncError(err, result, "Couldn't connect");
-            else {
-              result.result.sort((a, b) => {
-                if (a.name < b.name) { return -1; } else if (a.name > b.name) { return 1; }
-                return 0;
-              });
-
-              // re-set collection names and selected collection
-              SessionManager.set(SessionManager.strSessionCollectionNames, result.result);
-              SessionManager.set(SessionManager.strSessionSelectedCollection, newName);
-
-              // set all session values undefined except connection and collection
-              SessionManager.set(SessionManager.strSessionSelectedQuery, undefined);
-              SessionManager.set(SessionManager.strSessionSelectedOptions, undefined);
-            }
-          }
-        });
-      },
-
       execute() {
         Notification.start('#btnExecuteQuery');
         const selectedCollection = SessionManager.get(SessionManager.strSessionSelectedCollection);
@@ -988,11 +964,14 @@ Querying.prototype = {
 
         if (newName) {
           Communicator.call({
-            methodName: 'command',
+            methodName: 'rename',
             args: { selectedCollection, newName, options },
             callback: (err, result) => {
-              QueryRender.renderAfterQueryExecution(err, result, false, 'rename', { newName, options });
-              if (!err && !result.error) this.renderCollectionnames(newName);
+              if (err || result.error) ErrorHandler.showMeteorFuncError(err, result, "Couldn't rename");
+              else {
+                Notification.success(`Successfully renamed to: ${newName}`);
+                CollectionUtil.renderCollectionNames();
+              }
             }
           });
         } else Notification.error('Please enter new name !');

@@ -44,12 +44,10 @@ CollectionUtil.prototype = {
             return 0;
           });
 
-          // re-set collection names
           SessionManager.set(SessionManager.strSessionCollectionNames, result.result);
-          // set all session values undefined except connection
-          SessionManager.set(SessionManager.strSessionSelectedQuery, undefined);
-          SessionManager.set(SessionManager.strSessionSelectedOptions, undefined);
-          SessionManager.set(SessionManager.strSessionSelectedCollection, undefined);
+          SessionManager.set(SessionManager.strSessionSelectedQuery, null);
+          SessionManager.set(SessionManager.strSessionSelectedCollection, null);
+          SessionManager.set(SessionManager.strSessionSelectedOptions, null);
           FlowRouter.go('/databaseStats');
         }
       }

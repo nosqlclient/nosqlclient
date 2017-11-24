@@ -41,7 +41,7 @@ const convertToExtendedJson = function (str) {
 ExtendedJSON.prototype = {
   convertAndCheckJSON(json) {
     if (!json) return {};
-    json = json.match(/[^\s"']+|"([^"]*)"|'([^']*)'/gm).join('');
+    if (json.match(/[^\s"']+|"([^"]*)"|'([^']*)'/gm)) json = json.match(/[^\s"']+|"([^"]*)"|'([^']*)'/gm).join('');
     let result = {};
     try {
       if (!json.startsWith('{') && !json.startsWith('[')) {

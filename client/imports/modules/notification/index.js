@@ -29,8 +29,9 @@ Notification.prototype = {
     ladda.stopAll();
   },
 
-  start(selector) {
-    ladda.create(document.querySelector(selector)).start();
+  start(strSelector) {
+    const selector = document.querySelector(strSelector);
+    if (selector) ladda.create(selector).start();
   },
 
   stop() {
