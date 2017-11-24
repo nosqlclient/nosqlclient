@@ -153,12 +153,12 @@ MongoDB.prototype = {
   analyzeSchema({ connectionId, username, password, collection, sessionId }) {
     const connection = Database.readOne({ type: Database.types.Connections, query: { _id: connectionId } });
     const connectionUrl = Connection.getConnectionUrl(connection, username, password, true, true);
-    const mongoPath = MongoDBHelper.getProperBinary('mongo');
     const args = [connectionUrl, '--quiet', '--eval', `var collection =\"${collection}\", outputFormat=\"json\"`, `${MongoDBHelper.getMongoExternalsPath()}/variety/variety.js_`];
     const metadataToLog = { sessionId, args, collection };
 
     Logger.info({ message: 'analyze-schema', metadataToLog });
     try {
+      const mongoPath = MongoDBHelper.getProperBinary('mongo');
       const spawned = spawn(mongoPath, args);
       let message = '';
       spawned.stdout.on('data', Meteor.bindEnvironment((data) => {

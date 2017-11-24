@@ -66,23 +66,7 @@ Template.navigation.events({
 
   'click .navCollection': function (event) {
     if (event.target.id === 'btnDropCollection') return;
-
-    const { name } = this;
-
-    $('#listCollectionNames').find('li').each((index, li) => {
-      const liObject = $(li);
-      if (liObject[0].textContent.substr(1).replace('Drop', '').trim() === name) liObject.addClass('active');
-      else liObject.removeClass('active');
-    });
-
-    $('#listSystemCollections').find('li').each((index, li) => {
-      const liObject = $(li);
-      if (liObject[0].textContent.substr(1).replace('Drop', '').trim() === name) liObject.addClass('active');
-      else liObject.removeClass('active');
-    });
-
-
-    SessionManager.set(SessionManager.strSessionSelectedCollection, name);
+    CollectionUtil.setSessionForNavigation(this.name);
   },
 });
 

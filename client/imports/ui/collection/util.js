@@ -9,6 +9,22 @@ const CollectionUtil = function () {
 };
 
 CollectionUtil.prototype = {
+  setSessionForNavigation(name) {
+    $('#listCollectionNames').find('li').each((index, li) => {
+      const liObject = $(li);
+      if (liObject[0].textContent.substr(1).replace('Drop', '').trim() === name) liObject.addClass('active');
+      else liObject.removeClass('active');
+    });
+
+    $('#listSystemCollections').find('li').each((index, li) => {
+      const liObject = $(li);
+      if (liObject[0].textContent.substr(1).replace('Drop', '').trim() === name) liObject.addClass('active');
+      else liObject.removeClass('active');
+    });
+
+    SessionManager.set(SessionManager.strSessionSelectedCollection, name);
+  },
+
   dropDatabase() {
     Notification.modal({
       title: 'Are you sure?',
