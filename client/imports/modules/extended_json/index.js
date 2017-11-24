@@ -44,9 +44,7 @@ ExtendedJSON.prototype = {
     if (json.match(/[^\s"']+|"([^"]*)"|'([^']*)'/gm)) json = json.match(/[^\s"']+|"([^"]*)"|'([^']*)'/gm).join('');
     let result = {};
     try {
-      if (!json.startsWith('{') && !json.startsWith('[')) {
-        json = `{${json}`;
-      }
+      if (!json.startsWith('{') && !json.startsWith('[')) json = `{${json}`;
 
       if ((!json.endsWith('}') && !json.endsWith(']')) ||
         (json.split('\{').length - 1) > (json.split('\}').length - 1)) {
