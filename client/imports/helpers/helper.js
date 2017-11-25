@@ -36,7 +36,6 @@ Helper.prototype = {
   },
 
   translate({ key, options, language }) {
-    console.log(`key:${key}`, `options: ${options}`, `lang:${language}`);
     return TAPi18n.__(key, options, language);
   }
 };

@@ -9,8 +9,10 @@ const Notification = function () {
 };
 
 Notification.prototype = {
-  notify({ type, message, translateOptions, options }) {
-    toastr[type](Helper.translate({ key: message, options: translateOptions }), options);
+  notify({ type, message, errorCode, translateOptions, options }) {
+    let translatedMessage = Helper.translate({ key: message, options: translateOptions });
+    if (errorCode) translatedMessage = `[${errorCode}] ${translatedMessage}`;
+    toastr[type](translatedMessage, options);
   },
 
   info(message, options, translateOptions) {
@@ -27,8 +29,8 @@ Notification.prototype = {
     ladda.stopAll();
   },
 
-  error(message, options, translateOptions) {
-    this.notify({ type: 'error', message, options, translateOptions });
+  error(message, options, translateOptions, errorCode) {
+    this.notify({ type: 'error', errorCode, message, options, translateOptions });
     ladda.stopAll();
   },
 
