@@ -1,5 +1,6 @@
 import { Communicator, ReactivityProvider } from '/client/imports/facades';
 import { Notification, ErrorHandler, SessionManager, UIComponents, ExtendedJSON } from '/client/imports/modules';
+import Helper from '/client/imports/helpers/helper';
 
 const JSONEditor = require('jsoneditor');
 
@@ -16,7 +17,7 @@ UserManagementUsers.prototype = {
     Communicator.call({
       methodName: 'getDatabases',
       callback: (err, result) => {
-        if (err || result.error) ErrorHandler.showMeteorFuncError(err, result, "Couldn't fetch databases");
+        if (err || result.error) ErrorHandler.showMeteorFuncError(err, result);
         else {
           for (let i = 0; i < result.result.length; i += 1) {
             cmbOptGroupCollection.append($('<option></option>')
@@ -39,7 +40,7 @@ UserManagementUsers.prototype = {
       methodName: 'command',
       args: { command: { rolesInfo: 1, showBuiltinRoles: true }, runOnAdminDB },
       callback: (err, result) => {
-        if (err || result.error) ErrorHandler.showMeteorFuncError(err, result, "Couldn't fetch roles to populate table");
+        if (err || result.error) ErrorHandler.showMeteorFuncError(err, result);
         else {
           UIComponents.DataTable.setupDatatable({
             selectorString: '#tblCurrentRoles',
@@ -59,11 +60,11 @@ UserManagementUsers.prototype = {
     const db = $('#cmbDatabasesForAddRoleToUser').chosen().val();
     const roleName = $('#inputAddRoleToUserRolename').val();
     if (!db) {
-      Notification.error('Database is required');
+      Notification.error('db-required');
       return;
     }
     if (!roleName) {
-      Notification.error('Role is required');
+      Notification.error('role-required');
       return;
     }
 
@@ -71,7 +72,7 @@ UserManagementUsers.prototype = {
     const currentDatas = tableSelector.rows().data();
     for (let i = 0; i < currentDatas.length; i += 1) {
       if (currentDatas[i].db === db && currentDatas[i].role === roleName) {
-        Notification.error(`<b>${roleName}</b>@${db} already exists !`);
+        Notification.error('field-exists', null, { fieldName: `${roleName}@${db}` });
         return;
       }
     }
@@ -80,7 +81,7 @@ UserManagementUsers.prototype = {
     if (tableSelector.rows().data().length === 0) this.populateUserRolesTable(null, [objectToAdd]);
     else tableSelector.row.add(objectToAdd).draw();
 
-    Notification.success(`<b>${roleName}</b>@${db} successfully added`);
+    Notification.success('added-successfully', null, { fieldName: `<b>${roleName}</b>@${db}` });
   },
 
   saveUser() {
@@ -89,12 +90,12 @@ UserManagementUsers.prototype = {
     const titleSelector = $('#addEditUserModalTitle');
 
     if (!usernameSelector.val()) {
-      Notification.warning('Username is required !');
+      Notification.warning('username-required');
       return;
     }
 
-    if (!passwordSelector.val() && titleSelector.text() === 'Add User') {
-      Notification.warning('Password is required !');
+    if (!passwordSelector.val() && titleSelector.text() === Helper.translate({ key: 'add-user' })) {
+      Notification.warning('password-required');
       return;
     }
 
@@ -102,13 +103,13 @@ UserManagementUsers.prototype = {
     if (customData) {
       customData = ExtendedJSON.convertAndCheckJSON(customData);
       if (customData.ERROR) {
-        Notification.error(`Syntax Error on customData: ${customData.ERROR}`);
+        Notification.error('syntax-error-custom-data', null, { error: customData.ERROR });
         return;
       }
     }
 
     const command = {};
-    if (titleSelector.text() === 'Edit User') command.updateUser = usernameSelector.val();
+    if (titleSelector.text() === Helper.translate({ key: 'edit-user' })) command.updateUser = usernameSelector.val();
     else command.createUser = usernameSelector.val();
 
     command.roles = this.populateUserRolesToSave();
@@ -123,11 +124,10 @@ UserManagementUsers.prototype = {
       methodName: 'command',
       args: { command, runOnAdminDB },
       callback: (err, result) => {
-        if (err || result.error) ErrorHandler.showMeteorFuncError(err, result, "Couldn't update user");
+        if (err || result.error) ErrorHandler.showMeteorFuncError(err, result);
         else {
           this.initUsers();
-          if (titleSelector.text() === 'Edit User') Notification.success('Successfuly updated user !');
-          else Notification.success('Successfuly added user !');
+          Notification.success('saved-successfully');
           $('#editUserModal').modal('hide');
         }
 
@@ -167,7 +167,7 @@ UserManagementUsers.prototype = {
         methodName: 'command',
         args: { command: userInfoCommand, runOnAdminDB },
         callback: (err, result) => {
-          if (err || result.error) ErrorHandler.showMeteorFuncError(err, result, "Couldn't fetch userInfo");
+          if (err || result.error) ErrorHandler.showMeteorFuncError(err, result);
           else {
             const user = result.result.users[0];
             jsonEditor.set(user.customData);
@@ -184,10 +184,9 @@ UserManagementUsers.prototype = {
     if (!SessionManager.get(SessionManager.strSessionUsermanagementUser)) return;
 
     Notification.modal({
-      title: 'Are you sure ?',
-      text: 'You can NOT recover this user afterwards, are you sure ?',
+      title: 'are-you-sure',
+      text: 'recover-not-possible',
       type: 'warning',
-      cancelButtonText: 'No',
       callback: (isConfirm) => {
         if (isConfirm) {
           Notification.start('#btnCloseUMDB');
@@ -198,10 +197,10 @@ UserManagementUsers.prototype = {
             methodName: 'command',
             args: { command, runOnAdminDB },
             callback: (err, result) => {
-              if (err || result.error) ErrorHandler.showMeteorFuncError(err, result, "Couldn't drop user");
+              if (err || result.error) ErrorHandler.showMeteorFuncError(err, result);
               else {
                 this.initUsers();
-                Notification.success('Successfuly dropped user !');
+                Notification.success('deleted-successfully');
               }
             }
           });
@@ -266,7 +265,7 @@ UserManagementUsers.prototype = {
   },
 
   popEditUserModal(user) {
-    $('#addEditUserModalTitle').text('Edit User');
+    $('#addEditUserModalTitle').text(Helper.translate({ key: 'edit-user' }));
 
     Notification.start('#btnCloseUMDB');
 
@@ -285,7 +284,7 @@ UserManagementUsers.prototype = {
       methodName: 'command',
       args: { command: userInfoCommand, runOnAdminDB },
       callback: (err, result) => {
-        if (err || result.error) ErrorHandler.showMeteorFuncError(err, result, "Couldn't fetch userInfo");
+        if (err || result.error) ErrorHandler.showMeteorFuncError(err, result);
         else {
           $('#editUserModal').modal('show');
 
@@ -324,7 +323,7 @@ UserManagementUsers.prototype = {
       methodName: 'command',
       args: { command, runOnAdminDB },
       callback: (err, result) => {
-        if (err || result.error) ErrorHandler.showMeteorFuncError(err, result, "Couldn't fetch users");
+        if (err || result.error) ErrorHandler.showMeteorFuncError(err, result);
         else {
           UIComponents.DataTable.setupDatatable({
             data: this.populateTableData(result.result.users),

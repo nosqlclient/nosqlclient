@@ -124,10 +124,10 @@ Template.topNavbar.events({
   },
 
   'click #anchorTab1': function () {
-    if (!$('#anchorTab1').attr('data-toggle')) Notification.warning('Disable URI connection to use this tab');
+    if (!$('#anchorTab1').attr('data-toggle')) Notification.warning('disable-uri-to-use');
   },
 
   'click #anchorTab2': function () {
-    if (!$('#anchorTab2').attr('data-toggle')) Notification.warning('Disable URI connection to use this tab');
+    if (!$('#anchorTab2').attr('data-toggle')) Notification.warning('disable-uri-to-use');
   },
 });

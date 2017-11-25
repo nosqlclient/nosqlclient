@@ -1,7 +1,7 @@
 import { Template } from 'meteor/templating';
 import { UserManagementUsers } from '/client/imports/ui';
 import { SessionManager, UIComponents } from '/client/imports/modules';
-
+import Helper from '/client/imports/helpers/helper';
 import './manage_users.html';
 
 Template.manageUsers.onRendered(() => {
@@ -62,7 +62,7 @@ Template.manageUsers.events({
     inputPasswordSelector.val('');
     inputPasswordSelector.attr('placeholder', 'Password');
 
-    $('#addEditUserModalTitle').text('Add User');
+    $('#addEditUserModalTitle').text(Helper.translate({ key: 'add-user' }));
     $('.nav-tabs a[href="#tab-1"]').tab('show');
     UIComponents.Editor.setCodeMirrorValue($('#divCustomData'), '');
   },

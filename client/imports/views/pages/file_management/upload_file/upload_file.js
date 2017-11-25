@@ -5,28 +5,17 @@ import './upload_file.html';
 
 Template.uploadFile.onRendered(() => {
   if (!SessionManager.get(SessionManager.strSessionCollectionNames)) FlowRouter.go('/databaseStats');
+
+  $('#fileInfoModal').on('shown.bs.modal', () => {
+    UIComponents.Editor.initializeCodeMirror({ divSelector: $('#divMetadata'), txtAreaId: 'txtMetadata' });
+  });
 });
 
 Template.uploadFile.events({
   'click #btnUpload': function (event) {
     event.preventDefault();
     const blob = $('#inputFile')[0].files[0];
-    if (blob) {
-      Notification.modal({
-        title: 'Are you sure ?',
-        text: 'Are you sure to continue uploading file ?',
-        type: 'warning',
-        cancelButtonText: 'No',
-        callback: (isConfirm) => {
-          if (isConfirm) {
-            const modal = $('#fileInfoModal');
-            modal.on('shown.bs.modal', () => {
-              UIComponents.Editor.initializeCodeMirror({ divSelector: $('#divMetadata'), txtAreaId: 'txtMetadata' });
-            });
-            modal.modal('show');
-          }
-        }
-      });
-    }
+    if (!blob) Notification.warning('select-file');
+    else $('#fileInfoModal').modal('show');
   }
 });

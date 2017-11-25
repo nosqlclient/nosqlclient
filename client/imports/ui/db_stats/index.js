@@ -1,5 +1,6 @@
-import { SessionManager, ErrorHandler, UIComponents, Enums } from '/client/imports/modules';
+import { SessionManager, ErrorHandler, UIComponents, Enums, Notification } from '/client/imports/modules';
 import { Communicator, ReactivityProvider } from '/client/imports/facades';
+import Helper from '/client/imports/helpers/helper';
 import moment from 'moment';
 
 const packageJson = require('/package.json');
@@ -123,8 +124,8 @@ DBStats.prototype = {
       methodName: 'handleSubscriber',
       args: { email: $('#txtEmailToSubscribe').val() },
       callback: (err) => {
-        if (err) Notification.error(`Failed: ${err.message}`);
-        else Notification.success('Thank you for subscription !');
+        if (err) ErrorHandler.showMeteorFuncError(err);
+        else Notification.success('thanks-for-subscription');
       }
     });
   },
@@ -136,7 +137,7 @@ DBStats.prototype = {
         methodName: 'dbStats',
         callback: (err, result) => {
           if (err || result.error) {
-            ErrorHandler.showMeteorFuncError(err, result, "Couldn't execute dbStats");
+            ErrorHandler.showMeteorFuncError(err, result);
             SessionManager.set(SessionManager.strSessionDBStats, null);
           } else {
             this.convertInformationsToCorrectUnit(result.result, settings);
@@ -172,7 +173,7 @@ DBStats.prototype = {
           callback: (err, result) => {
             if (err || result.error) {
               const errorMessage = result.error ? result.error.message : err.message;
-              $('#errorMessage').text(`Successfully connected but, couldn't fetch server status: ${errorMessage}`);
+              $('#errorMessage').text(Helper.translate({ key: 'db-stats-error', options: { error: errorMessage } }));
               SessionManager.set(SessionManager.strSessionServerStatus, null);
             } else {
               SessionManager.set(SessionManager.strSessionServerStatus, result.result);
@@ -352,7 +353,7 @@ DBStats.prototype = {
     if (SessionManager.get(SessionManager.strSessionCollectionNames)) {
       const divChart = $('#divOperationCountersChart');
       if (!data || data.length === 0) {
-        divChart.html('This feature is not supported on this platform (OS)');
+        divChart.html(Helper.translate({ key: 'not-supported-os' }));
         return;
       }
       if (divChart.find('.flot-base').length <= 0) {
@@ -390,12 +391,12 @@ DBStats.prototype = {
   initQueuedReadWriteChart(data, totalQueuedReadWrite) {
     if (SessionManager.get(SessionManager.strSessionCollectionNames)) {
       if (totalQueuedReadWrite) {
-        $('#spanTotalQueuedRW').html(`, Total: ${totalQueuedReadWrite}`);
+        $('#spanTotalQueuedRW').html(`, ${Helper.translate({ key: 'total' })}: ${totalQueuedReadWrite}`);
       }
 
       const divChart = $('#divQueuedReadWrite');
       if (!data || data.length === 0) {
-        divChart.html('This feature is not supported for current mongodb version');
+        divChart.html(Helper.translate({ key: 'feature-not-supported-mongodb-version' }));
         return;
       }
 
@@ -419,12 +420,12 @@ DBStats.prototype = {
   initActiveReadWriteChart(data, totalActiveReadWrite) {
     if (SessionManager.get(SessionManager.strSessionCollectionNames)) {
       if (totalActiveReadWrite) {
-        $('#spanTotalActiveRW').html(`, Total: ${totalActiveReadWrite}`);
+        $('#spanTotalActiveRW').html(`, ${Helper.translate({ key: 'total' })}: ${totalActiveReadWrite}`);
       }
 
       const divChart = $('#divActiveReadWrite');
       if (!data || data.length === 0) {
-        divChart.html('This feature is not supported for current mongodb version');
+        divChart.html(Helper.translate({ key: 'feature-not-supported-mongodb-version' }));
         return;
       }
 
@@ -448,11 +449,11 @@ DBStats.prototype = {
 
   initNetworkChart(data, totalRequests) {
     if (SessionManager.get(SessionManager.strSessionCollectionNames)) {
-      if (totalRequests) $('#spanTotalRequests').html(`, Total Requests: ${totalRequests}`);
+      if (totalRequests) $('#spanTotalRequests').html(`, ${Helper.translate({ key: 'total-requests' })}: ${totalRequests}`);
 
       const divChart = $('#divNetworkChart');
       if (!data || data.length === 0) {
-        divChart.html('This feature is not supported on this platform (OS)');
+        divChart.html(Helper.translate({ key: 'feature-not-supported-mongodb-version' }));
         return;
       }
 
@@ -477,11 +478,11 @@ DBStats.prototype = {
     if (SessionManager.get(SessionManager.strSessionCollectionNames)) {
       const divChart = $('#divConnectionsChart');
       if (!data || data.length === 0) {
-        divChart.html('This feature is not supported on this platform (OS)');
+        divChart.html(Helper.translate({ key: 'feature-not-supported-mongodb-version' }));
         return;
       }
 
-      $('#spanAvailableConnections').html(`, Available: ${availableConnections}`);
+      $('#spanAvailableConnections').html(`, ${Helper.translate({ key: 'available' })}: ${availableConnections}`);
 
       if (divChart.find('.flot-base').length <= 0) {
         try {
@@ -503,7 +504,7 @@ DBStats.prototype = {
     if (SessionManager.get(SessionManager.strSessionCollectionNames)) {
       const divChart = $('#divHeapMemoryChart');
       if (!data || data.length === 0) {
-        divChart.html('This feature is not supported on this platform (OS)');
+        divChart.html(Helper.translate({ key: 'feature-not-supported-mongodb-version' }));
         return;
       }
 
@@ -533,7 +534,7 @@ DBStats.prototype = {
   showWhatisNew() {
     const modal = $('#whatsNewModal');
     modal.on('shown.bs.modal', () => {
-      $('#whatsNewHeader').html(`What's new in ${packageJson.version}`);
+      $('#whatsNewHeader').html(`${Helper.translate({ key: 'what-is-new', options: { version: packageJson.version } })}`);
       $('#wizard').steps({
         enableFinishButton: false,
         enableCancelButton: false,

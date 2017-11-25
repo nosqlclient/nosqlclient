@@ -112,7 +112,7 @@ Template.mainLayout.onRendered(function () {
     // toastr.info('You are idle for 30 minutes :(', 'Idle');
   });
   $(document).on('active.idleTimer', () => {
-    Notification.success('Welcome back !', 'We missed you');
+    Notification.success('welcome-back');
   });
 
   doUIStuff();

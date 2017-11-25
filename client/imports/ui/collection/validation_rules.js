@@ -1,5 +1,6 @@
 import { Notification, ErrorHandler, UIComponents, SessionManager, ExtendedJSON } from '/client/imports/modules';
 import { Communicator, ReactivityProvider } from '/client/imports/facades';
+import Helper from '/client/imports/helpers/helper';
 
 const CollectionValidationRules = function () {};
 
@@ -10,7 +11,7 @@ CollectionValidationRules.prototype = {
 
     UIComponents.Editor.initializeCodeMirror({ divSelector: divValidator, txtAreaId: 'txtValidator' });
     UIComponents.Editor.setCodeMirrorValue(divValidator, '', $('#txtValidator'));
-    $('#spanCollectionNameValidationRules').html(`Valid for MongoDB 3.2 and higher<br/>${$('#validationRulesModal').data('collection')}`);
+    $('#spanCollectionNameValidationRules').html(`${Helper.translate({ key: 'mongodb_version_warning', options: { version: '3.2' } })}<br/>${$('#validationRulesModal').data('collection')}`);
     combos.chosen();
     combos.find('option').prop('selected', false).trigger('chosen:updated');
     this.initRules();
@@ -30,7 +31,7 @@ CollectionValidationRules.prototype = {
       methodName: 'listCollectionNames',
       args: { dbName: connection.databaseName },
       callback: (err, result) => {
-        if (err || result.error) ErrorHandler.showMeteorFuncError(err, result, "Couldn't fetch rules");
+        if (err || result.error) ErrorHandler.showMeteorFuncError(err, result);
         else if (result.result) {
           result.result.forEach((collection) => {
             if (collection.name === selectedCollection) {
@@ -58,7 +59,7 @@ CollectionValidationRules.prototype = {
     let validator = UIComponents.Editor.getCodeMirrorValue($('#divValidator'));
     validator = ExtendedJSON.convertAndCheckJSON(validator);
     if (validator.ERROR) {
-      Notification.error(`Syntax Error on validator: ${validator.ERROR}`);
+      Notification.error('syntax-error-validator', null, { error: validator.ERROR });
       return;
     }
 
@@ -73,9 +74,9 @@ CollectionValidationRules.prototype = {
       methodName: 'command',
       args: { command },
       callback: (err, result) => {
-        if (err || result.error) ErrorHandler.showMeteorFuncError(err, result, "Couldn't save rule");
+        if (err || result.error) ErrorHandler.showMeteorFuncError(err, result);
         else {
-          Notification.success('Successfully saved');
+          Notification.success('saved-successfully');
           $('#validationRulesModal').modal('hide');
         }
       }

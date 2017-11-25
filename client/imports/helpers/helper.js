@@ -1,3 +1,5 @@
+import { TAPi18n } from 'meteor/tap:i18n';
+
 const Helper = function () {
 };
 
@@ -31,8 +33,12 @@ Helper.prototype = {
     } else {
       done([]);
     }
-  }
+  },
 
+  translate({ key, options, language }) {
+    console.log(`key:${key}`, `options: ${options}`, `lang:${language}`);
+    return TAPi18n.__(key, options, language);
+  }
 };
 
 const helper = new Helper();

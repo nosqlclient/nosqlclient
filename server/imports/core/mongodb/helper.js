@@ -111,10 +111,10 @@ MongoDBHelper.prototype = {
 
   getProperBinary(binaryName) {
     const settings = Database.readOne({ type: Database.types.Settings, query: {} });
+    const errorMessage = `binary-${binaryName}-not-found`;
     if (settings.mongoBinaryPath) {
       const dir = `${settings.mongoBinaryPath.replace(/\\/g, '/')}/`;
       Logger.info({ message: `${binaryName}`, metadataToLog: { dir: `${dir}`, binary: `${binaryName}` } });
-      const errorMessage = `Binary ${binaryName} not found in ${dir + binaryName}, please set mongo binary path from settings`;
 
       switch (os.platform()) {
         case 'win32':
@@ -134,9 +134,9 @@ MongoDBHelper.prototype = {
         case 'linux':
           return `${dir}linux/mongo`;
         default:
-          throw new Meteor.Error(`Not supported os: ${os.platform()}, you can set mongo binary path from settings`);
+          throw new Meteor.Error('not-supported-os');
       }
-    } else throw new Meteor.Error('Please set mongo binaries from settings');
+    } else throw new Meteor.Error(errorMessage);
   },
 
   getMongoExternalsPath() {

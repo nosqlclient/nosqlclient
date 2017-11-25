@@ -68,7 +68,7 @@ Options.prototype = {
     this.checkAndAddOption('CUSTOM_DATA', $('#divCustomData'), result, Enums.ADD_USER_OPTIONS);
     this.checkAndAddOption('ROLES', $('#divRoles'), result, Enums.ADD_USER_OPTIONS);
 
-    if (!result.roles || Object.keys(result.roles).length === 0) Notification.info('Creating a user without roles is deprecated in MongoDB >= 2.6');
+    if (!result.roles || Object.keys(result.roles).length === 0) Notification.info('no-role-user-deprecated');
 
     return result;
   },

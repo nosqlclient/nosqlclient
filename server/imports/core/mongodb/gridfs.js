@@ -155,7 +155,7 @@ MongoDBGridFS.prototype = {
           if (doc) {
             done(null, doc);
           } else {
-            done(new Meteor.Error('No file found for given ID'), null);
+            throw new Meteor.Error('no-file-found');
           }
         });
       } catch (exception) {

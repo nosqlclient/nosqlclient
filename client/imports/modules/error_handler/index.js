@@ -1,24 +1,36 @@
 import { Notification } from '/client/imports/modules';
+import Helper from '/client/imports/helpers/helper';
 
 const ErrorHandler = function () {
 };
 
 ErrorHandler.prototype = {
-  getErrorMessage(err, result) {
-    let errorMessage = '';
-    if (err && err.details && err.details.message) errorMessage = `[${err.error}] ${err.details.message}`;
-    else if (err && err.message) errorMessage = `[${err.error}] ${err.message}`;
-    else if (result && result.error && result.error.details && result.error.details.message) errorMessage = `[${result.error.error}] ${result.error.details.message}`;
-    else if (result && result.error && result.error.message) errorMessage = result.error.code ? `[${result.error.code}] ${result.error.message}` : result.error.message;
-    else if (result && result.error) errorMessage = JSON.stringify(result.error);
+  getErrorMessage(err, result, translateOptions) {
+    let errorMessage = 'unknown-error';
+    if (err) {
+      if (err.details && err.details.message) {
+        // external error comes with directly throwing (err.error = code)
+        errorMessage = `[${err.error}] ${Helper.translate({ key: err.details.message, options: translateOptions })}`;
+      } else if (err.reason) {
+        // internal error comes with directly throwing (err.error = code)
+        errorMessage = `[${err.error}] ${Helper.translate({ key: err.reason, options: translateOptions })}`;
+      }
+    } else if (result && result.error) {
+      if (result.error.details && result.error.details.message) {
+        // external error comes with callback throwing
+        errorMessage = result.error.error ? `[${result.error.error}] ${result.error.details.message}` : result.error.details.message;
+      }
+      if (result.error.message) {
+        // external error comes with callback throwing (no details, comes as MongoError)
+        errorMessage = result.error.error ? `[${result.error.error}] ${result.error.message}` : result.error.message;
+      }
+    }
 
     return errorMessage;
   },
 
-  showMeteorFuncError(err, result) {
-    console.log(err, result);
-    const errorMessage = this.getErrorMessage(err, result);
-    Notification.error(errorMessage || 'unknown error');
+  showMeteorFuncError(err, result, translateOptions) {
+    Notification.error(this.getErrorMessage(err, result, translateOptions));
   }
 };
 

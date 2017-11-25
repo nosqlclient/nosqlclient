@@ -3,6 +3,8 @@ import { Communicator, ReactivityProvider } from '/client/imports/facades';
 import { CollectionUtil } from '/client/imports/ui';
 import $ from 'jquery';
 
+import Helper from '/client/imports/helpers/helper';
+
 const CollectionAdd = function () {
 };
 
@@ -59,11 +61,8 @@ CollectionAdd.prototype = {
       if (!val) result[Enums.ADD_COLLECTION_OPTIONS.INDEX_OPTION_DEFAULTS] = {};
       else {
         val = ExtendedJSON.convertAndCheckJSON(val);
-        if (val.ERROR) {
-          result.ERROR = `Syntax Error on Index Option Defaults: ${val.ERROR}`;
-        } else {
-          result[Enums.ADD_COLLECTION_OPTIONS.INDEX_OPTION_DEFAULTS] = val;
-        }
+        if (val.ERROR) result.ERROR = `Syntax Error on Index Option Defaults: ${val.ERROR}`;
+        else result[Enums.ADD_COLLECTION_OPTIONS.INDEX_OPTION_DEFAULTS] = val;
       }
     }
 
@@ -84,20 +83,20 @@ CollectionAdd.prototype = {
     if (collationVal) {
       options.collation = ExtendedJSON.convertAndCheckJSON(collationVal);
       if (options.collation.ERROR) {
-        Notification.error(`Syntax error on collation: ${options.collation.ERROR}`);
+        Notification.error('syntax-error-collation', null, { error: options.collation.ERROR });
         return;
       }
     }
     if ($('#cmbCollectionOrView').val() === 'view') {
       options.viewOn = $('#cmbCollectionsAddCollection').val();
       if (!options.viewOn) {
-        Notification.warning('Please select a collection to create view on !');
+        Notification.warning('select-collection');
         return;
       }
 
       options.pipeline = ExtendedJSON.convertAndCheckJSON(UIComponents.Editor.getCodeMirrorValue($('#divViewPipeline')));
       if (options.pipeline.ERROR) {
-        Notification.error(`Syntax error on pipeline: ${options.pipeline.ERROR}`);
+        Notification.error('syntax-error-pipeline', null, { error: options.pipeline.ERROR });
         return;
       }
 
@@ -109,7 +108,7 @@ CollectionAdd.prototype = {
     if (storageEnginveVal) {
       options.storageEngine = ExtendedJSON.convertAndCheckJSON(storageEnginveVal);
       if (options.storageEngine.ERROR) {
-        Notification.error(`Syntax error on storageEngine: ${options.storageEngine.ERROR}`);
+        Notification.error('syntax-error-storage-engine', null, { error: options.storageEngine.ERROR });
         return;
       }
     }
@@ -120,7 +119,7 @@ CollectionAdd.prototype = {
     if (validatorVal) {
       options.validator = ExtendedJSON.convertAndCheckJSON(validatorVal);
       if (options.validator.ERROR) {
-        Notification.error(`Syntax error on validator: ${options.validator.ERROR}`);
+        Notification.error('syntax-error-validator', null, { error: options.validator.ERROR });
         return;
       }
     }
@@ -236,7 +235,7 @@ CollectionAdd.prototype = {
 
     if (col.type === 'view') {
       this.prepareFormAsView();
-      modalTitle.text('View Information');
+      modalTitle.text(Helper.translate({ key: 'view-info' }));
       cmbCollectionOrView.val('view').trigger('chosen:updated');
       $('#cmbCollectionsAddCollection').val(col.options.viewOn).trigger('chosen:updated');
       if (col.options.pipeline) {
@@ -244,7 +243,7 @@ CollectionAdd.prototype = {
       }
     } else {
       this.prepareFormAsCollection();
-      modalTitle.text('Collection Information');
+      modalTitle.text(Helper.translate({ key: 'collection-info' }));
       cmbCollectionOrView.val('collection').trigger('chosen:updated');
       this.setStorageEngineAndValidator(col);
       this.setOptionsForCollection(col);
@@ -272,7 +271,7 @@ CollectionAdd.prototype = {
     $('#inputCapped, #inputNoPadding, #inputTwoSizesIndexes').iCheck('uncheck');
     $('#cmbCollectionOrView, #cmbCollectionsAddCollection, #cmbAddCollectionViewOptions, #cmbValidationActionAddCollection, #cmbValidationLevelAddCollection')
       .find('option').prop('selected', false).trigger('chosen:updated');
-    $('#collectionAddModalTitle').text('Create Collection/View');
+    $('#collectionAddModalTitle').text(Helper.translate({ key: 'create-collection-view' }));
     $('#spanColName').text(ReactivityProvider.findOne(ReactivityProvider.types.Connections, { _id: SessionManager.get(SessionManager.strSessionConnection)._id }).connectionName);
     $('#btnCreateCollection').prop('disabled', false);
 
@@ -282,7 +281,7 @@ CollectionAdd.prototype = {
   addCollection() {
     const name = $('#inputCollectionViewName').val();
     if (!name) {
-      Notification.warning('Please enter a name !');
+      Notification.warning('name-required');
       return;
     }
 
@@ -296,11 +295,11 @@ CollectionAdd.prototype = {
       args: { collectionName: name, options },
       callback: (err, res) => {
         if (err || (res && res.error)) {
-          ErrorHandler.showMeteorFuncError(err, res, "Couldn't create");
+          ErrorHandler.showMeteorFuncError(err, res);
         } else {
           CollectionUtil.renderCollectionNames();
           $('#collectionAddModal').modal('hide');
-          Notification.success(`Successfuly created collection: ${name}`);
+          Notification.success('collection-created-successfully', null, { name });
         }
       }
     });
@@ -315,7 +314,7 @@ CollectionAdd.prototype = {
       args: { dbName: connection.databaseName },
       callback: (err, result) => {
         if (err || result.error) {
-          ErrorHandler.showMeteorFuncError(err, result, "Couldn't fetch data");
+          ErrorHandler.showMeteorFuncError(err, result);
           $('#collectionAddModal').modal('hide');
         } else {
           Notification.stop();
@@ -330,7 +329,7 @@ CollectionAdd.prototype = {
           }
 
           if (!found) {
-            Notification.warning("Couldn't find collection in response of getCollectionInfos");
+            Notification.warning('collection-not-found', null, { name: collection });
             $('#collectionAddModal').modal('hide');
           }
         }

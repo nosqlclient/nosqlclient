@@ -28,13 +28,13 @@ Querying.prototype = {
       methodName: 'count',
       args: { selectedCollection },
       callback: (countError, result) => {
-        if (countError || result.error) ErrorHandler.showMeteorFuncError(countError, result, "Couldn't fetch distinct fields");
+        if (countError || result.error) ErrorHandler.showMeteorFuncError(countError, result);
         else {
           Communicator.call({
             methodName: 'find',
             args: { selectedCollection, cursorOptions: { limit: countToTake, skip: Math.round(Math.random() * result.result) } },
             callback: (err, samples) => {
-              if (err || samples.error) ErrorHandler.showMeteorFuncError(err, samples, "Couldn't fetch distinct fields");
+              if (err || samples.error) ErrorHandler.showMeteorFuncError(err, samples);
               else {
                 const keys = findKeysOfObject(samples.result);
                 SessionManager.set(SessionManager.strSessionDistinctFields, keys);

@@ -1,6 +1,7 @@
 import { Template } from 'meteor/templating';
 import { SessionManager, UIComponents, Notification } from '/client/imports/modules';
 import { UserManagementRoles } from '/client/imports/ui';
+import Helper from '/client/imports/helpers/helper';
 import './manage_roles.html';
 
 Template.manageRoles.onRendered(() => {
@@ -57,7 +58,7 @@ Template.manageRoles.events({
     inputRoleSelector.val('');
     inputRoleSelector.prop('disabled', false);
 
-    $('#addEditRoleModalTitle').text('Add Role');
+    $('#addEditRoleModalTitle').text(Helper.translate({ key: 'add-role' }));
     $('#tblRolePrivileges').DataTable().clear().draw();
     $('#tblRolesToInherit').DataTable().clear().draw();
   },

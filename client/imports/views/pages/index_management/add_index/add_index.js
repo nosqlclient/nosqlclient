@@ -35,7 +35,7 @@ Template.addIndex.events({
 
   'click .deleteField': function (event) {
     if ($('.divField:visible').length === 1) {
-      Notification.warning('At least one field is required !');
+      Notification.warning('one-field-required');
       return;
     }
     $(event.currentTarget).parents('.divField').remove();

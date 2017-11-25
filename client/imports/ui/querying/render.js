@@ -36,7 +36,7 @@ QueryRender.prototype = {
   },
 
   renderAfterQueryExecution(err, result, isAdmin, queryInfo, queryParams, saveHistory) {
-    if (err || result.error) ErrorHandler.showMeteorFuncError(err, result, "Couldn't execute query");
+    if (err || result.error) ErrorHandler.showMeteorFuncError(err, result);
     else {
       result.result = result.result || '';
       if (isAdmin) this.setAdminResult(result.result);
@@ -372,7 +372,7 @@ QueryRender.prototype = {
     Communicator.call({
       methodName: 'checkMongoclientVersion',
       callback: (err, res) => {
-        if (res) Notification.info(res, { timeOut: 0, extendedTimeOut: 0, preventDuplicates: true });
+        if (res) Notification.info(res.message, { timeOut: 0, extendedTimeOut: 0, preventDuplicates: true }, { version: res.version });
       }
     });
 

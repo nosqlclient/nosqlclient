@@ -1,5 +1,6 @@
 import { Communicator } from '/client/imports/facades';
 import { Notification, ErrorHandler, UIComponents, SessionManager } from '/client/imports/modules';
+import Helper from '/client/imports/helpers/helper';
 
 const StoredFunctions = function () {};
 
@@ -12,7 +13,7 @@ StoredFunctions.prototype = {
       methodName: 'find',
       args: { selectedCollection: 'system.js' },
       callback: (err, result) => {
-        if (err || result.error) ErrorHandler.showMeteorFuncError(err, result, "Couldn't fetch stored functions");
+        if (err || result.error) ErrorHandler.showMeteorFuncError(err, result);
         else {
           UIComponents.DataTable.setupDatatable({
             selectorString: '#tblStoredFunctions',
@@ -36,7 +37,7 @@ StoredFunctions.prototype = {
               },
             ]
           });
-          if (isRefresh) Notification.success('Successfully refreshed !');
+          if (isRefresh) Notification.success('refreshed-successfully');
         }
 
         Notification.stop();
@@ -55,7 +56,7 @@ StoredFunctions.prototype = {
         $('#inputStoredFunctionName').val(data._id);
         UIComponents.Editor.setCodeMirrorValue(divStoredFunction, data.value.$code, $('#txtStoredFunction'));
       } else {
-        $('#storedFunctionModalTitle').html('Add Stored Function');
+        $('#storedFunctionModalTitle').html(Helper.translate({ key: 'add-stored-function' }));
         $('#inputStoredFunctionName').val('');
         UIComponents.Editor.setCodeMirrorValue(divStoredFunction, '', $('#txtStoredFunction'));
       }
@@ -65,12 +66,12 @@ StoredFunctions.prototype = {
   getObjectToSave() {
     const functionVal = UIComponents.Editor.getCodeMirrorValue($('#divStoredFunction'));
     if (!functionVal.parseFunction()) {
-      Notification.error('Syntax error on function value, not a valid function');
+      Notification.error('syntax-error-stored-function');
       return;
     }
     const name = $('#inputStoredFunctionName').val();
     if (!name) {
-      Notification.error('Name is required !');
+      Notification.error('name-required');
       return;
     }
     return { value: { $code: functionVal }, _id: name };
@@ -90,9 +91,9 @@ StoredFunctions.prototype = {
         methodName: 'updateOne',
         args: { selectedCollection: 'system.js', selector: { _id: data._id }, setObject: objectToSave },
         callback: (err, result) => {
-          if (err || result.error) ErrorHandler.showMeteorFuncError(err, result, "Couldn't save");
+          if (err || result.error) ErrorHandler.showMeteorFuncError(err, result);
           else {
-            Notification.success('Successfuly updated !');
+            Notification.success('saved-successfully');
             modal.modal('hide');
             this.init();
           }
@@ -104,9 +105,9 @@ StoredFunctions.prototype = {
         methodName: 'insertMany',
         args: { selectedCollection: 'system.js', docs: [objectToSave] },
         callback: (err, result) => {
-          if (err || result.error) ErrorHandler.showMeteorFuncError(err, result, "Couldn't insert");
+          if (err || result.error) ErrorHandler.showMeteorFuncError(err, result);
           else {
-            Notification.success('Successfuly added new function !');
+            Notification.success('saved-successfully');
             modal.modal('hide');
             this.init();
           }
@@ -119,10 +120,9 @@ StoredFunctions.prototype = {
     const name = SessionManager.get(SessionManager.strSessionSelectedStoredFunction)._id;
     if (name) {
       Notification.modal({
-        title: 'Are you sure ?',
-        text: 'You can NOT recover this function afterwards, are you sure ?',
+        title: 'are-you-sure',
+        text: 'recover-not-possible',
         type: 'warning',
-        cancelButtonText: 'No',
         callback: (isConfirm) => {
           if (isConfirm) {
             Notification.start('#btnAddNewStoredFunction');
@@ -131,9 +131,9 @@ StoredFunctions.prototype = {
               methodName: 'delete',
               args: { selectedCollection: 'system.js', selector: { _id: name } },
               callback: (err, result) => {
-                if (err || result.error) ErrorHandler.showMeteorFuncError(err, result, "Couldn't delete");
+                if (err || result.error) ErrorHandler.showMeteorFuncError(err, result);
                 else {
-                  Notification.success('Successfuly deleted !');
+                  Notification.success('deleted-successfully');
                   this.init();
                 }
               }

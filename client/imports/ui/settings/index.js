@@ -26,8 +26,8 @@ Settings.prototype = {
       methodName: 'updateSettings',
       args: { settings },
       callback: (err) => {
-        if (err) ErrorHandler.showMeteorFuncError(err, null, "Couldn't save");
-        else Notification.success('Successfully saved !');
+        if (err) ErrorHandler.showMeteorFuncError(err);
+        else Notification.success('saved-successfully');
       }
     });
   },

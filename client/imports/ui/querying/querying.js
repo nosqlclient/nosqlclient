@@ -59,16 +59,17 @@ const renderBoolean = function (divSelector, val) {
 
 const checkStringInput = function (variable, name) {
   if (!variable) {
-    Notification.error(`${name} can not be empty`);
+    Notification.error(`${name}-required`);
     return false;
   }
 
   return true;
 };
 
-const checkErrorField = function (obj) {
+const checkErrorField = function (obj, fieldName) {
   if (obj.ERROR) {
-    Notification.error(obj.ERROR);
+    if (!fieldName) Notification.error(obj.ERROR);
+    else Notification.error(`syntax-error-${fieldName}`, null, { error: obj.ERROR });
     return false;
   }
 
@@ -77,7 +78,7 @@ const checkErrorField = function (obj) {
 
 const checkFunction = function (obj, fieldName) {
   if (!obj) {
-    Notification.error(`Syntax error on ${fieldName}, not a valid function`);
+    Notification.error(`syntax-error-${fieldName}-function`);
     return false;
   }
 
@@ -204,7 +205,7 @@ Querying.prototype = {
       const command = ExtendedJSON.convertAndCheckJSON(UIComponents.Editor.getCodeMirrorValue($('#divCommand')));
       const options = QueryingOptions.getOptions(Enums.COMMAND_OPTIONS);
 
-      if (!checkErrorField(command)) return;
+      if (!checkErrorField(command, 'command')) return;
 
       const runOnAdminDB = $('#aRunOnAdminDB').iCheck('update')[0].checked;
       proceedQueryExecution('command', { command, runOnAdminDB, options });
@@ -260,7 +261,7 @@ Querying.prototype = {
       const collectionName = $('#inputValidateCollection').val();
       const options = ExtendedJSON.convertAndCheckJSON(UIComponents.Editor.getCodeMirrorValue($('#divOptions')));
 
-      if (!checkStringInput(collectionName, 'collectionName')) return;
+      if (!checkStringInput(collectionName, 'collection-name')) return;
       if (!checkErrorField(options)) return;
 
       proceedQueryExecution('validateCollection', { collectionName, options });
@@ -275,7 +276,7 @@ Querying.prototype = {
         const pipeline = getFromHistoryOrEditor(historyParams, $('#divPipeline'), 'pipeline');
         const options = historyParams ? historyParams.options : QueryingOptions.getOptions(Enums.AGGREGATE_OPTIONS);
 
-        if (!checkErrorField(pipeline)) return;
+        if (!checkErrorField(pipeline, 'pipeline')) return;
         if (!checkErrorField(options)) return;
 
         proceedQueryExecution('aggregate', { selectedCollection, pipeline, options }, false, { pipeline, options }, (!historyParams));
@@ -309,7 +310,7 @@ Querying.prototype = {
         const operations = getFromHistoryOrEditor(historyParams, $('#divBulkWrite'));
         const options = historyParams ? historyParams.options : QueryingOptions.getOptions(Enums.BULK_WRITE_OPTIONS);
 
-        if (!checkErrorField(operations)) return;
+        if (!checkErrorField(operations, 'operations')) return;
 
         proceedQueryExecution('bulkWrite', { selectedCollection, operations, options }, false, { selector: operations, options }, (!historyParams));
       },
@@ -339,7 +340,7 @@ Querying.prototype = {
         const selector = getFromHistoryOrEditor(historyParams, $('#divSelector'));
         const options = historyParams ? historyParams.options : QueryingOptions.getOptions(Enums.COUNT_OPTIONS);
 
-        if (!checkErrorField(selector)) return;
+        if (!checkErrorField(selector, 'selector')) return;
 
         proceedQueryExecution('count', { selectedCollection, selector, options }, false, { selector, options }, (!historyParams));
       },
@@ -370,7 +371,7 @@ Querying.prototype = {
         const options = historyParams ? historyParams.options : QueryingOptions.getOptions(Enums.CREATE_INDEX_OPTIONS);
         const fields = getFromHistoryOrEditor(historyParams, $('#divFields'), 'fields');
 
-        if (!checkErrorField(fields)) return;
+        if (!checkErrorField(fields, 'fields')) return;
         if (!checkErrorField(options)) return;
 
         proceedQueryExecution('createIndex', { selectedCollection, fields, options }, false, { fields, options }, (!historyParams));
@@ -407,7 +408,7 @@ Querying.prototype = {
         const selectedCollection = SessionManager.get(SessionManager.strSessionSelectedCollection);
         const selector = getFromHistoryOrEditor(historyParams, $('#divSelector'));
 
-        if (!checkErrorField(selector)) return;
+        if (!checkErrorField(selector, 'selector')) return;
 
         proceedQueryExecution('delete', { selectedCollection, selector }, false, { selector }, (!historyParams));
       },
@@ -424,7 +425,7 @@ Querying.prototype = {
         const fieldName = historyParams ? historyParams.fieldName : $('#inputField').val();
         const options = historyParams ? historyParams.options : QueryingOptions.getOptions(Enums.DISTINCT_OPTIONS);
 
-        if (!checkErrorField(selector)) return;
+        if (!checkErrorField(selector, 'selector')) return;
 
         proceedQueryExecution('distinct', { selectedCollection, selector, fieldName, options }, false, { selector, fieldName, options }, (!historyParams));
       },
@@ -477,7 +478,7 @@ Querying.prototype = {
         const totalMegabytes = Math.round(totalBytes * 100) / 100;
 
         if (totalMegabytes > maxAllowedFetchSize) {
-          Notification.error(`The fetched document size (average): ${totalMegabytes} MB, exceeds maximum allowed size (${maxAllowedFetchSize} MB), please use LIMIT, SKIP options.`);
+          Notification.error('exceeds-max-size', null, { maxAllowedFetchSize, totalMegabytes });
           return false;
         }
 
@@ -490,7 +491,7 @@ Querying.prototype = {
         const cursorOptions = historyParams ? historyParams.cursorOptions : QueryingOptions.getOptions(Enums.CURSOR_OPTIONS);
         const selector = getFromHistoryOrEditor(historyParams, $('#divSelector'));
 
-        if (!checkErrorField(selector)) return;
+        if (!checkErrorField(selector, 'selector')) return;
         if (!checkErrorField(cursorOptions)) return;
 
         // max allowed fetch size  != 0 and there's no project option, check for size
@@ -559,7 +560,7 @@ Querying.prototype = {
         const cursorOptions = historyParams ? historyParams.cursorOptions : QueryingOptions.getOptions(Enums.CURSOR_OPTIONS);
         const selector = getFromHistoryOrEditor(historyParams, $('#divSelector'));
 
-        if (!checkErrorField(selector)) return;
+        if (!checkErrorField(selector, 'selector')) return;
         if (!checkErrorField(cursorOptions)) return;
 
         proceedQueryExecution('findOne', { selectedCollection, selector, cursorOptions }, false, { selector, cursorOptions }, (!historyParams));
@@ -593,7 +594,7 @@ Querying.prototype = {
         const options = historyParams ? historyParams.options : QueryingOptions.getOptions(Enums.FINDONE_MODIFY_OPTIONS);
         const selector = getFromHistoryOrEditor(historyParams, $('#divSelector'));
 
-        if (!checkErrorField(selector)) return;
+        if (!checkErrorField(selector, 'selector')) return;
         if (!checkErrorField(options)) return;
 
         proceedQueryExecution('findOneAndDelete', { selectedCollection, selector, options }, false, { selector, options }, (!historyParams));
@@ -626,8 +627,8 @@ Querying.prototype = {
         const selector = getFromHistoryOrEditor(historyParams, $('#divSelector'));
         const replaceObject = getFromHistoryOrEditor(historyParams, $('#divReplacement'), 'replaceObject');
 
-        if (!checkErrorField(selector)) return;
-        if (!checkErrorField(replaceObject)) return;
+        if (!checkErrorField(selector, 'selector')) return;
+        if (!checkErrorField(replaceObject, 'replacement')) return;
         if (!checkErrorField(options)) return;
 
         proceedQueryExecution('findOneAndReplace', { selectedCollection, selector, replaceObject, options }, false, { selector, replaceObject, options }, (!historyParams));
@@ -663,8 +664,8 @@ Querying.prototype = {
         const selector = getFromHistoryOrEditor(historyParams, $('#divSelector'));
         let setObject = getFromHistoryOrEditor(historyParams, $('#divSet'), 'setObject');
 
-        if (!checkErrorField(selector)) return;
-        if (!checkErrorField(setObject)) return;
+        if (!checkErrorField(selector, 'selector')) return;
+        if (!checkErrorField(setObject, 'set')) return;
         if (!setObject.$set) setObject = { $set: setObject };
 
         if (options.ERROR) {
@@ -709,7 +710,7 @@ Querying.prototype = {
         const options = historyParams ? historyParams.options : QueryingOptions.getOptions(Enums.GEO_HAYSTACK_SEARCH_OPTIONS);
 
         if (options.ERROR) {
-          Notification.error(`Syntax error: ${options.ERROR}`);
+          Notification.error(options.ERROR);
           return;
         }
 
@@ -752,7 +753,7 @@ Querying.prototype = {
 
         const options = historyParams ? historyParams.options : QueryingOptions.getOptions(Enums.GEO_NEAR_OPTIONS);
         if (options.ERROR) {
-          Notification.error(`Syntax error: ${options.ERROR}`);
+          Notification.error(options.ERROR);
           return;
         }
 
@@ -801,19 +802,19 @@ Querying.prototype = {
 
         if (keys.startsWith('function')) {
           if (!keys.parseFunction()) {
-            Notification.error('Syntax error on keys, not a valid function, you can provide object or array as well');
+            Notification.error('syntax-error-keys-function');
             return;
           }
         } else {
           keys = ExtendedJSON.convertAndCheckJSON(keys);
           if (keys.ERROR) {
-            Notification.error(`Syntax error on keys: ${keys.ERROR}`);
+            Notification.error('syntax-error-keys', null, { error: keys.ERROR });
             return;
           }
         }
 
-        if (!checkErrorField(condition)) return;
-        if (!checkErrorField(initial)) return;
+        if (!checkErrorField(condition, 'condition')) return;
+        if (!checkErrorField(initial, 'initial')) return;
         if (!checkFunction(reduce, 'reduce')) return;
         if (!checkFunction(finalize, 'finalize')) return;
 
@@ -861,7 +862,7 @@ Querying.prototype = {
         const docs = getFromHistoryOrEditor(historyParams, $('#divDocs'), 'docs');
         const options = historyParams ? historyParams.options : QueryingOptions.getOptions(Enums.INSERT_MANY_OPTIONS);
 
-        if (!checkErrorField(docs)) return;
+        if (!checkErrorField(docs, 'docs')) return;
 
         proceedQueryExecution('insertMany', { selectedCollection, docs, options }, false, { docs, options }, (!historyParams));
       },
@@ -960,7 +961,7 @@ Querying.prototype = {
         const newName = $('#inputNewName').val();
 
         if (newName === selectedCollection) {
-          Notification.warning('Can not use same name as target name');
+          Notification.warning('name-same-with-old');
           return;
         }
 
@@ -969,14 +970,14 @@ Querying.prototype = {
             methodName: 'rename',
             args: { selectedCollection, newName, options },
             callback: (err, result) => {
-              if (err || result.error) ErrorHandler.showMeteorFuncError(err, result, "Couldn't rename");
+              if (err || result.error) ErrorHandler.showMeteorFuncError(err, result);
               else {
-                Notification.success(`Successfully renamed to: ${newName}`);
+                Notification.success('saved-successfully');
                 CollectionUtil.renderCollectionNames();
               }
             }
           });
-        } else Notification.error('Please enter new name !');
+        } else Notification.error('name-required');
       }
     },
 
@@ -1012,9 +1013,9 @@ Querying.prototype = {
         const selector = getFromHistoryOrEditor(historyParams, $('#divSelector'));
         let setObject = getFromHistoryOrEditor(historyParams, $('#divSet'), 'setObject');
 
-        if (!checkErrorField(selector)) return;
+        if (!checkErrorField(selector, 'selector')) return;
         if (!checkErrorField(options)) return;
-        if (!checkErrorField(setObject)) return;
+        if (!checkErrorField(setObject, 'set')) return;
 
         if (!setObject.$set) setObject = { $set: setObject };
 
@@ -1047,9 +1048,9 @@ Querying.prototype = {
         const selector = getFromHistoryOrEditor(historyParams, $('#divSelector'));
         let setObject = getFromHistoryOrEditor(historyParams, $('#divSet'), 'setObject');
 
-        if (!checkErrorField(selector)) return;
+        if (!checkErrorField(selector, 'selector')) return;
         if (!checkErrorField(options)) return;
-        if (!checkErrorField(setObject)) return;
+        if (!checkErrorField(setObject, 'set')) return;
 
         if (!setObject.$set) setObject = { $set: setObject };
 

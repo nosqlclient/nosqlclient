@@ -99,7 +99,7 @@ MongoDBShell.prototype = {
       return `use ${connection.databaseName}`;
     }
 
-    Error.create({ type: Error.types.ShellError });
+    Error.create({ type: Error.types.ShellError, message: 'spawn-failed' });
   },
 
   clearShell({ sessionId }) {

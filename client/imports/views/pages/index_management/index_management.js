@@ -31,7 +31,7 @@ Template.indexManagement.onRendered(function () {
 Template.indexManagement.events({
   'click #btnAddIndex': function () {
     if (!$('#cmbCollections').val()) {
-      Notification.warning('Please select a collection first !');
+      Notification.warning('select-collection');
       return;
     }
 

@@ -38,7 +38,7 @@ UserManagementTree.prototype = {
       methodName: 'command',
       args: { command, runOnAdminDB },
       callback: (err, result) => {
-        if (err || result.error) ErrorHandler.showMeteorFuncError(err, result, "Couldn't fetch users");
+        if (err || result.error) ErrorHandler.showMeteorFuncError(err, result);
         else {
           const dbName = runOnAdminDB ? 'admin' : connection.databaseName;
           const children = this.populateTreeChildrenForUsers(result.result.users);
@@ -68,7 +68,7 @@ UserManagementTree.prototype = {
                     methodName: 'command',
                     args: { command: userInfoCommand, runOnAdminDB },
                     callback: (userInfoCommandError, userInfoCommandResult) => {
-                      if (userInfoCommandError || userInfoCommandResult.error) ErrorHandler.showMeteorFuncError(userInfoCommandError, userInfoCommandResult, "Couldn't fetch userInfo");
+                      if (userInfoCommandError || userInfoCommandResult.error) ErrorHandler.showMeteorFuncError(userInfoCommandError, userInfoCommandResult);
                       else callback(self.populateTreeChildrenForRoles(userInfoCommandResult.result.users[0]));
                     }
                   });
@@ -83,7 +83,7 @@ UserManagementTree.prototype = {
                     methodName: 'command',
                     args: { command: roleInfoCommand, runOnAdminDB },
                     callback: (roleInfoCommandError, roleInfoCommandResult) => {
-                      if (roleInfoCommandError || roleInfoCommandResult.error) ErrorHandler.showMeteorFuncError(roleInfoCommandError, roleInfoCommandResult, "Couldn't fetch roleInfo");
+                      if (roleInfoCommandError || roleInfoCommandResult.error) ErrorHandler.showMeteorFuncError(roleInfoCommandError, roleInfoCommandResult);
                       else callback(self.populateTreeChildrenForPrivileges(roleInfoCommandResult.result.roles[0]));
                     }
                   });

@@ -10,11 +10,11 @@ Template.addCollection.onRendered(() => {
 
 Template.addCollection.events({
   'click #anchorStorageEngine': function () {
-    if (!$('#anchorStorageEngine').attr('data-toggle')) Notification.warning('Views can not have storage engine !');
+    if (!$('#anchorStorageEngine').attr('data-toggle')) Notification.warning('views-cant-have-storage-engines');
   },
 
   'click #anchorValidator': function () {
-    if (!$('#anchorValidator').attr('data-toggle')) Notification.warning('Views can not have validator !');
+    if (!$('#anchorValidator').attr('data-toggle')) Notification.warning('views-cant-have-validator');
   },
 
   'change #cmbCollectionOrView': function () {

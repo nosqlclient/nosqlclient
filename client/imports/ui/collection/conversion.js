@@ -17,7 +17,7 @@ CollectionConversion.prototype = {
     const collection = $('#convertToCappedModal').data('collection');
 
     if (!size) {
-      Notification.warning('Size is required !');
+      Notification.warning('size-required');
       return;
     }
 
@@ -30,9 +30,9 @@ CollectionConversion.prototype = {
       methodName: 'command',
       args: { command },
       callback: (err, result) => {
-        if (err || result.error) ErrorHandler.showMeteorFuncError(err, result, "Couldn't convert");
+        if (err || result.error) ErrorHandler.showMeteorFuncError(err, result);
         else {
-          Notification.success('Successfully converted to capped');
+          Notification.success('collection-converted-successfully');
           $('#convertToCappedModal').modal('hide');
         }
       }

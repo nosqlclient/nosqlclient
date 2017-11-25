@@ -76,7 +76,7 @@ Template.adminQueries.events({
   'click #btnExecuteAdminQuery': function () {
     const queryTemplate = SessionManager.get(SessionManager.strSessionSelectedQuery);
     if (queryTemplate) Template[queryTemplate].executeQuery();
-    else Notification.warning('Select Query', 'Please select a query first ');
+    else Notification.warning('select-query');
   },
 });
 

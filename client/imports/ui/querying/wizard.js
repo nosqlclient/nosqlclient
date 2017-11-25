@@ -1,4 +1,5 @@
 import { UIComponents, ExtendedJSON } from '/client/imports/modules';
+import Helper from '/client/imports/helpers/helper';
 
 const QueryWizard = function () {
   this.step = 1;
@@ -32,7 +33,7 @@ QueryWizard.prototype = {
     sendButton2.prop('disabled', false);
 
     chatDiv.empty();
-    chatDiv.append($('<div class="left"> <div class="author-name"> Nosqlclient </div> <div class="chat-message active"> Hello, let\'s start with giving a field name to me. </div></div> ' +
+    chatDiv.append($(`<div class="left"> <div class="author-name"> Nosqlclient </div> <div class="chat-message active">${Helper.translate({ key: 'wizard-start' })}</div></div> ` +
       '<div class="right"> <div class="author-name"> Me</div> <div class="chat-message"> Hmm...</div> </div>'));
 
     this.step = 1; this.selectedOption = null; this.fieldName = null; this.txtValue = null; this.regexOptions = null;
@@ -42,15 +43,25 @@ QueryWizard.prototype = {
 
     cmbDiv.css('display', 'none');
     cmb.prop('multiple', false);
-    cmb.attr('data-placeholder', 'I want to retrieve documents that...');
+    cmb.attr('data-placeholder', Helper.translate({ key: 'wizard-start-user' }));
     cmb.empty();
-    cmb.append($('<option></option> <optgroup id="optGroupPositives" label="Positives"> <option value="1">have the field</option> <option value="2">the field matches regex</option> ' +
-      '<option value="3">the field equals something</option> <option value="4">the field equals one of values of an array</option> ' +
-      '<option value="5">the field is greater or equal than something</option> ' +
-      '<option value="6">the field is greater than something</option> </optgroup> <optgroup id="optGroupNegatives" label="Negatives"> <option value="-1">have not the field</option> ' +
-      '<option value="-2">the field not matches regex</option> <option value="-3">the field not equals something</option> ' +
-      '<option value="-4">the field not equals one of values of an array</option> ' +
-      '<option value="-5">the field is less or equal than something</option> <option value="-6">the field is less than something</option> </optgroup>'));
+    cmb.append($(`<option></option> 
+      <optgroup id="optGroupPositives" label="Positives">
+      <option value="1">${Helper.translate({ key: 'wizard-option-1' })}</option> 
+      <option value="2">${Helper.translate({ key: 'wizard-option-2' })}</option> 
+      <option value="3">${Helper.translate({ key: 'wizard-option-3' })}</option> 
+      <option value="4">${Helper.translate({ key: 'wizard-option-4' })}</option>  
+      <option value="5">${Helper.translate({ key: 'wizard-option-5' })}</option>  
+      <option value="6">${Helper.translate({ key: 'wizard-option-6' })}</option> 
+      </optgroup> 
+      <optgroup id="optGroupNegatives" label="Negatives"> 
+      <option value="-1">${Helper.translate({ key: 'wizard-option-minus-1' })}</option> 
+      <option value="-2">${Helper.translate({ key: 'wizard-option-minus-2' })}</option> 
+      <option value="-3">${Helper.translate({ key: 'wizard-option-minus-3' })}</option> 
+      <option value="-4">${Helper.translate({ key: 'wizard-option-minus-4' })}</option> 
+      <option value="-5">${Helper.translate({ key: 'wizard-option-minus-5' })}</option> 
+      <option value="-6">${Helper.translate({ key: 'wizard-option-minus-6' })}</option> 
+      </optgroup>`));
     cmb.chosen('destroy');
   },
 
@@ -96,7 +107,7 @@ QueryWizard.prototype = {
         }
         chatDiv.append($(`<div class="right"><div class="author-name">Me </div> <div class="chat-message">${txt.val()}</div></div>`));
         chatDiv.append($('<div class="left"><div class="author-name">Nosqlclient </div> <div class="chat-message active"></div></div>'));
-        chatDiv.find('.left').last().find('.chat-message').html('So, you want to retrieve documents that...');
+        chatDiv.find('.left').last().find('.chat-message').html(Helper.translate({ key: 'wizard-step-1' }));
         txtDiv.css('display', 'none');
         cmbDiv.css('display', '');
         cmb.chosen({
@@ -133,7 +144,7 @@ QueryWizard.prototype = {
           const convertedValue = ExtendedJSON.convertAndCheckJSON(this.txtValue);
           if (convertedValue.ERROR || Object.prototype.toString.call(convertedValue) !== '[object Array]') {
             chatDiv.append($('<div class="left"><div class="author-name">Nosqlclient </div> <div class="chat-message active"></div></div>'));
-            chatDiv.find('.left').last().find('.chat-message').html('Please provide a valid array, e.g. [3,5,6,7] or ["myValue","mySecondValue"]');
+            chatDiv.find('.left').last().find('.chat-message').html(Helper.translate({ key: 'wizard-step-3-array-error' }));
             break;
           }
         }
@@ -192,27 +203,27 @@ QueryWizard.prototype = {
 
     if (this.selectedOption === '2' || this.selectedOption === '-2') {
       setTxtField();
-      return 'type your regex without starting and ending slash (/) e.g. acme.*corp';
+      return Helper.translate({ key: 'wizard-step-2-option-2' });
     }
     if (this.selectedOption === '3') {
       setTxtField();
-      return "equals what ? Don't forget to provide correct type, e.g. for number 3, for string \"3\", for boolean true/false etc..";
+      return Helper.translate({ key: 'wizard-step-2-option-3' });
     }
     if (this.selectedOption === '-3') {
       setTxtField();
-      return "not equals what ? Don't forget to provide correct type, e.g. for number 3, for string \"3\", for boolean true/false etc..";
+      return Helper.translate({ key: 'wizard-step-2-option-minus-3' });
     }
     if (this.selectedOption === '4' || this.selectedOption === '-4') {
       setTxtField();
-      return 'can you share your array, e.g. [3,5,6,8] or for string values ["myString","myAnotherString"]';
+      return Helper.translate({ key: 'wizard-step-2-option-4' });
     }
     if (this.selectedOption === '5' || this.selectedOption === '-5') {
       setTxtField();
-      return `then you should be looking for a number or date to be ${this.selectedOption === '5' ? 'greater' : 'less'} or equal than, what is it? (e.g. date("2017-01-01T13:00:00Z")  or 100)`;
+      return Helper.translate({ key: 'wizard-step-2-option-5-6', options: { greater_or_less: this.selectedOption === '5' ? 'greater' : 'less' } });
     }
     if (this.selectedOption === '6' || this.selectedOption === '-6') {
       setTxtField();
-      return `then you should be looking for a number or date to be ${this.selectedOption === '6' ? 'greater' : 'less'} or equal than, what is it? (e.g. date("2017-01-01T13:00:00Z") or 100)`;
+      return Helper.translate({ key: 'wizard-step-2-option-5-6', options: { greater_or_less: this.selectedOption === '6' ? 'greater' : 'less' } });
     }
   },
 
@@ -245,7 +256,7 @@ QueryWizard.prototype = {
 
       txtDiv.css('display', 'none');
       cmbDiv.css('display', '');
-      return 'Cool, you can select one or more options to use with your regex, or just leave it empty and press Send';
+      return Helper.translate({ key: 'wizard-step-2-option-2-final' });
     }
 
     txt.prop('disabled', true);

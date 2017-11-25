@@ -20,7 +20,7 @@ Connection.prototype = {
   switchDatabase() {
     const selector = $('#inputDatabaseNameToSwitch');
     if (!selector.val()) {
-      Notification.error('Please enter a database name or choose one from the list');
+      Notification.error('enter-or-choose-database');
       return;
     }
 
@@ -40,7 +40,7 @@ Connection.prototype = {
     Communicator.call({
       methodName: 'listDatabases',
       callback: (err, result) => {
-        if (err || result.error) ErrorHandler.showMeteorFuncError(err, result, "Couldn't fetch databases");
+        if (err || result.error) ErrorHandler.showMeteorFuncError(err, result);
         else {
           result.result.databases.sort((a, b) => {
             if (a.name < b.name) { return -1; } else if (a.name > b.name) { return 1; }
@@ -134,10 +134,10 @@ Connection.prototype = {
       (!connection[connection.authenticationType].username || !connection[connection.authenticationType].password);
   },
 
-  connect(isRefresh, message) {
+  connect(isRefresh, message, messageTranslateOptions) {
     const connection = ReactivityProvider.findOne(ReactivityProvider.types.Connections, { _id: SessionManager.get(SessionManager.strSessionConnection)._id });
     if (!connection) {
-      Notification.warning('Please select a connection first !');
+      Notification.warning('select-connection');
       return;
     }
 
@@ -148,15 +148,15 @@ Connection.prototype = {
       modal.data('password', connection[connection.authenticationType].password);
       modal.data('connection', connection);
       modal.modal('show');
-    } else this.proceedConnecting({ isRefresh, message, connection });
+    } else this.proceedConnecting({ isRefresh, message, messageTranslateOptions, connection });
   },
 
-  proceedConnecting({ isRefresh, message, connection, username, password }) {
+  proceedConnecting({ isRefresh, message, messageTranslateOptions, connection, username, password }) {
     Communicator.call({
       methodName: 'connect',
       args: { connectionId: connection._id, username, password },
       callback: (err, result) => {
-        if (err || result.error) ErrorHandler.showMeteorFuncError(err, result, "Couldn't connect");
+        if (err || result.error) ErrorHandler.showMeteorFuncError(err, result);
         else {
           result.result.sort((a, b) => {
             if (a.name < b.name) { return -1; } else if (a.name > b.name) { return 1; }
@@ -171,8 +171,8 @@ Connection.prototype = {
             $('#promptUsernamePasswordModal').modal('hide');
 
             FlowRouter.go('/databaseStats');
-          } else if (!message) Notification.success('Successfuly refreshed collections');
-          else Notification.success(message);
+          } else if (!message) Notification.success('refreshed-successfully');
+          else Notification.success(message, null, messageTranslateOptions);
 
           SessionManager.set(SessionManager.strSessionPromptedUsername, username);
           SessionManager.set(SessionManager.strSessionPromptedPassword, password);
@@ -576,7 +576,7 @@ Connection.prototype = {
           SessionManager.clear();
           this.populateConnectionsTable();
           Notification.stop();
-        } else Notification.error(`unexpected error during connection remove: ${err.message}`);
+        } else ErrorHandler.showMeteorFuncError(err);
       }
     });
   },
@@ -595,9 +595,9 @@ Connection.prototype = {
         methodName: 'checkAndSaveConnection',
         args: { connection },
         callback: (err) => {
-          if (err) ErrorHandler.showMeteorFuncError(err, null, 'could not save connection');
+          if (err) ErrorHandler.showMeteorFuncError(err, null);
           else {
-            Notification.success('Successfully saved connection');
+            Notification.success('saved-successfully');
             this.populateConnectionsTable();
             modal.modal('hide');
           }

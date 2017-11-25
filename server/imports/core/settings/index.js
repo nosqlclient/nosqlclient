@@ -98,10 +98,7 @@ Settings.prototype = {
     try {
       Logger.info({ message: 'check-version' });
       const response = HTTP.get('https://api.github.com/repos/nosqlclient/nosqlclient/releases/latest', { headers: { 'User-Agent': 'Mongoclient' } });
-      if (response && response.data && response.data.name && response.data.name !== packageJson.version) {
-        return `There's a new version of mongoclient: ${response.data.name}, <a href='https://github.com/nosqlclient/nosqlclient/releases/latest' target='_blank'>download here</a>, 
-           if you're using docker just use pull for the <b>${response.data.name}</b> or <b>latest</b> tag !`;
-      }
+      if (response && response.data && response.data.name && response.data.name !== packageJson.version) return { version: response.data.name, message: 'new-version-available' };
       return '';
     } catch (exception) {
       Logger.error({ message: 'check-version', exception });

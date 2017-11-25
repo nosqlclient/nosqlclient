@@ -28,7 +28,7 @@ Template.navigation.events({
     const connection = ReactivityProvider.findOne(ReactivityProvider.types.Connections, { _id: SessionManager.get(SessionManager.strSessionConnection)._id });
 
     if (connection.ssl && connection.ssl.enable) {
-      Notification.info('Unfortunately, this feature is not usable in SSL connections yet');
+      Notification.info('not-allowed-for-ssl-connections');
       return;
     }
 

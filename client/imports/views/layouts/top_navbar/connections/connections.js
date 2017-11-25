@@ -1,6 +1,7 @@
 import { Template } from 'meteor/templating';
 import { Connection } from '/client/imports/ui';
 import { Notification, SessionManager } from '/client/imports/modules';
+import Helper from '/client/imports/helpers/helper';
 import $ from 'jquery';
 import './connections.html';
 
@@ -43,7 +44,7 @@ Template.connections.events({
   },
 
   'click #anchorConnectionSsl': function () {
-    if (!$('#anchorConnectionSsl').attr('data-toggle')) Notification.warning('SSL already set via Mongodb-X509');
+    if (!$('#anchorConnectionSsl').attr('data-toggle')) Notification.warning('ssl-set-via-x509');
   },
 
   'change #cmbSshAuthType': function () {
@@ -76,14 +77,14 @@ Template.connections.events({
 
   'click .deleteHost': function (event) {
     if ($('.divHostField:visible').length === 1) {
-      Notification.warning('At least one host is required !');
+      Notification.warning('host-required');
       return;
     }
     $(event.currentTarget).parents('.divHostField').remove();
   },
 
   'click #btnCreateNewConnection': function () {
-    $('#addEditConnectionModalTitle').text('Add Connection');
+    $('#addEditConnectionModalTitle').text(Helper.translate({ key: 'add-connection' }));
     const modal = $('#addEditConnectionModal');
     modal.data('edit', null);
     modal.data('clone', null);
@@ -96,7 +97,7 @@ Template.connections.events({
   },
 
   'click .editor_edit': function () {
-    $('#addEditConnectionModalTitle').text('Edit Connection');
+    $('#addEditConnectionModalTitle').text(Helper.translate({ key: 'edit-connection' }));
     const modal = $('#addEditConnectionModal');
     modal.data('edit', SessionManager.get(SessionManager.strSessionConnection)._id);
     modal.data('clone', '');
@@ -104,7 +105,7 @@ Template.connections.events({
   },
 
   'click .editor_duplicate': function () {
-    $('#addEditConnectionModalTitle').text('Clone Connection');
+    $('#addEditConnectionModalTitle').text(Helper.translate({ key: 'clone-connection' }));
     const modal = $('#addEditConnectionModal');
     modal.data('clone', SessionManager.get(SessionManager.strSessionConnection)._id);
     modal.data('edit', '');

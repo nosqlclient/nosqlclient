@@ -63,7 +63,7 @@ Aggregate.prototype = {
         let jsonValue = liElement.find('[id^=wrapper]').data('editor').getValue();
         if (!liElement.hasClass('$unwind') || (liElement.hasClass('$unwind') && jsonValue.indexOf(':') !== -1)) {
           jsonValue = ExtendedJSON.convertAndCheckJSON(jsonValue);
-          if (jsonValue.ERROR) return `${queryName} error: ${jsonValue.ERROR}`;
+          if (jsonValue.ERROR) return `${queryName}: ${jsonValue.ERROR}`;
         }
 
         stage[queryName] = jsonValue;
@@ -183,12 +183,12 @@ Aggregate.prototype = {
     const selectedCollection = $('#cmbCollections').chosen().val();
     const stages = $('#stages').find('li');
     if (!selectedCollection) {
-      Notification.warning('Please select a collection first !');
+      Notification.warning('select-collection');
       return;
     }
 
     if (stages.length === 0) {
-      Notification.warning('At least one stage is required !');
+      Notification.warning('one-stage-required');
       return;
     }
 
@@ -196,7 +196,7 @@ Aggregate.prototype = {
 
     const pipeline = this.createPipeline(stages);
     if (Object.prototype.toString.call(pipeline) !== '[object Array]') {
-      Notification.error(`One of the stages has error: ${pipeline}`);
+      Notification.error('stage-error', null, { error: pipeline });
       return;
     }
 
@@ -204,7 +204,7 @@ Aggregate.prototype = {
       methodName: 'aggregate',
       args: { selectedCollection, pipeline },
       callback: (err, result) => {
-        if (err || result.error) ErrorHandler.showMeteorFuncError(err, result, "Couldn't execute ");
+        if (err || result.error) ErrorHandler.showMeteorFuncError(err, result);
         else this.setAggregateResult(result.result, selectedCollection, pipeline);
 
         Notification.stop();

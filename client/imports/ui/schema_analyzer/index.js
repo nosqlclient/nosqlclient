@@ -104,7 +104,7 @@ SchemaAnalyzer.prototype = {
         added(id, fields) {
           const jsonData = ExtendedJSON.convertAndCheckJSON(fields.message);
           if (jsonData.ERROR) {
-            Notification.error(fields.message);
+            Notification.error('syntax-error-schema-analyze-result', null, { error: jsonData.ERROR });
             Communicator.call({ methodName: 'removeSchemaAnalyzeResult' });
             return;
           }
@@ -124,11 +124,11 @@ SchemaAnalyzer.prototype = {
   analyze() {
     const collection = $('#cmbCollections').val();
     if (!collection) {
-      Notification.info('Please select a collection first !');
+      Notification.info('select-collection');
       return;
     }
     if (collection.endsWith('.chunks')) {
-      Notification.warning('I rather not analyzing a GridFS collection !');
+      Notification.warning('no-chunks-analyzing');
       return;
     }
 
@@ -143,7 +143,7 @@ SchemaAnalyzer.prototype = {
         collection
       },
       callback: (err) => {
-        if (err) ErrorHandler.showMeteorFuncError(err, null, "Couldn't analyze collection");
+        if (err) ErrorHandler.showMeteorFuncError(err);
       }
     });
   }

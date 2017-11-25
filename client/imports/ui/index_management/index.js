@@ -1,5 +1,6 @@
 import { Communicator, ReactivityProvider } from '/client/imports/facades';
 import { UIComponents, ExtendedJSON, ErrorHandler, Notification } from '/client/imports/modules';
+import Helper from '/client/imports/helpers/helper';
 import moment from 'moment';
 
 const IndexManagement = function () {
@@ -23,7 +24,7 @@ IndexManagement.prototype = {
       methodName: 'indexInformation',
       args: { selectedCollection, isFull: true },
       callback: (err, indexInformation) => {
-        if (err || indexInformation.error) ErrorHandler.showMeteorFuncError(err, indexInformation, "Couldn't fetch index information");
+        if (err || indexInformation.error) ErrorHandler.showMeteorFuncError(err, indexInformation);
         else {
           let found = false;
           indexInformation.result.forEach((index) => {
@@ -32,7 +33,7 @@ IndexManagement.prototype = {
               this.proceedPreparingFormForView(index);
             }
           });
-          if (!found) Notification.error(`Couldn't find index: ${indexName}`);
+          if (!found) Notification.error('index-not-found', null, { indexName });
         }
       }
     });
@@ -90,7 +91,7 @@ IndexManagement.prototype = {
     $('#inputUnique').iCheck('uncheck');
     $('#inputBackground').iCheck('uncheck');
     $('#inputSparse').iCheck('uncheck');
-    $('#addIndexModalTitle').html('Add Index');
+    $('#addIndexModalTitle').html(Helper.translate({ key: 'add-index' }));
     $('#btnSaveIndex').prop('disabled', false);
     $('#cmbTextIndexVersion, #cmbTextIndexDefaultLanguage').find('option').prop('selected', false).trigger('chosen:updated');
   },
@@ -207,7 +208,7 @@ IndexManagement.prototype = {
     if (partialFilterExpression) {
       partialFilterExpression = ExtendedJSON.convertAndCheckJSON(partialFilterExpression);
       if (partialFilterExpression.ERROR) {
-        Notification.error(`Syntax Error on partialFilterExpression: ${partialFilterExpression.ERROR}`);
+        Notification.error('syntax-error-partial-filter-expression', null, { error: partialFilterExpression.ERROR });
         return;
       }
     }
@@ -216,7 +217,7 @@ IndexManagement.prototype = {
     if (collation) {
       collation = ExtendedJSON.convertAndCheckJSON(collation);
       if (collation.ERROR) {
-        Notification.error(`Syntax Error on collation: ${collation.ERROR}`);
+        Notification.error('syntax-error-collation', null, { error: collation.ERROR });
         return;
       }
     }
@@ -265,9 +266,9 @@ IndexManagement.prototype = {
       methodName: 'command',
       args: { command, isFull: true },
       callback: (err, result) => {
-        if (err || result.error) ErrorHandler.showMeteorFuncError(err, result, "Couldn't create index");
+        if (err || result.error) ErrorHandler.showMeteorFuncError(err, result);
         else {
-          Notification.success('Successfully created index');
+          Notification.success('saved-successfully');
           this.initIndexes();
           $('#addIndexModal').modal('hide');
         }
@@ -286,13 +287,13 @@ IndexManagement.prototype = {
       methodName: 'indexInformation',
       args: { selectedCollection, isFull: true },
       callback: (err, indexInformation) => {
-        if (err || indexInformation.error) ErrorHandler.showMeteorFuncError(err, indexInformation, "Couldn't fetch indexes");
+        if (err || indexInformation.error) ErrorHandler.showMeteorFuncError(err, indexInformation);
         else {
           Communicator.call({
             methodName: 'stats',
             args: { selectedCollection },
             callback: (statsErr, stats) => {
-              if (statsErr || stats.error) ErrorHandler.showMeteorFuncError(statsErr, stats, "Couldn't fetch indexes");
+              if (statsErr || stats.error) ErrorHandler.showMeteorFuncError(statsErr, stats);
               else {
                 Communicator.call({
                   methodName: 'aggregate',
@@ -318,7 +319,7 @@ IndexManagement.prototype = {
     const indexName = modal.data('index');
 
     if (!selectedCollection || !indexName) {
-      Notification.error("Couldn't find collection or index name, please try again...");
+      Notification.error('collection-or-index-name-missing');
       modal.modal('hide');
       return;
     }
@@ -328,7 +329,7 @@ IndexManagement.prototype = {
       methodName: 'indexInformation',
       args: { selectedCollection, isFull: true },
       callback: (err, indexInformation) => {
-        if (err || indexInformation.error) ErrorHandler.showMeteorFuncError(err, indexInformation, "Couldn't fetch index information");
+        if (err || indexInformation.error) ErrorHandler.showMeteorFuncError(err, indexInformation);
         else {
           let found = false;
           indexInformation.result.forEach((index) => {
@@ -339,7 +340,7 @@ IndexManagement.prototype = {
             }
           });
 
-          if (!found) Notification.error(`Couldn't find index: ${indexName}`);
+          if (!found) Notification.error('index-not-found', null, { indexName });
         }
 
         Notification.stop();
@@ -471,10 +472,10 @@ IndexManagement.prototype = {
 
     if (indexName && selectedCollection) {
       Notification.modal({
-        title: 'Are you sure ?',
-        text: `${indexName} will be dropped, are you sure ?`,
+        title: 'are-you-sure',
+        text: 'index-will-be-dropped',
+        textTranslateOptions: { indexName },
         type: 'info',
-        cancelButtonText: 'No',
         callback: (isConfirm) => {
           if (isConfirm) {
             Notification.start('#btnAddIndex');
@@ -482,9 +483,9 @@ IndexManagement.prototype = {
               methodName: 'dropIndex',
               args: { selectedCollection, indexName },
               callback: (err, result) => {
-                if (err || result.error) ErrorHandler.showMeteorFuncError(err, result, "Couldn't drop index");
+                if (err || result.error) ErrorHandler.showMeteorFuncError(err, result);
                 else {
-                  Notification.success(`Successfully dropped index: ${indexName}`);
+                  Notification.success('index-dropped-successfully', null, { indexName });
                   this.initIndexes();
                 }
               }

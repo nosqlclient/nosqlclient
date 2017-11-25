@@ -172,7 +172,7 @@ Shell.prototype = {
         password: SessionManager.get(SessionManager.strSessionPromptedPassword)
       },
       callback: (err, result) => {
-        if (err || result.error) ErrorHandler.showMeteorFuncError(err, result, "Couldn't connect via shell");
+        if (err || result.error) ErrorHandler.showMeteorFuncError(err, result);
         else self.addCommandToHistory(result);
       }
     });
@@ -191,7 +191,7 @@ Shell.prototype = {
             password: SessionManager.get(SessionManager.strSessionPromptedPassword)
           },
           callback: (err) => {
-            if (err) ErrorHandler.showMeteorFuncError(err, null, "Couldn't execute shell command");
+            if (err) ErrorHandler.showMeteorFuncError(err);
             else self.addCommandToHistory(cm.getValue());
           }
         });

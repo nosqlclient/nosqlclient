@@ -1,5 +1,6 @@
 import { Communicator, ReactivityProvider } from '/client/imports/facades';
 import { Notification, ErrorHandler, SessionManager, UIComponents } from '/client/imports/modules';
+import Helper from '/client/imports/helpers/helper';
 
 const UserManagementRoles = function () {
 
@@ -32,11 +33,11 @@ UserManagementRoles.prototype = {
     const role = $('#cmbRolesForDBForInheritedRole').val();
 
     if (!db) {
-      Notification.warning('Database is required !');
+      Notification.warning('db-required');
       return;
     }
     if (!role) {
-      Notification.warning('Role is required !');
+      Notification.warning('role-required');
       return;
     }
 
@@ -44,7 +45,7 @@ UserManagementRoles.prototype = {
     const currentDatas = table.rows().data();
     for (let i = 0; i < currentDatas.length; i += 1) {
       if (currentDatas[i].db === db && currentDatas[i].role === role) {
-        Notification.error(`<b>${role}</b>@${db} already exists !`);
+        Notification.error('field-exists', null, { fieldName: `${role}@${db}` });
         return;
       }
     }
@@ -53,7 +54,7 @@ UserManagementRoles.prototype = {
     if (table.rows().data().length === 0) this.populateRolesToInheritTable(null, [objectToAdd]);
     else table.row.add(objectToAdd).draw();
 
-    Notification.success(`<b>${role}</b>@${db} successfuly added`);
+    Notification.success('added-successfully', null, { fieldName: `<b>${role}</b>@${db}` });
   },
 
   applyPrivilegeToRole() {
@@ -67,12 +68,12 @@ UserManagementRoles.prototype = {
       else resource = `<b>${cmbPrivilegeCollection.val()}</b>`;
     }
     if (!actions) {
-      Notification.warning('At least one action is required !');
+      Notification.warning('action-required');
       return;
     }
 
     const privilegesTableSelector = $('#tblRolePrivileges').DataTable();
-    if ($('#addEditPrivilegeModalTitle').text() === 'Edit Privilege') {
+    if ($('#addEditPrivilegeModalTitle').text() === Helper.translate({ key: 'edit-privilege' })) {
       // edit existing privilege of role
       const selectedRowData = SessionManager.get(SessionManager.strSessionUsermanagementPrivilege);
 
@@ -106,16 +107,17 @@ UserManagementRoles.prototype = {
     const titleSelector = $('#addEditRoleModalTitle');
     const roleNameSelector = $('#inputRoleUM');
 
-    if (SessionManager.get(SessionManager.strSessionUsermanagementRole) && SessionManager.get(SessionManager.strSessionUsermanagementRole).isBuiltin && titleSelector.text() === 'Edit Role') {
-      Notification.warning('Cannot change builtin roles !');
+    if (SessionManager.get(SessionManager.strSessionUsermanagementRole) && SessionManager.get(SessionManager.strSessionUsermanagementRole).isBuiltin &&
+      titleSelector.text() === Helper.translate({ key: 'edit-role' })) {
+      Notification.warning('builtin-roles-read-only');
       return;
     }
     if ($('#tblRolePrivileges').DataTable().rows().data().length === 0) {
-      Notification.warning('At least one privilege is required !');
+      Notification.warning('privilege-required');
       return;
     }
     if (!roleNameSelector.val()) {
-      Notification.warning('Role name is required !');
+      Notification.warning('role-required');
       return;
     }
 
@@ -134,11 +136,10 @@ UserManagementRoles.prototype = {
       methodName: 'command',
       args: { command, runOnAdminDB },
       callback: (err, result) => {
-        if (err || result.error) ErrorHandler.showMeteorFuncError(err, result, "Couldn't update role");
+        if (err || result.error) ErrorHandler.showMeteorFuncError(err, result);
         else {
           this.initRoles();
-          if ($('#addEditRoleModalTitle').text() === 'Edit Role') Notification.success('Successfuly updated role !');
-          else Notification.success('Successfuly added role !');
+          Notification.success('saved-successfully');
 
           $('#editRoleModal').modal('hide');
         }
@@ -148,8 +149,8 @@ UserManagementRoles.prototype = {
 
   addNewInheritRoleToRole() {
     if (SessionManager.get(SessionManager.strSessionUsermanagementRole) &&
-      SessionManager.get(SessionManager.strSessionUsermanagementRole).isBuiltin && $('#addEditRoleModalTitle').text() === 'Edit Role') {
-      Notification.warning('Cannot add inherit roles to builtin roles !');
+      SessionManager.get(SessionManager.strSessionUsermanagementRole).isBuiltin && $('#addEditRoleModalTitle').text() === Helper.translate({ key: 'edit-role' })) {
+      Notification.warning('builtin-roles-read-only');
       return;
     }
     Notification.start('#btnAddInheritRole');
@@ -160,13 +161,13 @@ UserManagementRoles.prototype = {
 
   addNewPrivilegeToRole() {
     if (SessionManager.get(SessionManager.strSessionUsermanagementRole) &&
-      SessionManager.get(SessionManager.strSessionUsermanagementRole).isBuiltin && $('#addEditRoleModalTitle').text() === 'Edit Role') {
-      Notification.warning('Cannot add new privileges to builtin roles !');
+      SessionManager.get(SessionManager.strSessionUsermanagementRole).isBuiltin && $('#addEditRoleModalTitle').text() === Helper.translate({ key: 'edit-role' })) {
+      Notification.warning('builtin-roles-read-only');
       return;
     }
 
-    $('#addEditPrivilegeModalTitle').text('Add Privilege');
-    $('#addEditPrivilegeModalText').text(`Role ${SessionManager.get(SessionManager.strSessionUsermanagementRole) ? SessionManager.get(SessionManager.strSessionUsermanagementRole).role : ''}`);
+    $('#addEditPrivilegeModalTitle').text(Helper.translate({ key: 'add-privilege' }));
+    $('#addEditPrivilegeModalText').text(`${SessionManager.get(SessionManager.strSessionUsermanagementRole) ? SessionManager.get(SessionManager.strSessionUsermanagementRole).role : ''}`);
 
     Notification.start('#btnApplyAddPrivilegeToRole');
 
@@ -179,7 +180,7 @@ UserManagementRoles.prototype = {
   startEditingRole() {
     if (!SessionManager.get(SessionManager.strSessionUsermanagementPrivilege)) return;
 
-    $('#addEditPrivilegeModalTitle').text('Edit Privilege');
+    $('#addEditPrivilegeModalTitle').text(Helper.translate({ key: 'edit-privilege' }));
     $('#addEditPrivilegeModalText').text('');
 
     Notification.start('#btnApplyAddPrivilegeToRole');
@@ -202,7 +203,7 @@ UserManagementRoles.prototype = {
   },
 
   popEditRoleModal(role) {
-    $('#addEditRoleModalTitle').text('Edit Role');
+    $('#addEditRoleModalTitle').text(Helper.translate({ key: 'edit-role' }));
 
     Notification.start('#btnCloseUMRoles');
 
@@ -220,7 +221,7 @@ UserManagementRoles.prototype = {
       methodName: 'command',
       args: { command: rolesInfoCommand, runOnAdminDB },
       callback: (err, result) => {
-        if (err || result.error) ErrorHandler.showMeteorFuncError(err, result, "Couldn't fetch roleInfo");
+        if (err || result.error) ErrorHandler.showMeteorFuncError(err, result);
         else {
           const resultRole = result.result.roles[0];
           this.populateRolePrivilegesTable(resultRole);
@@ -364,7 +365,7 @@ UserManagementRoles.prototype = {
     Communicator.call({
       methodName: 'getDatabases',
       callback: (err, result) => {
-        if (err || result.error) ErrorHandler.showMeteorFuncError(err, result, "Couldn't fetch databases");
+        if (err || result.error) ErrorHandler.showMeteorFuncError(err, result);
         else {
           for (let i = 0; i < result.result.length; i += 1) {
             cmbDBGroup.append($('<option></option>')
@@ -411,7 +412,7 @@ UserManagementRoles.prototype = {
         methodName: 'listCollectionNames',
         args: { dbName: db },
         callback: (err, result) => {
-          if (err || result.error) ErrorHandler.showMeteorFuncError(err, result, "Couldn't fetch collection names");
+          if (err || result.error) ErrorHandler.showMeteorFuncError(err, result);
           else {
             for (let i = 0; i < result.result.length; i += 1) {
               cmbGroup.append($('<option></option>')
@@ -432,7 +433,7 @@ UserManagementRoles.prototype = {
     Communicator.call({
       methodName: 'getAllActions',
       callback: (err, result) => {
-        if (err || result.error) ErrorHandler.showMeteorFuncError(err, result, "Couldn't fetch actions from docs.mongodb.org");
+        if (err || result.error) ErrorHandler.showMeteorFuncError(err, result);
         else {
           for (let i = 0; i < result.length; i += 1) {
             cmb.append($('<option></option>')
@@ -471,7 +472,7 @@ UserManagementRoles.prototype = {
     Communicator.call({
       methodName: 'getDatabases',
       callback: (err, result) => {
-        if (err || result.error) ErrorHandler.showMeteorFuncError(err, result, "Couldn't fetch databases");
+        if (err || result.error) ErrorHandler.showMeteorFuncError(err, result);
         else {
           for (let i = 0; i < result.result.length; i += 1) {
             cmb.append($('<option></option>')
@@ -502,7 +503,7 @@ UserManagementRoles.prototype = {
       methodName: 'command',
       args: { command: { rolesInfo: 1, showBuiltinRoles: true }, runOnAdminDB },
       callback: (err, result) => {
-        if (err || result.error) ErrorHandler.showMeteorFuncError(err, result, "Couldn't fetch roles, please enter one manually");
+        if (err || result.error) ErrorHandler.showMeteorFuncError(err, result);
         else {
           for (let i = 0; i < result.result.roles.length; i += 1) {
             cmb.append($('<option></option>')
@@ -563,7 +564,7 @@ UserManagementRoles.prototype = {
       methodName: 'command',
       args: { command, runOnAdminDB },
       callback: (err, result) => {
-        if (err || result.error) ErrorHandler.showMeteorFuncError(err, result, "Couldn't fetch roles");
+        if (err || result.error) ErrorHandler.showMeteorFuncError(err, result);
         else {
           UIComponents.DataTable.setupDatatable({
             selectorString: '#tblRoles',
@@ -607,10 +608,9 @@ UserManagementRoles.prototype = {
   deleteRole() {
     if (!SessionManager.get(SessionManager.strSessionUsermanagementRole)) return;
     Notification.modal({
-      title: 'Are you sure ?',
-      text: 'You can NOT recover this role afterwards, are you sure ?',
+      title: 'are-you-sure',
+      text: 'recover-not-possible',
       type: 'warning',
-      cancelButtonText: 'No',
       callback: (isConfirm) => {
         if (isConfirm) {
           Notification.start('#btnCloseUMRoles');
@@ -622,10 +622,10 @@ UserManagementRoles.prototype = {
             methodName: 'command',
             args: { command, runOnAdminDB },
             callback: (err, result) => {
-              if (err || result.error) ErrorHandler.showMeteorFuncError(err, result, "Couldn't drop role");
+              if (err || result.error) ErrorHandler.showMeteorFuncError(err, result);
               else {
                 this.initRoles();
-                Notification.success('Successfuly dropped role !');
+                Notification.success('deleted-successfully');
               }
             }
           });

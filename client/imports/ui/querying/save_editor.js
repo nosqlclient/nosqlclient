@@ -39,7 +39,7 @@ Editor.prototype = {
     const activeTab = $('#resultTabs').find('li.active').find('a').attr('href');
     const findData = $(activeTab).data('findData');
     if (!findData) {
-      Notification.error('Could not find query execution result, can not save !');
+      Notification.error('no-result-found-to-save');
       return;
     }
     const deletedObjectIds = [];
@@ -48,41 +48,38 @@ Editor.prototype = {
 
     const activeEditorValue = ExtendedJSON.convertAndCheckJSON(QueryRender.getActiveEditorValue());
     if (activeEditorValue.ERROR) {
-      Notification.error(`Syntax error, can not save document: ${activeEditorValue.ERROR}`);
+      Notification.error('syntax-error-result', null, { error: activeEditorValue.ERROR });
       return;
     }
 
     this.getChangedObjects(findData, activeEditorValue, deletedObjectIds, updateObjects, addedObjects);
     if (deletedObjectIds.length === 0 && updateObjects.length === 0 && addedObjects.length === 0) {
-      Notification.warning('Nothing to save, all objects are identical with old result');
+      Notification.warning('objects-identical');
       return;
     }
 
     if (!this.checkAllElementsAreObject(updateObjects, addedObjects)) {
-      Notification.warning('All documents should be object, can not save !');
+      Notification.warning('documents-should-be-objects');
       return;
     }
 
+    const selectedCollection = SessionManager.get(SessionManager.strSessionSelectedCollection);
+
     Notification.modal({
-      title: 'Are you sure ?',
-      text: `${deletedObjectIds.length} documents will be deleted, ${updateObjects.length} documents will be updated and 
-            ${addedObjects.length} documents will be inserted into <b>${SessionManager.get(SessionManager.strSessionSelectedCollection)}</b>, are you sure ?`,
+      title: 'are-you-sure',
+      text: 'save-editor-info',
+      textTranslateOptions: { deleted: deletedObjectIds.length, updated: updateObjects.length, inserted: addedObjects.length, selectedCollection },
       type: 'info',
-      confirmButtonText: 'Yes!',
-      cancelButtonText: 'No',
       callback: (isConfirm) => {
         if (isConfirm) {
           Notification.start('#btnSaveFind');
-
-          const selectedCollection = SessionManager.get(SessionManager.strSessionSelectedCollection);
-
           Communicator.call({
             methodName: 'saveFindResult',
             args: { selectedCollection, updateObjects, deletedObjectIds, addedObjects },
             callback: (err) => {
-              if (err) ErrorHandler.showMeteorFuncError(err, null, "Couldn't proceed saving find result");
+              if (err) ErrorHandler.showMeteorFuncError(err);
               else {
-                Notification.success('Successfully saved !');
+                Notification.success('saved-successfully');
                 $(activeTab).data('findData', activeEditorValue);
               }
             }
@@ -95,17 +92,15 @@ Editor.prototype = {
   saveEditor() {
     const doc = ExtendedJSON.convertAndCheckJSON(QueryRender.getActiveEditorValue());
     if (doc.ERROR) {
-      Notification.error(`Syntax error, can not save document: ${doc.ERROR}`);
+      Notification.error('syntax-error-editor', null, { error: doc.ERROR });
       return;
     }
 
     Notification.modal({
-      title: 'Are you sure ?',
-      text: 'Document will be updated using _id field of result view, are you sure ?',
+      title: 'are-you-sure',
+      text: 'save-single-doc-editor-info',
       type: 'info',
       showCancelButton: true,
-      confirmButtonText: 'Yes!',
-      cancelButtonText: 'No',
       callback: (isConfirm) => {
         if (isConfirm) {
           Notification.start('#btnSaveFindOne');
@@ -116,11 +111,11 @@ Editor.prototype = {
               methodName: 'updateOne',
               args: { selectedCollection, selector: { _id: doc._id }, setObject: doc },
               callback: (err, result) => {
-                if (err || result.error) ErrorHandler.showMeteorFuncError(err, result, "Couldn't update document");
-                else Notification.success('Successfully updated document');
+                if (err || result.error) ErrorHandler.showMeteorFuncError(err, result);
+                else Notification.success('saved-successfully');
               }
             });
-          } else Notification.error('Could not find _id of document, save failed !');
+          } else Notification.error('_id-required');
         }
       }
     });
@@ -129,16 +124,14 @@ Editor.prototype = {
   deleteDocument() {
     const doc = ExtendedJSON.convertAndCheckJSON(QueryRender.getActiveEditorValue());
     if (doc.ERROR) {
-      Notification.error(`Syntax error, can not delete document: ${doc.ERROR}`);
+      Notification.error('syntax-error-editor', null, { error: doc.ERROR });
       return;
     }
 
     Notification.modal({
-      title: 'Are you sure ?',
-      text: 'Document will be deleted using _id field of result view,  are you sure ?',
+      title: 'are-you-sure',
+      text: 'delete-single-doc-editor-info',
       type: 'info',
-      confirmButtonText: 'Yes!',
-      cancelButtonText: 'No',
       callback: (isConfirm) => {
         if (isConfirm) {
           Notification.start('#btnDelFindOne');
@@ -149,9 +142,9 @@ Editor.prototype = {
               methodName: 'delete',
               args: { selectedCollection, selector: { _id: doc._id } },
               callback: (err, result) => {
-                if (err || result.error) ErrorHandler.showMeteorFuncError(err, result, "Couldn't delete document");
+                if (err || result.error) ErrorHandler.showMeteorFuncError(err, result);
                 else {
-                  Notification.success('Successfully deleted document');
+                  Notification.success('deleted-successfully');
                   const tabToRemove = $('#resultTabs').find('li.active');
                   tabToRemove.remove();
                   $(tabToRemove.find('a').attr('href')).remove();
@@ -160,7 +153,7 @@ Editor.prototype = {
                 }
               }
             });
-          } else Notification.error('Could not find _id of document, delete failed !');
+          } else Notification.error('_id-required');
         }
       }
     });

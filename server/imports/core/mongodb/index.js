@@ -145,7 +145,7 @@ MongoDB.prototype = {
           MongoDBHelper.keepDroppingCollections(collections, 0, done);
         });
       } catch (exception) {
-        done(Error.createWithoutThrow({ type: Error.types.QueryError, message: 'drop-all-collections', metadataToLog: { sessionId }, externalError: exception }), null);
+        done(Error.createWithoutThrow({ type: Error.types.QueryError, message: 'drop-all-collections-error', metadataToLog: { sessionId }, externalError: exception }), null);
       }
     });
   },

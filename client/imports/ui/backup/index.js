@@ -21,7 +21,7 @@ Backup.prototype = {
     Communicator.call({
       methodName: 'getDatabases',
       callback: (err, result) => {
-        if (err || result.error) ErrorHandler.showMeteorFuncError(err, result, "Couldn't fetch databases, you can add manually");
+        if (err || result.error) ErrorHandler.showMeteorFuncError(err, result);
         else {
           for (let i = 0; i < result.result.length; i += 1) {
             cmb.append($('<option></option>')
@@ -68,7 +68,7 @@ Backup.prototype = {
       methodName: 'listCollectionNames',
       args: { dbName: db },
       callback: (err, result) => {
-        if (err || result.error) ErrorHandler.showMeteorFuncError(err, result, "Couldn't fetch collection names, you can add manually");
+        if (err || result.error) ErrorHandler.showMeteorFuncError(err, result);
         else {
           for (let i = 0; i < result.result.length; i += 1) {
             cmb.append($('<option></option>')
@@ -132,7 +132,7 @@ Backup.prototype = {
     Communicator.call({
       methodName: binary,
       args: { args },
-      callback: (err) => { if (err) ErrorHandler.showMeteorFuncError(err, null, "Couldn't proceed"); }
+      callback: (err) => { if (err) ErrorHandler.showMeteorFuncError(err, null); }
     });
   },
 
@@ -174,7 +174,7 @@ Backup.prototype = {
       if (arg === '--query') {
         let query = UIComponents.Editor.getCodeMirrorValue($('#mongodump--query'));
         query = ExtendedJSON.convertAndCheckJSON(query);
-        if (query.ERROR) Notification.error(`Syntax error on query: ${query.ERROR}`);
+        if (query.ERROR) Notification.error('syntax-error-query', null, { error: query.ERROR });
         else result.push(JSON.stringify(query));
       } else if (argElement.length !== 0) result.push(argElement.val());
     });
@@ -194,13 +194,13 @@ Backup.prototype = {
       if (arg === '--query') {
         const query = ExtendedJSON.convertAndCheckJSON(UIComponents.Editor.getCodeMirrorValue($('#mongoexport--query')));
         if (query.ERROR) {
-          Notification.error(`Syntax error on query: ${query.ERROR}`);
+          Notification.error('syntax-error-query', null, { error: query.ERROR });
           result = null;
         } else result.push(JSON.stringify(query));
       } else if (arg === '--sort') {
         const sort = ExtendedJSON.convertAndCheckJSON(UIComponents.Editor.getCodeMirrorValue($('#mongoexport--sort')));
         if (sort.ERROR) {
-          Notification.error(`Syntax error on query: ${sort.ERROR}`);
+          Notification.error('syntax-error-sort', null, { error: sort.ERROR });
           result = null;
         } else result.push(JSON.stringify(sort));
       } else if (argElement.length !== 0) result.push(argElement.val());

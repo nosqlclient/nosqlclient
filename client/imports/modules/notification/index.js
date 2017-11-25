@@ -1,31 +1,34 @@
 /* global swal */
+import Helper from '/client/imports/helpers/helper';
+
 const toastr = require('toastr');
 const ladda = require('ladda');
+
 
 const Notification = function () {
 };
 
 Notification.prototype = {
-  notify({ type, message, options }) {
-    toastr[type](message, options);
+  notify({ type, message, translateOptions, options }) {
+    toastr[type](Helper.translate({ key: message, options: translateOptions }), options);
   },
 
-  info(message, options) {
-    this.notify({ type: 'info', message, options });
+  info(message, options, translateOptions) {
+    this.notify({ type: 'info', message, options, translateOptions });
   },
 
-  success(message, options) {
-    this.notify({ type: 'success', message, options });
+  success(message, options, translateOptions) {
+    this.notify({ type: 'success', message, options, translateOptions });
     ladda.stopAll();
   },
 
-  warning(message, options) {
-    this.notify({ type: 'warning', message, options });
+  warning(message, options, translateOptions) {
+    this.notify({ type: 'warning', message, options, translateOptions });
     ladda.stopAll();
   },
 
-  error(message, options) {
-    this.notify({ type: 'error', message, options });
+  error(message, options, translateOptions) {
+    this.notify({ type: 'error', message, options, translateOptions });
     ladda.stopAll();
   },
 
@@ -38,17 +41,19 @@ Notification.prototype = {
     ladda.stopAll();
   },
 
-  modal({ title, text, type, callback, showCancelButton = true, closeOnConfirm = true, confirmButtonText = 'Yes, please', cancelButtonText = 'Cancel' }) {
+  modal({ title, titleTranslateOptions, text, textTranslateOptions, type, callback, inputPlaceholder, showCancelButton = true,
+    closeOnConfirm = true, confirmButtonText = 'yes-please', cancelButtonText = 'cancel' }) {
     swal({
-      title,
-      text,
+      title: Helper.translate({ key: title, options: titleTranslateOptions }),
+      text: Helper.translate({ key: text, options: textTranslateOptions }),
       html: true,
       type,
+      inputPlaceholder: Helper.translate({ key: inputPlaceholder }),
       showCancelButton,
       confirmButtonColor: '#DD6B55',
-      confirmButtonText,
+      confirmButtonText: Helper.translate({ key: confirmButtonText }),
       closeOnConfirm,
-      cancelButtonText
+      cancelButtonText: Helper.translate({ key: cancelButtonText })
     }, callback);
   },
 
@@ -56,8 +61,8 @@ Notification.prototype = {
     swal.close();
   },
 
-  showModalInputError(message) {
-    swal.showInputError(message);
+  showModalInputError(message, translateOptions) {
+    swal.showInputError(Helper.translate({ key: message, options: translateOptions }));
   }
 };
 

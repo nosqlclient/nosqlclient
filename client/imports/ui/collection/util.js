@@ -2,6 +2,7 @@ import { Communicator, ReactivityProvider } from '/client/imports/facades';
 import { SessionManager, ErrorHandler, Notification, Enums, Querying } from '/client/imports/modules';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { CollectionAdd, CollectionValidationRules, CollectionRename, CollectionFilter, CollectionConversion, Connection } from '/client/imports/ui';
+import Helper from '/client/imports/helpers/helper';
 import $ from 'jquery';
 
 const CollectionUtil = function () {
@@ -27,19 +28,18 @@ CollectionUtil.prototype = {
 
   dropDatabase() {
     Notification.modal({
-      title: 'Are you sure?',
-      text: 'You will not be able to recover this database!',
+      title: 'are-you-sure',
+      text: 'recover-not-possible',
       type: 'warning',
-      showCancelButton: true,
       callback: (isConfirm) => {
         if (isConfirm) {
           Communicator.call({
             methodName: 'dropDB',
             callback: (err, result) => {
-              if (err || result.error) ErrorHandler.showMeteorFuncError(err, result, "Couldn't drop database");
+              if (err || result.error) ErrorHandler.showMeteorFuncError(err, result);
               else {
                 SessionManager.clear();
-                Notification.success('Successfuly dropped database');
+                Notification.success('database-dropped-successfully');
               }
             }
           });
@@ -53,7 +53,7 @@ CollectionUtil.prototype = {
       methodName: 'connect',
       args: { connectionId: SessionManager.get(SessionManager.strSessionConnection)._id },
       callback: (err, result) => {
-        if (err || result.error) ErrorHandler.showMeteorFuncError(err, result, "Couldn't connect");
+        if (err || result.error) ErrorHandler.showMeteorFuncError(err, result);
         else {
           result.result.sort((a, b) => {
             if (a.name < b.name) { return -1; } else if (a.name > b.name) { return 1; }
@@ -72,18 +72,18 @@ CollectionUtil.prototype = {
 
   dropAllCollections() {
     Notification.modal({
-      title: 'Are you sure?',
-      text: 'All collections except system, will be dropped, are you sure ?',
+      title: 'are-you-sure',
+      text: 'all-collections-will-be-dropped',
       type: 'warning',
       callback: (isConfirm) => {
         if (isConfirm) {
           Communicator.call({
             methodName: 'dropAllCollections',
             callback: (err, result) => {
-              if (err || result.error) ErrorHandler.showMeteorFuncError(err, result, "Couldn't drop all collections");
+              if (err || result.error) ErrorHandler.showMeteorFuncError(err, result);
               else {
                 this.renderCollectionNames();
-                Notification.success('Successfully dropped all collections/views except system');
+                Notification.success('dropped-all-collections-successfully');
               }
             }
           });
@@ -94,20 +94,20 @@ CollectionUtil.prototype = {
 
   dropCollection(selectedCollection) {
     Notification.modal({
-      title: 'Are you sure?',
-      text: `${selectedCollection} collection will be dropped, are you sure ?`,
+      title: 'are-you-sure',
+      text: 'collection-will-be-dropped',
+      textTranslateOptions: { selectedCollection },
       type: 'warning',
-      confirmButtonText: 'Yes, drop it!',
       callback: (isConfirm) => {
         if (isConfirm) {
           Communicator.call({
             methodName: 'dropCollection',
             args: { selectedCollection },
             callback: (err, result) => {
-              if (err || result.error) ErrorHandler.showMeteorFuncError(err, result, "Couldn't drop collection");
+              if (err || result.error) ErrorHandler.showMeteorFuncError(err, result);
               else {
                 this.renderCollectionNames();
-                Notification.success(`Successfuly dropped collection: ${selectedCollection}`);
+                Notification.success('collection-dropped-successfully', null, { selectedCollection });
               }
             }
           });
@@ -118,28 +118,27 @@ CollectionUtil.prototype = {
 
   cloneCollection(selectedCollection) {
     Notification.modal({
-      title: 'Collection Name',
-      text: 'Please type collection name',
+      title: 'collection-name',
+      text: 'collection-name',
       type: 'input',
       closeOnConfirm: false,
-      confirmButtonColor: '#DD6B55',
-      inputPlaceholder: 'Collection Name',
+      inputPlaceholder: 'collection-name',
       inputValue: selectedCollection,
       callback: (inputValue) => {
         if (!inputValue) {
-          Notification.showModalInputError('You need to write something!');
+          Notification.showModalInputError('name-required');
           return false;
         }
 
-        Notification.modal({ title: 'Creating...', message: `Please wait while ${inputValue} is being created, collections will be refreshed automatically !`, type: 'info' });
+        Notification.modal({ title: 'creating', text: 'please-wait', type: 'info' });
 
         Communicator.call({
           methodName: 'aggregate',
           args: { selectedCollection, pipeline: [{ $match: {} }, { $out: inputValue }] },
           callback: (err, result) => {
-            if (err || result.error) ErrorHandler.showMeteorFuncError(err, result, "Couldn't clone ");
+            if (err || result.error) ErrorHandler.showMeteorFuncError(err, result);
             else {
-              Connection.connect(true, `Successfully cloned collection ${selectedCollection} as ${inputValue}`);
+              Connection.connect(true, 'collection-cloned-successfully', { selectedCollection, name: inputValue });
               Notification.closeModal();
             }
           }
@@ -151,10 +150,10 @@ CollectionUtil.prototype = {
   showMongoBinaryInfo() {
     if (!localStorage.getItem(Enums.LOCAL_STORAGE_KEYS.MONGO_BINARY_INFO)) {
       Notification.modal({
-        title: 'Mongo Tools',
-        text: 'Nosqlclient uses mongo binaries and tools for dump/restore, schema analyzer, and shell you can set the directory of binaries from <b>Settings</b>',
+        title: 'mongo-tools',
+        text: 'mongo-tools-info',
         type: 'info',
-        confirmButtonText: "Cool, don't show again!",
+        confirmButtonText: 'dont-show-again',
         callback: (isConfirm) => {
           if (isConfirm) localStorage.setItem(Enums.LOCAL_STORAGE_KEYS.MONGO_BINARY_INFO, 'true');
         }
@@ -164,18 +163,18 @@ CollectionUtil.prototype = {
 
   clearCollection(selectedCollection) {
     Notification.modal({
-      title: 'Are you sure?',
-      text: `${selectedCollection} collection's all data will be wiped, are you sure ?`,
+      title: 'are-you-sure',
+      text: 'collection-will-be-wiped',
+      textTranslateOptions: { selectedCollection },
       type: 'warning',
-      confirmButtonText: 'Yes, clear it!',
       callback: (isConfirm) => {
         if (isConfirm) {
           Communicator.call({
             methodName: 'delete',
             args: { selectedCollection },
             callback: (err, result) => {
-              if (err || result.error) ErrorHandler.showMeteorFuncError(err, result, "Couldn't clear collection");
-              else Notification.success(`Successfuly cleared collection: ${selectedCollection}`);
+              if (err || result.error) ErrorHandler.showMeteorFuncError(err, result);
+              else Notification.success('collection-cleared-successfully', null, { selectedCollection });
             }
           });
         }
@@ -268,7 +267,7 @@ CollectionUtil.prototype = {
               if ($(this) && $(this).context && $(this).context.innerText) {
                 const collectionName = $(this).context.innerText.substring(1).split(' ')[0];
                 self.clearCollection(collectionName);
-              } else Notification.warning('No collection selected !');
+              } else Notification.warning('select-collection');
             }
           }
         }
@@ -314,7 +313,7 @@ CollectionUtil.prototype = {
           if ($(this) && $(this).context && $(this).context.innerText) {
             const collectionName = $(this).context.innerText.substring(1).split(' ')[0];
             self.dropCollection(collectionName);
-          } else Notification.warning('No collection selected !');
+          } else Notification.warning('select-collection');
         },
       },
       drop_collections: {
@@ -345,7 +344,8 @@ CollectionUtil.prototype = {
         args: { selectedCollection },
         callback: (err, result) => {
           if (err || result.error) {
-            $('#divCollectionInfo').html(`<div class="row"><div class="col-lg-7"><b>Couldn't fetch stats:</b></div><div class="col-lg-5">${ErrorHandler.getErrorMessage(err, result)}</div></div>`);
+            const errorMessage = Helper.translate({ key: 'fetch-stats-error' });
+            $('#divCollectionInfo').html(`<div class="row"><div class="col-lg-7"><b>${errorMessage}</b></div><div class="col-lg-5">${ErrorHandler.getErrorMessage(err, result)}</div></div>`);
           } else this.populateCollectionInfo(result.result, settings);
           Notification.stop();
         }
@@ -372,18 +372,18 @@ CollectionUtil.prototype = {
         break;
     }
     // we are manually doing the scale to prevent showing 0 MB for sizes 0.7, 0.8, 0.9 etc. MBs as mongodb does.
-    let resultString = `<div class="row"><div class="col-lg-7"><b>Count:</b></div><div class="col-lg-5">${statsResult.count}</div></div>`;
-    resultString += `<div class="row"><div class="col-lg-7"><b>Index Count:</b></div><div class="col-lg-5">${statsResult.nindexes}</div></div>`;
+    let resultString = `<div class="row"><div class="col-lg-7"><b>${Helper.translate({ key: 'count' })}:</b></div><div class="col-lg-5">${statsResult.count}</div></div>`;
+    resultString += `<div class="row"><div class="col-lg-7"><b>${Helper.translate({ key: 'index-count' })}:</b></div><div class="col-lg-5">${statsResult.nindexes}</div></div>`;
 
     const size = Number.isNaN(Number(statsResult.size / scale)) ? '0.00' : Number(statsResult.size / scale).toFixed(2);
-    resultString += `<div class="row"><div class="col-lg-7"><b>Size:</b></div><div class="col-lg-5">${size} ${text}</div></div>`;
+    resultString += `<div class="row"><div class="col-lg-7"><b>${Helper.translate({ key: 'size' })}:</b></div><div class="col-lg-5">${size} ${text}</div></div>`;
 
     const totalIndexSize = Number.isNaN(Number(statsResult.totalIndexSize / scale)) ? '0.00' : Number(statsResult.totalIndexSize / scale).toFixed(2);
-    resultString += `<div class="row"><div class="col-lg-7"><b>Total Index Size:</b></div><div class="col-lg-5">${totalIndexSize} ${text}</div></div>`;
+    resultString += `<div class="row"><div class="col-lg-7"><b>${Helper.translate({ key: 'total-index-size' })}:</b></div><div class="col-lg-5">${totalIndexSize} ${text}</div></div>`;
 
     const avgObjSize = Number.isNaN(Number(statsResult.avgObjSize / scale)) ? '0.00' : Number(statsResult.avgObjSize / scale).toFixed(2);
-    resultString += `<div class="row"><div class="col-lg-7"><b>Average Object Size:</b></div><div class="col-lg-5">${avgObjSize} ${text}</div></div>`;
-    resultString += `<div class="row"><div class="col-lg-7"><b>Is Capped:</b></div><div class="col-lg-5">${statsResult.capped}</div></div>`;
+    resultString += `<div class="row"><div class="col-lg-7"><b>${Helper.translate({ key: 'avg-obj-size' })}:</b></div><div class="col-lg-5">${avgObjSize} ${text}</div></div>`;
+    resultString += `<div class="row"><div class="col-lg-7"><b>${Helper.translate({ key: 'is-capped' })}:</b></div><div class="col-lg-5">${statsResult.capped}</div></div>`;
 
     $('#divCollectionInfo').html(resultString);
   },

@@ -12,7 +12,7 @@ FileManagement.prototype = {
     let metaData = UIComponents.Editor.getCodeMirrorValue($('#divMetadata'));
     metaData = ExtendedJSON.convertAndCheckJSON(metaData);
     if (metaData.ERROR) {
-      Notification.error(`Syntax error on metaData: ${metaData.ERROR}`);
+      Notification.error('syntax-error-metadata', null, { error: metaData.ERROR });
       return;
     }
 
@@ -34,9 +34,9 @@ FileManagement.prototype = {
         methodName: 'uploadFile',
         args: { bucketName: $('#txtBucketName').val(), blob: new Uint8Array(file.target.result), fileName: blob.name, contentType, metaData, aliases },
         callback: (err, result) => {
-          if (err || result.error) ErrorHandler.showMeteorFuncError(err, result, "Couldn't upload file");
+          if (err || result.error) ErrorHandler.showMeteorFuncError(err, result);
           else {
-            Notification.success('Successfuly uploaded file');
+            Notification.success('saved-successfully');
             this.initFilesInformation();
           }
         }
@@ -50,7 +50,7 @@ FileManagement.prototype = {
       methodName: 'getFile',
       args: { bucketName: $('#txtBucketName').val(), fileId: id },
       callback: (err, result) => {
-        if (err || result.error) ErrorHandler.showMeteorFuncError(err, result, "Couldn't find file");
+        if (err || result.error) ErrorHandler.showMeteorFuncError(err, result);
         else jsonEditor.set(result.result);
 
         Notification.stop();
@@ -71,7 +71,7 @@ FileManagement.prototype = {
     let selector = UIComponents.Editor.getCodeMirrorValue($('#divSelector'));
     selector = ExtendedJSON.convertAndCheckJSON(selector);
     if (selector.ERROR) {
-      Notification.error(`Syntax error on selector: ${selector.ERROR}`);
+      Notification.error('syntax-error-selector', null, { error: selector.ERROR });
       return;
     }
 
@@ -80,7 +80,7 @@ FileManagement.prototype = {
       args: { selector, limit: $('#txtFileFetchLimit').val(), bucketName: $('#txtBucketName').val() },
       callback: (err, result) => {
         if (err || result.error) {
-          ErrorHandler.showMeteorFuncError(err, result, "Couldn't get file informations");
+          ErrorHandler.showMeteorFuncError(err, result);
           return;
         }
         this.convertObjectIdAndDateToString(result.result);
@@ -123,11 +123,9 @@ FileManagement.prototype = {
 
   deleteFiles() {
     Notification.modal({
-      title: 'Are you sure ?',
-      text: 'All files that are matched by selector will be deleted, are you sure ?',
+      title: 'are-you-sure',
+      text: 'all-selected-files-will-be-wiped',
       type: 'warning',
-      showCancelButton: true,
-      cancelButtonText: 'No',
       callback: (isConfirm) => {
         if (isConfirm) {
           Notification.start('#btnDeleteFiles');
@@ -135,7 +133,7 @@ FileManagement.prototype = {
           let selector = UIComponents.Editor.getCodeMirrorValue($('#divSelector'));
           selector = ExtendedJSON.convertAndCheckJSON(selector);
           if (selector.ERROR) {
-            Notification.error(`Syntax error on selector: ${selector.ERROR}`);
+            Notification.error('syntax-error-selector', null, { error: selector.ERROR });
             return;
           }
 
@@ -143,9 +141,9 @@ FileManagement.prototype = {
             methodName: 'deleteFiles',
             args: { bucketName: $('#txtBucketName').val(), selector },
             callback: (err, result) => {
-              if (err || result.err) ErrorHandler.showMeteorFuncError(err, result, "Couldn't delete files");
+              if (err || result.err) ErrorHandler.showMeteorFuncError(err, result);
               else {
-                Notification.success('Successfuly deleted !');
+                Notification.success('deleted-successfully');
                 this.initFilesInformation();
               }
             }
@@ -159,10 +157,9 @@ FileManagement.prototype = {
     const fileRow = SessionManager.get(SessionManager.strSessionSelectedFile);
     if (fileRow) {
       Notification.modal({
-        title: 'Are you sure ?',
-        text: 'You can NOT recover this file afterwards, are you sure ?',
+        title: 'are-you-sure',
+        text: 'recover-not-possible',
         type: 'warning',
-        cancelButtonText: 'No',
         callback: (isConfirm) => {
           if (isConfirm) {
             Notification.start('#btnReloadFiles');
@@ -171,9 +168,9 @@ FileManagement.prototype = {
               methodName: 'deleteFile',
               args: { bucketName: $('#txtBucketName').val(), fileId: fileRow._id },
               callback: (err) => {
-                if (err) Notification.error(`Couldn't delete: ${err.message}`);
+                if (err) ErrorHandler.showMeteorFuncError(err);
                 else {
-                  Notification.success('Successfuly deleted !');
+                  Notification.success('deleted-successfully');
                   this.initFilesInformation();
                 }
               }
@@ -186,10 +183,9 @@ FileManagement.prototype = {
 
   updateMetadata() {
     Notification.modal({
-      title: 'Are you sure ?',
-      text: 'Existing metadata will be overwritten, are you sure ?',
+      title: 'are-you-sure',
+      text: 'existing-metadata-will-be-overriden',
       type: 'warning',
-      cancelButtonText: 'No',
       callback: (isConfirm) => {
         if (isConfirm) {
           Notification.start('#btnUpdateMetadata');
@@ -205,9 +201,9 @@ FileManagement.prototype = {
               setObject: { $set: setValue }
             },
             callback: (err) => {
-              if (err) Notification.error(`Couldn't update file info: ${err.message}`);
+              if (err) ErrorHandler.showMeteorFuncError(err);
               else {
-                Notification.success('Successfully updated file information !');
+                Notification.success('saved-successfully');
                 this.proceedShowingMetadata(SessionManager.get(SessionManager.strSessionSelectedFile)._id, jsonEditor);
               }
             }

@@ -20,11 +20,11 @@ CollectionRename.prototype = {
     const options = { dropTarget: $('#divDropTarget').iCheck('update')[0].checked };
 
     if (!newName) {
-      Notification.warning('Name is required !');
+      Notification.warning('name-required');
       return;
     }
     if (newName === selectedCollection) {
-      Notification.warning('Can not use same name as target name !');
+      Notification.warning('name-same-with-old');
       return;
     }
 
@@ -32,9 +32,9 @@ CollectionRename.prototype = {
       methodName: 'rename',
       args: { selectedCollection, newName, options },
       callback: (err, result) => {
-        if (err || result.error) ErrorHandler.showMeteorFuncError(err, result, "Couldn't rename");
+        if (err || result.error) ErrorHandler.showMeteorFuncError(err, result);
         else {
-          Notification.success(`Successfully renamed to: ${newName}`);
+          Notification.success('collection-renamed-successfully', null, { name: newName });
           $('#renameCollectionModal').modal('hide');
           CollectionUtil.renderCollectionNames();
         }
