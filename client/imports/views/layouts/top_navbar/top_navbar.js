@@ -9,18 +9,16 @@ require('bootstrap-filestyle');
 const packageJson = require('/package.json');
 
 Template.topNavbar.onRendered(function () {
-  const connections = this.subscribe('connections');
-  this.autorun(() => {
-    if (connections.ready()) {
-      $('.filestyle').filestyle({});
-      UIComponents.DataTable.initiateDatatable({
-        selector: $('#tblSwitchDatabases'),
-        clickCallback: (table, row) => { $('#inputDatabaseNameToSwitch').val(row.data().name); },
-        noDeleteEvent: true
-      });
-      $('#versionText').html(packageJson.version);
-    }
+  this.subscribe('connections');
+  $('.filestyle').filestyle({});
+  $('#switchDatabaseModal').on('shown.bs.modal', () => {
+    UIComponents.DataTable.initiateDatatable({
+      selector: $('#tblSwitchDatabases'),
+      clickCallback: (table, row) => { $('#inputDatabaseNameToSwitch').val(row.data().name); },
+      noDeleteEvent: true
+    });
   });
+  $('#versionText').html(packageJson.version);
 });
 
 Template.topNavbar.events({

@@ -83,6 +83,7 @@ UIComponents.prototype = {
 
     initiateDatatable({ selector, sessionKey, clickCallback, noDeleteEvent }) {
       const self = this;
+      selector.DataTable();
       selector.find('tbody').on('click', 'tr', function () {
         const table = selector.DataTable();
         self.doTableRowSelectable(table, $(this));

@@ -5,37 +5,32 @@ const ErrorHandler = function () {
 };
 
 ErrorHandler.prototype = {
-  getErrorMessage(err, result) {
+  getErrorMessage(err, result, translateOptions) {
     let errorMessage = 'unknown-error';
-    let code = '';
     if (err) {
-      code = `[${err.error}]`;
       if (err.details && err.details.message) {
         // external error comes with directly throwing (err.error = code)
-        errorMessage = err.details.message;
+        errorMessage = `[${err.error}] ${Helper.translate({ key: err.details.message, options: translateOptions })}`;
       } else if (err.reason) {
         // internal error comes with directly throwing (err.error = code)
-        errorMessage = err.reason;
+        errorMessage = `[${err.error}] ${Helper.translate({ key: err.reason, options: translateOptions })}`;
       }
     } else if (result && result.error) {
-      code = result.error.error ? `[${result.error.error}]` : '';
-
       if (result.error.details && result.error.details.message) {
         // external error comes with callback throwing
-        errorMessage = result.error.details.message;
+        errorMessage = result.error.error ? `[${result.error.error}] ${result.error.details.message}` : result.error.details.message;
       }
       if (result.error.message) {
         // external error comes with callback throwing (no details, comes as MongoError)
-        errorMessage = result.error.message;
+        errorMessage = result.error.error ? `[${result.error.error}] ${result.error.message}` : result.error.message;
       }
     }
 
-    return { code, errorMessage };
+    return errorMessage;
   },
 
   showMeteorFuncError(err, result, translateOptions) {
-    const { code, errorMessage } = this.getErrorMessage(err, result);
-    Notification.error(errorMessage, null, translateOptions, code);
+    Notification.errorNoTranslate(this.getErrorMessage(err, result, translateOptions));
   }
 };
 
