@@ -2,6 +2,7 @@ import { Template } from 'meteor/templating';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { SessionManager, UIComponents } from '/client/imports/modules';
 import { Aggregate } from '/client/imports/ui';
+import Helper from '/client/imports/helpers/helper';
 import './aggregate_histories.html';
 
 Template.aggregateHistories.onRendered(() => {
@@ -16,6 +17,12 @@ Template.aggregateHistories.onRendered(() => {
     clickCallback: () => { $('#btnUseHistoricalPipeline').prop('disabled', false); },
     noDeleteEvent: true
   });
+});
+
+Template.aggregateHistories.helpers({
+  getPageHeading() {
+    return Helper.translate({ key: 'aggregate' });
+  }
 });
 
 Template.aggregateHistories.events({

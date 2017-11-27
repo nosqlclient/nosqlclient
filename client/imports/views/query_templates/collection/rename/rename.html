@@ -1,15 +1,15 @@
 <template name="rename">
     <div class="form-group">
-        <label class="col-lg-1 control-label">New name</label>
+        <label class="col-lg-1 control-label">{{_ "new_name"}}</label>
         <div class="col-lg-11">
             <input type="text" class="form-control" id='inputNewName'/>
         </div>
     </div>
     <div class="form-group">
-        <label class="col-lg-1 control-label">Options</label>
+        <label class="col-lg-1 control-label">{{_ "options"}}</label>
         <div class="col-lg-11">
             <select id="cmbRenameOptions"
-                    data-placeholder="Choose one or more options.."
+                    data-placeholder="{{_ "select_options"}}"
                     multiple="true"
                     class="chosen-select form-control"
                     tabindex="-1">
@@ -24,14 +24,14 @@
 
 <template name="dropTarget">
     <div class="form-group">
-        <label class="col-lg-1 control-label">Drop</label>
+        <label class="col-lg-1 control-label">{{_ "drop"}}</label>
         <div class="col-lg-11">
             <div id="divDropTarget" class="i-checks">
                 <input id="inputDropTarget" type="checkbox" value=""
                        class="form-control"
                        checked=""
                        style="position: absolute; opacity: 0;"/>
-                <span class="help-block m-b-none"><strong>Drop </strong>the target name collection if it previously exists.</span>
+                <span class="help-block m-b-none">{{{_ "drop_target_info"}}}</span>
             </div>
         </div>
     </div>

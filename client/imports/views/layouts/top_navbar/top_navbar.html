@@ -7,7 +7,7 @@
                 </a>
                 <form role="search" class="navbar-form-custom">
                     <div class="form-group">
-                        <input type="text" disabled="true" placeholder="Search for something..."
+                        <input type="text" disabled="true" placeholder=""
                                class="form-control"
                                name="top-search"
                                id="top-search">
@@ -17,41 +17,40 @@
             <ul class="nav navbar-top-links navbar-right">
                 <li class="dropdown">
                     <a class="dropdown-toggle" data-toggle="dropdown" href="#" aria-expanded="false">
-                        <i class="fa fa-chevron-circle-down"></i> More
+                        <i class="fa fa-chevron-circle-down"></i> {{_ "more"}}
                     </a>
                     <ul class="dropdown-menu dropdown-alerts">
                         {{#if isConnected}}
                             <li>
                                 <a id="btnSwitchDatabase" href="">
-                                    <i class="fa fa-database"></i> Switch Database
+                                    <i class="fa fa-database"></i> {{_ "switch_database"}}
                                 </a>
                             </li>
                             <li class="divider"></li>
-                            <li><a id="btnRefreshCollections2" href="#"><i class="fa fa-refresh"></i> Refresh
-                                Collections</a></li>
+                            <li><a id="btnRefreshCollections2" href="#"><i class="fa fa-refresh"></i> {{_ "refresh_collections"}}</a></li>
                             <li class="divider"></li>
                         {{/if}}
                         <li>
                             <a href="{{pathFor route="settings"}}">
-                                <i class="fa fa-gears"></i> Settings
+                                <i class="fa fa-gears"></i> {{_ "settings"}}
                             </a>
                         </li>
                         <li class="divider"></li>
                         <li>
                             <a id="btnImportMongoclient">
-                                <i class="fa fa-download"></i> Import Nosqlclient Data
+                                <i class="fa fa-download"></i> {{_ "import_nosqlclient_data"}}
                             </a>
                         </li>
                         <li class="divider"></li>
                         <li>
                             <a id="btnExportMongoclient">
-                                <i class="fa fa-upload"></i> Export Nosqlclient Data
+                                <i class="fa fa-upload"></i> {{_ "export_nosqlclient_data"}}
                             </a>
                         </li>
                         <li class="divider"></li>
                         <li>
                             <a id="btnAboutMongoclient" href="">
-                                <i class="fa fa-globe"></i> About
+                                <i class="fa fa-globe"></i> {{_ "about"}}
                             </a>
                         </li>
                     </ul>
@@ -59,11 +58,11 @@
                 <li>
                     {{#if isConnected}}
                         <a id="btnDisconnect" href="#">
-                            <i class="fa fa-sign-out"></i> Disconnect
+                            <i class="fa fa-sign-out"></i> {{_ "disconnect"}}
                         </a>
                     {{else}}
                         <a id="btnConnectionList" href="#" data-toggle="modal" data-target="#connectionModal">
-                            <i class="fa fa-sign-in"></i> Connect
+                            <i class="fa fa-sign-in"></i> {{_ "connect"}}
                         </a>
                     {{/if}}
                 </li>
@@ -79,13 +78,11 @@
             <div class="modal-content animated bounceInRight">
                 <div style="background-color: #F4F4F6" class="modal-header">
                     <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span><span
-                            class="sr-only">Close</span></button>
+                            class="sr-only">{{_ "close"}}</span></button>
                     <img width="80" height="110" src="/logo/new/image_only.png" class="modal-icon"/>
                     <h4 class="modal-title">Nosqlclient</h4>
-                    <huge class="font-bold">Open Source Edition - Version <span id="versionText"></span><br/>
-                        Licensed with AGPLv3 © 2017 <br/>
-                        Contact with <a href="mailto:info@mongoclient.com">info@mongoclient.com</a> for
-                        <b>Enterprise</b> edition
+                    <huge class="font-bold">
+                        {{{_ "about_text"}}}
                     </huge>
                 </div>
             </div>
@@ -99,28 +96,28 @@
             <div class="modal-content animated bounceInRight">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span><span
-                            class="sr-only">Close</span></button>
+                            class="sr-only">{{_ "close"}}</span></button>
                     <i id="importExportMongoclientIcon" class="fa fa-download modal-icon"></i>
-                    <h4 id="importExportMongoclientTitle" class="modal-title">Import Nosqlclient Data</h4>
+                    <h4 id="importExportMongoclientTitle" class="modal-title">{{_ "import_nosqlclient_data"}}</h4>
                 </div>
                 <div class="modal-body">
                     <form id="frmImportMongoclient" class="form-horizontal">
                         <div class="form-group">
-                            <label class="col-lg-3 control-label">Backup File </label>
+                            <label class="col-lg-3 control-label">{{_ "backup_file"}}</label>
                             <div class="col-lg-9">
                                 <input class="form-control filestyle" type="file" id="inputImportBackupFile"
                                        data-buttonName="btn-primary">
-                                <span class="help-block m-b-none">Example: <b>/home/user/nosqlclient/backup_17_10_2016_18_24_01.json</b></span>
+                                <span class="help-block m-b-none">{{{_ "backup_file_info"}}}</span>
                             </div>
                         </div>
                     </form>
                 </div>
                 <div class="modal-footer">
                     <div class="pull-left">
-                        <button type="button" class="btn btn-white" data-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-white" data-dismiss="modal">{{_ "close"}}</button>
                     </div>
-                    <button id="btnProceedImportExport" title="Import Now !" type="button"
-                            class="btn btn-primary ladda-button" data-style="contract">Import
+                    <button id="btnProceedImportExport" title="{{_ "import"}}" type="button"
+                            class="btn btn-primary ladda-button" data-style="contract">{{_ "import"}}
                     </button>
                 </div>
             </div>
@@ -134,9 +131,9 @@
             <div class="modal-content animated bounceInRight">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span><span
-                            class="sr-only">Close</span></button>
+                            class="sr-only">{{_ "close"}}</span></button>
                     <i class="fa fa-database modal-icon"></i>
-                    <h4 class="modal-title">Databases</h4>
+                    <h4 class="modal-title">{{_ "databases"}}</h4>
                 </div>
                 <div class="modal-body">
                     <table id="tblSwitchDatabases"
@@ -144,7 +141,7 @@
                            style="width: 100%">
                         <thead>
                         <tr>
-                            <th>Database Name</th>
+                            <th>{{_ "db_name"}}</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -153,11 +150,11 @@
 
                     <form class="form-horizontal">
                         <div class="form-group">
-                            <label class="col-lg-2 control-label">Database Name</label>
+                            <label class="col-lg-2 control-label">{{_ "db_name"}}</label>
                             <div class="col-lg-10">
                                 <input id="inputDatabaseNameToSwitch" required="true"
                                        type="text"
-                                       placeholder="Database Name" class="form-control">
+                                       placeholder="{{_ "db_name"}}" class="form-control">
                             </div>
                         </div>
                     </form>
@@ -165,10 +162,10 @@
                 </div>
                 <div class="modal-footer">
                     <div class="pull-left">
-                        <button type="button" class="btn btn-white" data-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-white" data-dismiss="modal">{{_ "close"}}</button>
                     </div>
-                    <button id="btnConnectSwitchedDatabase" title="Connect !" type="button" disabled="true"
-                            class="btn btn-primary ladda-button" data-style="contract">Connect Now
+                    <button id="btnConnectSwitchedDatabase" title="{{_ "connect"}}" type="button" disabled="true"
+                            class="btn btn-primary ladda-button" data-style="contract">{{_ "connect"}}
                     </button>
                 </div>
             </div>

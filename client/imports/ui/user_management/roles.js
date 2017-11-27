@@ -73,7 +73,7 @@ UserManagementRoles.prototype = {
     }
 
     const privilegesTableSelector = $('#tblRolePrivileges').DataTable();
-    if ($('#addEditPrivilegeModalTitle').text() === Helper.translate({ key: 'edit-privilege' })) {
+    if ($('#addEditPrivilegeModalTitle').text() === Helper.translate({ key: 'edit_privilege' })) {
       // edit existing privilege of role
       const selectedRowData = SessionManager.get(SessionManager.strSessionUsermanagementPrivilege);
 
@@ -108,7 +108,7 @@ UserManagementRoles.prototype = {
     const roleNameSelector = $('#inputRoleUM');
 
     if (SessionManager.get(SessionManager.strSessionUsermanagementRole) && SessionManager.get(SessionManager.strSessionUsermanagementRole).isBuiltin &&
-      titleSelector.text() === Helper.translate({ key: 'edit-role' })) {
+      titleSelector.text() === Helper.translate({ key: 'edit_role' })) {
       Notification.warning('builtin-roles-read-only');
       return;
     }
@@ -149,7 +149,7 @@ UserManagementRoles.prototype = {
 
   addNewInheritRoleToRole() {
     if (SessionManager.get(SessionManager.strSessionUsermanagementRole) &&
-      SessionManager.get(SessionManager.strSessionUsermanagementRole).isBuiltin && $('#addEditRoleModalTitle').text() === Helper.translate({ key: 'edit-role' })) {
+      SessionManager.get(SessionManager.strSessionUsermanagementRole).isBuiltin && $('#addEditRoleModalTitle').text() === Helper.translate({ key: 'edit_role' })) {
       Notification.warning('builtin-roles-read-only');
       return;
     }
@@ -161,12 +161,12 @@ UserManagementRoles.prototype = {
 
   addNewPrivilegeToRole() {
     if (SessionManager.get(SessionManager.strSessionUsermanagementRole) &&
-      SessionManager.get(SessionManager.strSessionUsermanagementRole).isBuiltin && $('#addEditRoleModalTitle').text() === Helper.translate({ key: 'edit-role' })) {
+      SessionManager.get(SessionManager.strSessionUsermanagementRole).isBuiltin && $('#addEditRoleModalTitle').text() === Helper.translate({ key: 'edit_role' })) {
       Notification.warning('builtin-roles-read-only');
       return;
     }
 
-    $('#addEditPrivilegeModalTitle').text(Helper.translate({ key: 'add-privilege' }));
+    $('#addEditPrivilegeModalTitle').text(Helper.translate({ key: 'add_privilege' }));
     $('#addEditPrivilegeModalText').text(`${SessionManager.get(SessionManager.strSessionUsermanagementRole) ? SessionManager.get(SessionManager.strSessionUsermanagementRole).role : ''}`);
 
     Notification.start('#btnApplyAddPrivilegeToRole');
@@ -180,7 +180,7 @@ UserManagementRoles.prototype = {
   startEditingRole() {
     if (!SessionManager.get(SessionManager.strSessionUsermanagementPrivilege)) return;
 
-    $('#addEditPrivilegeModalTitle').text(Helper.translate({ key: 'edit-privilege' }));
+    $('#addEditPrivilegeModalTitle').text(Helper.translate({ key: 'edit_privilege' }));
     $('#addEditPrivilegeModalText').text('');
 
     Notification.start('#btnApplyAddPrivilegeToRole');
@@ -203,7 +203,7 @@ UserManagementRoles.prototype = {
   },
 
   popEditRoleModal(role) {
-    $('#addEditRoleModalTitle').text(Helper.translate({ key: 'edit-role' }));
+    $('#addEditRoleModalTitle').text(Helper.translate({ key: 'edit_role' }));
 
     Notification.start('#btnCloseUMRoles');
 

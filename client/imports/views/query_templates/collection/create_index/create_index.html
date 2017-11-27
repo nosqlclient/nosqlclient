@@ -1,15 +1,15 @@
 <template name="createIndex">
     <div class="form-group">
-        <label class="col-lg-1 control-label">Index Field</label>
+        <label class="col-lg-1 control-label">{{_ "index_field"}}</label>
         <div id="divFields" class="col-lg-11">
             <textarea id="txtFields" class="form-control"></textarea>
         </div>
     </div>
     <div class="form-group">
-        <label class="col-lg-1 control-label">Options</label>
+        <label class="col-lg-1 control-label">{{_ "options"}}</label>
         <div class="col-lg-11">
             <select id="cmbCreateIndexOptions"
-                    data-placeholder="Choose one or more options.."
+                    data-placeholder="{{_ "select_options"}}"
                     multiple="true"
                     class="chosen-select form-control"
                     tabindex="-1">

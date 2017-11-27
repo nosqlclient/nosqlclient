@@ -33,56 +33,55 @@
 
 <template name="keepTemp">
     <div class="form-group">
-        <label class="col-lg-1 control-label">Keep Temp
+        <label class="col-lg-1 control-label">{{_ "keep_temp"}}
         </label>
         <div id="divKeepTemp" class="col-lg-11">
             <input id="inputKeepTemp" type="checkbox"
                    class="form-control"
                    checked=""
                    style="position: absolute; opacity: 0;"/>
-            <span class="help-block m-b-none">Keep temporary data</span>
+            <span class="help-block m-b-none">{{{_ "keep_temp_info"}}}</span>
         </div>
     </div>
 </template>
 
 <template name="jsMode">
     <div class="form-group">
-        <label class="col-lg-1 control-label">JS Mode
+        <label class="col-lg-1 control-label">{{_ "js_mode"}}
         </label>
         <div id="divJsMode" class="col-lg-11">
             <input id="inputJsMode" type="checkbox"
                    class="form-control"
                    checked=""
                    style="position: absolute; opacity: 0;"/>
-            <span class="help-block m-b-none">It is possible to make the execution stay in JS.<b> Provided in MongoDB > 2.0.X</b></span>
+            <span class="help-block m-b-none">{{{_ "js_mode_info"}}}</span>
         </div>
     </div>
 </template>
 
 <template name="out">
     <div class="form-group">
-        <label class="col-lg-1 control-label">Out</label>
+        <label class="col-lg-1 control-label">{{_ "out"}}</label>
         <div id="divOut" class="col-lg-11">
             <textarea id="txtOut" class="form-control"></textarea>
-            <span class="help-block m-b-none">Example: <i>{inline:1} | {replace:'collectionName'} | {merge:'collectionName'} |
-                {reduce:'collectionName'}</i></span>
+            <span class="help-block m-b-none">{{{_ "out_info"}}}</span>
         </div>
     </div>
 </template>
 
 <template name="finalize">
     <div class="form-group">
-        <label class="col-lg-1 control-label">Finalize</label>
+        <label class="col-lg-1 control-label">{{_ "finalize"}}</label>
         <div id="divFinalize" class="col-lg-11">
             <textarea id="txtFinalize" class="form-control"></textarea>
-            <span class="help-block m-b-none">Please provide a valid function which starts with <strong>function</strong> keyword</span>
+            <span class="help-block m-b-none">{{_ "valid_function_info"}}</span>
         </div>
     </div>
 </template>
 
 <template name="scope">
     <div class="form-group">
-        <label class="col-lg-1 control-label">Scope</label>
+        <label class="col-lg-1 control-label">{{_ "scope"}}</label>
         <div id="divScope" class="col-lg-11">
             <textarea id="txtScope" class="form-control"></textarea>
         </div>
@@ -91,7 +90,7 @@
 
 <template name="verbose">
     <div class="form-group">
-        <label class="col-lg-1 control-label">Verbose</label>
+        <label class="col-lg-1 control-label">{{_ "verbose"}}</label>
         <div class="col-lg-11">
             <div id="divVerbose" class="i-checks">
                 <input id="inputVerbose" type="checkbox" value=""

@@ -2,6 +2,7 @@ import { Template } from 'meteor/templating';
 import { Shell } from '/client/imports/ui';
 import { SessionManager } from '/client/imports/modules';
 import { FlowRouter } from 'meteor/kadira:flow-router';
+import Helper from '/client/imports/helpers/helper';
 import './shell_histories/shell_histories';
 import './mc_shell.html';
 
@@ -13,6 +14,12 @@ Template.mcShell.events({
   'click #btnShowShellHistories': function () {
     $('#shellHistoriesModal').modal('show');
   },
+});
+
+Template.mcShell.helpers({
+  getPageHeading() {
+    return Helper.translate({ key: 'shell' });
+  }
 });
 
 Template.mcShell.onRendered(function () {

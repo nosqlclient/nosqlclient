@@ -1,6 +1,7 @@
 import { Notification, UIComponents, Enums, ExtendedJSON, ErrorHandler, SessionManager } from '/client/imports/modules';
 import { Communicator } from '/client/imports/facades';
 import { QueryRender } from '/client/imports/ui';
+import Helper from '/client/imports/helpers/helper';
 import moment from 'moment';
 
 const Aggregate = function () {
@@ -149,7 +150,7 @@ Aggregate.prototype = {
       selector: '#resultTabs li',
       items: {
         close_others: {
-          name: 'Close Others',
+          name: Helper.translate({ key: 'close_others' }),
           icon: 'fa-times-circle',
           callback() {
             const tabId = $(this).children('a').attr('href');
@@ -164,7 +165,7 @@ Aggregate.prototype = {
           },
         },
         close_all: {
-          name: 'Close All Tabs',
+          name: Helper.translate({ key: 'close_all' }),
           icon: 'fa-times',
           callback() {
             const resultTabsList = $('#resultTabs').find('li');
@@ -183,7 +184,7 @@ Aggregate.prototype = {
     const selectedCollection = $('#cmbCollections').chosen().val();
     const stages = $('#stages').find('li');
     if (!selectedCollection) {
-      Notification.warning('select-collection');
+      Notification.warning('select_collection');
       return;
     }
 

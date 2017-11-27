@@ -1,27 +1,29 @@
-import { Session } from 'meteor/session';
+import { ReactiveDict } from 'meteor/reactive-dict';
 
 const SessionManager = function () {
+  this.dictionary = new ReactiveDict();
 };
 
 SessionManager.prototype = {
   get(key) {
-    return Session.get(key);
+    return this.dictionary.get(key);
   },
 
   set(key, value) {
-    Session.set(key, value);
+    this.dictionary.set(key, value);
   },
 
   remove(key) {
-    Session.set(key, null);
+    this.dictionary.set(key, null);
   },
 
   clear() {
-    Object.keys(Session.keys).forEach((key) => {
-      Session.set(key, null);
+    Object.keys(this.dictionary.keys).forEach((key) => {
+      this.dictionary.delete(key);
     });
   },
 
+  strSessionApplicationLanguage: 'applicationLanguage',
   strSessionPromptedUsername: 'promptedUsername',
   strSessionPromptedPassword: 'promptedPassword',
   strSessionConnection: 'connection',

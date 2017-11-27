@@ -1,19 +1,31 @@
 <template name="settings">
-    {{> pageHeading title="Settings" }}
+    {{> pageHeading title=getPageHeading }}
 
     <div class="wrapper wrapper-content animated fadeIn">
         <div class="row">
             <div class="col-lg-12">
                 <div class="ibox float-e-margins">
                     <div class="ibox-title">
-                        <h5>Application Settings
-                            <small class="m-l-sm">Specify application settings</small>
+                        <h5>{{_ "settings"}}
                         </h5>
                     </div>
                     <div class="ibox-content">
                         <form class="form-horizontal">
                             <div class="form-group">
-                                <label class="col-lg-3 control-label">Max allowed fetch size for FIND query</label>
+                                <label class="col-lg-3 control-label">{{_ "language"}}</label>
+                                <div class="col-lg-9">
+                                    <select id="cmbMongoclientLanguage"
+                                            data-placeholder="{{_ "choose_one"}}"
+                                            class="chosen-select form-control"
+                                            tabindex="-1">
+                                        <option value="en">{{_ "english"}}</option>
+                                        <option value="tr">{{_ "turkish"}}</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="col-lg-3 control-label">{{_ "max_find_size"}}</label>
                                 <div class="col-lg-9">
                                     <div class="input-group m-b">
                                         <input id="inputMaxAllowedFetchSize" min="0" required="true" type="number"
@@ -21,59 +33,59 @@
                                         <span class="input-group-addon"> MB</span>
                                     </div>
                                     <span class="help-block m-b-none">
-                                        <strong>0</strong> = Infinite. This only works if you are <strong>NOT</strong> using <strong>project</strong> option
+                                        {{{_ "max_find_size_help_block"}}}
                                     </span>
                                 </div>
                             </div>
 
                             <div class="form-group">
-                                <label class="col-lg-3 control-label">Socket timeout</label>
+                                <label class="col-lg-3 control-label">{{_ "socket_timeout"}}</label>
                                 <div class="col-lg-9">
                                     <div class="input-group m-b">
                                         <input id="inputSocketTimeout" min="0" required="true" type="number"
                                                class="form-control">
-                                        <span class="input-group-addon"> Seconds</span>
+                                        <span class="input-group-addon"> {{_ "seconds"}}</span>
                                     </div>
                                     <span class="help-block m-b-none">
-                                        <strong>0</strong> = Infinite.
+                                        {{{_ "socket_timeout_help_block"}}}
                                     </span>
                                 </div>
                             </div>
 
                             <div class="form-group">
-                                <label class="col-lg-3 control-label">Connection timeout</label>
+                                <label class="col-lg-3 control-label">{{_ "conn_timeout"}}</label>
                                 <div class="col-lg-9">
                                     <div class="input-group m-b">
                                         <input id="inputConnectionTimeout" min="0" required="true" type="number"
                                                class="form-control">
-                                        <span class="input-group-addon"> Seconds</span>
+                                        <span class="input-group-addon"> {{_ "seconds"}}</span>
                                     </div>
                                     <span class="help-block m-b-none">
-                                        <strong>0</strong> = Infinite.
+                                        {{{_ "conn_timeout_help_block"}}}
                                     </span>
                                 </div>
                             </div>
 
                             <div class="form-group">
-                                <label class="col-lg-3 control-label">Database statistics scheduler</label>
+                                <label class="col-lg-3 control-label">{{_ "db_stats_scheduler"}}</label>
                                 <div class="col-lg-9">
                                     <div class="input-group m-b">
                                         <input id="inputDBStatsScheduler" min="2000" required="true"
                                                type="number"
                                                class="form-control">
-                                        <span class="input-group-addon"> Milliseconds</span>
+                                        <span class="input-group-addon"> {{_ "miliseconds"}}</span>
                                     </div>
                                     <span class="help-block m-b-none">
-                                        Every <strong>configured milliseconds</strong> noqslclient populates statistic charts via querying database.
+                                        {{{_ "db_stats_scheduler_help_block"}}}
                                     </span>
                                 </div>
                             </div>
 
                             <div class="form-group">
-                                <label class="col-lg-3 control-label">Size information in</label>
+                                <label class="col-lg-3 control-label">{{_ "size_info_in"}}</label>
                                 <div class="col-lg-9">
                                     <select id="cmbScale"
-                                            data-placeholder="Choose one..."
+                                            data-placeholder="{{_ "choose_one"}}"
                                             class="chosen-select form-control"
                                             tabindex="-1">
                                         <option>MegaBytes</option>
@@ -84,10 +96,10 @@
                             </div>
 
                             <div class="form-group">
-                                <label class="col-lg-3 control-label">Default result view</label>
+                                <label class="col-lg-3 control-label">{{_ "default_result_view"}}</label>
                                 <div class="col-lg-9">
                                     <select id="cmbResultView"
-                                            data-placeholder="Choose one..."
+                                            data-placeholder="{{_ "choose_one"}}"
                                             class="chosen-select form-control"
                                             tabindex="-1">
                                         <option>Jsoneditor</option>
@@ -97,39 +109,39 @@
                             </div>
 
                             <div class="form-group">
-                                <label class="col-lg-3 control-label">Autocomplete samples count</label>
+                                <label class="col-lg-3 control-label">{{_ "samples_count"}}</label>
                                 <div class="col-lg-9">
                                     <input id="inputAutoCompleteSamplesCount" min="0" required="true" type="number"
                                            class="form-control">
-                                    <span class="help-block m-b-none">Nosqlclient randomly finds given count data per collection selection to find autocompletion keys, <b>0 disables autocompletion</b></span>
+                                    <span class="help-block m-b-none">{{{_ "samples_count_help_block"}}}</span>
                                 </div>
                             </div>
 
                             <div class="form-group">
-                                <label class="col-lg-3 control-label">Autocomplete shortcut</label>
+                                <label class="col-lg-3 control-label">{{_ "autocomplete_shortcut"}}</label>
                                 <div class="col-lg-9">
                                     <input id="inputAutocompleteShortcut" required="true" type="text"
                                            class="form-control">
-                                    <span class="help-block m-b-none">Combination should be seperated by dash. E.g. <b>Ctrl-Space</b>, <b>Alt-A</b>. Shell also uses this combination.</span>
+                                    <span class="help-block m-b-none">{{{_ "autocomplete_shortcut_help_block"}}}</span>
                                 </div>
                             </div>
 
                             <div class="form-group">
-                                <label class="col-lg-3 control-label">Single tab for results</label>
+                                <label class="col-lg-3 control-label">{{_ "single_tab"}}</label>
                                 <div class="col-lg-9">
                                     <div id="divUseSingleTab" class="i-checks">
                                         <input id="inputUseSingleTab" type="checkbox" value=""
                                                class="form-control"
                                                checked=""
                                                style="position: absolute; opacity: 0;"/>
-                                        <span class="help-block m-b-none">Specify to use single or multiple tabs for queries</span>
+                                        <span class="help-block m-b-none">{{{_ "single_tab_help_block"}}}</span>
                                     </div>
                                 </div>
                             </div>
 
 
                             <div class="form-group">
-                                <label class="col-lg-3 control-label">Show live chat</label>
+                                <label class="col-lg-3 control-label">{{_ "show_live_chat"}}</label>
                                 <div class="col-lg-9">
                                     <div id="divShowLiveChat" class="i-checks">
                                         <input id="inputShowLiveChat" type="checkbox" value=""
@@ -137,14 +149,14 @@
                                                checked=""
                                                style="position: absolute; opacity: 0;"/>
                                         <span class="help-block m-b-none">
-                                            In case, you're disturbed with live chat button you can disable it from here. <b>Requires restart</b>
+                                            {{{_ "live_chat_help_block"}}}
                                          </span>
                                     </div>
                                 </div>
                             </div>
 
                             <div class="form-group">
-                                <label class="col-lg-3 control-label">Show database statistics</label>
+                                <label class="col-lg-3 control-label">{{_ "show_db_stats"}}</label>
                                 <div class="col-lg-9">
                                     <div id="divShowDBStats" class="i-checks">
                                         <input id="inputShowDBStats" type="checkbox" value=""
@@ -152,7 +164,7 @@
                                                checked=""
                                                style="position: absolute; opacity: 0;"/>
                                         <span class="help-block m-b-none">
-                                         To prevent querying database at regular intervals for statistics, you can <strong>disable</strong> this feature
+                                            {{{_ "show_db_stats_help_block"}}}
                                          </span>
                                     </div>
                                 </div>
@@ -160,13 +172,13 @@
 
                             <div class="hr-line-dashed"></div>
                             <div class="form-group">
-                                <label class="col-lg-3 control-label">Max. chart points</label>
+                                <label class="col-lg-3 control-label">{{_ "max_chart_points"}}</label>
                                 <div class="col-lg-9">
                                     <input id="inputMaxChartPoints" min="15" required="true"
                                            type="number"
                                            class="form-control">
                                     <span class="help-block m-b-none">
-                                        Maximum <b>live</b> chart points to show on database stats
+                                        {{{_ "max_chart_points_help_block"}}}
                                     </span>
                                 </div>
                             </div>
@@ -174,14 +186,12 @@
                             <div class="hr-line-dashed"></div>
 
                             <div class="form-group">
-                                <label class="col-lg-3 control-label">Mongo binaries path</label>
+                                <label class="col-lg-3 control-label">{{_ "mongo_binary_path"}}</label>
                                 <div class="col-lg-9">
                                     <input id="inputMongoExecutable" required="true" type="text"
                                            class="form-control">
                                     <span class="help-block m-b-none">
-                                        Set path of mongo binaries <i>(mongo, mongodump, mongorestore, mongoexport, mongoimport)</i> for <b>shell, schema analyzer and dump sections</b><br/>
-                                        <b>Example:</b> <i>/home/sercan/my_apps/mongodb3.4/bin</i><br/>
-                                        Make sure Nosqlclient has read permissions on the folder
+                                        {{{_ "mongo_binary_path_help_block" }}}
                                     </span>
                                 </div>
                             </div>
@@ -192,7 +202,7 @@
                                             class="btn btn-block btn-outline btn-primary ladda-button"
                                             type="button"
                                             data-style="contract">
-                                        <strong>Save</strong></button>
+                                        <strong>{{_ "save"}}</strong></button>
                                 </div>
                             </div>
                         </form>

@@ -1,13 +1,13 @@
 <template name="schemaAnalyzer">
     {{#if isConnected}}
-        {{> pageHeading title='Schema Analyzer' }}
+        {{> pageHeading title=getPageHeading }}
         <div class="wrapper wrapper-content animated fadeInRight">
             <div class="row">
                 <div class="col-lg-12">
                     <div class="ibox float-e-margins">
                         <div class="ibox-title">
                             <h5>
-                                Database Schema Analyzer
+                                {{_ "schema_analyzer"}}
                             </h5>
                             <div class="ibox-tools">
                                 <button id="btnAnalyzeNow" type="button"
@@ -19,10 +19,10 @@
                         <div class="ibox-content">
                             <form class="form-horizontal">
                                 <div class="form-group">
-                                    <label class="col-lg-1 control-label">Collection</label>
+                                    <label class="col-lg-1 control-label">{{_ "collection"}}</label>
                                     <div class="col-lg-11">
                                         <select id="cmbCollections"
-                                                data-placeholder="Choose a collection..."
+                                                data-placeholder="{{_ "select_collection"}}"
                                                 class="chosen-select form-control"
                                                 tabindex="-1">
                                             <option></option>
@@ -39,7 +39,7 @@
                 <div class="col-lg-12">
                     <div class="ibox float-e-margins">
                         <div class="ibox-title">
-                            <h5>Fields - Details</h5>
+                            <h5>{{_ "fields_details"}}</h5>
                         </div>
                         <div class="ibox-content">
                             <table id="tblFieldsDetails"
@@ -47,9 +47,9 @@
                                    style="width: 100%">
                                 <thead>
                                 <tr>
-                                    <th>Field Name</th>
-                                    <th>Total Occurrences</th>
-                                    <th>Percentage Containing</th>
+                                    <th>{{_ "field_name"}}</th>
+                                    <th>{{_ "total_occurrences"}}</th>
+                                    <th>{{_ "percentage_containing"}}</th>
                                     <th>String</th>
                                     <th>Number</th>
                                     <th>Boolean</th>

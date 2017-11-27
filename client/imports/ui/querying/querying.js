@@ -261,7 +261,7 @@ Querying.prototype = {
       const collectionName = $('#inputValidateCollection').val();
       const options = ExtendedJSON.convertAndCheckJSON(UIComponents.Editor.getCodeMirrorValue($('#divOptions')));
 
-      if (!checkStringInput(collectionName, 'collection-name')) return;
+      if (!checkStringInput(collectionName, 'collection_name')) return;
       if (!checkErrorField(options)) return;
 
       proceedQueryExecution('validateCollection', { collectionName, options });

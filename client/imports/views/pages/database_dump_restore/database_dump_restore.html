@@ -1,5 +1,5 @@
 <template name="databaseDumpRestore">
-    {{> pageHeading title='Dump - Restore' }}
+    {{> pageHeading title=getPageHeading }}
 
     {{#if isConnected}}
         <div class="wrapper wrapper-content animated fadeInRight">
@@ -10,7 +10,7 @@
                             <h5>Mongodump</h5>
 
                             <div class="ibox-tools">
-                                <a id="btnClearMongodumpLogs" href="#" title="Clear Logs">
+                                <a id="btnClearMongodumpLogs" href="#" title="{{_ "delete_logs"}}">
                                     <i class="fa fa-trash"></i>
                                 </a>
                             </div>
@@ -19,10 +19,10 @@
                         <div class="ibox-content">
                             <form method="get" class="form-horizontal">
                                 <div class="form-group">
-                                    <label class="col-lg-2 control-label">Arguments</label>
+                                    <label class="col-lg-2 control-label">{{_ "arguments"}}</label>
                                     <div class="col-lg-10">
                                         <select id="cmbMongodumpArgs"
-                                                data-placeholder="Choose one or more options.."
+                                                data-placeholder="{{_ "select_options"}}"
                                                 multiple="true"
                                                 class="chosen-select form-control"
                                                 tabindex="-1">
@@ -83,7 +83,7 @@
 
                                 <div class="form-group">
                                     <div id="mongodump">
-                                        <label class="col-lg-2 control-label">Logs</label>
+                                        <label class="col-lg-2 control-label">{{_ "logs"}}</label>
                                         <div class="col-lg-10">
                                             <textarea id="txtMongodumpLogs" class="form-control"></textarea>
                                         </div>
@@ -99,7 +99,7 @@
                                             class="btn btn-block btn-outline btn-primary ladda-button"
                                             type="button"
                                             data-style="contract">
-                                        <strong>Execute</strong></button>
+                                        <strong>{{_ "execute"}}</strong></button>
                                 </div>
                             </div>
                         </div>
@@ -112,7 +112,7 @@
                             <h5>Mongorestore</h5>
 
                             <div class="ibox-tools">
-                                <a id="btnClearMongorestoreLogs" href="#" title="Clear Logs">
+                                <a id="btnClearMongorestoreLogs" href="#" title="{{_ "delete_logs"}}">
                                     <i class="fa fa-trash"></i>
                                 </a>
                             </div>
@@ -121,10 +121,10 @@
                         <div class="ibox-content">
                             <form method="get" class="form-horizontal">
                                 <div class="form-group">
-                                    <label class="col-lg-2 control-label">Arguments</label>
+                                    <label class="col-lg-2 control-label">{{_ "arguments"}}</label>
                                     <div class="col-lg-10">
                                         <select id="cmbMongorestoreArgs"
-                                                data-placeholder="Choose one or more options.."
+                                                data-placeholder="{{_ "select_options"}}"
                                                 multiple="true"
                                                 class="chosen-select form-control"
                                                 tabindex="-1">
@@ -190,7 +190,7 @@
 
                                 <div class="form-group">
                                     <div id="mongorestore">
-                                        <label class="col-lg-2 control-label">Logs</label>
+                                        <label class="col-lg-2 control-label">{{_ "logs"}}</label>
                                         <div class="col-lg-10">
                                             <textarea id="txtMongorestoreLogs" class="form-control"></textarea>
                                         </div>
@@ -206,7 +206,7 @@
                                             class="btn btn-block btn-outline btn-primary ladda-button"
                                             type="button"
                                             data-style="contract">
-                                        <strong>Execute</strong></button>
+                                        <strong>{{_ "execute"}}</strong></button>
                                 </div>
                             </div>
                         </div>
@@ -221,7 +221,7 @@
                             <h5>Mongoexport</h5>
 
                             <div class="ibox-tools">
-                                <a id="btnClearMongoexportLogs" href="#" title="Clear Logs">
+                                <a id="btnClearMongoexportLogs" href="#" title="{{_ "delete_logs"}}">
                                     <i class="fa fa-trash"></i>
                                 </a>
                             </div>
@@ -230,10 +230,10 @@
                         <div class="ibox-content">
                             <form method="get" class="form-horizontal">
                                 <div class="form-group">
-                                    <label class="col-lg-2 control-label">Arguments</label>
+                                    <label class="col-lg-2 control-label">{{_ "arguments"}}</label>
                                     <div class="col-lg-10">
                                         <select id="cmbMongoexportArgs"
-                                                data-placeholder="Choose one or more options.."
+                                                data-placeholder="{{_ "select_options"}}"
                                                 multiple="true"
                                                 class="chosen-select form-control"
                                                 tabindex="-1">
@@ -287,7 +287,7 @@
 
                                 <div class="form-group">
                                     <div id="mongoexport">
-                                        <label class="col-lg-2 control-label">Logs</label>
+                                        <label class="col-lg-2 control-label">{{_ "logs"}}</label>
                                         <div class="col-lg-10">
                                             <textarea id="txtMongoexportLogs" class="form-control"></textarea>
                                         </div>
@@ -303,7 +303,7 @@
                                             class="btn btn-block btn-outline btn-primary ladda-button"
                                             type="button"
                                             data-style="contract">
-                                        <strong>Execute</strong></button>
+                                        <strong>{{_ "execute"}}</strong></button>
                                 </div>
                             </div>
                         </div>
@@ -316,7 +316,7 @@
                             <h5>Mongoimport</h5>
 
                             <div class="ibox-tools">
-                                <a id="btnClearMongoimportLogs" href="#" title="Clear Logs">
+                                <a id="btnClearMongoimportLogs" href="#" title="{{_ "delete_logs"}}">
                                     <i class="fa fa-trash"></i>
                                 </a>
                             </div>
@@ -325,10 +325,10 @@
                         <div class="ibox-content">
                             <form method="get" class="form-horizontal">
                                 <div class="form-group">
-                                    <label class="col-lg-2 control-label">Arguments</label>
+                                    <label class="col-lg-2 control-label">{{_ "arguments"}}</label>
                                     <div class="col-lg-10">
                                         <select id="cmbMongoimportArgs"
-                                                data-placeholder="Choose one or more options.."
+                                                data-placeholder="{{_ "select_options"}}"
                                                 multiple="true"
                                                 class="chosen-select form-control"
                                                 tabindex="-1">
@@ -386,7 +386,7 @@
 
                                 <div class="form-group">
                                     <div id="mongoimport">
-                                        <label class="col-lg-2 control-label">Logs</label>
+                                        <label class="col-lg-2 control-label">{{_ "logs"}}</label>
                                         <div class="col-lg-10">
                                             <textarea id="txtMongoimportLogs" class="form-control"></textarea>
                                         </div>
@@ -402,7 +402,7 @@
                                             class="btn btn-block btn-outline btn-primary ladda-button"
                                             type="button"
                                             data-style="contract">
-                                        <strong>Execute</strong></button>
+                                        <strong>{{_ "execute"}}</strong></button>
                                 </div>
                             </div>
                         </div>

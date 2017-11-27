@@ -4,9 +4,9 @@
         <div class="modal-dialog">
             <div class="query-wizard fadeInRight animated active">
                 <div class="heading" draggable="true">
-                    Query Wizard
+                    {{_ "wizard"}}
                     <small id="btnResetChat" class="reset-chat pull-right">
-                        Reset Chat
+                        {{_ "reset_chat"}}
                     </small>
                 </div>
                 <div class="content" style="overflow: hidden; width: auto; height: 234px;">
@@ -16,7 +16,7 @@
                             Nosqlclient
                         </div>
                         <div class="chat-message active">
-                            Hello, let's start with giving a field name to me.
+                            {{_ "wizard_start"}}
                         </div>
 
                     </div>
@@ -33,40 +33,40 @@
                 <div class="form-chat">
                     <div id="divQueryWizardCombo" style="display: none" class="input-group input-group">
                         <select id="cmbQueryWizardResponses"
-                                data-placeholder="I want to retrieve documents that..."
+                                data-placeholder="{{_ "wizard_start_user"}}"
                                 class="chosen-select form-control"
                                 tabindex="-1">
                             <option></option>
 
                             <optgroup id="optGroupPositives" label="Positives">
-                                <option value="1">have the field</option>
-                                <option value="2">the field matches regex</option>
-                                <option value="3">the field equals something</option>
-                                <option value="4">the field equals one of the values of an array</option>
-                                <option value="5">the field is greater or equal than something</option>
-                                <option value="6">the field is greater than something</option>
+                                <option value="1">{{_ "wizard_option_1"}}</option>
+                                <option value="2">{{_ "wizard_option_2"}}</option>
+                                <option value="3">{{_ "wizard_option_3"}}</option>
+                                <option value="4">{{_ "wizard_option_4"}}</option>
+                                <option value="5">{{_ "wizard_option_5"}}</option>
+                                <option value="6">{{_ "wizard_option_6"}}</option>
                             </optgroup>
 
 
                             <optgroup id="optGroupNegatives" label="Negatives">
-                                <option value="-1">have not the field</option>
-                                <option value="-2">the field not matches regex</option>
-                                <option value="-3">the field not equals something</option>
-                                <option value="-4">the field not equals one of the values of an array</option>
-                                <option value="-5">the field is less or equal than something</option>
-                                <option value="-6">the field is less than something</option>
+                                <option value="-1">{{_ "wizard_option_minus_1"}}</option>
+                                <option value="-2">{{_ "wizard_option_minus_2"}}</option>
+                                <option value="-3">{{_ "wizard_option_minus_3"}}</option>
+                                <option value="-4">{{_ "wizard_option_minus_4"}}</option>
+                                <option value="-5">{{_ "wizard_option_minus_5"}}</option>
+                                <option value="-6">{{_ "wizard_option_minus_6"}}</option>
                             </optgroup>
 
                         </select>
                         <span class="input-group-btn"> <button id="btnQueryWizardRespond" class="btn btn-primary"
-                                                               type="button">Send</button> </span>
+                                                               type="button">{{_ "send"}}</button> </span>
                     </div>
 
                     <div id="divQueryWizardTxt" class="input-group input-group">
                         <input id="inputQueryWizardResponse"
                                class="form-control"/>
                         <span class="input-group-btn"> <button id="btnQueryWizardRespond2" class="btn btn-primary"
-                                                               type="button">Send</button> </span>
+                                                               type="button">{{_ "send"}}</button> </span>
                     </div>
                 </div>
 

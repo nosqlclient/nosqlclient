@@ -1,5 +1,6 @@
 import { UIComponents, SessionManager, Notification, ExtendedJSON, ErrorHandler } from '/client/imports/modules';
 import { ReactivityProvider, Communicator } from '/client/imports/facades';
+import Helper from '/client/imports/helpers/helper';
 
 const SchemaAnalyzer = function () {
 
@@ -32,12 +33,12 @@ SchemaAnalyzer.prototype = {
           className: 'center',
         },
         {
-          title: 'Total Occurrences',
+          title: Helper.translate({ key: 'total_occurrences' }),
           data: 'totalOccurrences',
           className: 'center',
         },
         {
-          title: 'Percentage Containing',
+          title: Helper.translate({ key: 'percentage_containing' }),
           data: 'percentContaining',
           className: 'center',
         },
@@ -124,7 +125,7 @@ SchemaAnalyzer.prototype = {
   analyze() {
     const collection = $('#cmbCollections').val();
     if (!collection) {
-      Notification.info('select-collection');
+      Notification.info('select_collection');
       return;
     }
     if (collection.endsWith('.chunks')) {

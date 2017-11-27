@@ -2,6 +2,7 @@ import { Template } from 'meteor/templating';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { SessionManager, UIComponents } from '/client/imports/modules';
 import { FileManagement } from '/client/imports/ui';
+import Helper from '/client/imports/helpers/helper';
 import '/client/imports/views/query_templates_options/selector/selector';
 import './upload_file/upload_file';
 import './file_info/file_info';
@@ -22,6 +23,12 @@ Template.fileManagement.onRendered(function () {
       UIComponents.DataTable.initiateDatatable({ selector: $('#tblFiles'), sessionKey: SessionManager.strSessionSelectedFile, noDeleteEvent: true });
     }
   });
+});
+
+Template.fileManagement.helpers({
+  getPageHeading() {
+    return Helper.translate({ key: 'file_management' });
+  }
 });
 
 Template.fileManagement.events({

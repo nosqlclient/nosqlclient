@@ -5,9 +5,9 @@
             <div class="modal-content animated bounceInRight">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span><span
-                            class="sr-only">Close</span></button>
-                    <h4 class="modal-title">Manage Roles</h4>
-                    <small class="font-bold">Database {{getDB}}
+                            class="sr-only">{{_ "close"}}</span></button>
+                    <h4 class="modal-title">{{_ "manage_roles"}}</h4>
+                    <small class="font-bold">{{_ "database"}} {{getDB}}
                     </small>
                 </div>
                 <div class="modal-body">
@@ -18,11 +18,11 @@
                                    style="width: 100%">
                                 <thead>
                                 <tr>
-                                    <th>Role</th>
-                                    <th>Database</th>
-                                    <th>Is Builtin</th>
-                                    <th>Edit/View</th>
-                                    <th>Delete</th>
+                                    <th>{{_ "role"}}</th>
+                                    <th>{{_ "database"}}</th>
+                                    <th>{{_ "is_builtin"}}</th>
+                                    <th>{{_ "edit_view"}}</th>
+                                    <th>{{_ "delete"}}</th>
                                 </tr>
                                 </thead>
                                 <tbody>
@@ -33,7 +33,7 @@
                                     class="btn btn-block btn-outline btn-primary"
                                     style="margin-top: 10px"
                                     data-toggle="modal"
-                                    data-target="#editRoleModal">Add Role
+                                    data-target="#editRoleModal">{{_ "add_role"}}
                             </button>
                         </div>
                     </div>
@@ -43,7 +43,7 @@
                             data-style="contract"
                             class="btn btn-outline btn-primary ladda-button"
                             data-dismiss="modal">
-                        Close
+                        {{_ "close"}}
                     </button>
                 </div>
             </div>
@@ -57,16 +57,16 @@
             <div class="modal-content animated bounceInRight">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span><span
-                            class="sr-only">Close</span></button>
-                    <h4 id="addEditRoleModalTitle" class="modal-title">Edit Role</h4>
+                            class="sr-only">{{_ "close"}}</span></button>
+                    <h4 id="addEditRoleModalTitle" class="modal-title">{{_ "edit_role"}}</h4>
                 </div>
                 <div class="modal-body">
                     <form class="form-horizontal">
-                        <div class="form-group"><label class="col-lg-2 control-label">Role</label>
+                        <div class="form-group"><label class="col-lg-2 control-label">{{_ "role"}}</label>
                             <div class="col-lg-10">
                                 <input id="inputRoleUM" value="{{getRole.role}}" required="true"
                                        type="text"
-                                       placeholder="Role" class="form-control">
+                                       placeholder="{{_ "role"}}" class="form-control">
                             </div>
                         </div>
                     </form>
@@ -74,10 +74,9 @@
                     <div class="tabs-container">
                         <ul class="nav nav-tabs">
                             <li class="active"><a data-toggle="tab" href="#tab-1-role" aria-expanded="true">
-                                Privileges</a>
+                                {{_ "privileges"}}</a>
                             </li>
-                            <li class=""><a data-toggle="tab" href="#tab-2-role" aria-expanded="false">Roles To
-                                Inherit</a>
+                            <li class=""><a data-toggle="tab" href="#tab-2-role" aria-expanded="false">{{_ "roles_to_inherit"}}</a>
                             </li>
                         </ul>
                         <div class="tab-content">
@@ -88,10 +87,10 @@
                                            style="width: 100%">
                                         <thead>
                                         <tr>
-                                            <th>Actions</th>
-                                            <th>Resource</th>
-                                            <th>Edit</th>
-                                            <th>Delete</th>
+                                            <th>{{_ "actions"}}</th>
+                                            <th>{{_ "resource"}}</th>
+                                            <th>{{_ "edit"}}</th>
+                                            <th>{{_ "delete"}}</th>
                                         </tr>
                                         </thead>
                                         <tbody>
@@ -100,7 +99,7 @@
 
                                     <button id="btnAddNewPrivilegeToRole" type="button"
                                             class="btn btn-block btn-outline btn-primary"
-                                            style="margin-bottom: 10px">Add Privilege
+                                            style="margin-bottom: 10px">{{_ "add_privilege"}}
                                     </button>
                                 </div>
                             </div>
@@ -111,9 +110,9 @@
                                            style="width: 100%">
                                         <thead>
                                         <tr>
-                                            <th>Role</th>
-                                            <th>Database</th>
-                                            <th>Delete</th>
+                                            <th>{{_ "role"}}</th>
+                                            <th>{{_ "database"}}</th>
+                                            <th>{{_ "delete"}}</th>
                                         </tr>
                                         </thead>
                                         <tbody>
@@ -122,7 +121,7 @@
 
                                     <button id="btnAddNewInheritRoleToRole" type="button"
                                             class="btn btn-block btn-outline btn-primary"
-                                            style="margin-bottom: 10px">Add Role To Inherit
+                                            style="margin-bottom: 10px">{{_ "add_role_to_inherit"}}
                                     </button>
                                 </div>
                             </div>
@@ -131,12 +130,12 @@
                 </div>
                 <div class="modal-footer">
                     <div class="pull-left">
-                        <button type="button" class="btn btn-white" data-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-white" data-dismiss="modal">{{_ "close"}}</button>
                     </div>
                     <button id="btnApplyAddEditRole" type="button"
                             data-style="contract"
                             class="btn btn-outline btn-primary ladda-button">
-                        Save
+                        {{_ "save"}}
                     </button>
                 </div>
             </div>
@@ -150,17 +149,17 @@
             <div class="modal-content animated bounceInRight">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span><span
-                            class="sr-only">Close</span></button>
-                    <h4 id="addEditPrivilegeModalTitle" class="modal-title">Add Privilege</h4>
-                    <small id="addEditPrivilegeModalText" class="font-bold">Role
+                            class="sr-only">{{_ "close"}}</span></button>
+                    <h4 id="addEditPrivilegeModalTitle" class="modal-title">{{_ "add_privilege"}}</h4>
+                    <small id="addEditPrivilegeModalText" class="font-bold">{{_ "role"}}
                     </small>
                 </div>
                 <div class="modal-body">
                     <form class="form-horizontal">
-                        <div class="form-group"><label class="col-lg-2 control-label">DB / Resource</label>
+                        <div class="form-group"><label class="col-lg-2 control-label">{{_ "db_resource"}}</label>
                             <div class="col-lg-10">
                                 <select id="cmbPrivilegeResource"
-                                        data-placeholder="Choose a database or enter one"
+                                        data-placeholder="{{_ "enter_or_choose_database"}}"
                                         class="chosen-select form-control"
                                         tabindex="-1">
                                     <option></option>
@@ -168,10 +167,10 @@
                             </div>
                         </div>
 
-                        <div class="form-group"><label class="col-lg-2 control-label">Collection</label>
+                        <div class="form-group"><label class="col-lg-2 control-label">{{_ "collection"}}</label>
                             <div class="col-lg-10">
                                 <select id="cmbPrivilegeCollection"
-                                        data-placeholder="Choose a collection or enter one"
+                                        data-placeholder="{{_ "enter_or_choose_collection"}}"
                                         class="chosen-select form-control"
                                         tabindex="-1">
                                     <option></option>
@@ -180,10 +179,10 @@
                         </div>
 
                         <div class="form-group">
-                            <label class="col-sm-2 control-label">Actions</label>
+                            <label class="col-sm-2 control-label">{{_ "actions"}}</label>
                             <div class="col-lg-10"><select id="cmbActionsOfPrivilege"
                                                            multiple="true"
-                                                           data-placeholder="Choose an action"
+                                                           data-placeholder="{{_ "action"}}"
                                                            class="chosen-select form-control"
                                                            tabindex="-1">
                             </select></div>
@@ -192,7 +191,7 @@
                 </div>
                 <div class="modal-footer">
                     <div class="pull-left">
-                        <button type="button" class="btn btn-white" data-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-white" data-dismiss="modal">{{_ "close"}}</button>
                     </div>
                     <button id="btnApplyAddPrivilegeToRole"
                             type="button"
@@ -212,15 +211,15 @@
             <div class="modal-content animated bounceInRight">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span><span
-                            class="sr-only">Close</span></button>
-                    <h4>Add Role to Inherit</h4>
+                            class="sr-only">{{_ "close"}}</span></button>
+                    <h4>{{_ "add_role_to_inherit"}}</h4>
                 </div>
                 <div class="modal-body">
                     <form class="form-horizontal">
-                        <div class="form-group"><label class="col-lg-2 control-label">Database</label>
+                        <div class="form-group"><label class="col-lg-2 control-label">{{_ "database"}}</label>
                             <div class="col-lg-10">
                                 <select id="cmbDatabasesForInheritRole"
-                                        data-placeholder="Choose a database or enter one"
+                                        data-placeholder="{{_ "enter_or_choose_database"}}"
                                         class="chosen-select form-control"
                                         tabindex="-1">
                                     <option></option>
@@ -228,10 +227,10 @@
                             </div>
                         </div>
 
-                        <div class="form-group"><label class="col-lg-2 control-label">Role</label>
+                        <div class="form-group"><label class="col-lg-2 control-label">{{_ "role"}}</label>
                             <div class="col-lg-10">
                                 <select id="cmbRolesForDBForInheritedRole"
-                                        data-placeholder="Choose a role or enter one"
+                                        data-placeholder="{{_ "enter_or_choose_role"}}"
                                         class="chosen-select form-control"
                                         tabindex="-1">
                                     <option></option>
@@ -242,7 +241,7 @@
                 </div>
                 <div class="modal-footer">
                     <div class="pull-left">
-                        <button type="button" class="btn btn-white" data-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-white" data-dismiss="modal">{{_ "close"}}</button>
                     </div>
                     <button id="btnAddInheritRole"
                             type="button"

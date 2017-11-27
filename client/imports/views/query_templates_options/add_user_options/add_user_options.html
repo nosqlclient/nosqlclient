@@ -9,22 +9,20 @@
 
 <template name="customData">
     <div class="form-group">
-        <label class="col-lg-1 control-label">Custom data</label>
+        <label class="col-lg-1 control-label">{{_ "custom_data"}}</label>
         <div id="divCustomData" class="col-lg-11">
             <textarea id="txtCustomData" class="form-control"></textarea>
-            <span class="help-block m-b-none">Custom data associated with the user <strong>(only Mongodb 2.6 or
-                higher)</strong></span>
+            <span class="help-block m-b-none">{{{_ "custom_data_help_block"}}}</span>
         </div>
     </div>
 </template>
 
 <template name="roles">
     <div class="form-group">
-        <label class="col-lg-1 control-label">Roles</label>
+        <label class="col-lg-1 control-label">{{_ "roles"}}</label>
         <div id="divRoles" class="col-lg-11">
             <textarea id="txtRoles" class="form-control"></textarea>
-            <span class="help-block m-b-none">Array | Object<br/>Creating a user without roles is deprecated in <strong>MongoDB
-                >= 2.6</strong></span>
+            <span class="help-block m-b-none">{{{_ "roles_info"}}}</span>
         </div>
     </div>
 </template>

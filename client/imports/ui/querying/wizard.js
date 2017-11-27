@@ -33,7 +33,7 @@ QueryWizard.prototype = {
     sendButton2.prop('disabled', false);
 
     chatDiv.empty();
-    chatDiv.append($(`<div class="left"> <div class="author-name"> Nosqlclient </div> <div class="chat-message active">${Helper.translate({ key: 'wizard-start' })}</div></div> ` +
+    chatDiv.append($(`<div class="left"> <div class="author-name"> Nosqlclient </div> <div class="chat-message active">${Helper.translate({ key: 'wizard_start' })}</div></div> ` +
       '<div class="right"> <div class="author-name"> Me</div> <div class="chat-message"> Hmm...</div> </div>'));
 
     this.step = 1; this.selectedOption = null; this.fieldName = null; this.txtValue = null; this.regexOptions = null;
@@ -43,24 +43,24 @@ QueryWizard.prototype = {
 
     cmbDiv.css('display', 'none');
     cmb.prop('multiple', false);
-    cmb.attr('data-placeholder', Helper.translate({ key: 'wizard-start-user' }));
+    cmb.attr('data-placeholder', Helper.translate({ key: 'wizard_start_user' }));
     cmb.empty();
     cmb.append($(`<option></option> 
       <optgroup id="optGroupPositives" label="Positives">
-      <option value="1">${Helper.translate({ key: 'wizard-option-1' })}</option> 
-      <option value="2">${Helper.translate({ key: 'wizard-option-2' })}</option> 
-      <option value="3">${Helper.translate({ key: 'wizard-option-3' })}</option> 
-      <option value="4">${Helper.translate({ key: 'wizard-option-4' })}</option>  
-      <option value="5">${Helper.translate({ key: 'wizard-option-5' })}</option>  
-      <option value="6">${Helper.translate({ key: 'wizard-option-6' })}</option> 
+      <option value="1">${Helper.translate({ key: 'wizard_option_1' })}</option> 
+      <option value="2">${Helper.translate({ key: 'wizard_option_2' })}</option> 
+      <option value="3">${Helper.translate({ key: 'wizard_option_3' })}</option> 
+      <option value="4">${Helper.translate({ key: 'wizard_option_4' })}</option>  
+      <option value="5">${Helper.translate({ key: 'wizard_option_5' })}</option>  
+      <option value="6">${Helper.translate({ key: 'wizard_option_6' })}</option> 
       </optgroup> 
       <optgroup id="optGroupNegatives" label="Negatives"> 
-      <option value="-1">${Helper.translate({ key: 'wizard-option-minus-1' })}</option> 
-      <option value="-2">${Helper.translate({ key: 'wizard-option-minus-2' })}</option> 
-      <option value="-3">${Helper.translate({ key: 'wizard-option-minus-3' })}</option> 
-      <option value="-4">${Helper.translate({ key: 'wizard-option-minus-4' })}</option> 
-      <option value="-5">${Helper.translate({ key: 'wizard-option-minus-5' })}</option> 
-      <option value="-6">${Helper.translate({ key: 'wizard-option-minus-6' })}</option> 
+      <option value="-1">${Helper.translate({ key: 'wizard_option_minus_1' })}</option> 
+      <option value="-2">${Helper.translate({ key: 'wizard_option_minus_2' })}</option> 
+      <option value="-3">${Helper.translate({ key: 'wizard_option_minus_3' })}</option> 
+      <option value="-4">${Helper.translate({ key: 'wizard_option_minus_4' })}</option> 
+      <option value="-5">${Helper.translate({ key: 'wizard_option_minus_5' })}</option> 
+      <option value="-6">${Helper.translate({ key: 'wizard_option_minus_6' })}</option> 
       </optgroup>`));
     cmb.chosen('destroy');
   },
@@ -107,7 +107,7 @@ QueryWizard.prototype = {
         }
         chatDiv.append($(`<div class="right"><div class="author-name">Me </div> <div class="chat-message">${txt.val()}</div></div>`));
         chatDiv.append($('<div class="left"><div class="author-name">Nosqlclient </div> <div class="chat-message active"></div></div>'));
-        chatDiv.find('.left').last().find('.chat-message').html(Helper.translate({ key: 'wizard-step-1' }));
+        chatDiv.find('.left').last().find('.chat-message').html(Helper.translate({ key: 'wizard_step_1' }));
         txtDiv.css('display', 'none');
         cmbDiv.css('display', '');
         cmb.chosen({
@@ -129,7 +129,7 @@ QueryWizard.prototype = {
         chatDiv.append($(`<div class="right"><div class="author-name">Me </div> <div class="chat-message">I want to retrieve documents that ${
           text}</div></div>`));
         chatDiv.append($('<div class="left"><div class="author-name">Nosqlclient </div> <div class="chat-message active"></div></div>'));
-        chatDiv.find('.left').last().find('.chat-message').html(`Okay, ${stepText}`);
+        chatDiv.find('.left').last().find('.chat-message').html(stepText);
 
         this.step += 1;
         break;
@@ -144,7 +144,7 @@ QueryWizard.prototype = {
           const convertedValue = ExtendedJSON.convertAndCheckJSON(this.txtValue);
           if (convertedValue.ERROR || Object.prototype.toString.call(convertedValue) !== '[object Array]') {
             chatDiv.append($('<div class="left"><div class="author-name">Nosqlclient </div> <div class="chat-message active"></div></div>'));
-            chatDiv.find('.left').last().find('.chat-message').html(Helper.translate({ key: 'wizard-step-3-array-error' }));
+            chatDiv.find('.left').last().find('.chat-message').html(Helper.translate({ key: 'wizard_step_3_array_error' }));
             break;
           }
         }
@@ -203,27 +203,27 @@ QueryWizard.prototype = {
 
     if (this.selectedOption === '2' || this.selectedOption === '-2') {
       setTxtField();
-      return Helper.translate({ key: 'wizard-step-2-option-2' });
+      return Helper.translate({ key: 'wizard_step_2_option_2' });
     }
     if (this.selectedOption === '3') {
       setTxtField();
-      return Helper.translate({ key: 'wizard-step-2-option-3' });
+      return Helper.translate({ key: 'wizard_step_2_option_3' });
     }
     if (this.selectedOption === '-3') {
       setTxtField();
-      return Helper.translate({ key: 'wizard-step-2-option-minus-3' });
+      return Helper.translate({ key: 'wizard_step_2_option_minus_3' });
     }
     if (this.selectedOption === '4' || this.selectedOption === '-4') {
       setTxtField();
-      return Helper.translate({ key: 'wizard-step-2-option-4' });
+      return Helper.translate({ key: 'wizard_step_2_option_4' });
     }
     if (this.selectedOption === '5' || this.selectedOption === '-5') {
       setTxtField();
-      return Helper.translate({ key: 'wizard-step-2-option-5-6', options: { greater_or_less: this.selectedOption === '5' ? 'greater' : 'less' } });
+      return Helper.translate({ key: 'wizard_step_2_option_5_6' });
     }
     if (this.selectedOption === '6' || this.selectedOption === '-6') {
       setTxtField();
-      return Helper.translate({ key: 'wizard-step-2-option-5-6', options: { greater_or_less: this.selectedOption === '6' ? 'greater' : 'less' } });
+      return Helper.translate({ key: 'wizard_step_2_option_5_6' });
     }
   },
 
@@ -256,7 +256,7 @@ QueryWizard.prototype = {
 
       txtDiv.css('display', 'none');
       cmbDiv.css('display', '');
-      return Helper.translate({ key: 'wizard-step-2-option-2-final' });
+      return Helper.translate({ key: 'wizard_step_2_option_2_final' });
     }
 
     txt.prop('disabled', true);

@@ -6,10 +6,10 @@
             <div class="modal-content animated bounceInRight">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span><span
-                            class="sr-only">Close</span></button>
+                            class="sr-only">{{_ "close"}}</span></button>
                     <i class="fa fa-laptop modal-icon"></i>
-                    <h4 class="modal-title">Connections</h4>
-                    <small class="font-bold">You can either connect an existing connection or create a new one.
+                    <h4 class="modal-title">{{_ "connections"}}</h4>
+                    <small class="font-bold">{{_ "connections_description"}}
                     </small>
                 </div>
                 <div class="modal-body">
@@ -19,12 +19,12 @@
                         <thead>
                         <tr>
                             <th>_id</th>
-                            <th>Connection Name</th>
-                            <th>Servers</th>
-                            <th>Properties</th>
-                            <th>Edit</th>
-                            <th>Clone</th>
-                            <th>Delete</th>
+                            <th>{{_ "connection_name"}}</th>
+                            <th>{{_ "servers"}}</th>
+                            <th>{{_ "properties"}}</th>
+                            <th>{{_ "edit"}}</th>
+                            <th>{{_ "clone"}}</th>
+                            <th>{{_ "delete"}}</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -32,15 +32,15 @@
                     </table>
 
                     <button id="btnCreateNewConnection" type="button" class="btn btn-block btn-outline btn-primary">
-                        Create New
+                        {{_ "create_new"}}
                     </button>
                 </div>
                 <div class="modal-footer">
                     <div class="pull-left">
-                        <button type="button" class="btn btn-white" data-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-white" data-dismiss="modal">{{_ "close"}}</button>
                     </div>
-                    <button id="btnConnect" title="Select a connection" type="button" disabled="true"
-                            class="btn btn-primary ladda-button" data-style="contract">Connect Now
+                    <button id="btnConnect" title="{{_ "select_connection"}}" type="button" disabled="true"
+                            class="btn btn-primary ladda-button" data-style="contract">{{_ "connect"}}
                     </button>
                 </div>
             </div>
@@ -54,8 +54,8 @@
             <div class="modal-content animated bounceInRight">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span><span
-                            class="sr-only">Close</span></button>
-                    <h4 id="addEditConnectionModalTitle" class="modal-title">Add Connection</h4>
+                            class="sr-only">{{_ "close"}}</span></button>
+                    <h4 id="addEditConnectionModalTitle" class="modal-title">{{_ "add_connection"}}</h4>
                     <small id="addEditModalSmall" class="font-bold">{{getConnection.connectionName}}
                     </small>
                 </div>
@@ -66,7 +66,7 @@
                             <div class="col-lg-12"><input id="inputConnectionName"
                                                           data-required="true"
                                                           type="text"
-                                                          placeholder="Connection Name (optional)"
+                                                          placeholder="{{_ "connection_name"}} ({{_ "optional"}})"
                                                           class="form-control">
                             </div>
                         </div>
@@ -74,7 +74,7 @@
                             <div class="col-lg-12"><input id="inputUrl"
                                                           data-required="true"
                                                           type="text"
-                                                          placeholder="Connection URL (Overrides possible properties)"
+                                                          placeholder="{{_ "connection_url"}}"
                                                           class="form-control">
                             </div>
                         </div>
@@ -85,19 +85,19 @@
                             <ul class="nav nav-tabs">
                                 <li class="active"><a data-toggle="tab" href="#tab-1-connection"
                                                       aria-expanded="true">
-                                    Connection</a>
+                                    {{_ "connection"}}</a>
                                 </li>
                                 <li class=""><a data-toggle="tab" href="#tab-2-authentication"
-                                                aria-expanded="false">Authentication</a>
+                                                aria-expanded="false">{{_ "authentication"}}</a>
                                 </li>
                                 <li class=""><a id="anchorConnectionSsl" data-toggle="tab" href="#tab-3-ssl"
-                                                aria-expanded="false">SSL</a>
+                                                aria-expanded="false">{{_ "ssl"}}</a>
                                 </li>
                                 <li class=""><a data-toggle="tab" href="#tab-4-ssh"
-                                                aria-expanded="false">SSH</a>
+                                                aria-expanded="false">{{_ "ssh"}}</a>
                                 </li>
                                 <li class=""><a data-toggle="tab" href="#tab-5-connection-options"
-                                                aria-expanded="false">Options</a>
+                                                aria-expanded="false">{{_ "options"}}</a>
                                 </li>
                             </ul>
                             <div class="tab-content">
@@ -115,22 +115,22 @@
                                         <!--Authentication Type-->
                                         <form class="form-horizontal">
                                             <div class="form-group">
-                                                <label class="col-lg-2 control-label">Authentication Type
+                                                <label class="col-lg-2 control-label">{{_ "auth_type"}}
                                                 </label>
                                                 <div data-placement="top"
                                                      data-toggle="tooltip" class="col-lg-10">
                                                     <select id="cmbAuthenticationType"
-                                                            data-placeholder="Leave empty for no authentication"
+                                                            data-placeholder="{{_ "leave_empty_for_no_auth"}}"
                                                             class="chosen-select form-control"
                                                             tabindex="-1">
                                                         <option></option>
-                                                        <option value="scram_sha_1">Scram-Sha-1</option>
-                                                        <option value="mongodb_cr">Mongodb-CR</option>
-                                                        <option value="mongodb_x509">X509</option>
-                                                        <option value="gssapi">Kerberos (GSSAPI)</option>
-                                                        <option value="plain">LDAP (Plain)</option>
+                                                        <option value="scram_sha_1">{{_ "scram_sha_1"}}</option>
+                                                        <option value="mongodb_cr">{{_ "mongodb_cr"}}</option>
+                                                        <option value="mongodb_x509">{{_ "x509"}}</option>
+                                                        <option value="gssapi">{{_ "kerberos"}}</option>
+                                                        <option value="plain">{{_ "ldap"}}</option>
                                                     </select>
-                                                    <span class="help-block m-b-none"><b>Mongodb-CR</b> is for prior MongoDB 3.0 versions, select <b>Scram-Sha-1</b> if you don't know what to do</span>
+                                                    <span class="help-block m-b-none">{{{_ "auth_warning"}}}</span>
                                                 </div>
                                             </div>
                                         </form>
@@ -146,13 +146,13 @@
                                         {{#if authenticationMethod "mongodb_x509"}}
                                             <form class="form-horizontal">
                                                 <div class="form-group"><label
-                                                        class="col-lg-2 control-label">Username</label>
+                                                        class="col-lg-2 control-label">{{_ "username"}}</label>
                                                     <div data-placement="top"
                                                          data-toggle="tooltip" class="col-lg-10"><input
                                                             id="inputX509Username"
                                                             data-required="true"
                                                             type="text"
-                                                            placeholder="Subject from certificate"
+                                                            placeholder="{{_ "subject_from_certificate"}}"
                                                             class="form-control">
                                                     </div>
                                                 </div>
@@ -176,8 +176,7 @@
                                 <div id="tab-3-ssl" class="tab-pane">
                                     <div class="panel-body no-borders modal-background">
                                         <form id="formSSL" class="form-horizontal">
-                                            <div class="form-group"><label class="col-lg-2 control-label">Use
-                                                SSL</label>
+                                            <div class="form-group"><label class="col-lg-2 control-label">{{_ "use_ssl"}}</label>
                                                 <div data-placement="top"
                                                      data-toggle="tooltip" id="divUseSSL" class="col-lg-10">
                                                     <input id="inputUseSSL" type="checkbox"
@@ -185,7 +184,7 @@
                                                            checked=""
                                                            style="position: absolute; opacity: 0;"/>
                                                     <span id="spanUseSSL" style="display: none;"
-                                                          class="help-block m-b-none"><b>Clear URL</b> to activate here</span>
+                                                          class="help-block m-b-none">{{{_ "clear_url_to_activate"}}}</span>
                                                 </div>
                                             </div>
 
@@ -201,8 +200,7 @@
                                 <!-- TAB 4-->
                                 <div id="tab-4-ssh" class="tab-pane">
                                     <div class="panel-body no-borders modal-background">
-                                        <div class="form-group"><label class="col-lg-2 control-label">Use
-                                            SSH</label>
+                                        <div class="form-group"><label class="col-lg-2 control-label">{{_ "use_ssh"}}</label>
                                             <div id="divUseSSH" class="col-lg-10">
                                                 <input id="inputUseSSH" type="checkbox"
                                                        class="form-control"
@@ -235,10 +233,10 @@
 
                 <div class="modal-footer">
                     <div class="pull-left">
-                        <button type="button" class="btn btn-white" data-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-white" data-dismiss="modal">{{_ "close"}}</button>
                     </div>
                     <button id="btnSaveConnection" type="button" class="btn btn-primary ladda-button"
-                            data-style="contract">Save changes
+                            data-style="contract">{{_ "save"}}
                     </button>
                 </div>
             </div>
@@ -253,10 +251,10 @@
             <div class="modal-content animated bounceInRight">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span><span
-                            class="sr-only">Close</span></button>
+                            class="sr-only">{{_ "close"}}</span></button>
                     <i class="fa fa-key modal-icon"></i>
-                    <h4 class="modal-title">Credentials</h4>
-                    <small class="font-bold">You should enter username & password to continue connecting...
+                    <h4 class="modal-title">{{_ "credentials"}}</h4>
+                    <small class="font-bold">{{_ "credentials_prompt"}}
                     </small>
                 </div>
                 <div class="modal-body">
@@ -266,7 +264,7 @@
                                 <input id="inputPromptedUsername"
                                        data-required="true"
                                        type="text"
-                                       placeholder="Username"
+                                       placeholder="{{_ "username"}}"
                                        class="form-control">
                             </div>
                         </div>
@@ -274,7 +272,7 @@
                             <div data-placement="top"
                                  data-toggle="tooltip" class="col-lg-12">
                                 <div class="input-group"><input id="inputPromptedPassword" type="password"
-                                                                placeholder="Password"
+                                                                placeholder="{{_ "password"}}"
                                                                 class="form-control">
                                     <span class="input-group-btn"> <button type="button" class="btn btn-white showpass"><span
                                             class="glyphicon glyphicon-eye-open"></span>
@@ -285,10 +283,10 @@
                 </div>
                 <div class="modal-footer">
                     <div class="pull-left">
-                        <button type="button" class="btn btn-white" data-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-white" data-dismiss="modal">{{_ "close"}}</button>
                     </div>
-                    <button id="btnProceedConnecting" title="Connect Now" type="button"
-                            class="btn btn-primary ladda-button" data-style="contract">Connect Now
+                    <button id="btnProceedConnecting" title="{{_ "connect"}}" type="button"
+                            class="btn btn-primary ladda-button" data-style="contract">{{_ "connect"}}
                     </button>
                 </div>
             </div>
@@ -299,22 +297,22 @@
 <template name="kerberosTemplate">
     <form class="form-horizontal">
         <div class="form-group"><label
-                class="col-lg-2 control-label">Username</label>
+                class="col-lg-2 control-label">{{_ "username"}}</label>
             <div data-placement="top"
                  data-toggle="tooltip" class="col-lg-10"><input id="inputKerberosUsername"
                                                                 data-required="true"
                                                                 type="text"
-                                                                placeholder="Username"
+                                                                placeholder="{{_ "username"}}"
                                                                 class="form-control">
             </div>
         </div>
         <div class="form-group">
-            <label class="col-lg-2 control-label">Password</label>
+            <label class="col-lg-2 control-label">{{_ "password"}}</label>
             <div class="col-lg-10">
                 <div data-placement="top"
                      data-toggle="tooltip" class="input-group">
                     <input id="inputKerberosPassword" type="password"
-                           placeholder="Password (optional)"
+                           placeholder="{{_ "password"}} ({{_ "optional"}})"
                            class="form-control">
                     <span class="input-group-btn"> <button type="button" class="btn btn-white showpass"><span
                             class="glyphicon glyphicon-eye-open"></span>
@@ -326,13 +324,13 @@
         <div class="hr-line-dashed"></div>
 
         <div class="form-group"><label
-                class="col-lg-2 control-label">Service Name</label>
+                class="col-lg-2 control-label">{{_ "service_name"}}</label>
             <div data-placement="top"
                  data-toggle="tooltip" class="col-lg-10"><input id="inputKerberosServiceName"
                                                                 data-required="true"
                                                                 type="text"
                                                                 value="mongodb"
-                                                                placeholder="Service Name"
+                                                                placeholder="{{_ "service_name"}}"
                                                                 class="form-control">
             </div>
         </div>
@@ -342,21 +340,21 @@
 <template name="ldapTemplate">
     <form class="form-horizontal">
         <div class="form-group"><label
-                class="col-lg-2 control-label">Username</label>
+                class="col-lg-2 control-label">{{_ "username"}}</label>
             <div data-placement="top"
                  data-toggle="tooltip" class="col-lg-10"><input id="inputLdapUsername"
                                                                 data-required="true"
                                                                 type="text"
-                                                                placeholder="Username"
+                                                                placeholder="{{_ "username"}}"
                                                                 class="form-control">
             </div>
         </div>
         <div class="form-group">
-            <label class="col-lg-2 control-label">Password</label>
+            <label class="col-lg-2 control-label">{{_ "password"}}</label>
             <div data-placement="top"
                  data-toggle="tooltip" class="col-lg-10">
                 <div class="input-group"><input id="inputLdapPassword" type="password"
-                                                placeholder="Password"
+                                                placeholder="{{_ "password"}}"
                                                 class="form-control">
                     <span class="input-group-btn"> <button type="button" class="btn btn-white showpass"><span
                             class="glyphicon glyphicon-eye-open"></span>
@@ -368,7 +366,7 @@
 </template>
 
 <template name="connectionOptions">
-    <div class="form-group"><label class="col-lg-2 control-label">Connection Timeout</label>
+    <div class="form-group"><label class="col-lg-2 control-label">{{_ "conn_timeout"}}</label>
         <div data-placement="top"
              data-toggle="tooltip" class="col-lg-10">
             <div class="input-group m-b">
@@ -376,15 +374,15 @@
                        data-required="true"
                        min="1"
                        type="number"
-                       placeholder="Connection Timeout"
+                       placeholder="{{_ "conn_timeout"}}"
                        class="form-control">
-                <span class="input-group-addon"> Seconds</span>
+                <span class="input-group-addon"> {{_ "seconds"}}</span>
             </div>
-            <span class="help-block m-b-none">Enter to override <b>default</b> connection timeout <b>from settings</b>, <b>0</b> is infinite</span>
+            <span class="help-block m-b-none">{{{_ "override_conn_timeout_info"}}}</span>
         </div>
     </div>
 
-    <div class="form-group"><label class="col-lg-2 control-label">Socket Timeout</label>
+    <div class="form-group"><label class="col-lg-2 control-label">{{_ "socket_timeout"}}</label>
         <div data-placement="top"
              data-toggle="tooltip" class="col-lg-10">
             <div class="input-group m-b">
@@ -392,51 +390,51 @@
                        data-required="true"
                        min="1"
                        type="number"
-                       placeholder="Socket Timeout"
+                       placeholder="{{_ "socket_timeout"}}"
                        class="form-control">
-                <span class="input-group-addon"> Seconds</span>
+                <span class="input-group-addon"> {{_ "seconds"}}</span>
             </div>
-            <span class="help-block m-b-none">Enter to override <b>default</b> socket timeout <b>from settings</b>, <b>0</b> is infinite</span>
+            <span class="help-block m-b-none">{{{_ "override_socket_timeout_info"}}}</span>
         </div>
     </div>
 
     <div class="hr-line-dashed"></div>
 
-    <div class="form-group"><label class="col-lg-2 control-label">Replica Name</label>
+    <div class="form-group"><label class="col-lg-2 control-label">{{_ "replica_name"}}</label>
         <div data-placement="top"
              data-toggle="tooltip" class="col-lg-10">
             <input id="inputReplicaSetName"
                    data-required="true"
                    min="1"
                    type="text"
-                   placeholder="Replica Set Name"
+                   placeholder="{{_ "replica_name"}}"
                    class="form-control">
-            <span class="help-block m-b-none">Use for <b>replica sets</b></span>
+            <span class="help-block m-b-none">{{{_ "replica_field_info"}}}</span>
         </div>
     </div>
 
     <!--Read Preference-->
     <div class="form-group">
-        <label class="col-lg-2 control-label">Read Preference</label>
+        <label class="col-lg-2 control-label">{{_ "read_preference"}}</label>
         <div data-placement="top"
              data-toggle="tooltip" class="col-lg-10">
             <select id="cmbReadPreference"
-                    data-placeholder="Read preference"
+                    data-placeholder="{{_ "read_preference"}}"
                     class="chosen-select form-control"
                     tabindex="-1">
                 <option></option>
-                <option value="primary">Primary</option>
-                <option value="primaryPreferred">Primary Preferred</option>
-                <option value="secondary">Secondary</option>
-                <option value="secondaryPreferred">Secondary Preferred</option>
-                <option value="nearest">Nearest</option>
+                <option value="primary">{{_ "primary"}}</option>
+                <option value="primaryPreferred">{{_ "primary_preferred"}}</option>
+                <option value="secondary">{{_ "secondary"}}</option>
+                <option value="secondaryPreferred">{{_ "secondary_preferred"}}</option>
+                <option value="nearest">{{_ "nearest"}}</option>
             </select>
-            <span class="help-block m-b-none">Use for <b>replica sets or sharded clusters</b></span>
+            <span class="help-block m-b-none">{{{_ "read_preference_info"}}}</span>
         </div>
     </div>
 
     <!--Connect with no primary-->
-    <div class="form-group"><label class="col-lg-2 control-label">Connect With No Primary</label>
+    <div class="form-group"><label class="col-lg-2 control-label">{{_ "connect_with_no_primary"}}</label>
         <div id="divConnectWithNoPrimary" class="col-lg-10">
             <input data-placement="top"
                    data-toggle="tooltip" id="inputConnectWithNoPrimary" type="checkbox"
@@ -451,62 +449,62 @@
 <template name="sshTemplate">
     <form class="form-horizontal">
         <div class="form-group"><label
-                class="col-lg-2 control-label">Hostname</label>
+                class="col-lg-2 control-label">{{_ "hostname"}}</label>
             <div class="col-lg-10"><input id="inputSshHostname"
                                           data-required="true"
                                           type="text"
-                                          placeholder="Hostname"
+                                          placeholder="{{_ "hostname"}}"
                                           class="form-control">
             </div>
         </div>
-        <div class="form-group"><label class="col-lg-2 control-label">Port</label>
+        <div class="form-group"><label class="col-lg-2 control-label">{{_ "port"}}</label>
             <div class="col-lg-10"><input id="inputSshPort"
                                           data-required="true"
                                           min="1"
                                           type="number"
-                                          placeholder="Port"
+                                          placeholder="{{_ "port"}}"
                                           class="form-control">
             </div>
         </div>
-        <div class="form-group"><label class="col-lg-2 control-label">Destination Port</label>
+        <div class="form-group"><label class="col-lg-2 control-label">{{_ "destination_port"}}</label>
             <div class="col-lg-10"><input id="inputSshDestinationPort"
                                           data-required="true"
                                           min="1"
                                           type="number"
-                                          placeholder="Destination port"
+                                          placeholder="{{_ "destination_port"}}"
                                           class="form-control">
-                <span class="help-block m-b-none">Remote <b>mongod/mongos</b> instance's port</span>
+                <span class="help-block m-b-none">{{{_ "destination_port_info"}}}</span>
             </div>
         </div>
-        <div class="form-group"><label class="col-lg-2 control-label">Local Port</label>
+        <div class="form-group"><label class="col-lg-2 control-label">{{_ "local_port"}}</label>
             <div class="col-lg-10"><input id="inputSshLocalPort"
                                           data-required="true"
                                           min="1"
                                           type="number"
-                                          placeholder="Local port"
+                                          placeholder="{{_ "local_port"}}"
                                           class="form-control">
-                <span class="help-block m-b-none">By default it's same as <b>MongoDB</b> port in the first tab, you can optionally set another port to <b>here</b> and <b>first tab</b></span>
+                <span class="help-block m-b-none">{{{_ "local_port_info"}}}</span>
             </div>
         </div>
         <div class="form-group"><label
-                class="col-lg-2 control-label">Username</label>
+                class="col-lg-2 control-label">{{_ "username"}}</label>
             <div class="col-lg-10"><input id="inputSshUsername"
                                           data-required="true"
                                           type="text"
-                                          placeholder="Username"
+                                          placeholder="{{_ "username"}}"
                                           class="form-control">
             </div>
         </div>
         <div class="form-group">
-            <label class="col-lg-2 control-label">Authentication</label>
+            <label class="col-lg-2 control-label">{{_ "authentication"}}</label>
             <div class="col-lg-10">
                 <select id="cmbSshAuthType"
-                        data-placeholder="Authentication type.."
+                        data-placeholder="{{_ "auth_type"}}"
                         class="chosen-select form-control"
                         tabindex="-1">
                     <option></option>
-                    <option value="Certificate">Certificate</option>
-                    <option value="Password">Password</option>
+                    <option value="Certificate">{{_ "certificate"}}</option>
+                    <option value="Password">{{_ "password"}}</option>
                 </select>
             </div>
         </div>
@@ -516,7 +514,7 @@
     <form id="formSshCertificateAuth" class="form-horizontal"
           style="display: none;">
         <div class="form-group">
-            <label class="col-lg-2 control-label">Certificate </label>
+            <label class="col-lg-2 control-label">{{_ "certificate"}} </label>
             <div class="col-lg-10">
                 <input class="form-control filestyle" type="file"
                        id="inputSshCertificate"
@@ -524,10 +522,10 @@
             </div>
         </div>
         <div class="form-group">
-            <label class="col-lg-2 control-label">PassPhrase</label>
+            <label class="col-lg-2 control-label">{{_ "passphrase"}}</label>
             <div class="col-lg-10">
                 <div class="input-group"><input id="inputSshPassPhrase" type="password"
-                                                placeholder="PassPhrase"
+                                                placeholder="{{_ "passphrase"}}"
                                                 class="form-control">
                     <span class="input-group-btn"> <button type="button" class="btn btn-white showpass"><span
                             class="glyphicon glyphicon-eye-open"></span>
@@ -540,11 +538,11 @@
     <!-- PASSWORD AUTH FORM FOR SSH-->
     <form id="formSshPasswordAuth" class="form-horizontal" style="display: none;">
         <div class="form-group">
-            <label class="col-lg-2 control-label">Password</label>
+            <label class="col-lg-2 control-label">{{_ "password"}}</label>
             <div class="col-lg-10">
                 <div class="input-group">
-                    <input id="inputSshPassword" type="password"
-                           placeholder="Password"
+                    <input id="inputSshPassword" type="{{_ "password"}}"
+                           placeholder="{{_ "password"}}"
                            class="form-control">
                     <span class="input-group-btn"> <button type="button" class="btn btn-white showpass"><span
                             class="glyphicon glyphicon-eye-open"></span>
@@ -559,11 +557,11 @@
     <form class="form-horizontal">
         <!-- Hosts to connect -->
         <div class="form-group divHostField" style="display: none">
-            <label class="col-lg-2 control-label">Host/Port</label>
+            <label class="col-lg-2 control-label">{{_ "host_port"}}</label>
             <div class="col-lg-8">
                 <div data-placement="top"
                      data-toggle="tooltip" class="input-group"><input type="text"
-                                                                      placeholder="Host Name / IP Address"
+                                                                      placeholder="{{_ "hostname"}}"
                                                                       class="form-control txtHostName">
                     <div class="input-group-btn">
                         <button data-toggle="dropdown"
@@ -572,10 +570,10 @@
                         <ul class="dropdown-menu pull-right">
                             <li><a class="addHost" href="#"><i
                                     class="fa fa-plus"></i>
-                                Add Another</a>
+                                {{_ "add_another"}}</a>
                             </li>
                             <li><a class="deleteHost" href="#"><i
-                                    class="fa fa-remove"></i> Delete</a>
+                                    class="fa fa-remove"></i> {{_ "delete"}}</a>
                             </li>
                         </ul>
                     </div>
@@ -586,22 +584,22 @@
                                                                data-required="true"
                                                                min="1"
                                                                type="number"
-                                                               placeholder="Port"
+                                                               placeholder="{{_ "port"}}"
                                                                class="form-control txtPort">
             </div>
         </div>
 
         <!--DB Name to connect-->
         <div class="form-group">
-            <label class="col-lg-2 control-label">Database Name</label>
+            <label class="col-lg-2 control-label">{{_ "db_name"}}</label>
             <div data-placement="top"
                  data-toggle="tooltip" class="col-lg-10"><input id="inputDatabaseName"
                                                                 data-required="true"
                                                                 type="text"
                                                                 value="test"
-                                                                placeholder="Uses admin, if not provided"
+                                                                placeholder="{{_ "db_name_placeholder"}}"
                                                                 class="form-control">
-                <span class="help-block m-b-none">You can use <b>More - Switch Database</b> afterwards</span>
+                <span class="help-block m-b-none">{{{_ "db_name_info"}}}</span>
             </div>
         </div>
     </form>
@@ -610,22 +608,22 @@
 <template name="basicAuthTemplate">
     <form id="formBasicAuthentication" class="form-horizontal">
         <div class="form-group">
-            <label class="col-lg-2 control-label">Username
+            <label class="col-lg-2 control-label">{{_ "username"}}
             </label>
             <div data-placement="top"
                  data-toggle="tooltip" class="col-lg-10">
                 <input id="inputUser" type="text"
-                       placeholder="Username"
+                       placeholder="{{_ "username"}}"
                        class="form-control">
             </div>
         </div>
         <div class="form-group">
-            <label class="col-lg-2 control-label">Password
+            <label class="col-lg-2 control-label">{{_ "password"}}
             </label>
             <div data-placement="top"
                  data-toggle="tooltip" class="col-lg-10">
                 <div class="input-group"><input id="inputPassword" type="password"
-                                                placeholder="Password"
+                                                placeholder="{{_ "password"}}"
                                                 class="form-control">
                     <span class="input-group-btn"> <button type="button" class="btn btn-white showpass"><span
                             class="glyphicon glyphicon-eye-open"></span>
@@ -633,12 +631,12 @@
             </div>
         </div>
         <div class="form-group">
-            <label class="col-lg-2 control-label">Authentication DB
+            <label class="col-lg-2 control-label">{{_ "auth_db"}}
             </label>
             <div class="col-lg-10">
                 <input data-placement="top"
                        data-toggle="tooltip" id="inputAuthenticationDB" type="text"
-                       placeholder="Specify if user is defined in a different DB"
+                       placeholder="{{_ "auth_db_placeholder"}}"
                        class="form-control">
             </div>
         </div>
@@ -649,19 +647,19 @@
     <form class="form-horizontal">
         <!-- Certificate Validation -->
         <div class="form-group">
-            <label class="col-lg-2 control-label">Root CA File
+            <label class="col-lg-2 control-label">{{_ "root_ca_file"}}
             </label>
             <div class="col-lg-10">
                 <input class="form-control filestyle" type="file"
                        id="inputRootCA"
                        data-buttonName="btn-primary">
-                <span class="help-block m-b-none">Leave empty for no validation</span>
+                <span class="help-block m-b-none">{{{_ "leave_empty_for_no_validation"}}}</span>
             </div>
         </div>
 
         <!-- Certificate -->
         <div class="form-group">
-            <label class="col-lg-2 control-label">Certificate
+            <label class="col-lg-2 control-label">{{_ "certificate"}}
             </label>
             <div class="col-lg-10">
                 <input class="form-control filestyle" type="file"
@@ -671,13 +669,13 @@
         </div>
 
         <!-- Certificate Passphrase-->
-        <div class="form-group"><label class="col-lg-2 control-label">Passphrase
+        <div class="form-group"><label class="col-lg-2 control-label">{{_ "passphrase"}}
         </label>
             <div data-placement="top"
                  data-toggle="tooltip" class="col-lg-10">
                 <div class="input-group">
                     <input id="inputPassPhrase" type="password"
-                           placeholder="Leave empty for no passphrase"
+                           placeholder="{{_ "leave_empty_for_no_passphrase"}}"
                            class="form-control">
                     <span class="input-group-btn"> <button type="button" class="btn btn-white showpass"><span
                             class="glyphicon glyphicon-eye-open"></span>
@@ -688,7 +686,7 @@
 
         <!-- Certificate Key File-->
         <div class="form-group">
-            <label class="col-lg-2 control-label">Certificate Key File
+            <label class="col-lg-2 control-label">{{_ "certificate_key_file"}}
             </label>
             <div class="col-lg-10">
                 <input class="form-control filestyle" type="file"
@@ -698,7 +696,7 @@
         </div>
 
         <!-- Allow invalid hostnames -->
-        <div class="form-group"><label class="col-lg-2 control-label">Disable Hostname Verification</label>
+        <div class="form-group"><label class="col-lg-2 control-label">{{_ "disable_hostname_verification"}}</label>
             <div data-placement="top"
                  data-toggle="tooltip" id="divDisableHostnameVerification" class="col-lg-1">
                 <input id="inputDisableHostnameVerification" type="checkbox"

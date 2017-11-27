@@ -118,11 +118,11 @@ CollectionUtil.prototype = {
 
   cloneCollection(selectedCollection) {
     Notification.modal({
-      title: 'collection-name',
-      text: 'collection-name',
+      title: 'collection_name',
+      text: 'collection_name',
       type: 'input',
       closeOnConfirm: false,
-      inputPlaceholder: 'collection-name',
+      inputPlaceholder: 'collection_name',
       inputValue: selectedCollection,
       callback: (inputValue) => {
         if (!inputValue) {
@@ -153,7 +153,7 @@ CollectionUtil.prototype = {
         title: 'mongo-tools',
         text: 'mongo-tools-info',
         type: 'info',
-        confirmButtonText: 'dont-show-again',
+        confirmButtonText: 'dont_show_again',
         callback: (isConfirm) => {
           if (isConfirm) localStorage.setItem(Enums.LOCAL_STORAGE_KEYS.MONGO_BINARY_INFO, 'true');
         }
@@ -203,11 +203,11 @@ CollectionUtil.prototype = {
     const self = this;
     return {
       manage_collection: {
-        name: 'Manage',
+        name: Helper.translate({ key: 'manage' }),
         icon: 'fa-pencil',
         items: {
           view_collection: {
-            name: 'Show Collection/View',
+            name: Helper.translate({ key: 'show_coll_view_info' }),
             icon: 'fa-book',
             callback() {
               if ($(this) && $(this).context && $(this).context.innerText) {
@@ -223,7 +223,7 @@ CollectionUtil.prototype = {
 
           convert_to_capped: {
             icon: 'fa-level-down',
-            name: 'Convert to Capped',
+            name: Helper.translate({ key: 'convert_to_capped' }),
             callback() {
               const collectionName = $(this).context.innerText.substring(1).split(' ')[0];
               convertToCappedModal.data('collection', collectionName);
@@ -233,7 +233,7 @@ CollectionUtil.prototype = {
 
           rename_collection: {
             icon: 'fa-pencil-square-o',
-            name: 'Rename',
+            name: Helper.translate({ key: 'rename' }),
             callback() {
               const collectionName = $(this).context.innerText.substring(1).split(' ')[0];
               renameModal.data('collection', collectionName);
@@ -243,7 +243,7 @@ CollectionUtil.prototype = {
 
           clone_collection: {
             icon: 'fa-clone',
-            name: 'Clone',
+            name: Helper.translate({ key: 'clone' }),
             callback() {
               const selectedCollection = $(this).context.innerText.substring(1).split(' ')[0];
               self.cloneCollection(selectedCollection);
@@ -252,7 +252,7 @@ CollectionUtil.prototype = {
 
           validation_rules: {
             icon: 'fa-check-circle',
-            name: 'Edit Validation Rules',
+            name: Helper.translate({ key: 'edit_validation_rules' }),
             callback() {
               const collectionName = $(this).context.innerText.substring(1).split(' ')[0];
               validationRulesModal.data('collection', collectionName);
@@ -261,20 +261,20 @@ CollectionUtil.prototype = {
           },
 
           clear_collection: {
-            name: 'Clear Collection',
+            name: Helper.translate({ key: 'clear_collection' }),
             icon: 'fa-remove',
             callback() {
               if ($(this) && $(this).context && $(this).context.innerText) {
                 const collectionName = $(this).context.innerText.substring(1).split(' ')[0];
                 self.clearCollection(collectionName);
-              } else Notification.warning('select-collection');
+              } else Notification.warning('select_collection');
             }
           }
         }
       },
 
       add_collection: {
-        name: 'Add Collection/View',
+        name: Helper.translate({ key: 'add_coll_view' }),
         icon: 'fa-plus',
         callback() {
           addCollectionModal.data('is-view', '');
@@ -285,14 +285,14 @@ CollectionUtil.prototype = {
         },
       },
       filter_collections: {
-        name: 'Filter Collections',
+        name: Helper.translate({ key: 'filter' }),
         icon: 'fa-filter',
         callback() {
           filterModal.modal('show');
         },
       },
       clear_filter: {
-        name: 'Clear Filter',
+        name: Helper.translate({ key: 'clear_filter' }),
         icon: 'fa-minus-circle',
         callback() {
           CollectionFilter.excludedCollectionsByFilter.set([]);
@@ -300,24 +300,24 @@ CollectionUtil.prototype = {
         },
       },
       refresh_collections: {
-        name: 'Refresh Collections',
+        name: Helper.translate({ key: 'refresh_collections' }),
         icon: 'fa-refresh',
         callback() {
           Connection.connect(true);
         },
       },
       drop_collection: {
-        name: 'Drop Collection',
+        name: Helper.translate({ key: 'drop_collection' }),
         icon: 'fa-trash',
         callback() {
           if ($(this) && $(this).context && $(this).context.innerText) {
             const collectionName = $(this).context.innerText.substring(1).split(' ')[0];
             self.dropCollection(collectionName);
-          } else Notification.warning('select-collection');
+          } else Notification.warning('select_collection');
         },
       },
       drop_collections: {
-        name: 'Drop All Collections',
+        name: Helper.translate({ key: 'drop_all_collections' }),
         icon: 'fa-ban',
         callback() {
           self.dropAllCollections();
@@ -344,7 +344,7 @@ CollectionUtil.prototype = {
         args: { selectedCollection },
         callback: (err, result) => {
           if (err || result.error) {
-            const errorMessage = Helper.translate({ key: 'fetch-stats-error' });
+            const errorMessage = Helper.translate({ key: 'fetch_stats_error' });
             $('#divCollectionInfo').html(`<div class="row"><div class="col-lg-7"><b>${errorMessage}</b></div><div class="col-lg-5">${ErrorHandler.getErrorMessage(err, result)}</div></div>`);
           } else this.populateCollectionInfo(result.result, settings);
           Notification.stop();
@@ -373,17 +373,17 @@ CollectionUtil.prototype = {
     }
     // we are manually doing the scale to prevent showing 0 MB for sizes 0.7, 0.8, 0.9 etc. MBs as mongodb does.
     let resultString = `<div class="row"><div class="col-lg-7"><b>${Helper.translate({ key: 'count' })}:</b></div><div class="col-lg-5">${statsResult.count}</div></div>`;
-    resultString += `<div class="row"><div class="col-lg-7"><b>${Helper.translate({ key: 'index-count' })}:</b></div><div class="col-lg-5">${statsResult.nindexes}</div></div>`;
+    resultString += `<div class="row"><div class="col-lg-7"><b>${Helper.translate({ key: 'index_count' })}:</b></div><div class="col-lg-5">${statsResult.nindexes}</div></div>`;
 
     const size = Number.isNaN(Number(statsResult.size / scale)) ? '0.00' : Number(statsResult.size / scale).toFixed(2);
     resultString += `<div class="row"><div class="col-lg-7"><b>${Helper.translate({ key: 'size' })}:</b></div><div class="col-lg-5">${size} ${text}</div></div>`;
 
     const totalIndexSize = Number.isNaN(Number(statsResult.totalIndexSize / scale)) ? '0.00' : Number(statsResult.totalIndexSize / scale).toFixed(2);
-    resultString += `<div class="row"><div class="col-lg-7"><b>${Helper.translate({ key: 'total-index-size' })}:</b></div><div class="col-lg-5">${totalIndexSize} ${text}</div></div>`;
+    resultString += `<div class="row"><div class="col-lg-7"><b>${Helper.translate({ key: 'total_index_size' })}:</b></div><div class="col-lg-5">${totalIndexSize} ${text}</div></div>`;
 
     const avgObjSize = Number.isNaN(Number(statsResult.avgObjSize / scale)) ? '0.00' : Number(statsResult.avgObjSize / scale).toFixed(2);
-    resultString += `<div class="row"><div class="col-lg-7"><b>${Helper.translate({ key: 'avg-obj-size' })}:</b></div><div class="col-lg-5">${avgObjSize} ${text}</div></div>`;
-    resultString += `<div class="row"><div class="col-lg-7"><b>${Helper.translate({ key: 'is-capped' })}:</b></div><div class="col-lg-5">${statsResult.capped}</div></div>`;
+    resultString += `<div class="row"><div class="col-lg-7"><b>${Helper.translate({ key: 'avg_obj_size' })}:</b></div><div class="col-lg-5">${avgObjSize} ${text}</div></div>`;
+    resultString += `<div class="row"><div class="col-lg-7"><b>${Helper.translate({ key: 'is_capped' })}:</b></div><div class="col-lg-5">${statsResult.capped}</div></div>`;
 
     $('#divCollectionInfo').html(resultString);
   },

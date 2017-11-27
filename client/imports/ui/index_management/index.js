@@ -91,7 +91,7 @@ IndexManagement.prototype = {
     $('#inputUnique').iCheck('uncheck');
     $('#inputBackground').iCheck('uncheck');
     $('#inputSparse').iCheck('uncheck');
-    $('#addIndexModalTitle').html(Helper.translate({ key: 'add-index' }));
+    $('#addIndexModalTitle').html(Helper.translate({ key: 'add_index' }));
     $('#btnSaveIndex').prop('disabled', false);
     $('#cmbTextIndexVersion, #cmbTextIndexDefaultLanguage').find('option').prop('selected', false).trigger('chosen:updated');
   },

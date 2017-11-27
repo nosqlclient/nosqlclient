@@ -20,7 +20,7 @@ Connection.prototype = {
   switchDatabase() {
     const selector = $('#inputDatabaseNameToSwitch');
     if (!selector.val()) {
-      Notification.error('enter-or-choose-database');
+      Notification.error('enter_or_choose_database');
       return;
     }
 

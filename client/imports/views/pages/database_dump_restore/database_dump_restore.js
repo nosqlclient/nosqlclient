@@ -2,11 +2,18 @@ import { Template } from 'meteor/templating';
 import { SessionManager } from '/client/imports/modules';
 import { Backup } from '/client/imports/ui';
 import { FlowRouter } from 'meteor/kadira:flow-router';
+import Helper from '/client/imports/helpers/helper';
 import './database_dump_restore.html';
 import './options/options';
 
 Template.databaseDumpRestore.onDestroyed(() => {
   Backup.removeDumpLogs();
+});
+
+Template.databaseDumpRestore.helpers({
+  getPageHeading() {
+    return Helper.translate({ key: 'dump_restore' });
+  }
 });
 
 Template.databaseDumpRestore.onRendered(function () {

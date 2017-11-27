@@ -1,9 +1,9 @@
 <template name="stats">
     <div class="form-group">
-        <label class="col-lg-1 control-label">Options</label>
+        <label class="col-lg-1 control-label">{{_ "options"}}</label>
         <div class="col-lg-11">
             <select id="cmbStatsOptions"
-                    data-placeholder="Choose one or more options.."
+                    data-placeholder="{{_ "select_options"}}"
                     multiple="true"
                     class="chosen-select form-control"
                     tabindex="-1">
@@ -19,7 +19,7 @@
 
 <template name="scale">
     <div class="form-group">
-        <label class="col-lg-1 control-label">Scale</label>
+        <label class="col-lg-1 control-label">{{_ "scale"}}</label>
         <div class="col-lg-11">
             <input id="inputScale" type="number" class="form-control">
         </div>

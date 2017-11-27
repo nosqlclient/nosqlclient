@@ -58,7 +58,7 @@ Template.manageRoles.events({
     inputRoleSelector.val('');
     inputRoleSelector.prop('disabled', false);
 
-    $('#addEditRoleModalTitle').text(Helper.translate({ key: 'add-role' }));
+    $('#addEditRoleModalTitle').text(Helper.translate({ key: 'add_role' }));
     $('#tblRolePrivileges').DataTable().clear().draw();
     $('#tblRolesToInherit').DataTable().clear().draw();
   },

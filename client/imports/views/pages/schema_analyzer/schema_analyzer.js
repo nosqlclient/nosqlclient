@@ -2,8 +2,8 @@ import { Template } from 'meteor/templating';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { SessionManager } from '/client/imports/modules';
 import { SchemaAnalyzer } from '/client/imports/ui';
+import Helper from '/client/imports/helpers/helper';
 import './schema_analyzer.html';
-
 
 Template.schemaAnalyzer.onRendered(function () {
   if (!SessionManager.get(SessionManager.strSessionCollectionNames)) {
@@ -18,6 +18,12 @@ Template.schemaAnalyzer.onRendered(function () {
   this.autorun(() => {
     if (connections.ready() && settings.ready() && schemaAnalyzeResult.ready()) SchemaAnalyzer.init();
   });
+});
+
+Template.schemaAnalyzer.helpers({
+  getPageHeading() {
+    return Helper.translate({ key: 'schema_analyzer' });
+  }
 });
 
 Template.schemaAnalyzer.onDestroyed(() => {

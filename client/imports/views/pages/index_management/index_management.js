@@ -2,6 +2,7 @@ import { Template } from 'meteor/templating';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { IndexManagement } from '/client/imports/ui';
 import { SessionManager, UIComponents, Notification } from '/client/imports/modules';
+import Helper from '/client/imports/helpers/helper';
 import './add_index/add_index';
 import './view_raw/view_raw';
 import './index_management.html';
@@ -28,10 +29,16 @@ Template.indexManagement.onRendered(function () {
   });
 });
 
+Template.indexManagement.helpers({
+  getPageHeading() {
+    return Helper.translate({ key: 'index_management' });
+  }
+});
+
 Template.indexManagement.events({
   'click #btnAddIndex': function () {
     if (!$('#cmbCollections').val()) {
-      Notification.warning('select-collection');
+      Notification.warning('select_collection');
       return;
     }
 

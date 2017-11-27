@@ -1,24 +1,24 @@
 <template name="adminQueries">
     {{#if getConnection}}
-        {{> pageHeading title='Admin Queries'}}
+        {{> pageHeading title=getPageHeading }}
 
         <div class="wrapper wrapper-content animated fadeInRight">
             <div class="row">
                 <div class="col-lg-12">
                     <div class="ibox float-e-margins">
                         <div class="ibox-title">
-                            <h5>Admin
-                                <small>These queries can only be executed if you have necessary privileges</small>
+                            <h5>{{_ "admin"}}
+                                <small>{{_ "admin_info"}}</small>
                             </h5>
                             <div class="ibox-tools">
                                 <a id="btnSwitchView" href="#"
-                                   title="Switch Result View">
+                                   title="{{_ "switch_result_view"}}">
                                     <i class="fa fa-exchange"></i>
                                 </a>
                                 <a id="aRunOnAdminDB" class="i-checks"
                                    style="display: none;"
                                    data-toggle="tooltip"
-                                   title="If checked, this command will be executed on admin DB, otherwise on current DB">
+                                   title="{{_ "run_on_admin_info"}}">
                                     <input id="inputRunOnAdminDB" type="checkbox" value=""
                                            class="form-control"
                                            checked=""
@@ -29,10 +29,10 @@
                         <div class="ibox-content">
                             <form class="form-horizontal">
                                 <div class="form-group">
-                                    <label class="col-lg-1 control-label">Admin Query</label>
+                                    <label class="col-lg-1 control-label">{{_ "admin_query"}}</label>
                                     <div class="col-lg-11">
                                         <select id="cmbAdminQueries"
-                                                data-placeholder="Choose a query..."
+                                                data-placeholder="{{_ "choose_query"}}"
                                                 class="chosen-select form-control"
                                                 tabindex="-1">
                                             <option></option>
@@ -49,7 +49,7 @@
                                                 class="btn btn-block btn-outline btn-primary ladda-button"
                                                 type="button"
                                                 data-style="contract">
-                                            <strong>Execute</strong></button>
+                                            <strong>{{_ "execute"}}</strong></button>
                                     </div>
                                 </div>
 

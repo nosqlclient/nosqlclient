@@ -94,7 +94,7 @@ UserManagementUsers.prototype = {
       return;
     }
 
-    if (!passwordSelector.val() && titleSelector.text() === Helper.translate({ key: 'add-user' })) {
+    if (!passwordSelector.val() && titleSelector.text() === Helper.translate({ key: 'add_user' })) {
       Notification.warning('password-required');
       return;
     }
@@ -109,7 +109,7 @@ UserManagementUsers.prototype = {
     }
 
     const command = {};
-    if (titleSelector.text() === Helper.translate({ key: 'edit-user' })) command.updateUser = usernameSelector.val();
+    if (titleSelector.text() === Helper.translate({ key: 'edit_user' })) command.updateUser = usernameSelector.val();
     else command.createUser = usernameSelector.val();
 
     command.roles = this.populateUserRolesToSave();
@@ -265,7 +265,7 @@ UserManagementUsers.prototype = {
   },
 
   popEditUserModal(user) {
-    $('#addEditUserModalTitle').text(Helper.translate({ key: 'edit-user' }));
+    $('#addEditUserModalTitle').text(Helper.translate({ key: 'edit_user' }));
 
     Notification.start('#btnCloseUMDB');
 

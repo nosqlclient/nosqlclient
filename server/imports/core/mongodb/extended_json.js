@@ -51,6 +51,8 @@ const isJsonDocConvertible = function (param) {
 
 ExtendedJSON.prototype = {
   convertBSONtoJSON(obj) {
+    if (!obj) return obj;
+
     // there are some other objects such as Math, Date etc..
     if (obj && (typeof obj === 'object') && Object.prototype.toString.call(obj) !== '[object Array]' && convertBsonDocumentToJson(obj)) {
       return convertBsonDocumentToJson(obj);
@@ -74,6 +76,8 @@ ExtendedJSON.prototype = {
   },
 
   convertJSONtoBSON(obj) {
+    if (!obj) return obj;
+
     if (obj && Object.prototype.toString.call(obj) === '[object Object]' && convertJsonDocumentToBson(obj)) {
       return convertJsonDocumentToBson(obj);
     }

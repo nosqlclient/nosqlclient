@@ -84,7 +84,7 @@ Template.connections.events({
   },
 
   'click #btnCreateNewConnection': function () {
-    $('#addEditConnectionModalTitle').text(Helper.translate({ key: 'add-connection' }));
+    $('#addEditConnectionModalTitle').text(Helper.translate({ key: 'add_connection' }));
     const modal = $('#addEditConnectionModal');
     modal.data('edit', null);
     modal.data('clone', null);
@@ -97,7 +97,7 @@ Template.connections.events({
   },
 
   'click .editor_edit': function () {
-    $('#addEditConnectionModalTitle').text(Helper.translate({ key: 'edit-connection' }));
+    $('#addEditConnectionModalTitle').text(Helper.translate({ key: 'edit_connection' }));
     const modal = $('#addEditConnectionModal');
     modal.data('edit', SessionManager.get(SessionManager.strSessionConnection)._id);
     modal.data('clone', '');
@@ -105,7 +105,7 @@ Template.connections.events({
   },
 
   'click .editor_duplicate': function () {
-    $('#addEditConnectionModalTitle').text(Helper.translate({ key: 'clone-connection' }));
+    $('#addEditConnectionModalTitle').text(Helper.translate({ key: 'clone_connection' }));
     const modal = $('#addEditConnectionModal');
     modal.data('clone', SessionManager.get(SessionManager.strSessionConnection)._id);
     modal.data('edit', '');

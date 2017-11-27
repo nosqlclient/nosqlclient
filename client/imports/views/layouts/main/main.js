@@ -2,8 +2,9 @@ import { Template } from 'meteor/templating';
 import '/client/imports/views/layouts/navigation/navigation';
 import '/client/imports/views/layouts/top_navbar/top_navbar';
 import '/client/imports/views/layouts/footer/footer.html';
-import { Settings } from '/lib/imports/collections';
-import { Enums, Notification } from '/client/imports/modules';
+import { TAPi18n } from 'meteor/tap:i18n';
+import { Enums, Notification, SessionManager } from '/client/imports/modules';
+import { ReactivityProvider } from '/client/imports/facades';
 import './main.html';
 
 const fixHeight = function () {
@@ -122,12 +123,14 @@ Template.mainLayout.onRendered(function () {
   let initializedLiveChat = false;
   this.autorun(() => {
     if (settings.ready()) {
-      const foundSettings = Settings.findOne();
+      const foundSettings = ReactivityProvider.findOne(ReactivityProvider.types.Settings);
       if (foundSettings && foundSettings.showLiveChat && !initializedLiveChat) {
         initializedLiveChat = true;
         liveChatFunc(window, window.nudgespot || []);
         window.nudgespot.init('748ae792d632f6c5e14ad610e53ef745');
       }
+      SessionManager.set(SessionManager.strSessionApplicationLanguage, foundSettings.language || 'en');
+      TAPi18n.setLanguage(SessionManager.get(SessionManager.strSessionApplicationLanguage));
     }
   });
 });

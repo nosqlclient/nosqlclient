@@ -11,10 +11,10 @@
 <template name="queryTemplate">
     <div class="form-group">
         <div id="{{id}}">
-            <label class="col-lg-2 control-label">Query</label>
+            <label class="col-lg-2 control-label">{{_ "query"}}</label>
             <div class="col-lg-10">
                 <textarea id="txtQuery" class="form-control"></textarea>
-                <span class="help-block m-b-none"><b>Extended json</b> is valid</span>
+                <span class="help-block m-b-none">{{_ "query_info"}}</span>
             </div>
         </div>
     </div>
@@ -22,17 +22,17 @@
 
 <template name="readPreferenceTemplate">
     <div class="form-group">
-        <label class="col-lg-2 control-label">Read Preference</label>
+        <label class="col-lg-2 control-label">{{_ "read_preference"}}</label>
         <div class="col-lg-10">
             <select id="{{id}}"
-                    data-placeholder="Read preference"
+                    data-placeholder="{{_ "read_preference"}}"
                     class="chosen-select form-control"
                     tabindex="-1">
-                <option value="primary">primary</option>
-                <option value="primaryPreferred">primaryPreferred</option>
-                <option value="secondary">secondary</option>
-                <option value="secondaryPreferred">secondaryPreferred</option>
-                <option value="nearest">nearest</option>
+                <option value="primary">{{_ "primary"}}</option>
+                <option value="primaryPreferred">{{_ "primary_preferred"}}</option>
+                <option value="secondary">{{_ "secondary"}}</option>
+                <option value="secondaryPreferred">{{_ "secondary_preferred"}}</option>
+                <option value="nearest">{{_ "nearest"}}</option>
             </select>
         </div>
     </div>
@@ -40,10 +40,10 @@
 
 <template name="collectionsTemplate">
     <div class="form-group">
-        <label class="col-lg-2 control-label">Collection</label>
+        <label class="col-lg-2 control-label">{{_ "collection"}}</label>
         <div class="col-lg-10">
             <select id="{{id}}"
-                    data-placeholder="Choose a collection"
+                    data-placeholder="{{_ "select_collection"}}"
                     class="chosen-select form-control"
                     tabindex="-1">
             </select>
@@ -53,10 +53,10 @@
 
 <template name="databasesTemplate">
     <div class="form-group">
-        <label class="col-lg-2 control-label">Database</label>
+        <label class="col-lg-2 control-label">{{_ "database"}}</label>
         <div class="col-lg-10">
             <select id="{{id}}"
-                    data-placeholder="Choose a database"
+                    data-placeholder="{{_ "select_database"}}"
                     class="chosen-select form-control"
                     tabindex="-1">
             </select>
@@ -66,10 +66,10 @@
 
 <template name="verboseLevels">
     <div class="form-group">
-        <label class="col-lg-2 control-label">Verbose Levels</label>
+        <label class="col-lg-2 control-label">{{_ "verbose"}}</label>
         <div class="col-lg-10">
             <select id="{{id}}"
-                    data-placeholder="Choose level of verbose logging"
+                    data-placeholder="{{_ "verbose"}}"
                     class="chosen-select form-control"
                     tabindex="-1">
                 <option value="-v"></option>
@@ -389,10 +389,10 @@
 <template name="sortTemplate">
     <div class="form-group">
         <div id="mongoexport--sort">
-            <label class="col-lg-2 control-label">Sort</label>
+            <label class="col-lg-2 control-label">{{_ "sort"}}</label>
             <div class="col-lg-10">
                 <textarea id="txtSort" class="form-control"></textarea>
-                <span class="help-block m-b-none"><b>Extended json</b> is valid</span>
+                <span class="help-block m-b-none">{{_ "query_info"}}</span>
             </div>
         </div>
     </div>

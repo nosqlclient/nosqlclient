@@ -2,6 +2,7 @@ import { Template } from 'meteor/templating';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { QueryRender, Editor } from '/client/imports/ui';
 import { Enums, SessionManager, Notification } from '/client/imports/modules';
+import Helper from '/client/imports/helpers/helper';
 import '/client/imports/views/query_templates/collection/aggregate/aggregate';
 import '/client/imports/views/query_templates/collection/bulk_write/bulk_write';
 import '/client/imports/views/query_templates/collection/count/count';
@@ -107,34 +108,34 @@ Template.browseCollection.helpers({
   getHelpBlockForSelectedQuery() {
     switch (SessionManager.get(SessionManager.strSessionSelectedQuery)) {
       case Enums.QUERY_TYPES.FINDONE_AND_REPLACE:
-        return 'This query replaces whole document which matched by <strong>selector</strong> with the <strong>set</strong> object';
+        return Helper.translate({ key: 'findone_replace_help_block' });
 
       case Enums.QUERY_TYPES.GROUP:
-        return '<strong>Deprecated since version 3.4</strong> Use db.collection.aggregate() with the $group stage or db.collection.mapReduce() instead';
+        return Helper.translate({ key: 'group_help_block' });
 
       case Enums.QUERY_TYPES.FINDONE_AND_DELETE:
-        return '<strong><span style="color: red; ">CAUTION:</span></strong> This query removes whole document which matched by <strong>selector</strong>';
+        return Helper.translate({ key: 'findone_delete_help_block' });
 
       case Enums.QUERY_TYPES.CREATE_INDEX:
-        return 'Since mongodb version <strong>3.0.0</strong>, this query can be used instead of <strong>ensureIndex</strong>';
+        return Helper.translate({ key: 'create_index_help_block' });
 
       case Enums.QUERY_TYPES.DELETE:
-        return '<strong><span style="color: red; ">CAUTION:</span></strong> This query removes whole document(s) which matched by <strong>selector</strong>';
+        return Helper.translate({ key: 'delete_help_block' });
 
       case Enums.QUERY_TYPES.GEO_HAYSTACK_SEARCH:
-        return 'This query executes a geo search using a <strong>geo haystack index</strong> on a collection';
+        return Helper.translate({ key: 'geo_haystack_search_help_block' });
 
       case Enums.QUERY_TYPES.IS_CAPPED:
-        return 'Returns the information of if the collection is a <strong>capped</strong> collection';
+        return Helper.translate({ key: 'is_capped_help_block' });
 
       case Enums.QUERY_TYPES.OPTIONS:
-        return 'Returns <strong>collection</strong> options';
+        return Helper.translate({ key: 'options_help_block' });
 
       case Enums.QUERY_TYPES.RE_INDEX:
-        return 'Reindex all indexes on the collection <strong>Warning:</strong> reIndex is a blocking operation <i>(indexes are rebuilt in the foreground)</i> and will be slow for large collections';
+        return Helper.translate({ key: 're_index_help_block' });
 
       case Enums.QUERY_TYPES.UPDATE_MANY:
-        return 'Updates all documents which matched by <strong>Selector</strong>';
+        return Helper.translate({ key: 'update_many_help_block' });
 
       default:
         return '';

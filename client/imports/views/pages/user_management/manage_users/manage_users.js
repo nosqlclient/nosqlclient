@@ -62,7 +62,7 @@ Template.manageUsers.events({
     inputPasswordSelector.val('');
     inputPasswordSelector.attr('placeholder', 'Password');
 
-    $('#addEditUserModalTitle').text(Helper.translate({ key: 'add-user' }));
+    $('#addEditUserModalTitle').text(Helper.translate({ key: 'add_user' }));
     $('.nav-tabs a[href="#tab-1"]').tab('show');
     UIComponents.Editor.setCodeMirrorValue($('#divCustomData'), '');
   },

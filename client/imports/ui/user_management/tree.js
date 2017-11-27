@@ -1,9 +1,10 @@
 import { Communicator, ReactivityProvider } from '/client/imports/facades';
 import { Notification, ErrorHandler, SessionManager } from '/client/imports/modules';
+import Helper from '/client/imports/helpers/helper';
 
 const UserManagementTree = function () {
   this.loading = false;
-  this.defaultInformationText = 'Select a role or resource or privilege to see the details';
+  this.defaultInformationText = '';
 };
 
 UserManagementTree.prototype = {
@@ -20,6 +21,7 @@ UserManagementTree.prototype = {
   },
 
   initUserTree() {
+    this.defaultInformationText = Helper.translate({ key: 'user_management_default_tree_text' });
     SessionManager.set(SessionManager.strSessionUsermanagementInfo, '');
     SessionManager.set(SessionManager.strSessionSelectionUserManagement, this.defaultInformationText);
     $('#btnEditUser').hide();

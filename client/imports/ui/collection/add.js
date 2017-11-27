@@ -90,7 +90,7 @@ CollectionAdd.prototype = {
     if ($('#cmbCollectionOrView').val() === 'view') {
       options.viewOn = $('#cmbCollectionsAddCollection').val();
       if (!options.viewOn) {
-        Notification.warning('select-collection');
+        Notification.warning('select_collection');
         return;
       }
 
@@ -235,7 +235,7 @@ CollectionAdd.prototype = {
 
     if (col.type === 'view') {
       this.prepareFormAsView();
-      modalTitle.text(Helper.translate({ key: 'view-info' }));
+      modalTitle.text(Helper.translate({ key: 'view_info' }));
       cmbCollectionOrView.val('view').trigger('chosen:updated');
       $('#cmbCollectionsAddCollection').val(col.options.viewOn).trigger('chosen:updated');
       if (col.options.pipeline) {
@@ -243,7 +243,7 @@ CollectionAdd.prototype = {
       }
     } else {
       this.prepareFormAsCollection();
-      modalTitle.text(Helper.translate({ key: 'collection-info' }));
+      modalTitle.text(Helper.translate({ key: 'collection_info' }));
       cmbCollectionOrView.val('collection').trigger('chosen:updated');
       this.setStorageEngineAndValidator(col);
       this.setOptionsForCollection(col);
@@ -271,7 +271,7 @@ CollectionAdd.prototype = {
     $('#inputCapped, #inputNoPadding, #inputTwoSizesIndexes').iCheck('uncheck');
     $('#cmbCollectionOrView, #cmbCollectionsAddCollection, #cmbAddCollectionViewOptions, #cmbValidationActionAddCollection, #cmbValidationLevelAddCollection')
       .find('option').prop('selected', false).trigger('chosen:updated');
-    $('#collectionAddModalTitle').text(Helper.translate({ key: 'create-collection-view' }));
+    $('#collectionAddModalTitle').text(Helper.translate({ key: 'create_collection_view' }));
     $('#spanColName').text(ReactivityProvider.findOne(ReactivityProvider.types.Connections, { _id: SessionManager.get(SessionManager.strSessionConnection)._id }).connectionName);
     $('#btnCreateCollection').prop('disabled', false);
 

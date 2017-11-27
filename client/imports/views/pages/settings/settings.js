@@ -1,5 +1,6 @@
 import { Template } from 'meteor/templating';
 import { Settings } from '/client/imports/ui';
+import Helper from '/client/imports/helpers/helper';
 import './settings.html';
 
 Template.settings.onRendered(function () {
@@ -14,6 +15,12 @@ Template.settings.onRendered(function () {
   this.autorun(() => {
     if (settings.ready() && connections.ready()) Settings.init();
   });
+});
+
+Template.settings.helpers({
+  getPageHeading() {
+    return Helper.translate({ key: 'settings' });
+  }
 });
 
 Template.settings.events({

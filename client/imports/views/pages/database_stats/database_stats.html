@@ -12,21 +12,12 @@
                                     <h2 class="no-margins">
                                         {{getServerStatus.host}}
                                     </h2>
-                                    <h4>The server is up for {{getServerStatus.uptime}} seconds</h4>
+                                    <h4>{{{_ "server_uptime" uptime=getServerStatus.uptime}}}</h4>
                                     <small>
-                                        The performances which are shown here are coming from
-                                        <strong>serverStatus</strong>, <strong>top</strong>
-                                        and
-                                        <strong>stats</strong> queries.
-                                        Therefore, before having a look at below graphs consider
-                                        <strong>nosqlclient</strong> is
-                                        already executing <strong>serverStatus</strong> at regular intervals. See <a
-                                            href="https://docs.mongodb.org/manual/administration/monitoring/#commands">here</a>
-                                        for more info<br/><br/>
-
-                                        Mongodb version is <strong>{{getServerStatus.version}}</strong><br/>
-                                        Process id is <strong>{{getServerStatus.pid}}</strong><br/>
-                                        Process name is <strong>{{getServerStatus.process}}</strong><br/>
+                                        {{{_ "db_stats_info"}}}
+                                        {{{_ "mongodb_version_info" version=getServerStatus.version}}}<br/>
+                                        {{{_ "process_id_info" pid=getServerStatus.pid}}}<br/>
+                                        {{{_ "process_name_info" name=getServerStatus.process}}}<br/>
                                     </small>
                                 </div>
                             </div>
@@ -39,35 +30,35 @@
                                 <tbody>
                                 <tr>
                                     <td>
-                                        <strong>{{getDBStats.collections}}</strong> Collections
+                                        {{{_ "collections_info" count=getDBStats.collections}}}
                                     </td>
                                     <td>
-                                        <strong>{{getDBStats.objects}}</strong> Objects
+                                        {{{_ "objects_info" count=getDBStats.objects}}}
                                     </td>
 
                                 </tr>
                                 <tr>
                                     <td>
-                                        <strong>{{getDBStats.dataSize}}</strong> Data Size
+                                        {{{_ "data_size_info" count=getDBStats.dataSize}}}
                                     </td>
                                     <td>
-                                        <strong>{{getDBStats.storageSize}}</strong> Storage Size
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        <strong>{{getDBStats.indexes}}</strong> Indexes
-                                    </td>
-                                    <td>
-                                        <strong>{{getDBStats.indexSize}}</strong> Index Size
+                                        {{{_ "storage_size_info" count=getDBStats.storageSize}}}
                                     </td>
                                 </tr>
                                 <tr>
                                     <td>
-                                        <strong>{{getDBStats.fileSize}}</strong> File Size
+                                        {{{_ "indexes_info" count=getDBStats.indexes}}}
                                     </td>
                                     <td>
-                                        <strong>{{getDBStats.numExtents}}</strong> Extents
+                                        {{{_ "index_size_info" count=getDBStats.indexSize}}}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        {{{_ "file_size_info" count=getDBStats.fileSize}}}
+                                    </td>
+                                    <td>
+                                        {{{_ "extents_info" count=getDBStats.numExtents}}}
                                     </td>
                                 </tr>
                                 </tbody>
@@ -83,7 +74,7 @@
                         <div class="col-lg-12">
                             <div class="ibox float-e-margins">
                                 <div class="ibox-title">
-                                    <h5>Memory Usage</h5>
+                                    <h5>{{_ "memory_usage"}}</h5>
                                 </div>
                                 <div class="ibox-content">
                                     <div id="divHeapMemoryChart" class="flot-chart">
@@ -98,7 +89,7 @@
                         <div class="col-lg-6">
                             <div class="ibox float-e-margins">
                                 <div class="ibox-title">
-                                    <h5>Queued Read/Write <span id="spanTotalQueuedRW"></span></h5>
+                                    <h5>{{_ "queued_write_read"}} <span id="spanTotalQueuedRW"></span></h5>
                                 </div>
                                 <div class="ibox-content">
                                     <div id="divQueuedReadWrite" class="flot-chart">
@@ -111,7 +102,7 @@
                         <div class="col-lg-6">
                             <div class="ibox float-e-margins">
                                 <div class="ibox-title">
-                                    <h5>Active Read/Write <span id="spanTotalActiveRW"></span></h5>
+                                    <h5>{{_ "active_write_read"}} <span id="spanTotalActiveRW"></span></h5>
                                 </div>
                                 <div class="ibox-content">
                                     <div id="divActiveReadWrite" class="flot-chart">
@@ -126,7 +117,7 @@
                         <div class="col-lg-6">
                             <div class="ibox float-e-margins">
                                 <div class="ibox-title">
-                                    <h5>Connections <span id="spanAvailableConnections"></span></h5>
+                                    <h5>{{_ "connections"}} <span id="spanAvailableConnections"></span></h5>
                                 </div>
                                 <div class="ibox-content">
                                     <div id="divConnectionsChart" class="flot-chart">
@@ -139,7 +130,7 @@
                         <div class="col-lg-6">
                             <div class="ibox float-e-margins">
                                 <div class="ibox-title">
-                                    <h5>Network <span id="spanTotalRequests"></span></h5>
+                                    <h5>{{_ "network"}} <span id="spanTotalRequests"></span></h5>
                                 </div>
                                 <div class="ibox-content">
                                     <div id="divNetworkChart" class="flot-chart">
@@ -154,7 +145,7 @@
                         <div class="col-lg-12">
                             <div class="ibox float-e-margins">
                                 <div class="ibox-title">
-                                    <h5>Collections Read/Write</h5>
+                                    <h5>{{_ "collections_read_write"}}</h5>
                                 </div>
                                 <div id="divCollectionsReadWrite" class="ibox-content">
                                     <table id="tblCollectionsReadWrite"
@@ -162,9 +153,9 @@
                                            style="width: 100%">
                                         <thead>
                                         <tr>
-                                            <th>Collection</th>
-                                            <th>Read (Microseconds)</th>
-                                            <th>Write (Microseconds)</th>
+                                            <th>{{_ "collection"}}</th>
+                                            <th>{{_ "read"}} ({{_ "microseconds"}})</th>
+                                            <th>{{_ "write"}} ({{_ "microseconds"}})</th>
                                         </tr>
                                         </thead>
                                         <tbody>
@@ -181,7 +172,7 @@
                         <div class="col-lg-12">
                             <div class="ibox float-e-margins">
                                 <div class="ibox-title">
-                                    <h5>Operation Counters</h5>
+                                    <h5>{{_ "op_counters"}}</h5>
                                 </div>
                                 <div class="ibox-content">
                                     <div id="divOperationCountersChart" class="flot-chart">
@@ -198,10 +189,9 @@
                     <div class="row">
                         <div class="col-lg-12">
                             <div class="text-center m-t-lg">
-                                <h1>Statistics are disabled by settings</h1>
+                                <h1>{{_ "stats_disabled"}}</h1>
                                 <small id="errorMessage">
-                                    To see the statistics of your database, simply
-                                    <strong>enable</strong> <i>show database statistics</i> setting
+                                    {{{_ "stats_info"}}}
                                 </small>
                             </div>
                         </div>
@@ -218,29 +208,27 @@
                             </h1>
                             {{#if isSubscribed}}
                                 <small>
-                                    Connect to your database, by clicking <b>Connect</b> button.
+                                    {{{_ "connect_info"}}}
                                 </small>
                                 <br/>
                                 <br/>
                                 <button type="button" class="btn btn-primary ladda-button" disabled
-                                        data-style="contract">Thanks for subscription
+                                        data-style="contract">{{_ "thanks-for-subscription"}}
                                 </button>
                             {{else}}
                                 <small>
-                                    Subscribe to Nosqlclient Newsletter by filling your e-mail address to below
-                                    input,
-                                    and pressing <b>Subscribe</b>
+                                    {{{_ "subscribe_info"}}}
                                 </small>
                                 <div class="row">
                                     <div class="col-lg-offset-4 col-lg-4">
                                         <input id="txtEmailToSubscribe" type="email"
-                                               placeholder="E-mail, don't worry we hate spam !"
+                                               placeholder="{{_ "email_we_hate_spam"}}"
                                                class="form-control required"/>
                                     </div>
                                 </div>
                                 <br/>
                                 <button id="btnSubscribe" type="button" class="btn btn-primary ladda-button"
-                                        data-style="contract">Subscribe
+                                        data-style="contract">{{_ "subscribe"}}
                                 </button>
                             {{/if}}
                         </div>
@@ -250,14 +238,14 @@
         {{/if}}
     {{/if}}
 
-    <!-- MODAL What's New-->
+    <!-- MODAL What's New TODO rework-->
     <div class="modal inmodal" id="whatsNewModal" tabindex="-1" role="dialog" aria-hidden="true"
          style="display: none;">
         <div class="modal-dialog modal-lg">
             <div class="modal-content animated bounceInRight">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span><span
-                            class="sr-only">Close</span></button>
+                            class="sr-only">{{_ "close"}}</span></button>
                     <i class="fa fa-newspaper-o modal-icon"></i>
                     <h4 class="modal-title">Mongoclient becomes Nosqlclient !</h4>
                     <small id="whatsNewHeader" class="font-bold">
@@ -265,34 +253,6 @@
                 </div>
                 <div class="modal-body">
                     <div id="wizard">
-                        <h1>Auto-complete</h1>
-                        <div class="step-content">
-                            <div class="text-center m-t-md">
-                                <p>Auto complete is enabled by default, and it's shortcut is configurable via
-                                    settings.</p>
-                                <img width="800" height="400" src="whats_new/auto-complete-settings-220.gif">
-                            </div>
-                        </div>
-
-                        <h1>Prompt Credentials</h1>
-                        <div class="step-content">
-                            <div class="text-center m-t-md">
-                                <p>Nosqlclient prompts for username & password for your connections, if they're
-                                    empty.</p>
-                                <img width="650" height="400" src="whats_new/prompting-credentials-220.gif">
-                            </div>
-                        </div>
-
-                        <h1>Reworked Dump/Restore</h1>
-                        <div class="step-content">
-                            <div class="text-center m-t-md">
-                                <p>Dump, restore, import, export section now available for production uses, nosqlclient
-                                    uses native
-                                    mongo binaries which can be set from settings for dump section.</p>
-                                <img width="550" height="400" src="whats_new/reworked-dump-restore-220.gif">
-                            </div>
-                        </div>
-
                         <h1>Tweaks</h1>
                         <div class="step-content">
                             <div class="text-center m-t-md">
@@ -306,7 +266,7 @@
                 </div>
                 <div class="modal-footer">
                     <button id="btnDontShowWhatsNewAgain" title="Don't show again" type="button"
-                            class="btn btn-primary btn-block" data-style="contract">Cool, don't show again !
+                            class="btn btn-primary btn-block" data-style="contract">{{_ "dont_show_again"}}
                     </button>
                 </div>
             </div>

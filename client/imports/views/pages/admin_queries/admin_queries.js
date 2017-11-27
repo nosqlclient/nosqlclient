@@ -81,6 +81,10 @@ Template.adminQueries.events({
 });
 
 Template.adminQueries.helpers({
+  getPageHeading() {
+    return Helper.translate({ key: 'admin_queries' });
+  },
+
   getQueryTemplate() {
     return SessionManager.get(SessionManager.strSessionSelectedQuery);
   },
@@ -88,34 +92,34 @@ Template.adminQueries.helpers({
   getHelpBlockForSelectedQuery() {
     switch (SessionManager.get(SessionManager.strSessionSelectedQuery)) {
       case Enums.ADMIN_QUERY_TYPES.ADD_USER:
-        return 'Add a user to the database';
+        return Helper.translate({ key: 'add_user_help_block' });
 
       case Enums.ADMIN_QUERY_TYPES.BUILD_INFO:
-        return 'Retrieve the server information for the current instance of the db client';
+        return Helper.translate({ key: 'build_info_help_block' });
 
       case Enums.ADMIN_QUERY_TYPES.LIST_DATABASES:
-        return 'List the available databases';
+        return Helper.translate({ key: 'list_dbs_help_block' });
 
       case Enums.ADMIN_QUERY_TYPES.COMMAND:
-        return 'Execute a command';
+        return Helper.translate({ key: 'command_help_block' });
 
       case Enums.ADMIN_QUERY_TYPES.PING:
-        return 'Ping the server and retrieve results';
+        return Helper.translate({ key: 'ping_help_block' });
 
       case Enums.ADMIN_QUERY_TYPES.PROFILING_INFO:
-        return 'Retrive the current profiling information';
+        return Helper.translate({ key: 'profiling_info_help_block' });
 
       case Enums.ADMIN_QUERY_TYPES.REPL_SET_GET_STATUS:
-        return 'Get <strong>ReplicaSet</strong> status';
+        return Helper.translate({ key: 'repl_set_get_status_help_block' });
 
       case Enums.ADMIN_QUERY_TYPES.SERVER_STATUS:
-        return 'Retrieve this <strong>db\'s</strong> server status.';
+        return Helper.translate({ key: 'server_status_help_block' });
 
       case Enums.ADMIN_QUERY_TYPES.SET_PROFILING_LEVEL:
-        return 'Set the current profiling level';
+        return Helper.translate({ key: 'set_profiling_level_help_block' });
 
       case Enums.ADMIN_QUERY_TYPES.VALIDATE_COLLECTION:
-        return 'Validate an existing collection';
+        return Helper.translate({ key: 'validate_collection_help_block' });
 
       default:
         return '';

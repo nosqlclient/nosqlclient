@@ -18,7 +18,7 @@ Template.addCollection.events({
   },
 
   'change #cmbCollectionOrView': function () {
-    if ($('#cmbCollectionOrView') === 'collection') CollectionAdd.prepareFormAsCollection();
+    if ($('#cmbCollectionOrView').val() === 'collection') CollectionAdd.prepareFormAsCollection();
     else CollectionAdd.prepareFormAsView();
   },
 

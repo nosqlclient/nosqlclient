@@ -78,22 +78,39 @@ const mergeChartData = function (existingData, data, dataCountToKeep) {
   return existingData;
 };
 
-const getCorrectScales = function (settings) {
+const getCorrectScales = function (settings, forMemory) {
   let scale = 1;
   let text = 'MB';
-  switch (settings.scale) {
-    case 'KiloBytes':
-      scale = 1024;
-      text = 'KB';
-      break;
-    case 'MegaBytes':
-      scale = 1024 * 1024;
-      text = 'MB';
-      break;
-    default:
-      scale = 1;
-      text = 'Bytes';
-      break;
+  if (forMemory) {
+    switch (settings.scale) {
+      case 'KiloBytes':
+        scale = 1024;
+        text = 'KB';
+        break;
+      case 'Bytes':
+        scale = 1024 * 1024;
+        text = 'Bytes';
+        break;
+      default:
+        scale = 1;
+        text = 'MB';
+        break;
+    }
+  } else {
+    switch (settings.scale) {
+      case 'MegaBytes':
+        scale = 1024 * 1024;
+        text = 'MB';
+        break;
+      case 'KiloBytes':
+        scale = 1024;
+        text = 'KB';
+        break;
+      default:
+        scale = 1;
+        text = 'Bytes';
+        break;
+    }
   }
   return { scale, text };
 };
@@ -157,8 +174,8 @@ DBStats.prototype = {
       readers.push([time, result.globalLock.activeClients.readers]);
       writers.push([time, result.globalLock.activeClients.writers]);
 
-      data.push({ data: readers, label: 'Readers' });
-      data.push({ data: writers, label: 'Writers' });
+      data.push({ data: readers, label: Helper.translate({ key: 'readers' }) });
+      data.push({ data: writers, label: Helper.translate({ key: 'writers' }) });
 
       return result.globalLock.activeClients.total;
     }
@@ -173,7 +190,7 @@ DBStats.prototype = {
           callback: (err, result) => {
             if (err || result.error) {
               const errorMessage = result.error ? result.error.message : err.message;
-              $('#errorMessage').text(Helper.translate({ key: 'db-stats-error', options: { error: errorMessage } }));
+              $('#errorMessage').text(Helper.translate({ key: 'db_stats_error', options: { error: errorMessage } }));
               SessionManager.set(SessionManager.strSessionServerStatus, null);
             } else {
               SessionManager.set(SessionManager.strSessionServerStatus, result.result);
@@ -230,8 +247,8 @@ DBStats.prototype = {
       readers.push([time, result.globalLock.currentQueue.readers]);
       writers.push([time, result.globalLock.currentQueue.writers]);
 
-      data.push({ data: readers, label: 'Readers' });
-      data.push({ data: writers, label: 'Writers' });
+      data.push({ data: readers, label: Helper.translate({ key: 'readers' }) });
+      data.push({ data: writers, label: Helper.translate({ key: 'writers' }) });
 
       return result.globalLock.currentQueue.total;
     }
@@ -284,7 +301,7 @@ DBStats.prototype = {
         [4, result.opcounters.getmore],
       ];
 
-      data.push({ label: 'Counts', data: counts, color: '#1ab394' });
+      data.push({ label: Helper.translate({ key: 'counts' }), data: counts, color: '#1ab394' });
     }
   },
 
@@ -296,8 +313,8 @@ DBStats.prototype = {
       currentData.push([time, Math.round(result.connections.current * 100) / 100]);
       totalCreatedData.push([time, Math.round(result.connections.totalCreated * 100) / 100]);
 
-      data.push({ data: currentData, label: 'Active' });
-      data.push({ data: totalCreatedData, label: 'Total Created' });
+      data.push({ data: currentData, label: Helper.translate({ key: 'active' }) });
+      data.push({ data: totalCreatedData, label: Helper.translate({ key: 'total_created' }) });
 
       return result.connections.available;
     }
@@ -313,8 +330,8 @@ DBStats.prototype = {
       bytesInData.push([time, Math.round((result.network.bytesIn / scale) * 100) / 100]);
       bytesOutData.push([time, Math.round((result.network.bytesOut / scale) * 100) / 100]);
 
-      data.push({ data: bytesInData, label: `Incoming ${text}` });
-      data.push({ data: bytesOutData, label: `Outgoing ${text}` });
+      data.push({ data: bytesInData, label: Helper.translate({ key: 'incoming', options: { data: text } }) });
+      data.push({ data: bytesOutData, label: Helper.translate({ key: 'outgoing', options: { data: text } }) });
 
       return result.network.numRequests;
     }
@@ -322,7 +339,7 @@ DBStats.prototype = {
 
   populateMemoryData(result, data, settings) {
     if (result.mem) {
-      const { scale, text } = getCorrectScales(settings);
+      const { scale, text } = getCorrectScales(settings, true);
 
       const virtualMemData = []; const mappedMemData = []; const residentMemData = [];
       const time = new Date().getTime();
@@ -332,9 +349,9 @@ DBStats.prototype = {
       residentMemData.push([time, Math.round((result.mem.resident * scale) * 100) / 100]);
 
 
-      data.push({ data: virtualMemData, label: 'Virtual' });
-      data.push({ data: mappedMemData, label: 'Mapped' });
-      data.push({ data: residentMemData, label: 'Current' });
+      data.push({ data: virtualMemData, label: Helper.translate({ key: 'virtual' }) });
+      data.push({ data: mappedMemData, label: Helper.translate({ key: 'mapped' }) });
+      data.push({ data: residentMemData, label: Helper.translate({ key: 'current' }) });
 
       return text;
     }
@@ -396,7 +413,7 @@ DBStats.prototype = {
 
       const divChart = $('#divQueuedReadWrite');
       if (!data || data.length === 0) {
-        divChart.html(Helper.translate({ key: 'feature-not-supported-mongodb-version' }));
+        divChart.html(Helper.translate({ key: 'feature_not_supported_mongodb_version' }));
         return;
       }
 
@@ -425,7 +442,7 @@ DBStats.prototype = {
 
       const divChart = $('#divActiveReadWrite');
       if (!data || data.length === 0) {
-        divChart.html(Helper.translate({ key: 'feature-not-supported-mongodb-version' }));
+        divChart.html(Helper.translate({ key: 'feature_not_supported_mongodb_version' }));
         return;
       }
 
@@ -449,11 +466,11 @@ DBStats.prototype = {
 
   initNetworkChart(data, totalRequests) {
     if (SessionManager.get(SessionManager.strSessionCollectionNames)) {
-      if (totalRequests) $('#spanTotalRequests').html(`, ${Helper.translate({ key: 'total-requests' })}: ${totalRequests}`);
+      if (totalRequests) $('#spanTotalRequests').html(`, ${Helper.translate({ key: 'total_requests' })}: ${totalRequests}`);
 
       const divChart = $('#divNetworkChart');
       if (!data || data.length === 0) {
-        divChart.html(Helper.translate({ key: 'feature-not-supported-mongodb-version' }));
+        divChart.html(Helper.translate({ key: 'feature_not_supported_mongodb_version' }));
         return;
       }
 
@@ -478,7 +495,7 @@ DBStats.prototype = {
     if (SessionManager.get(SessionManager.strSessionCollectionNames)) {
       const divChart = $('#divConnectionsChart');
       if (!data || data.length === 0) {
-        divChart.html(Helper.translate({ key: 'feature-not-supported-mongodb-version' }));
+        divChart.html(Helper.translate({ key: 'feature_not_supported_mongodb_version' }));
         return;
       }
 
@@ -504,7 +521,7 @@ DBStats.prototype = {
     if (SessionManager.get(SessionManager.strSessionCollectionNames)) {
       const divChart = $('#divHeapMemoryChart');
       if (!data || data.length === 0) {
-        divChart.html(Helper.translate({ key: 'feature-not-supported-mongodb-version' }));
+        divChart.html(Helper.translate({ key: 'feature_not_supported_mongodb_version' }));
         return;
       }
 
@@ -534,7 +551,7 @@ DBStats.prototype = {
   showWhatisNew() {
     const modal = $('#whatsNewModal');
     modal.on('shown.bs.modal', () => {
-      $('#whatsNewHeader').html(`${Helper.translate({ key: 'what-is-new', options: { version: packageJson.version } })}`);
+      $('#whatsNewHeader').html(`${Helper.translate({ key: 'what_is_new', options: { version: packageJson.version } })}`);
       $('#wizard').steps({
         enableFinishButton: false,
         enableCancelButton: false,

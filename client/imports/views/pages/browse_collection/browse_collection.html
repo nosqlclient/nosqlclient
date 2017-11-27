@@ -6,35 +6,35 @@
                 <div class="col-lg-12">
                     <div class="ibox float-e-margins">
                         <div class="ibox-title">
-                            <h5>Query
+                            <h5>{{_ "query"}}
                                 <small>{{getSelectedCollection}}</small>
                             </h5>
                             <div class="ibox-tools">
-                                <a id="btnQueryWizard" href="#" title="Query Wizard">
+                                <a id="btnQueryWizard" href="#" title="{{_ "wizard"}}">
                                     <i class="fa fa-magic"></i>
                                 </a>
                                 <a id="btnExportQueryResult" href="#"
                                    aria-expanded="false"
                                    class="dropdown-toggle" data-toggle="dropdown"
-                                   title="Export Query Result">
+                                   title="{{_ "export"}}">
                                     <i class="fa fa-upload"></i>
                                 </a>
                                 <ul class="dropdown-menu dropdown-tasks">
                                     <li>
                                         <a id="btnExportAsCSV" href="">
-                                            <i class="fa fa-file"></i> Export CSV
+                                            <i class="fa fa-file"></i> {{_ "csv"}}
                                         </a>
                                     </li>
                                     <li><a id="btnExportAsJSON" href="#"><i class="fa fa-file"></i>
-                                        Export JSON</a></li>
+                                        {{_ "json"}}</a></li>
                                 </ul>
 
                                 <a id="btnSwitchView" href="#"
-                                   title="Switch Result View">
+                                   title="{{_ "switch_result_view"}}">
                                     <i class="fa fa-exchange"></i>
                                 </a>
                                 <a id="btnShowQueryHistories" href="#"
-                                   title="Show Query Histories">
+                                   title="{{_ "history"}}">
                                     <i class="fa fa-history"></i>
                                 </a>
                             </div>
@@ -42,10 +42,10 @@
                         <div class="ibox-content">
                             <form class="form-horizontal">
                                 <div class="form-group">
-                                    <label class="col-lg-1 control-label">Query</label>
+                                    <label class="col-lg-1 control-label">{{_ "query"}}</label>
                                     <div class="col-lg-11">
                                         <select id="cmbQueries"
-                                                data-placeholder="Choose a query..."
+                                                data-placeholder="{{_ "choose_query"}}"
                                                 class="chosen-select form-control"
                                                 tabindex="-1">
                                             <option></option>
@@ -61,7 +61,7 @@
                                         <button id="btnExecuteQuery"
                                                 class="btn btn-block btn-outline btn-primary ladda-button"
                                                 type="button"
-                                                data-style="contract"><strong>Execute</strong></button>
+                                                data-style="contract"><strong>{{_ "execute"}}</strong></button>
                                     </div>
                                 </div>
                                 <ul id="resultTabs" class="nav nav-tabs">
@@ -77,14 +77,14 @@
                                             class="btn btn-block btn-outline btn-primary ladda-button"
                                             type="button"
                                             data-style="contract">
-                                        <strong>Delete</strong></button>
+                                        <strong>{{_ "delete"}}</strong></button>
                                 </div>
                                 <div id="divSaveFindOne" class="col-lg-6">
                                     <button id="btnSaveFindOne"
                                             class="btn btn-block btn-outline btn-primary ladda-button"
                                             type="button"
                                             data-style="contract">
-                                        <strong>Save</strong></button>
+                                        <strong>{{_ "save"}}</strong></button>
                                 </div>
                             </div>
                         </div>
@@ -95,7 +95,7 @@
                                             class="btn btn-block btn-outline btn-primary ladda-button"
                                             type="button"
                                             data-style="contract">
-                                        <strong>Save</strong></button>
+                                        <strong>{{_ "save"}}</strong></button>
                                 </div>
                             </div>
                         </div>

@@ -56,7 +56,7 @@ StoredFunctions.prototype = {
         $('#inputStoredFunctionName').val(data._id);
         UIComponents.Editor.setCodeMirrorValue(divStoredFunction, data.value.$code, $('#txtStoredFunction'));
       } else {
-        $('#storedFunctionModalTitle').html(Helper.translate({ key: 'add-stored-function' }));
+        $('#storedFunctionModalTitle').html(Helper.translate({ key: 'add_stored_function' }));
         $('#inputStoredFunctionName').val('');
         UIComponents.Editor.setCodeMirrorValue(divStoredFunction, '', $('#txtStoredFunction'));
       }

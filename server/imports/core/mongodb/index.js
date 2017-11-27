@@ -82,23 +82,39 @@ const connectThroughTunnel = function ({ connection, sessionId, done, connection
   });
 };
 
+const checkConnectionIsAlive = function (sessionId, metadataToLog) {
+  if (!this.dbObjectsBySessionId[sessionId]) {
+    this.disconnect({ sessionId });
+    Error.create({ type: Error.types.ConnectionError, externalError: 'connection-closed', metadataToLog });
+  }
+};
+
 MongoDB.prototype = {
   execute({ selectedCollection, methodArray, sessionId, removeCollectionTopology }) {
-    Logger.info({ message: 'collection-query-execution', metadataToLog: { methodArray, selectedCollection, sessionId } });
+    const metadataToLog = { methodArray, selectedCollection, sessionId };
+    Logger.info({ message: 'collection-query-execution', metadataToLog });
+
+    checkConnectionIsAlive.call(this, sessionId, metadataToLog);
 
     const execution = this.dbObjectsBySessionId[sessionId].collection(selectedCollection);
     return MongoDBHelper.proceedExecutingQuery({ methodArray, execution, sessionId, removeCollectionTopology });
   },
 
   executeAdmin({ methodArray, runOnAdminDB, sessionId, removeCollectionTopology }) {
-    Logger.info({ message: 'admin-query-execution', metadataToLog: { methodArray, runOnAdminDB, sessionId } });
+    const metadataToLog = { methodArray, runOnAdminDB, sessionId };
+    Logger.info({ message: 'admin-query-execution', metadataToLog });
+
+    checkConnectionIsAlive.call(this, sessionId, metadataToLog);
 
     const execution = runOnAdminDB ? this.dbObjectsBySessionId[sessionId].admin() : this.dbObjectsBySessionId[sessionId];
     return MongoDBHelper.proceedExecutingQuery({ methodArray, execution, sessionId, removeCollectionTopology });
   },
 
   executeMapReduce({ selectedCollection, map, reduce, options, sessionId }) {
-    Logger.info({ message: 'mapreduce-query-execution', metadataToLog: { selectedCollection, map, reduce, options, sessionId } });
+    const metadataToLog = { selectedCollection, map, reduce, options, sessionId };
+    Logger.info({ message: 'mapreduce-query-execution', metadataToLog });
+
+    checkConnectionIsAlive.call(this, sessionId, metadataToLog);
 
     const execution = this.dbObjectsBySessionId[sessionId].collection(selectedCollection);
     return MongoDBHelper.proceedMapReduceExecution({ execution, map, reduce, options });
@@ -138,7 +154,10 @@ MongoDB.prototype = {
   },
 
   dropAllCollections({ sessionId }) {
-    Logger.info({ message: 'drop-all-collections', metadataTOLog: { sessionId } });
+    Logger.info({ message: 'drop-all-collections', metadataToLog: { sessionId } });
+
+    checkConnectionIsAlive.call(this, sessionId, { sessionId });
+
     return Async.runSync((done) => {
       try {
         this.dbObjectsBySessionId[sessionId].collections((err, collections) => {

@@ -363,9 +363,7 @@ QueryRender.prototype = {
 
   getActiveTabHeader() {
     const text = $('#resultTabs').find('li.active').find('a').text();
-    if (text && text.indexOf(' ') !== -1) {
-      return text.substring(0, text.indexOf(' '));
-    }
+    if (text && text.indexOf(' ') !== -1) return text.substring(0, text.indexOf(' '));
   },
 
   init() {
@@ -399,7 +397,7 @@ QueryRender.prototype = {
       selector: '#resultTabs li',
       items: {
         close_others: {
-          name: 'Close Others',
+          name: Helper.translate({ key: 'close_others' }),
           icon: 'fa-times-circle',
           callback() {
             const tabId = $(this).children('a').attr('href');
@@ -417,7 +415,7 @@ QueryRender.prototype = {
           },
         },
         close_all: {
-          name: 'Close All Tabs',
+          name: Helper.translate({ key: 'close_all' }),
           icon: 'fa-times',
           callback() {
             const resultTabs = $('#resultTabs').find('li');

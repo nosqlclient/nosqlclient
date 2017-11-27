@@ -1,15 +1,15 @@
 <template name="storedFunctions">
-    {{> pageHeading title='Stored Functions' }}
+    {{> pageHeading title=getPageHeading }}
     {{#if isConnected}}
         <div class="wrapper wrapper-content animated fadeInRight">
             <div class="row">
                 <div class="col-lg-12">
                     <div class="ibox float-e-margins">
                         <div class="ibox-title">
-                            <h5>Stored Functions {{getConnection.databaseName}}</h5>
+                            <h5>{{_ "stored_functions"}}</h5>
                             <div class="ibox-tools">
                                 <button id="btnRefreshStoredFunctions" type="button" class="btn btn-sm btn-primary">
-                                    Refresh
+                                    {{_ "refresh"}}
                                 </button>
                             </div>
                         </div>
@@ -19,10 +19,10 @@
                                    style="width: 100%">
                                 <thead>
                                 <tr>
-                                    <th>Name</th>
-                                    <th>Function</th>
-                                    <th>Edit</th>
-                                    <th>Delete</th>
+                                    <th>{{_ "name"}}</th>
+                                    <th>{{_ "function"}}</th>
+                                    <th>{{_ "edit"}}</th>
+                                    <th>{{_ "delete"}}</th>
                                 </tr>
                                 </thead>
                                 <tbody>
@@ -36,7 +36,7 @@
                                             class="btn btn-block btn-outline btn-primary ladda-button"
                                             type="button"
                                             data-style="contract">
-                                        <strong>Add Stored Function</strong></button>
+                                        <strong>{{_ "add"}}</strong></button>
                                 </div>
                             </div>
                         </div>
@@ -52,21 +52,21 @@
                     <div class="modal-header">
                         <button type="button" class="close" data-dismiss="modal">
                             <span aria-hidden="true">×</span>
-                            <span class="sr-only">Close</span></button>
-                        <h4 id="storedFunctionModalTitle" class="modal-title">Function Name</h4>
+                            <span class="sr-only">{{_ "close"}}</span></button>
+                        <h4 id="storedFunctionModalTitle" class="modal-title">{{_ "function_name"}}</h4>
                     </div>
                     <div class="modal-body">
                         <form class="form-horizontal">
                             <div class="form-group">
                                 <div class="col-lg-12">
-                                    <input class="form-control" type="text" placeholder="Stored Function Name"
+                                    <input class="form-control" type="text" placeholder="{{_ "function_name"}}"
                                            id="inputStoredFunctionName"
                                            data-buttonName="btn-primary">
                                 </div>
                             </div>
                             <div class="form-group">
                                 <div id="divStoredFunction" class="col-lg-12">
-                                                <textarea id="txtStoredFunction" placeholder="Function"
+                                                <textarea id="txtStoredFunction" placeholder="{{_ "function"}}"
                                                           class="form-control"></textarea>
                                 </div>
                             </div>
@@ -74,10 +74,10 @@
                     </div>
                     <div class="modal-footer">
                         <div class="pull-left">
-                            <button type="button" class="btn btn-white" data-dismiss="modal">Close</button>
+                            <button type="button" class="btn btn-white" data-dismiss="modal">{{_ "close"}}</button>
                         </div>
                         <button id="btnSaveStoredFunction" type="button" data-style="contract"
-                                class="btn btn-primary ladda-button">Save
+                                class="btn btn-primary ladda-button">{{_ "save"}}
                         </button>
                     </div>
                 </div>

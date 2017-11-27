@@ -10,8 +10,8 @@ Settings.prototype = {
     const settings = {};
     settings.autoCompleteSamplesCount = $('#inputAutoCompleteSamplesCount').val();
     settings.autoCompleteShortcut = $('#inputAutocompleteShortcut').val();
-    settings.scale = $('#cmbScale').chosen().val();
-    settings.defaultResultView = $('#cmbResultView').chosen().val();
+    settings.scale = $('#cmbScale').val();
+    settings.defaultResultView = $('#cmbResultView').val();
     settings.maxAllowedFetchSize = $('#inputMaxAllowedFetchSize').val();
     settings.socketTimeoutInSeconds = $('#inputSocketTimeout').val();
     settings.connectionTimeoutInSeconds = $('#inputConnectionTimeout').val();
@@ -21,6 +21,7 @@ Settings.prototype = {
     settings.mongoBinaryPath = $('#inputMongoExecutable').val() || '';
     settings.singleTabResultSets = $('#divUseSingleTab').iCheck('update')[0].checked;
     settings.maxLiveChartDataPoints = $('#inputMaxChartPoints').val();
+    settings.language = $('#cmbMongoclientLanguage').val();
 
     Communicator.call({
       methodName: 'updateSettings',
@@ -38,13 +39,15 @@ Settings.prototype = {
     if (!settings) return;
 
     const cmbScale = $('#cmbScale');
-    const cmbResultView = $('#cmbResultView');
-
     cmbScale.val(settings.scale);
     cmbScale.trigger('chosen:updated');
 
+    const cmbResultView = $('#cmbResultView');
     cmbResultView.val(settings.defaultResultView);
     cmbResultView.trigger('chosen:updated');
+
+    const cmbLang = $('#cmbMongoclientLanguage');
+    cmbLang.val(settings.language || 'en');
 
     $('#inputMaxAllowedFetchSize').val(settings.maxAllowedFetchSize || 0);
     $('#inputSocketTimeout').val(settings.socketTimeoutInSeconds || 0);
