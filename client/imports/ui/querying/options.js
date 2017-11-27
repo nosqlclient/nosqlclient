@@ -1,4 +1,5 @@
 import { Enums, Notification, SessionManager, UIComponents, ExtendedJSON } from '/client/imports/modules';
+import Helper from '/client/imports/helpers/helper';
 import $ from 'jquery';
 
 const Options = function () {
@@ -191,7 +192,7 @@ Options.prototype = {
     if ($.inArray('FINALIZE', SessionManager.get(SessionManager.strSessionSelectedOptions)) !== -1) {
       const finalize = UIComponents.Editor.getCodeMirrorValue($('#divFinalize'));
       if (!finalize.parseFunction()) {
-        result.ERROR = 'Syntax Error on finalize, not a valid ';
+        result.ERROR = Helper.translate({ key: 'syntax-error-finalize-function' });
         return;
       }
     }
@@ -244,7 +245,7 @@ Options.prototype = {
     if (val === '') result[optionEnum[option]] = {};
     else {
       val = ExtendedJSON.convertAndCheckJSON(val);
-      if (val.ERROR) result.ERROR = `Syntax Error on ${optionEnum[option]}: ${val.ERROR}`;
+      if (val.ERROR) result.ERROR = Helper.translate({ key: `syntax-error-${optionEnum[option]}`, options: { error: val.ERROR } });
       else result[optionEnum[option]] = val;
     }
   },

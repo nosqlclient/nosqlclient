@@ -61,7 +61,7 @@ CollectionAdd.prototype = {
       if (!val) result[Enums.ADD_COLLECTION_OPTIONS.INDEX_OPTION_DEFAULTS] = {};
       else {
         val = ExtendedJSON.convertAndCheckJSON(val);
-        if (val.ERROR) result.ERROR = `Syntax Error on Index Option Defaults: ${val.ERROR}`;
+        if (val.ERROR) result.ERROR = Helper.translate({ key: 'syntax-error-index-option-defaults', options: { error: val.ERROR } });
         else result[Enums.ADD_COLLECTION_OPTIONS.INDEX_OPTION_DEFAULTS] = val;
       }
     }
