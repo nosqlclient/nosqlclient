@@ -81,9 +81,37 @@ UIComponents.prototype = {
       }
     },
 
+    getDatatableLanguageOptions() {
+      return {
+        emptyTable: Helper.translate({ key: 'emptyTable' }),
+        info: Helper.translate({ key: 'info' }),
+        infoEmpty: Helper.translate({ key: 'infoEmpty' }),
+        infoFiltered: Helper.translate({ key: 'infoFiltered' }),
+        infoPostFix: Helper.translate({ key: 'infoPostFix' }),
+        thousands: Helper.translate({ key: 'thousands' }),
+        lengthMenu: Helper.translate({ key: 'lengthMenu' }),
+        loadingRecords: Helper.translate({ key: 'loadingRecords' }),
+        processing: Helper.translate({ key: 'processing' }),
+        search: Helper.translate({ key: 'dt_search' }),
+        zeroRecords: Helper.translate({ key: 'zeroRecords' }),
+        paginate: {
+          first: Helper.translate({ key: 'first' }),
+          last: Helper.translate({ key: 'last' }),
+          next: Helper.translate({ key: 'next' }),
+          previous: Helper.translate({ key: 'previous' })
+        },
+        aria: {
+          sortAscending: Helper.translate({ key: 'sortAscending' }),
+          sortDescending: Helper.translate({ key: 'sortDescending' })
+        }
+      };
+    },
+
     initiateDatatable({ selector, sessionKey, clickCallback, noDeleteEvent }) {
       const self = this;
-      selector.DataTable();
+      selector.DataTable({
+        language: self.getDatatableLanguageOptions()
+      });
       selector.find('tbody').on('click', 'tr', function () {
         const table = selector.DataTable();
         self.doTableRowSelectable(table, $(this));
@@ -100,7 +128,7 @@ UIComponents.prototype = {
     setupDatatable({ selectorString, columns, columnDefs = [], data, autoWidth = true, lengthMenu = [5, 10, 20] }) {
       const selector = $(selectorString);
       if ($.fn.dataTable.isDataTable(selectorString)) selector.DataTable().destroy();
-      selector.DataTable({ responsive: true, destroy: true, stateSave: true, autoWidth, data, columns, columnDefs, lengthMenu });
+      selector.DataTable({ language: this.getDatatableLanguageOptions(), responsive: true, destroy: true, stateSave: true, autoWidth, data, columns, columnDefs, lengthMenu });
     }
   },
 

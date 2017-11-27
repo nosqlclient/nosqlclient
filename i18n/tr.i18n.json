@@ -608,5 +608,24 @@
   "upsert":"Upsert",
   "language":"Dil",
   "english":"English",
-  "turkish":"Türkçe"
+  "turkish":"Türkçe",
+
+  // datatable
+  "emptyTable": "Hiç veri bulunamadı",
+  "info": "_START_ - _END_ arası gösteriliyor. Toplam: _TOTAL_",
+  "infoEmpty": "0 - 0 arası gösterililyor. Toplam: 0",
+  "infoFiltered": "(_MAX_ adet arasından filtrelendi)",
+  "infoPostFix": "",
+  "thousands": ",",
+  "lengthMenu": "_MENU_ adet göster",
+  "loadingRecords": "Yükleniyor...",
+  "processing": "Çalışıyor...",
+  "dt_search": "Ara:",
+  "zeroRecords": "Eşleşen kayıt bulunamadı",
+  "first": "İlk",
+  "last": "Son",
+  "next": "Bir sonraki",
+  "previous": "Bir önceki",
+  "sortAscending": ": yükselen şekilde sıralamayı aktive et",
+  "sortDescending": ": alçalan şekilde sıralamayı aktive et"
 }
