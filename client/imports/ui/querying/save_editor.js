@@ -76,8 +76,8 @@ Editor.prototype = {
           Communicator.call({
             methodName: 'saveFindResult',
             args: { selectedCollection, updateObjects, deletedObjectIds, addedObjects },
-            callback: (err) => {
-              if (err) ErrorHandler.showMeteorFuncError(err);
+            callback: (err, res) => {
+              if (err, res) ErrorHandler.showMeteorFuncError(err, res);
               else {
                 Notification.success('saved-successfully');
                 $(activeTab).data('findData', activeEditorValue);

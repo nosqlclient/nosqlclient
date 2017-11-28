@@ -390,9 +390,9 @@ QueryRender.prototype = {
     $('#queryHistoriesModal').on('show.bs.modal', () => {
       this.initQueryHistories();
     });
-
     $('[data-toggle="tooltip"]').tooltip({ trigger: 'hover' });
 
+    const self = this;
     $.contextMenu({
       selector: '#resultTabs li',
       items: {
@@ -410,8 +410,8 @@ QueryRender.prototype = {
               }
             });
 
-            if (this.getActiveTabHeader() !== 'findOne') $('#divBrowseCollectionFooter').hide();
-            if (this.getActiveTabHeader() !== 'find') $('#divBrowseCollectionFindFooter').hide();
+            if (self.getActiveTabHeader() !== 'findOne') $('#divBrowseCollectionFooter').hide();
+            if (self.getActiveTabHeader() !== 'find') $('#divBrowseCollectionFindFooter').hide();
           },
         },
         close_all: {

@@ -184,10 +184,18 @@ Meteor.methods({
   },
 
   saveFindResult({ selectedCollection, updateObjects, deletedObjectIds, addedObjects, sessionId }) {
-    updateObjects.forEach(obj => MongoDB.execute({ selectedCollection, methodArray: [{ updateOne: [{ _id: obj._id }, obj, {}] }], sessionId }));
-
-    if (deletedObjectIds.length > 0) MongoDB.execute({ selectedCollection, methodArray: [{ deleteMany: [{ _id: { $in: deletedObjectIds } }] }], sessionId });
-    if (addedObjects.length > 0) MongoDB.execute({ selectedCollection, methodArray: [{ insertMany: [addedObjects] }], sessionId });
+    for (let i = 0; i < updateObjects.length; i += 1) {
+      const result = MongoDB.execute({ selectedCollection, methodArray: [{ updateOne: [{ _id: updateObjects[i]._id }, updateObjects[i], {}] }], sessionId });
+      if (result.error) return result;
+    }
+    if (deletedObjectIds.length > 0) {
+      const result = MongoDB.execute({ selectedCollection, methodArray: [{ deleteMany: [{ _id: { $in: deletedObjectIds } }] }], sessionId });
+      if (result.error) return result;
+    }
+    if (addedObjects.length > 0) {
+      const result = MongoDB.execute({ selectedCollection, methodArray: [{ insertMany: [addedObjects] }], sessionId });
+      if (result.error) return result;
+    }
   },
 
   bulkWrite({ selectedCollection, operations, options, sessionId }) {
