@@ -1,11 +1,7 @@
-import {Template} from 'meteor/templating';
-import Helper from '/client/imports/helper';
-
+import { Template } from 'meteor/templating';
+import { UIComponents } from '/client/imports/modules';
 import './project.html';
 
-/**
- * Created by RSercan on 1.1.2016.
- */
-Template.project.onRendered(function () {
-    Helper.initializeCodeMirror($('#divProject'), 'txtProject');
+Template.project.onRendered(() => {
+  UIComponents.Editor.initializeCodeMirror({ divSelector: $('#divProject'), txtAreaId: 'txtProject' });
 });

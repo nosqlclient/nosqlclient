@@ -1,21 +1,9 @@
-import {Template} from "meteor/templating";
-import {Meteor} from "meteor/meteor";
-import Helper from "/client/imports/helper";
-import {initExecuteQuery} from "/client/imports/views/pages/admin_queries/admin_queries";
+import { Template } from 'meteor/templating';
+import { Querying } from '/client/imports/ui';
+import './repl_set_get_status.html';
 
-import "./repl_set_get_status.html";
-
-/**
- * Created by RSercan on 10.1.2016.
- */
-Template.replSetGetStatus.onRendered(function () {
-    Helper.changeRunOnAdminOptionVisibility(false);
+Template.replSetGetStatus.onRendered(() => {
+  Querying.setVisibilityOfRunOnAdminCheckbox(false);
 });
 
-Template.replSetGetStatus.executeQuery = function () {
-    initExecuteQuery();
-
-    Meteor.call("replSetGetStatus", Meteor.default_connection._lastSessionId, function (err, result) {
-        Helper.renderAfterQueryExecution(err, result, true);
-    });
-};
+Template.replSetGetStatus.executeQuery = Querying.Admin.executeReplSetGetStatusQuery.bind(Querying.Admin);

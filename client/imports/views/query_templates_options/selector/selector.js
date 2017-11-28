@@ -1,15 +1,7 @@
-/**
- * Created by RSercan on 3.1.2016.
- */
-import {Template} from 'meteor/templating';
-import Helper from '/client/imports/helper';
-
+import { Template } from 'meteor/templating';
+import { UIComponents } from '/client/imports/modules';
 import './selector.html';
 
-Template.selector.onRendered(function () {
-    Helper.initializeCodeMirror($('#divSelector'), 'txtSelector', true);
+Template.selector.onRendered(() => {
+  UIComponents.Editor.initializeCodeMirror({ divSelector: $('#divSelector'), txtAreaId: 'txtSelector', keepValue: true });
 });
-
-export const getSelectorValue = function () {
-    return Helper.getCodeMirrorValue($('#divSelector'));
-};

@@ -27,15 +27,14 @@
 
 <template name="includeLocs">
     <div class="form-group">
-        <label class="col-lg-1 control-label">Include Locs</label>
+        <label class="col-lg-1 control-label">{{_ "include_locs"}}</label>
         <div class="col-lg-11">
             <div id="divIncludeLocs" class="i-checks">
                 <input id="inputIncludeLocs" type="checkbox" value=""
                        class="form-control"
                        checked=""
                        style="position: absolute; opacity: 0;"/>
-                <span class="help-block m-b-none">Include the location data fields in the top level of the results<strong> MongoDB
-                    > 2.X</strong></span>
+                <span class="help-block m-b-none">{{{_ "include_locs_info"}}}</span>
             </div>
         </div>
     </div>
@@ -43,15 +42,14 @@
 
 <template name="uniqueDocs">
     <div class="form-group">
-        <label class="col-lg-1 control-label">Unique Docs</label>
+        <label class="col-lg-1 control-label">{{_ "unique_docs"}}</label>
         <div class="col-lg-11">
             <div id="divUniqueDocs" class="i-checks">
                 <input id="inputUniqueDocs" type="checkbox" value=""
                        class="form-control"
                        checked=""
                        style="position: absolute; opacity: 0;"/>
-                <span class="help-block m-b-none">The closest location in a document to the center of the search region will always be returned<strong>
-                    MongoDB > 2.X</strong></span>
+                <span class="help-block m-b-none">{{{_ "unique_docs_info"}}}</span>
             </div>
         </div>
     </div>
@@ -59,14 +57,14 @@
 
 <template name="spherical">
     <div class="form-group">
-        <label class="col-lg-1 control-label">Spherical</label>
+        <label class="col-lg-1 control-label">{{_ "spherical"}}</label>
         <div class="col-lg-11">
             <div id="divSpherical" class="i-checks">
                 <input id="inputSpherical" type="checkbox" value=""
                        class="form-control"
                        checked=""
                        style="position: absolute; opacity: 0;"/>
-                <span class="help-block m-b-none">Perform query using a spherical model</span>
+                <span class="help-block m-b-none">{{{_ "spherical_info"}}}</span>
             </div>
         </div>
     </div>
@@ -74,17 +72,17 @@
 
 <template name="distanceMultiplier">
     <div class="form-group">
-        <label class="col-lg-1 control-label">Distance Multiplier</label>
+        <label class="col-lg-1 control-label">{{_ "distance_multiplier"}}</label>
         <div class="col-lg-11">
             <input id="inputDistanceMultiplier" required="true" type="number" class="form-control">
-            <span class="help-block m-b-none">Include a value to multiply the distances with allowing for range conversions</span>
+            <span class="help-block m-b-none">{{{_ "distance_multiplier_info"}}}</span>
         </div>
     </div>
 </template>
 
 <template name="minDistance">
     <div class="form-group">
-        <label class="col-lg-1 control-label">Min Distance</label>
+        <label class="col-lg-1 control-label">{{_ "min_distance"}}</label>
         <div class="col-lg-11">
             <input id="inputMinDistance" required="true" type="number" class="form-control">
         </div>
@@ -93,7 +91,7 @@
 
 <template name="num">
     <div class="form-group">
-        <label class="col-lg-1 control-label">Max Number</label>
+        <label class="col-lg-1 control-label">{{_ "max_number"}}</label>
         <div class="col-lg-11">
             <input id="inputMaxNumber" required="true" type="number" class="form-control">
         </div>

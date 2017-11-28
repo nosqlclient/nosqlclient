@@ -1,6 +1,6 @@
 <template name="maxTimeMs">
     <div class="form-group">
-        <label class="col-lg-1 control-label">MaxTimeMS</label>
+        <label class="col-lg-1 control-label">{{_ "max_time_ms"}}</label>
         <div class="col-lg-11">
             <input id="inputMaxTimeMs" value=""
                    data-required="true"
@@ -8,7 +8,7 @@
                    type="number"
                    placeholder="Max time as milliseconds"
                    class="form-control">
-            <span class="help-block m-b-none">Number of <b>milliseconds</b> to wait before aborting the query.</span>
+            <span class="help-block m-b-none">{{{_ "max_time_ms_info"}}}</span>
         </div>
     </div>
 </template>

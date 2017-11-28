@@ -1,32 +1,32 @@
 <template name="aggregatePipeline">
     {{#if isConnected}}
-        {{> pageHeading title='Aggregate' }}
+        {{> pageHeading title=getPageHeading }}
         <div class="wrapper wrapper-content animated fadeInRight">
             <div class="row">
                 <div class="col-lg-12">
                     <div class="ibox float-e-margins">
                         <div class="ibox-title">
-                            <h5>Drag stages between list to re-order
+                            <h5>{{_ "drag_stages"}}
                             </h5>
                             <div class="ibox-tools">
                                 <button id="btnAggregateHistory" type="button"
                                         style="margin-right: 5px;"
                                         class="btn btn-sm btn-primary ladda-button" data-style="contract">
-                                    History
+                                    {{_ "history"}}
                                 </button>
                                 <button id="btnExecuteAggregatePipeline" type="button"
                                         class="btn btn-sm btn-primary ladda-button" data-style="contract">
-                                    Execute
+                                    {{_ "execute"}}
                                 </button>
                             </div>
                         </div>
                         <div class="ibox-content">
                             <form class="form-horizontal">
                                 <div class="form-group">
-                                    <label class="col-lg-1 control-label">Collection</label>
+                                    <label class="col-lg-1 control-label">{{_ "collection"}}</label>
                                     <div class="col-lg-11">
                                         <select id="cmbCollections"
-                                                data-placeholder="Choose a collection..."
+                                                data-placeholder="{{_ "select_collection"}}"
                                                 class="chosen-select form-control"
                                                 tabindex="-1">
                                             <option></option>
@@ -35,10 +35,10 @@
                                 </div>
 
                                 <div class="form-group">
-                                    <label class="col-lg-1 control-label">Pick a Stage</label>
+                                    <label class="col-lg-1 control-label">{{_ "choose_stage"}}</label>
                                     <div class="col-lg-11">
                                         <select id="cmbStageQueries"
-                                                data-placeholder="Choose a stage query.."
+                                                data-placeholder="{{_ "choose_stage"}}"
                                                 class="chosen-select form-control"
                                                 tabindex="-1">
                                             <option></option>
@@ -69,7 +69,7 @@
                                 </div>
 
                                 <div class="form-group">
-                                    <label class="col-lg-1 control-label">Pipeline</label>
+                                    <label class="col-lg-1 control-label">{{_ "pipeline"}}</label>
                                     <ul class="sortable-list agile-list col-lg-11" id="stages">
                                     </ul>
                                 </div>

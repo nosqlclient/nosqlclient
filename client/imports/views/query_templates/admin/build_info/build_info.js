@@ -1,18 +1,9 @@
-import {Template} from 'meteor/templating';
-import {Meteor} from 'meteor/meteor';
-import Helper from '/client/imports/helper';
-import {initExecuteQuery} from '/client/imports/views/pages/admin_queries/admin_queries';
-
+import { Template } from 'meteor/templating';
+import { Querying } from '/client/imports/ui';
 import './build_info.html';
 
-Template.buildInfo.onRendered(function()  {
-    Helper.changeRunOnAdminOptionVisibility(false);
+Template.buildInfo.onRendered(() => {
+  Querying.setVisibilityOfRunOnAdminCheckbox(false);
 });
 
-Template.buildInfo.executeQuery = function() {
-    initExecuteQuery();
-
-    Meteor.call("buildInfo",Meteor.default_connection._lastSessionId, function(err, result) {
-        Helper.renderAfterQueryExecution(err, result, true);
-    });
-};
+Template.buildInfo.executeQuery = Querying.Admin.executeBuildInfoQuery.bind(Querying.Admin);

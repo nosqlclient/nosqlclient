@@ -13,17 +13,17 @@
 
 <template name="capped">
     <div class="form-group">
-        <label class="col-lg-2 control-label">Capped
+        <label class="col-lg-2 control-label">{{_ "capped"}}
         </label>
         <div class="col-lg-5">
             <input id="inputCappedCollectionSize" required="true" type="number"
                    min="0"
-                   placeholder="Size (In Bytes)"
+                   placeholder="{{_ "size"}} {{_ "in_bytes"}}"
                    class="form-control">
         </div>
         <div class="col-lg-5">
             <input id="inputCappedCollectionMaxDocs" required="true" type="number" min="0"
-                   placeholder="Max Documents"
+                   placeholder="{{_ "max_documents"}}"
                    class="form-control">
         </div>
     </div>
@@ -31,7 +31,7 @@
 
 <template name="flags">
     <div class="form-group">
-        <label class="col-lg-2 control-label">Use 2-Sizes Indexes
+        <label class="col-lg-2 control-label">{{_ "use_2_sizes_indexes"}}
         </label>
         <div id="divTwoSizesIndexes" class="col-lg-10">
             <input id="inputTwoSizesIndexes" type="checkbox"
@@ -41,7 +41,7 @@
         </div>
     </div>
     <div class="form-group">
-        <label class="col-lg-2 control-label">No padding
+        <label class="col-lg-2 control-label">{{_ "no_padding"}}
         </label>
         <div id="divNoPadding" class="col-lg-10">
             <input id="inputNoPadding" type="checkbox"
@@ -54,12 +54,12 @@
 
 <template name="indexOptionDefaults">
     <div class="form-group">
-        <label class="col-lg-2 control-label">Index Option Defaults
+        <label class="col-lg-2 control-label">{{_ "index_option_defaults"}}
         </label>
         <div id="divIndexOptionDefaults" class="col-lg-10">
                                                 <textarea id="txtIndexOptionDefaults"
                                                           class="form-control"></textarea>
-            <span class="help-block m-b-none">Valid for <b>Mongodb 3.2</b> and higher</span>
+            <span class="help-block m-b-none">{{{_ "mongodb_version_warning" version="3.2"}}}</span>
         </div>
     </div>
 </template>

@@ -1,5 +1,5 @@
 <template name="userManagement">
-    {{> pageHeading title='User Management' }}
+    {{> pageHeading title=getPageHeading }}
 
     {{#if isConnected}}
         <div class="wrapper wrapper-content animated fadeInRight">
@@ -7,31 +7,29 @@
                 <div class="col-lg-12">
                     <div class="ibox float-e-margins">
                         <div class="ibox-title">
-                            <h5>Users
-                                <small>You need to have necessary privileges</small>
+                            <h5>{{_ "user_management"}}
+                                <small>{{_ "user_management_info"}}</small>
                             </h5>
 
                             <div class="ibox-tools">
                                 <button id="btnEditUser" type="button" class="btn btn-sm btn-primary"
-                                        style="display: none">Edit User
+                                        style="display: none">{{_ "edit_user"}}
                                 </button>
 
                                 <button id="btnManageRoles" type="button" class="btn btn-sm btn-primary"
                                         data-toggle="modal" data-target="#manageRolesModal"
-                                        style="display: none">Manage
-                                    Roles
+                                        style="display: none">{{_ "manage_roles"}}
                                 </button>
 
                                 <button id="btnManageUsers" type="button" class="btn btn-sm btn-primary"
                                         data-toggle="modal" data-target="#manageUsersModal"
-                                        style="display: none">Manage
-                                    Users
+                                        style="display: none">{{_ "manage_users"}}
                                 </button>
 
 
                                 <a id="aRunOnAdminDBToFetchUsers" class="i-checks"
                                    data-toggle="tooltip"
-                                   title="If checked, users will be fetched from admin DB, otherwise on current DB">
+                                   title="{{_ "run_on_admin_info"}}">
                                     <input id="inputRunOnAdminDBToFetchUsers" type="checkbox" value=""
                                            class="form-control"
                                            checked=""
@@ -59,7 +57,7 @@
                                     class="btn btn-block btn-outline btn-primary ladda-button"
                                     type="button"
                                     data-style="contract">
-                                <strong>Refresh</strong></button>
+                                <strong>{{_ "refresh"}}</strong></button>
                         </div>
                     </div>
                 </div>

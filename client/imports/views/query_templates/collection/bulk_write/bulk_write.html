@@ -1,17 +1,17 @@
 <template name="bulkWrite">
     <div class="form-group">
-        <label class="col-lg-1 control-label">Operations</label>
+        <label class="col-lg-1 control-label">{{_ "operations"}}</label>
         <div id="divBulkWrite" class="col-lg-11">
             <textarea id="txtBulkWrite" class="form-control"></textarea>
-            <span class="help-block m-b-none">Check mongodb 3.2 bulkWrite section for more information about bulkWrite, <b>operations must be an array</b></span>
+            <span class="help-block m-b-none">{{{_ "operations_info"}}}</span>
         </div>
     </div>
 
     <div class="form-group">
-        <label class="col-lg-1 control-label">Options</label>
+        <label class="col-lg-1 control-label">{{_ "options"}}</label>
         <div class="col-lg-11">
             <select id="cmbBulkWriteOptions"
-                    data-placeholder="Choose one or more options.."
+                    data-placeholder="{{_ "select_options"}}"
                     multiple="true"
                     class="chosen-select form-control"
                     tabindex="-1">

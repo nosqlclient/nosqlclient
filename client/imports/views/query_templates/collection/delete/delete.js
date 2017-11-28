@@ -1,49 +1,6 @@
-import {Template} from 'meteor/templating';
-import {Meteor} from 'meteor/meteor';
-import Helper from '/client/imports/helper';
-import {Session} from 'meteor/session';
-import {initExecuteQuery} from '/client/imports/views/pages/browse_collection/browse_collection';
-import {getSelectorValue} from '/client/imports/views/query_templates_options/selector/selector';
-
+import { Template } from 'meteor/templating';
+import { Querying } from '/client/imports/ui';
 import './delete.html';
 
-const toastr = require('toastr');
-const Ladda = require('ladda');
-/**
- * Created by RSercan on 2.1.2016.
- */
-Template.delete.onRendered(function () {
-});
-
-Template.delete.executeQuery = function (historyParams) {
-    initExecuteQuery();
-    const selectedCollection = Session.get(Helper.strSessionSelectedCollection);
-    let selector = historyParams ? JSON.stringify(historyParams.selector) : getSelectorValue();
-
-    selector = Helper.convertAndCheckJSON(selector);
-    if (selector["ERROR"]) {
-        toastr.error("Syntax error on selector: " + selector["ERROR"]);
-        Ladda.stopAll();
-        return;
-    }
-
-    const params = {
-        selector: selector
-    };
-
-    Meteor.call("delete", selectedCollection, selector,Meteor.default_connection._lastSessionId, function (err, result) {
-            Helper.renderAfterQueryExecution(err, result, false, "delete", params, (!historyParams));
-        }
-    );
-};
-
-Template.delete.renderQuery = function (query) {
-    if (query.queryParams) {
-        // let all stuff initialize
-        if (query.queryParams.selector) {
-            Meteor.setTimeout(function () {
-                Helper.setCodeMirrorValue($('#divSelector'), JSON.stringify(query.queryParams.selector, null, 1));
-            }, 100);
-        }
-    }
-};
+Template.delete.executeQuery = Querying.Collection.Delete.execute.bind(Querying.Collection.Delete);
+Template.delete.renderQuery = Querying.Collection.Delete.render.bind(Querying.Collection.Delete);

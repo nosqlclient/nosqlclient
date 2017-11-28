@@ -17,18 +17,16 @@
                                             class="caret"></b>
                                     </span>
                                 {{else}}
-                                    <span class="block mt-xs">Not Connected !</span>
+                                    <span class="block mt-xs">{{_ "not_connected"}}</span>
                                 {{/if}}
                             </span>
                         </a>
                         {{#if isConnected}}
                             <ul class="dropdown-menu animated fadeInRight m-t-xs">
-                                <li><a id="btnRefreshCollections" href="#"><i class="fa fa-refresh"></i> Refresh
-                                    collections</a></li>
-                                <li><a id="btnDropDatabase" href="#"><i class="fa fa-remove"></i> Drop database</a>
+                                <li><a id="btnRefreshCollections" href="#"><i class="fa fa-refresh"></i> {{_ "refresh_collections"}}</a></li>
+                                <li><a id="btnDropDatabase" href="#"><i class="fa fa-remove"></i> {{_ "drop_database"}}</a>
                                 </li>
-                                <li><a id="btnDropAllCollections" href="#"><i class="fa fa-remove"></i> Drop all
-                                    collections</a></li>
+                                <li><a id="btnDropAllCollections" href="#"><i class="fa fa-remove"></i> {{_ "drop_all_collections"}}</a></li>
 
                                 <!--
                                 <li class="divider"></li>
@@ -44,14 +42,14 @@
                     <li class="{{isActivePath regex='databaseStats'}}">
                         <a class="aNavigations" href="{{pathFor route='databaseStats'}}"><i
                                 class="fa fa-eye"></i> <span
-                                class="nav-label">Database Stats</span>
+                                class="nav-label">{{_ "db_stats"}}</span>
                         </a>
                     </li>
 
                     <li>
                         <a href=""><i
                                 class="fa fa-wrench"></i> <span
-                                class="nav-label">Management</span>
+                                class="nav-label">{{_ "management"}}</span>
                             <span class="fa arrow"></span>
                         </a>
 
@@ -59,7 +57,7 @@
                             <li class="{{isActivePath regex='userManagement'}}">
                                 <a class="aNavigations" href="{{pathFor route='userManagement'}}"><i
                                         class="fa fa-user"></i> <span
-                                        class="nav-label">User Management</span>
+                                        class="nav-label">{{_ "user_management"}}</span>
                                 </a>
                             </li>
 
@@ -67,28 +65,28 @@
                                 <a id="anchorDatabaseDumpRestore" href="{{pathFor route='databaseDumpRestore'}}"
                                    class="aNavigations"><i
                                         class="fa fa-download"></i> <span
-                                        class="nav-label">Dump/Restore/Import</span>
+                                        class="nav-label">{{_ "dump_restore"}}</span>
                                 </a>
                             </li>
 
                             <li class="{{isActivePath regex='fileManagement'}}">
                                 <a class="aNavigations" href="{{pathFor route='fileManagement'}}"><i
                                         class="fa fa-file"></i> <span
-                                        class="nav-label">File Management</span>
+                                        class="nav-label">{{_ "file_management"}}</span>
                                 </a>
                             </li>
 
                             <li class="{{isActivePath regex='indexManagement'}}">
                                 <a class="aNavigations" href="{{pathFor route='indexManagement'}}"><i
                                         class="fa fa-bolt"></i> <span
-                                        class="nav-label">Index Management</span>
+                                        class="nav-label">{{_ "index_management"}}</span>
                                 </a>
                             </li>
 
                             <li class="{{isActivePath regex='adminQueries'}}">
                                 <a class="aNavigations" href="{{pathFor route='adminQueries'}}"><i
                                         class="fa fa-key"></i> <span
-                                        class="nav-label">Admin Queries</span>
+                                        class="nav-label">{{_ "admin_queries"}}</span>
                                 </a>
                             </li>
                         </ul>
@@ -97,7 +95,7 @@
                     <li>
                         <a href=""><i
                                 class="fa fa-gears"></i> <span
-                                class="nav-label">Tools</span>
+                                class="nav-label">{{_ "tools"}}</span>
                             <span class="fa arrow"></span>
                         </a>
 
@@ -105,21 +103,21 @@
                             <li class="{{isActivePath regex='shell'}}">
                                 <a id="anchorShell" class="aNavigations" href="{{pathFor route='shell'}}"><i
                                         class="fa fa-window-maximize"></i> <span
-                                        class="nav-label">Shell</span>
+                                        class="nav-label">{{_ "shell"}}</span>
                                 </a>
                             </li>
 
                             <li class="{{isActivePath regex='aggregatePipeline'}}">
                                 <a class="aNavigations" href="{{pathFor route='aggregatePipeline'}}"><i
                                         class="fa fa-tasks"></i> <span
-                                        class="nav-label">Aggregate</span>
+                                        class="nav-label">{{_ "aggregate"}}</span>
                                 </a>
                             </li>
 
                             <li class="{{isActivePath regex='storedFunctions'}}">
                                 <a class="aNavigations" href="{{pathFor route='storedFunctions'}}"><i
                                         class="fa fa-suitcase"></i> <span
-                                        class="nav-label">Stored Functions</span>
+                                        class="nav-label">{{_ "stored_functions"}}</span>
                                 </a>
                             </li>
 
@@ -127,7 +125,7 @@
                                 <a id="anchorSchemaAnalyzer" class="aNavigations"
                                    href="{{pathFor route='schemaAnalyzer'}}"><i
                                         class="fa fa-braille"></i> <span
-                                        class="nav-label">Schema Analyzer</span>
+                                        class="nav-label">{{_ "schema_analyzer"}}</span>
                                 </a>
                             </li>
                         </ul>
@@ -135,12 +133,12 @@
 
                     <li>
                         <a class="navCollectionTop" href=""><i class="fa fa-dashboard"></i> <span
-                                class="nav-label">Collections</span>
+                                class="nav-label">{{_ "collections"}}</span>
                             <span class="fa arrow pull-right"></span>
 
                             {{#if filtered}}
                                 <span title="Filtered" style="margin-left: 15px"
-                                      class="label label-info">Filtered</span>
+                                      class="label label-info">{{_ "filtered"}}</span>
                             {{/if}}
                         </a>
 
@@ -152,7 +150,7 @@
                                             class="nav-label">{{name}}</span>
                                         {{#if equals type 'view'}}
                                             <span title="View" style="margin-left: 15px"
-                                                  class="label label-info">View</span>
+                                                  class="label label-info">{{_ "view"}}</span>
                                         {{/if}}
                                     </a>
                                 </li>
@@ -163,7 +161,7 @@
                     {{#if getSystemCollectionNames}}
                         <li>
                             <a href="#"><i class="fa fa-server"></i> <span
-                                    class="nav-label">System</span>
+                                    class="nav-label">{{_ "system"}}</span>
                                 <span class="fa arrow pull-right"></span>
                             </a>
 
@@ -182,7 +180,7 @@
 
                     <li>
                         <a href="#"><i class="fa fa-star"></i> <span
-                                class="nav-label">Nosqlclient Skin</span>
+                                class="nav-label">{{_ "nosqlclient_skin"}}</span>
                             <span class="fa arrow pull-right"></span>
                         </a>
 
@@ -190,25 +188,25 @@
                             <li>
                                 <a id="skin-default" class="anchor-skin" href="#"><i
                                         class="fa fa-star"></i> <span
-                                        class="nav-label">Skin - 1</span>
+                                        class="nav-label">{{_ "skin_1"}}</span>
                                 </a>
                             </li>
                             <li>
                                 <a id="skin-1" class="anchor-skin" href="#"><i
                                         class="fa fa-star"></i> <span
-                                        class="nav-label">Skin - 2</span>
+                                        class="nav-label">{{_ "skin_2"}}</span>
                                 </a>
                             </li>
                             <li>
                                 <a id="skin-2" class="anchor-skin" href="#"><i
                                         class="fa fa-star"></i> <span
-                                        class="nav-label">Skin - 3</span>
+                                        class="nav-label">{{_ "skin_3"}}</span>
                                 </a>
                             </li>
                             <li>
                                 <a id="skin-3" class="anchor-skin" href="#"><i
                                         class="fa fa-star"></i> <span
-                                        class="nav-label">Skin - 4</span>
+                                        class="nav-label">{{_ "skin_4"}}</span>
                                 </a>
                             </li>
                         </ul>

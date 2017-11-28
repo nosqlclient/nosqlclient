@@ -5,24 +5,24 @@
             <div class="modal-content animated bounceInRight">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span><span
-                            class="sr-only">Close</span></button>
-                    <h4 id="addIndexModalTitle" class="modal-title">Add Index</h4>
+                            class="sr-only">{{_ "close"}}</span></button>
+                    <h4 id="addIndexModalTitle" class="modal-title">{{_ "add_index"}}</h4>
                 </div>
                 <div class="modal-body">
                     <div class="tabs-container">
                         <ul class="nav nav-tabs">
                             <li class="active"><a data-toggle="tab" href="#tab-1-indexes"
                                                   aria-expanded="true">
-                                General</a>
+                                {{_ "general"}}</a>
                             </li>
                             <li class=""><a id="anchorStorageEngine" data-toggle="tab" href="#tab-2-text-options"
-                                            aria-expanded="false">Text Options</a>
+                                            aria-expanded="false">{{_ "text_options"}}</a>
                             </li>
                             <li class=""><a id="anchorValidator" data-toggle="tab" href="#tab-3-geo-options"
-                                            aria-expanded="false">Geo Options</a>
+                                            aria-expanded="false">{{_ "geo_options"}}</a>
                             </li>
                             <li class=""><a data-toggle="tab" href="#tab-4-indexes-collation"
-                                            aria-expanded="false">Collation</a>
+                                            aria-expanded="false">{{_ "collation"}}</a>
                             </li>
                         </ul>
                         <div class="tab-content">
@@ -33,13 +33,13 @@
                                         <div class="form-group">
                                             <div class="col-lg-12">
                                                 <input id="inputIndexName" type="text"
-                                                       placeholder="Index name"
+                                                       placeholder="{{_ "index_name"}}"
                                                        class="form-control">
                                             </div>
                                         </div>
                                         <div class="form-group divField" style="display: none">
                                             <div class="col-lg-6">
-                                                <div class="input-group"><input type="text" placeholder="Field name"
+                                                <div class="input-group"><input type="text" placeholder="{{_ "field_name"}}"
                                                                                 class="form-control txtFieldName">
                                                     <div class="input-group-btn">
                                                         <button data-toggle="dropdown"
@@ -47,10 +47,10 @@
                                                                 type="button"><span class="caret"></span></button>
                                                         <ul class="dropdown-menu pull-right">
                                                             <li><a class="addField" href="#"><i class="fa fa-plus"></i>
-                                                                Add Another</a>
+                                                                {{_ "add_another"}}</a>
                                                             </li>
                                                             <li><a class="deleteField" href="#"><i
-                                                                    class="fa fa-remove"></i> Delete</a>
+                                                                    class="fa fa-remove"></i> {{_ "delete"}}</a>
                                                             </li>
                                                         </ul>
                                                     </div>
@@ -58,7 +58,7 @@
                                             </div>
                                             <div class="col-lg-6">
                                                 <select
-                                                        data-placeholder="Select field type"
+                                                        data-placeholder="{{_ "select_field_type"}}"
                                                         class="chosen-select form-control cmbIndexTypes"
                                                         tabindex="-1">
                                                     <option value="1">1 (ascending)</option>
@@ -81,7 +81,7 @@
                                                                 <a id="anchorOptions" data-toggle="collapse"
                                                                    data-parent="#accordion"
                                                                    href="#collapseOne"
-                                                                   aria-expanded="true" class="">Options</a>
+                                                                   aria-expanded="true" class="">{{_ "options"}}</a>
                                                             </h5>
                                                         </div>
                                                         <div id="collapseOne" class="panel-collapse collapse"
@@ -89,8 +89,7 @@
                                                             <div class="panel-body">
                                                                 <form class="form-horizontal">
                                                                     <div class="form-group">
-                                                                        <label class="col-lg-3 control-label">Background
-                                                                            Creation</label>
+                                                                        <label class="col-lg-3 control-label">{{_ "background"}}</label>
                                                                         <div id="divBackground" class="col-lg-9">
                                                                             <input id="inputBackground" type="checkbox"
                                                                                    class="form-control"
@@ -100,7 +99,7 @@
                                                                     </div>
 
                                                                     <div class="form-group">
-                                                                        <label class="col-lg-3 control-label">Unique</label>
+                                                                        <label class="col-lg-3 control-label">{{_ "unique"}}</label>
                                                                         <div id="divUnique" class="col-lg-9">
                                                                             <input id="inputUnique" type="checkbox"
                                                                                    class="form-control"
@@ -110,7 +109,7 @@
                                                                     </div>
 
                                                                     <div class="form-group">
-                                                                        <label class="col-lg-3 control-label">Sparse</label>
+                                                                        <label class="col-lg-3 control-label">{{_ "sparse"}}</label>
                                                                         <div id="divSparse" class="col-lg-9">
                                                                             <input id="inputSparse" type="checkbox"
                                                                                    class="form-control"
@@ -120,24 +119,20 @@
                                                                     </div>
 
                                                                     <div class="form-group">
-                                                                        <label class="col-lg-3 control-label">Time to
-                                                                            Live
-                                                                            (Seconds)</label>
+                                                                        <label class="col-lg-3 control-label">{{_ "time_to_live"}} ({{_ "seconds"}})</label>
                                                                         <div class="col-lg-9">
                                                                             <input id="inputTTL" type="number"
                                                                                    class="form-control"
-                                                                                   placeholder="Leave empty for no TTL"/>
+                                                                                   placeholder="{{_ "leave_empty_for_no_ttl"}}"/>
                                                                         </div>
                                                                     </div>
 
                                                                     <div class="form-group">
-                                                                        <label class="col-lg-3 control-label">Partial
-                                                                            Filter
-                                                                            Expression</label>
+                                                                        <label class="col-lg-3 control-label">{{_ "partial_filter_expression"}}</label>
                                                                         <div id="divPartial" class="col-lg-9">
                                                                             <textarea id="txtPartial"
                                                                                       class="form-control"></textarea>
-                                                                            <span class="help-block m-b-none">Leave empty for no partial filter expression</span>
+                                                                            <span class="help-block m-b-none">{{_ "leave_empty_for_no_partial"}}</span>
                                                                         </div>
                                                                     </div>
                                                                 </form>
@@ -156,10 +151,10 @@
                                 <div class="panel-body no-borders modal-background">
                                     <form class="form-horizontal">
                                         <div class="form-group">
-                                            <label class="col-lg-2 control-label">Version</label>
+                                            <label class="col-lg-2 control-label">{{_ "version"}}</label>
                                             <div class="col-lg-10">
                                                 <select id="cmbTextIndexVersion"
-                                                        data-placeholder="Leave empty for no version"
+                                                        data-placeholder="{{_ "leave_empty_for_no_version"}}"
                                                         class="chosen-select form-control"
                                                         tabindex="-1">
                                                     <option></option>
@@ -171,10 +166,10 @@
                                         </div>
 
                                         <div class="form-group">
-                                            <label class="col-lg-2 control-label">Default Language</label>
+                                            <label class="col-lg-2 control-label">{{_ "default_language"}}</label>
                                             <div class="col-lg-10">
                                                 <select id="cmbTextIndexDefaultLanguage"
-                                                        data-placeholder="Leave empty for no version"
+                                                        data-placeholder="{{_ "leave_empty_for_no_language"}}"
                                                         class="chosen-select form-control"
                                                         tabindex="-1">
                                                     <option></option>
@@ -204,22 +199,22 @@
                                         </div>
 
                                         <div class="form-group">
-                                            <label class="col-lg-2 control-label">Language Override</label>
+                                            <label class="col-lg-2 control-label">{{_ "lang_override"}}</label>
                                             <div class="col-lg-10"><input id="inputTextLanguageOverride"
                                                                           type="text"
-                                                                          placeholder="Leave empty for no override"
+                                                                          placeholder="{{_ "leave_empty_for_no_override"}}"
                                                                           class="form-control">
                                             </div>
                                         </div>
 
                                         <div class="form-group divFieldWeight" style="display: none">
                                             <div class="col-lg-4 col-lg-offset-2">
-                                                <input type="text" placeholder="Field name" disabled
+                                                <input type="text" placeholder="{{_ "field_name"}}" disabled
                                                        class="form-control txtFieldWeightName">
                                             </div>
                                             <div class="col-lg-6">
                                                 <input type="number" min="1"
-                                                       placeholder="Weight (Leave empty for no weight)"
+                                                       placeholder="{{_ "weight"}} {{_ "leave_empty_for_no_weight"}}"
                                                        class="form-control txtFieldWeight">
                                             </div>
                                         </div>
@@ -233,8 +228,7 @@
                                     <div class="panel panel-default">
                                         <div class="panel-heading">
                                             <h5 class="panel-title">
-                                                <a data-toggle="collapse" href="#div2dOptions" aria-expanded="false">2D
-                                                    Options</a>
+                                                <a data-toggle="collapse" href="#div2dOptions" aria-expanded="false">{{_ "2d_options"}}</a>
                                             </h5>
                                         </div>
                                         <div id="div2dOptions" class="panel-collapse collapse" aria-expanded="false"
@@ -242,26 +236,26 @@
                                             <div class="panel-body">
                                                 <form class="form-horizontal">
                                                     <div class="form-group">
-                                                        <label class="col-lg-2 control-label">Min</label>
+                                                        <label class="col-lg-2 control-label">{{_ "min"}}</label>
                                                         <div class="col-lg-10"><input id="input2DMin"
                                                                                       type="number"
-                                                                                      placeholder="Lower bound"
+                                                                                      placeholder="{{_ "lower_bound"}}"
                                                                                       class="form-control">
                                                         </div>
                                                     </div>
                                                     <div class="form-group">
-                                                        <label class="col-lg-2 control-label">Max</label>
+                                                        <label class="col-lg-2 control-label">{{_ "max"}}</label>
                                                         <div class="col-lg-10"><input id="input2DMax"
                                                                                       type="number"
-                                                                                      placeholder="Upper bound"
+                                                                                      placeholder="{{_ "upper_bound"}}"
                                                                                       class="form-control">
                                                         </div>
                                                     </div>
                                                     <div class="form-group">
-                                                        <label class="col-lg-2 control-label">Bit</label>
+                                                        <label class="col-lg-2 control-label">{{_ "bit"}}</label>
                                                         <div class="col-lg-10"><input id="input2DBit"
                                                                                       type="number"
-                                                                                      placeholder="Bit Precision"
+                                                                                      placeholder="{{_ "bit_precision"}}"
                                                                                       class="form-control">
                                                         </div>
                                                     </div>
@@ -274,7 +268,7 @@
                                         <div class="panel-heading">
                                             <h5 class="panel-title">
                                                 <a data-toggle="collapse" href="#div2dSphereOptions"
-                                                   aria-expanded="false">2D Sphere Options</a>
+                                                   aria-expanded="false">{{_ "2d_sphere_options"}}</a>
                                             </h5>
                                         </div>
                                         <div id="div2dSphereOptions" class="panel-collapse collapse"
@@ -283,10 +277,10 @@
                                             <div class="panel-body">
                                                 <form class="form-horizontal">
                                                     <div class="form-group">
-                                                        <label class="col-lg-2 control-label">Version</label>
+                                                        <label class="col-lg-2 control-label">{{_ "version"}}</label>
                                                         <div class="col-lg-10"><input id="input2DSphereVersion"
                                                                                       type="number"
-                                                                                      placeholder="Index Version"
+                                                                                      placeholder="{{_ "version"}}"
                                                                                       class="form-control">
                                                         </div>
                                                     </div>
@@ -299,8 +293,7 @@
                                         <div class="panel-heading">
                                             <h5 class="panel-title">
                                                 <a data-toggle="collapse" href="#divGeoHaystackOptions"
-                                                   aria-expanded="false">Geo Haystack
-                                                    Options</a>
+                                                   aria-expanded="false">{{_ "geo_haystack_options"}}</a>
                                             </h5>
                                         </div>
                                         <div id="divGeoHaystackOptions" class="panel-collapse collapse"
@@ -309,10 +302,10 @@
                                             <div class="panel-body">
                                                 <form class="form-horizontal">
                                                     <div class="form-group">
-                                                        <label class="col-lg-2 control-label">Bucket Size</label>
+                                                        <label class="col-lg-2 control-label">{{_ "bucket_size"}}</label>
                                                         <div class="col-lg-10"><input id="inputBucketSize"
                                                                                       type="number"
-                                                                                      placeholder="Bucket Size"
+                                                                                      placeholder="{{_ "bucket_size"}}"
                                                                                       class="form-control">
                                                         </div>
                                                     </div>
@@ -329,11 +322,11 @@
                                 <div class="panel-body no-borders modal-background">
                                     <form class="form-horizontal">
                                         <div class="form-group">
-                                            <label class="col-lg-2 control-label">Collation</label>
+                                            <label class="col-lg-2 control-label">{{_ "collation"}}</label>
                                             <div id="divCollationAddIndex" class="col-lg-10">
                                                 <textarea id="txtCollationAddIndex"
                                                           class="form-control"></textarea>
-                                                <span class="help-block m-b-none">Valid for <b>Mongodb 3.4</b> and higher</span>
+                                                <span class="help-block m-b-none">{{{_ "mongodb_version_warning" version="3.4"}}}</span>
                                             </div>
                                         </div>
                                     </form>
@@ -345,10 +338,10 @@
                 </div>
                 <div class="modal-footer">
                     <div class="pull-left">
-                        <button type="button" class="btn btn-white" data-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-white" data-dismiss="modal">{{_ "close"}}</button>
                     </div>
                     <button id="btnSaveIndex" type="button" class="btn btn-primary ladda-button" data-style="contract">
-                        Save
+                        {{_ "save"}}
                     </button>
                 </div>
             </div>

@@ -1,0 +1,399 @@
+<template name="inputFieldTemplate">
+    <div class="form-group">
+        <label class="col-lg-2 control-label">{{label}}</label>
+        <div class="col-lg-10">
+            <input id="{{id}}" data-required="true" type="{{type}}" placeholder="{{label}}"
+                   class="form-control">
+        </div>
+    </div>
+</template>
+
+<template name="queryTemplate">
+    <div class="form-group">
+        <div id="{{id}}">
+            <label class="col-lg-2 control-label">{{_ "query"}}</label>
+            <div class="col-lg-10">
+                <textarea id="txtQuery" class="form-control"></textarea>
+                <span class="help-block m-b-none">{{_ "query_info"}}</span>
+            </div>
+        </div>
+    </div>
+</template>
+
+<template name="readPreferenceTemplate">
+    <div class="form-group">
+        <label class="col-lg-2 control-label">{{_ "read_preference"}}</label>
+        <div class="col-lg-10">
+            <select id="{{id}}"
+                    data-placeholder="{{_ "read_preference"}}"
+                    class="chosen-select form-control"
+                    tabindex="-1">
+                <option value="primary">{{_ "primary"}}</option>
+                <option value="primaryPreferred">{{_ "primary_preferred"}}</option>
+                <option value="secondary">{{_ "secondary"}}</option>
+                <option value="secondaryPreferred">{{_ "secondary_preferred"}}</option>
+                <option value="nearest">{{_ "nearest"}}</option>
+            </select>
+        </div>
+    </div>
+</template>
+
+<template name="collectionsTemplate">
+    <div class="form-group">
+        <label class="col-lg-2 control-label">{{_ "collection"}}</label>
+        <div class="col-lg-10">
+            <select id="{{id}}"
+                    data-placeholder="{{_ "select_collection"}}"
+                    class="chosen-select form-control"
+                    tabindex="-1">
+            </select>
+        </div>
+    </div>
+</template>
+
+<template name="databasesTemplate">
+    <div class="form-group">
+        <label class="col-lg-2 control-label">{{_ "database"}}</label>
+        <div class="col-lg-10">
+            <select id="{{id}}"
+                    data-placeholder="{{_ "select_database"}}"
+                    class="chosen-select form-control"
+                    tabindex="-1">
+            </select>
+        </div>
+    </div>
+</template>
+
+<template name="verboseLevels">
+    <div class="form-group">
+        <label class="col-lg-2 control-label">{{_ "verbose"}}</label>
+        <div class="col-lg-10">
+            <select id="{{id}}"
+                    data-placeholder="{{_ "verbose"}}"
+                    class="chosen-select form-control"
+                    tabindex="-1">
+                <option value="-v"></option>
+                <option value="-v">1</option>
+                <option value="-vv">2</option>
+                <option value="-vvv">3</option>
+                <option value="-vvvv">4</option>
+                <option value="-vvvvv">5</option>
+            </select>
+        </div>
+    </div>
+</template>
+
+<template name="mongodumpOptions">
+    {{#if isOptionSelected "-v" "selectedMongodumpArgs"}}
+        {{> verboseLevels id="mongodump-v"}}
+    {{/if}}
+    {{#if isOptionSelected "--host" "selectedMongodumpArgs"}}
+        {{> inputFieldTemplate label="Hostname" id="mongodump--host" type="text"}}
+    {{/if}}
+    {{#if isOptionSelected "--port" "selectedMongodumpArgs"}}
+        {{> inputFieldTemplate label="Port" id="mongodump--port" type="number"}}
+    {{/if}}
+    {{#if isOptionSelected "--sslCAFile" "selectedMongodumpArgs"}}
+        {{> inputFieldTemplate label="Ssl Ca Path" id="mongodump--sslCAFile" type="text"}}
+    {{/if}}
+    {{#if isOptionSelected "--sslPEMKeyFile" "selectedMongodumpArgs"}}
+        {{> inputFieldTemplate label="Ssl Pem Key Path" id="mongodump--sslPEMKeyFile" type="text"}}
+    {{/if}}
+    {{#if isOptionSelected "--sslPEMKeyPassword" "selectedMongodumpArgs"}}
+        {{> inputFieldTemplate label="Ssl Pem Key Password" id="mongodump--sslPEMKeyPassword" type="password"}}
+    {{/if}}
+    {{#if isOptionSelected "--sslCRLFile" "selectedMongodumpArgs"}}
+        {{> inputFieldTemplate label="Ssl Crl Path" id="mongodump--sslCRLFile" type="text"}}
+    {{/if}}
+    {{#if isOptionSelected "--username" "selectedMongodumpArgs"}}
+        {{> inputFieldTemplate label="Username" id="mongodump--username" type="text"}}
+    {{/if}}
+    {{#if isOptionSelected "--password" "selectedMongodumpArgs"}}
+        {{> inputFieldTemplate label="Password" id="mongodump--password" type="password"}}
+    {{/if}}
+    {{#if isOptionSelected "--authenticationDatabase" "selectedMongodumpArgs"}}
+        {{> inputFieldTemplate label="Authentication Database" id="mongodump--authenticationDatabase" type="text"}}
+    {{/if}}
+    {{#if isOptionSelected "--authenticationMechanism" "selectedMongodumpArgs"}}
+        {{> inputFieldTemplate label="Authentication Mechanism" id="mongodump--authenticationMechanism" type="text"}}
+    {{/if}}
+    {{#if isOptionSelected "--gssapiServiceName" "selectedMongodumpArgs"}}
+        {{> inputFieldTemplate label="Gssapi Service Name" id="mongodump--gssapiServiceName" type="text"}}
+    {{/if}}
+    {{#if isOptionSelected "--gssapiHostName" "selectedMongodumpArgs"}}
+        {{> inputFieldTemplate label="Gssapi Hostname" id="mongodump--gssapiHostName" type="text"}}
+    {{/if}}
+    {{#if isOptionSelected "--db" "selectedMongodumpArgs"}}
+        {{> databasesTemplate id="mongodump--db"}}
+    {{/if}}
+    {{#if isOptionSelected "--collection" "selectedMongodumpArgs"}}
+        {{> collectionsTemplate id="mongodump--collection"}}
+    {{/if}}
+    {{#if isOptionSelected "--query" "selectedMongodumpArgs"}}
+        {{> queryTemplate id="mongodump--query"}}
+    {{/if}}
+    {{#if isOptionSelected "--queryFile" "selectedMongodumpArgs"}}
+        {{> inputFieldTemplate label="Query File" id="mongodump--queryFile" type="text"}}
+    {{/if}}
+    {{#if isOptionSelected "--readPreference" "selectedMongodumpArgs"}}
+        {{> readPreferenceTemplate id="mongodump--readPreference"}}
+    {{/if}}
+    {{#if isOptionSelected "--out" "selectedMongodumpArgs"}}
+        {{> inputFieldTemplate label="Out" id="mongodump--out" type="text"}}
+    {{/if}}
+    {{#if isOptionSelected "--archive" "selectedMongodumpArgs"}}
+        {{> inputFieldTemplate label="Archive" id="mongodump--archive" type="text"}}
+    {{/if}}
+    {{#if isOptionSelected "--excludeCollection" "selectedMongodumpArgs"}}
+        {{> inputFieldTemplate label="Exclude Collection" id="mongodump--excludeCollection" type="text"}}
+    {{/if}}
+    {{#if isOptionSelected "--excludeCollectionsWithPrefix" "selectedMongodumpArgs"}}
+        {{> inputFieldTemplate label="Exclude Collection Prefix" id="mongodump--excludeCollectionsWithPrefix" type="text"}}
+    {{/if}}
+    {{#if isOptionSelected "--numParallelCollections" "selectedMongodumpArgs"}}
+        {{> inputFieldTemplate label="Parallel Collections Number" id="mongodump--numParallelCollections" type="number"}}
+    {{/if}}
+</template>
+
+<template name="mongoexportOptions">
+    {{#if isOptionSelected "-v" "selectedMongoexportArgs"}}
+        {{> verboseLevels id="mongoexport-v"}}
+    {{/if}}
+    {{#if isOptionSelected "--host" "selectedMongoexportArgs"}}
+        {{> inputFieldTemplate label="Hostname" id="mongoexport--host" type="text"}}
+    {{/if}}
+    {{#if isOptionSelected "--port" "selectedMongoexportArgs"}}
+        {{> inputFieldTemplate label="Port" id="mongoexport--port" type="number"}}
+    {{/if}}
+    {{#if isOptionSelected "--sslCAFile" "selectedMongoexportArgs"}}
+        {{> inputFieldTemplate label="Ssl Ca Path" id="mongoexport--sslCAFile" type="text"}}
+    {{/if}}
+    {{#if isOptionSelected "--sslPEMKeyFile" "selectedMongoexportArgs"}}
+        {{> inputFieldTemplate label="Ssl Pem Key Path" id="mongoexport--sslPEMKeyFile" type="text"}}
+    {{/if}}
+    {{#if isOptionSelected "--sslPEMKeyPassword" "selectedMongoexportArgs"}}
+        {{> inputFieldTemplate label="Ssl Pem Key Password" id="mongoexport--sslPEMKeyPassword" type="password"}}
+    {{/if}}
+    {{#if isOptionSelected "--sslCRLFile" "selectedMongoexportArgs"}}
+        {{> inputFieldTemplate label="Ssl Crl Path" id="mongoexport--sslCRLFile" type="text"}}
+    {{/if}}
+    {{#if isOptionSelected "--username" "selectedMongoexportArgs"}}
+        {{> inputFieldTemplate label="Username" id="mongoexport--username" type="text"}}
+    {{/if}}
+    {{#if isOptionSelected "--password" "selectedMongoexportArgs"}}
+        {{> inputFieldTemplate label="Password" id="mongoexport--password" type="password"}}
+    {{/if}}
+    {{#if isOptionSelected "--authenticationDatabase" "selectedMongoexportArgs"}}
+        {{> inputFieldTemplate label="Authentication Database" id="mongoexport--authenticationDatabase" type="text"}}
+    {{/if}}
+    {{#if isOptionSelected "--authenticationMechanism" "selectedMongoexportArgs"}}
+        {{> inputFieldTemplate label="Authentication Mechanism" id="mongoexport--authenticationMechanism" type="text"}}
+    {{/if}}
+    {{#if isOptionSelected "--gssapiServiceName" "selectedMongoexportArgs"}}
+        {{> inputFieldTemplate label="Gssapi Service Name" id="mongoexport--gssapiServiceName" type="text"}}
+    {{/if}}
+    {{#if isOptionSelected "--gssapiHostName" "selectedMongoexportArgs"}}
+        {{> inputFieldTemplate label="Gssapi Hostname" id="mongoexport--gssapiHostName" type="text"}}
+    {{/if}}
+    {{#if isOptionSelected "--db" "selectedMongoexportArgs"}}
+        {{> databasesTemplate id="mongoexport--db"}}
+    {{/if}}
+    {{#if isOptionSelected "--collection" "selectedMongoexportArgs"}}
+        {{> collectionsTemplate id="mongoexport--collection"}}
+    {{/if}}
+    {{#if isOptionSelected "--fields" "selectedMongoexportArgs"}}
+        {{> inputFieldTemplate label="Field(s) to include" id="mongoexport--fields" type="text"}}
+    {{/if}}
+    {{#if isOptionSelected "--fieldFile" "selectedMongoexportArgs"}}
+        {{> inputFieldTemplate label="Field File" id="mongoexport--fieldFile" type="text"}}
+    {{/if}}
+    {{#if isOptionSelected "--query" "selectedMongoexportArgs"}}
+        {{> queryTemplate id="mongoexport--query"}}
+    {{/if}}
+    {{#if isOptionSelected "--type" "selectedMongoexportArgs"}}
+        {{> inputFieldTemplate label="Type" id="mongoexport--type" type="text"}}
+    {{/if}}
+    {{#if isOptionSelected "--out" "selectedMongoexportArgs"}}
+        {{> inputFieldTemplate label="Out" id="mongoexport--out" type="text"}}
+    {{/if}}
+    {{#if isOptionSelected "--readPreference" "selectedMongoexportArgs"}}
+        {{> readPreferenceTemplate id="mongoexport--readPreference"}}
+    {{/if}}
+    {{#if isOptionSelected "--skip" "selectedMongoexportArgs"}}
+        {{> inputFieldTemplate label="Skip" id="mongoexport--skip" type="number"}}
+    {{/if}}
+    {{#if isOptionSelected "--limit" "selectedMongoexportArgs"}}
+        {{> inputFieldTemplate label="Limit" id="mongoexport--limit" type="number"}}
+    {{/if}}
+    {{#if isOptionSelected "--sort" "selectedMongoexportArgs"}}
+        {{> sortTemplate}}
+    {{/if}}
+</template>
+
+<template name="mongoimportOptions">
+    {{#if isOptionSelected "-v" "selectedMongoimportArgs"}}
+        {{> verboseLevels id="mongoimport-v"}}
+    {{/if}}
+    {{#if isOptionSelected "--host" "selectedMongoimportArgs"}}
+        {{> inputFieldTemplate label="Hostname" id="mongoimport--host" type="text"}}
+    {{/if}}
+    {{#if isOptionSelected "--port" "selectedMongoimportArgs"}}
+        {{> inputFieldTemplate label="Port" id="mongoimport--port" type="number"}}
+    {{/if}}
+    {{#if isOptionSelected "--sslCAFile" "selectedMongoimportArgs"}}
+        {{> inputFieldTemplate label="Ssl Ca Path" id="mongoimport--sslCAFile" type="text"}}
+    {{/if}}
+    {{#if isOptionSelected "--sslPEMKeyFile" "selectedMongoimportArgs"}}
+        {{> inputFieldTemplate label="Ssl Pem Key Path" id="mongoimport--sslPEMKeyFile" type="text"}}
+    {{/if}}
+    {{#if isOptionSelected "--sslPEMKeyPassword" "selectedMongoimportArgs"}}
+        {{> inputFieldTemplate label="Ssl Pem Key Password" id="mongoimport--sslPEMKeyPassword" type="password"}}
+    {{/if}}
+    {{#if isOptionSelected "--sslCRLFile" "selectedMongoimportArgs"}}
+        {{> inputFieldTemplate label="Ssl Crl Path" id="mongoimport--sslCRLFile" type="text"}}
+    {{/if}}
+    {{#if isOptionSelected "--username" "selectedMongoimportArgs"}}
+        {{> inputFieldTemplate label="Username" id="mongoimport--username" type="text"}}
+    {{/if}}
+    {{#if isOptionSelected "--password" "selectedMongoimportArgs"}}
+        {{> inputFieldTemplate label="Password" id="mongoimport--password" type="password"}}
+    {{/if}}
+    {{#if isOptionSelected "--authenticationDatabase" "selectedMongoimportArgs"}}
+        {{> inputFieldTemplate label="Authentication Database" id="mongoimport--authenticationDatabase" type="text"}}
+    {{/if}}
+    {{#if isOptionSelected "--authenticationMechanism" "selectedMongoimportArgs"}}
+        {{> inputFieldTemplate label="Authentication Mechanism" id="mongoimport--authenticationMechanism" type="text"}}
+    {{/if}}
+    {{#if isOptionSelected "--gssapiServiceName" "selectedMongoimportArgs"}}
+        {{> inputFieldTemplate label="Gssapi Service Name" id="mongoimport--gssapiServiceName" type="text"}}
+    {{/if}}
+    {{#if isOptionSelected "--gssapiHostName" "selectedMongoimportArgs"}}
+        {{> inputFieldTemplate label="Gssapi Hostname" id="mongoimport--gssapiHostName" type="text"}}
+    {{/if}}
+    {{#if isOptionSelected "--db" "selectedMongoimportArgs"}}
+        {{> databasesTemplate id="mongoimport--db"}}
+    {{/if}}
+    {{#if isOptionSelected "--collection" "selectedMongoimportArgs"}}
+        {{> collectionsTemplate id="mongoimport--collection"}}
+    {{/if}}
+    {{#if isOptionSelected "--fields" "selectedMongoimportArgs"}}
+        {{> inputFieldTemplate label="Field(s) to include" id="mongoimport--fields" type="text"}}
+    {{/if}}
+    {{#if isOptionSelected "--fieldFile" "selectedMongoimportArgs"}}
+        {{> inputFieldTemplate label="Field File" id="mongoimport--fieldFile" type="text"}}
+    {{/if}}
+    {{#if isOptionSelected "--type" "selectedMongoimportArgs"}}
+        {{> inputFieldTemplate label="Type" id="mongoimport--type" type="text"}}
+    {{/if}}
+    {{#if isOptionSelected "--file" "selectedMongoimportArgs"}}
+        {{> inputFieldTemplate label="File" id="mongoimport--file" type="text"}}
+    {{/if}}
+    {{#if isOptionSelected "--mode" "selectedMongoimportArgs"}}
+        {{> inputFieldTemplate label="Mode" id="mongoimport--mode" type="text"}}
+    {{/if}}
+    {{#if isOptionSelected "--upsertFields" "selectedMongoimportArgs"}}
+        {{> inputFieldTemplate label="Upsert Fields" id="mongoimport--upsertFields" type="text"}}
+    {{/if}}
+    {{#if isOptionSelected "--numInsertionWorkers" "selectedMongoimportArgs"}}
+        {{> inputFieldTemplate label="Insertion Workers Number" id="mongoimport--numInsertionWorkers" type="number"}}
+    {{/if}}
+    {{#if isOptionSelected "--writeConcern" "selectedMongoimportArgs"}}
+        {{> inputFieldTemplate label="Write Concern" id="mongoimport--writeConcern" type="text"}}
+    {{/if}}
+    {{#if isOptionSelected "--parseGrace" "selectedMongoimportArgs"}}
+        {{> inputFieldTemplate label="Parse Grace" id="mongoimport--parseGrace" type="text"}}
+    {{/if}}
+</template>
+
+<template name="mongorestoreOptions">
+    {{#if isOptionSelected "-v" "selectedMongorestoreArgs"}}
+        {{> verboseLevels id="mongorestore-v"}}
+    {{/if}}
+    {{#if isOptionSelected "--host" "selectedMongorestoreArgs"}}
+        {{> inputFieldTemplate label="Hostname" id="mongorestore--host" type="text"}}
+    {{/if}}
+    {{#if isOptionSelected "--port" "selectedMongorestoreArgs"}}
+        {{> inputFieldTemplate label="Port" id="mongorestore--port" type="number"}}
+    {{/if}}
+    {{#if isOptionSelected "--sslCAFile" "selectedMongorestoreArgs"}}
+        {{> inputFieldTemplate label="Ssl Ca Path" id="mongorestore--sslCAFile" type="text"}}
+    {{/if}}
+    {{#if isOptionSelected "--sslPEMKeyFile" "selectedMongorestoreArgs"}}
+        {{> inputFieldTemplate label="Ssl Pem Key Path" id="mongorestore--sslPEMKeyFile" type="text"}}
+    {{/if}}
+    {{#if isOptionSelected "--sslPEMKeyPassword" "selectedMongorestoreArgs"}}
+        {{> inputFieldTemplate label="Ssl Pem Key Password" id="mongorestore--sslPEMKeyPassword" type="password"}}
+    {{/if}}
+    {{#if isOptionSelected "--sslCRLFile" "selectedMongorestoreArgs"}}
+        {{> inputFieldTemplate label="Ssl Crl Path" id="mongorestore--sslCRLFile" type="text"}}
+    {{/if}}
+    {{#if isOptionSelected "--username" "selectedMongorestoreArgs"}}
+        {{> inputFieldTemplate label="Username" id="mongorestore--username" type="text"}}
+    {{/if}}
+    {{#if isOptionSelected "--password" "selectedMongorestoreArgs"}}
+        {{> inputFieldTemplate label="Password" id="mongorestore--password" type="password"}}
+    {{/if}}
+    {{#if isOptionSelected "--authenticationDatabase" "selectedMongorestoreArgs"}}
+        {{> inputFieldTemplate label="Authentication Database" id="mongorestore--authenticationDatabase" type="text"}}
+    {{/if}}
+    {{#if isOptionSelected "--authenticationMechanism" "selectedMongorestoreArgs"}}
+        {{> inputFieldTemplate label="Authentication Mechanism" id="mongorestore--authenticationMechanism" type="text"}}
+    {{/if}}
+    {{#if isOptionSelected "--gssapiServiceName" "selectedMongorestoreArgs"}}
+        {{> inputFieldTemplate label="Gssapi Service Name" id="mongorestore--gssapiServiceName" type="text"}}
+    {{/if}}
+    {{#if isOptionSelected "--gssapiHostName" "selectedMongorestoreArgs"}}
+        {{> inputFieldTemplate label="Gssapi Hostname" id="mongorestore--gssapiHostName" type="text"}}
+    {{/if}}
+    {{#if isOptionSelected "--db" "selectedMongorestoreArgs"}}
+        {{> databasesTemplate id="mongorestore--db"}}
+    {{/if}}
+    {{#if isOptionSelected "--collection" "selectedMongorestoreArgs"}}
+        {{> collectionsTemplate id="mongorestore--collection"}}
+    {{/if}}
+    {{#if isOptionSelected "--nsExclude" "selectedMongorestoreArgs"}}
+        {{> inputFieldTemplate label="Namespace To Exclude" id="mongorestore--nsExclude" type="text"}}
+    {{/if}}
+    {{#if isOptionSelected "--nsInclude" "selectedMongorestoreArgs"}}
+        {{> inputFieldTemplate label="Namespace To Include" id="mongorestore--nsInclude" type="text"}}
+    {{/if}}
+    {{#if isOptionSelected "--nsFrom" "selectedMongorestoreArgs"}}
+        {{> inputFieldTemplate label="Namespace From" id="mongorestore--nsFrom" type="text"}}
+    {{/if}}
+    {{#if isOptionSelected "--nsTo" "selectedMongorestoreArgs"}}
+        {{> inputFieldTemplate label="Namespace To" id="mongorestore--nsTo" type="text"}}
+    {{/if}}
+    {{#if isOptionSelected "--oplogLimit" "selectedMongorestoreArgs"}}
+        {{> inputFieldTemplate label="Oplog Limit" id="mongorestore--oplogLimit" type="text"}}
+    {{/if}}
+    {{#if isOptionSelected "--oplogFile" "selectedMongorestoreArgs"}}
+        {{> inputFieldTemplate label="Oplog File" id="mongorestore--oplogFile" type="text"}}
+    {{/if}}
+    {{#if isOptionSelected "--writeConcern" "selectedMongorestoreArgs"}}
+        {{> inputFieldTemplate label="Write Concern" id="mongorestore--writeConcern" type="text"}}
+    {{/if}}
+    {{#if isOptionSelected "--numParallelCollections" "selectedMongorestoreArgs"}}
+        {{> inputFieldTemplate label="Parallel Collections Number" id="mongorestore--numParallelCollections" type="number"}}
+    {{/if}}
+    {{#if isOptionSelected "--numInsertionWorkersPerCollection" "selectedMongorestoreArgs"}}
+        {{> inputFieldTemplate label="Insertion Workers Per Collection" id="mongorestore--numInsertionWorkersPerCollection" type="number"}}
+    {{/if}}
+    {{#if isOptionSelected "--archive" "selectedMongorestoreArgs"}}
+        {{> inputFieldTemplate label="Archive" id="mongorestore--archive" type="text"}}
+    {{/if}}
+    {{#if isOptionSelected "--dir" "selectedMongorestoreArgs"}}
+        {{> inputFieldTemplate label="Dir" id="mongorestore--dir" type="text"}}
+    {{/if}}
+</template>
+
+<template name="sortTemplate">
+    <div class="form-group">
+        <div id="mongoexport--sort">
+            <label class="col-lg-2 control-label">{{_ "sort"}}</label>
+            <div class="col-lg-10">
+                <textarea id="txtSort" class="form-control"></textarea>
+                <span class="help-block m-b-none">{{_ "query_info"}}</span>
+            </div>
+        </div>
+    </div>
+</template>

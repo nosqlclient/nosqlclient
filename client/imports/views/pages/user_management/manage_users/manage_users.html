@@ -5,9 +5,9 @@
             <div class="modal-content animated bounceInRight">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span><span
-                            class="sr-only">Close</span></button>
-                    <h4 class="modal-title">Manage Users</h4>
-                    <small class="font-bold">Database {{getDB}}
+                            class="sr-only">{{_ "close"}}</span></button>
+                    <h4 class="modal-title">{{_ "manage_users"}}</h4>
+                    <small class="font-bold">{{_ "database"}} {{getDB}}
                     </small>
                 </div>
                 <div class="modal-body">
@@ -18,11 +18,11 @@
                                    style="width: 100%">
                                 <thead>
                                 <tr>
-                                    <th>User</th>
-                                    <th>Roles</th>
-                                    <th>Custom Data</th>
-                                    <th>Edit</th>
-                                    <th>Delete</th>
+                                    <th>{{_ "user"}}</th>
+                                    <th>{{_ "roles"}}</th>
+                                    <th>{{_ "custom_data"}}</th>
+                                    <th>{{_ "edit"}}</th>
+                                    <th>{{_ "delete"}}</th>
                                 </tr>
                                 </thead>
                                 <tbody>
@@ -33,7 +33,7 @@
                                     class="btn btn-block btn-outline btn-primary"
                                     style="margin-top: 10px"
                                     data-toggle="modal"
-                                    data-target="#editUserModal">Add User
+                                    data-target="#editUserModal">{{_ "add_user"}}
                             </button>
                         </div>
                     </div>
@@ -43,7 +43,7 @@
                             data-style="contract"
                             class="btn btn-outline btn-primary ladda-button"
                             data-dismiss="modal">
-                        Close
+                        {{_ "close"}}
                     </button>
                 </div>
             </div>
@@ -58,23 +58,23 @@
             <div class="modal-content animated bounceInRight">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span><span
-                            class="sr-only">Close</span></button>
-                    <h4 id="addEditUserModalTitle" class="modal-title">Edit User</h4>
+                            class="sr-only">{{_ "close"}}</span></button>
+                    <h4 id="addEditUserModalTitle" class="modal-title">{{_ "edit_user"}}</h4>
                 </div>
                 <div class="modal-body">
                     <form class="form-horizontal">
-                        <div class="form-group"><label class="col-lg-2 control-label">User</label>
+                        <div class="form-group"><label class="col-lg-2 control-label">{{_ "user"}}</label>
                             <div class="col-lg-10">
                                 <input id="inputUsernameUM" value="{{getUser.user}}" required="true"
                                        type="text"
-                                       placeholder="Username" class="form-control">
+                                       placeholder="{{_ "username"}}" class="form-control">
                             </div>
                         </div>
 
-                        <div class="form-group"><label class="col-lg-2 control-label">Password</label>
+                        <div class="form-group"><label class="col-lg-2 control-label">{{_ "password"}}</label>
                             <div class="col-lg-10">
                                 <input id="inputPasswordUM" type="password"
-                                       placeholder="Leave this blank to keep old one"
+                                       placeholder="{{_ "leave_empty_for_same_password"}}"
                                        class="form-control">
                             </div>
                         </div>
@@ -82,9 +82,9 @@
 
                     <div class="tabs-container">
                         <ul class="nav nav-tabs">
-                            <li class="active"><a data-toggle="tab" href="#tab-1" aria-expanded="true"> Roles</a>
+                            <li class="active"><a data-toggle="tab" href="#tab-1" aria-expanded="true"> {{_ "roles"}}</a>
                             </li>
-                            <li class=""><a data-toggle="tab" href="#tab-2" aria-expanded="false">Custom Data</a>
+                            <li class=""><a data-toggle="tab" href="#tab-2" aria-expanded="false">{{_ "custom_data"}}</a>
                             </li>
                         </ul>
                         <div class="tab-content">
@@ -95,9 +95,9 @@
                                            style="width: 100%">
                                         <thead>
                                         <tr>
-                                            <th>Role</th>
-                                            <th>Database</th>
-                                            <th>Delete</th>
+                                            <th>{{_ "role"}}</th>
+                                            <th>{{_ "database"}}</th>
+                                            <th>{{_ "delete"}}</th>
                                         </tr>
                                         </thead>
                                         <tbody>
@@ -108,15 +108,14 @@
                                             class="btn btn-block btn-outline btn-primary"
                                             style="margin-bottom: 10px"
                                             data-toggle="modal"
-                                            data-target="#addRoleToUserModal">Add Role
+                                            data-target="#addRoleToUserModal">{{_ "add_role"}}
                                     </button>
                                 </div>
                             </div>
                             <div id="tab-2" class="tab-pane">
                                 <div id="divCustomData" class="panel-body no-borders modal-background">
                                     <textarea id="txtCustomData" class="form-control"></textarea>
-                                    <span class="help-block m-b-none">Custom data associated with the user <strong>(only Mongodb 2.6 or
-                                        higher)</strong></span>
+                                    <span class="help-block m-b-none">{{{_ "custom_data_help_block"}}}</span>
                                 </div>
                             </div>
                         </div>
@@ -124,12 +123,12 @@
                 </div>
                 <div class="modal-footer">
                     <div class="pull-left">
-                        <button type="button" class="btn btn-white" data-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-white" data-dismiss="modal">{{_ "close"}}</button>
                     </div>
                     <button id="btnApplyAddEditUser" type="button"
                             data-style="contract"
                             class="btn btn-outline btn-primary ladda-button">
-                        Save
+                        {{_ "save"}}
                     </button>
                 </div>
             </div>
@@ -143,16 +142,16 @@
             <div class="modal-content animated bounceInRight">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span><span
-                            class="sr-only">Close</span></button>
-                    <h4 class="modal-title">Add Role</h4>
+                            class="sr-only">{{_ "close"}}</span></button>
+                    <h4 class="modal-title">{{_ "add_role"}}</h4>
                 </div>
                 <div class="modal-body">
                     <form class="form-horizontal">
                         <div class="form-group">
-                            <label class="col-lg-1 control-label">Database</label>
+                            <label class="col-lg-1 control-label">{{_ "database"}}</label>
                             <div class="col-lg-11">
                                 <select id="cmbDatabasesForAddRoleToUser"
-                                        data-placeholder="Choose a database or enter one"
+                                        data-placeholder="{{_ "enter_or_choose_database"}}"
                                         class="chosen-select form-control"
                                         tabindex="-1">
                                     <option></option>
@@ -160,11 +159,11 @@
                             </div>
                         </div>
 
-                        <div class="form-group"><label class="col-lg-1 control-label">Role</label>
+                        <div class="form-group"><label class="col-lg-1 control-label">{{_ "role"}}</label>
                             <div class="col-lg-11">
                                 <input id="inputAddRoleToUserRolename" required="true"
                                        type="text"
-                                       placeholder="Role" class="form-control">
+                                       placeholder="{{_ "role"}}" class="form-control">
                             </div>
                         </div>
                     </form>
@@ -176,9 +175,9 @@
                                    style="width: 100%">
                                 <thead>
                                 <tr>
-                                    <th>Role</th>
-                                    <th>Database</th>
-                                    <th>Builtin Role</th>
+                                    <th>{{_ "role"}}</th>
+                                    <th>{{_ "database"}}</th>
+                                    <th>{{_ "builtin"}}</th>
                                 </tr>
                                 </thead>
                                 <tbody>
@@ -189,13 +188,13 @@
                 </div>
                 <div class="modal-footer">
                     <div class="pull-left">
-                        <button type="button" class="btn btn-white" data-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-white" data-dismiss="modal">{{_ "close"}}</button>
                     </div>
                     <button id="btnApplyAddRoleToUser"
                             type="button"
                             data-style="contract"
                             class="btn btn-outline btn-primary ladda-button">
-                        Add
+                        {{_ "add"}}
                     </button>
                 </div>
             </div>
@@ -209,8 +208,8 @@
             <div class="modal-content animated bounceInRight">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span><span
-                            class="sr-only">Close</span></button>
-                    <h4 class="modal-title">Custom Data</h4>
+                            class="sr-only">{{_ "close"}}</span></button>
+                    <h4 class="modal-title">{{_ "custom_data"}}</h4>
                     <small class="font-bold">
                         {{getUser.user}}
                     </small>
@@ -227,7 +226,7 @@
                             type="button"
                             data-style="contract"
                             data-dismiss="modal">
-                        <strong>Close</strong></button>
+                        <strong>{{_ "close"}}</strong></button>
                 </div>
             </div>
         </div>
