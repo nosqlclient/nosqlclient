@@ -26,13 +26,7 @@ const getEditor = function () {
 
 QueryRender.prototype = {
   setOptionsComboboxChangeEvent(cmb, sessionVar) {
-    cmb.on('change', (evt, params) => {
-      let array = SessionManager.get(sessionVar || SessionManager.strSessionSelectedOptions);
-      if (params.deselected) array = array.filter(item => params.deselected.indexOf(item) === -1);
-      else array.push(params.selected);
-
-      SessionManager.set(sessionVar || SessionManager.strSessionSelectedOptions, array);
-    });
+    UIComponents.setOptionsComboboxChangeEvent(cmb, sessionVar || SessionManager.strSessionSelectedOptions);
   },
 
   renderAfterQueryExecution(err, result, isAdmin, queryInfo, queryParams, saveHistory) {
