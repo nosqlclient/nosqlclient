@@ -5,6 +5,7 @@ import '/client/imports/views/layouts/footer/footer.html';
 import { TAPi18n } from 'meteor/tap:i18n';
 import { Enums, Notification, SessionManager } from '/client/imports/modules';
 import { ReactivityProvider } from '/client/imports/facades';
+import LiveChat from '/client/imports/helpers/live_chat/index';
 import './main.html';
 
 const fixHeight = function () {
@@ -30,33 +31,6 @@ const fixHeight = function () {
       }
     }
   }
-};
-
-const liveChatFunc = function (d, n) {
-  const s = document.createElement('script');
-  const a = document.getElementsByTagName('script');
-  const p = a[a.length - 1];
-  s.type = 'text/javascript';
-  s.async = true;
-  s.src = `${document.location.protocol === 'https:' ? 'https:' : 'http:'}//cdn.nudgespot.com/nudgespot.js`;
-  p.parentNode.insertBefore(s, p.nextSibling);
-  window.nudgespot = n;
-  n.init = function (t) {
-    function f(n, m) {
-      const a = m.split('.');
-      a.length === 2 && (n = n[a[0]], m = a[1]);
-      n[m] = function () {
-        n.push([m].concat(Array.prototype.slice.call(arguments, 0)));
-      };
-    }
-
-    n._version = 0.1;
-    n._globals = [t];
-    n.people = n.people || [];
-    n.params = n.params || [];
-    const m = 'track register unregister identify set_config people.delete people.create people.update people.create_property people.tag people.remove_Tag'.split(' ');
-    for (let i = 0; i < m.length; i += 1)f(n, m[i]);
-  };
 };
 
 const doUIStuff = function () {
@@ -126,7 +100,7 @@ Template.mainLayout.onRendered(function () {
       const foundSettings = ReactivityProvider.findOne(ReactivityProvider.types.Settings);
       if (foundSettings && foundSettings.showLiveChat && !initializedLiveChat) {
         initializedLiveChat = true;
-        liveChatFunc(window, window.nudgespot || []);
+        LiveChat.prepare(window, window.nudgespot || []);
         window.nudgespot.init('748ae792d632f6c5e14ad610e53ef745');
       }
       SessionManager.set(SessionManager.strSessionApplicationLanguage, foundSettings.language || 'en');
