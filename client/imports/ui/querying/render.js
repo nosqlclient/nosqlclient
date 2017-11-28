@@ -42,6 +42,12 @@ QueryRender.prototype = {
       if (isAdmin) this.setAdminResult(result.result);
       else this.setQueryResult(result.result, queryInfo, queryParams, saveHistory);
 
+      const collectionInfo = $('#divCollectionInfo');
+      let executionTime = '0 ms';
+      if (collectionInfo.find('#executionTime')) collectionInfo.find('#executionTime').remove();
+      if (result.executionTime) executionTime = `${result.executionTime} ms`;
+      collectionInfo.html(`${collectionInfo.html()}<div class="row" id="executionTime"><div class="col-lg-7"><b>${Helper.translate({ key: 'execution_time' })}:</b></div>
+                            <div class="col-lg-5">${executionTime} (${queryInfo})</div></div>`);
       Notification.stop();
     }
   },
@@ -127,11 +133,8 @@ QueryRender.prototype = {
 
     if (jsonEditor.css('display') === 'none' && aceEditor.css('display') === 'none') {
       // there's only one tab, set results
-      if (settings.defaultResultView === 'Jsoneditor') {
-        jsonEditor.show('slow');
-      } else {
-        aceEditor.show('slow');
-      }
+      if (settings.defaultResultView === 'Jsoneditor') jsonEditor.show('slow');
+      else aceEditor.show('slow');
       this.setResultToEditors(1, result, queryParams, queryInfo);
     } else {
       // close all if setting for single tab is enabled

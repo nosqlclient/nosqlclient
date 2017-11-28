@@ -91,7 +91,8 @@ MongoDBHelper.prototype = {
   },
 
   proceedExecutingQuery({ methodArray, execution, sessionId, removeCollectionTopology }) {
-    const result = Async.runSync((done) => {
+    const start = new Date();
+    let result = Async.runSync((done) => {
       try {
         for (let i = 0; i < methodArray.length; i += 1) {
           const last = (i === (methodArray.length - 1));
@@ -106,7 +107,10 @@ MongoDBHelper.prototype = {
 
     if (removeCollectionTopology) this.removeCollectionTopologyFromResult(result);
     this.removeConnectionTopologyFromResult(result);
-    return ExtendedJSON.convertBSONtoJSON(result);
+    result = ExtendedJSON.convertBSONtoJSON(result);
+    result.executionTime = new Date() - start;
+
+    return result;
   },
 
   getProperBinary(binaryName) {

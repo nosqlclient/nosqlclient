@@ -36,6 +36,7 @@
   "connection-closed":"Lütfen koleksiyonları yenileyin, ya da tekrar bağlanın, bağlantı koptu !",
 
   // client
+  "execution_time":"Son İşletim Süresi",
   "unknown-error":"Kötü birşeyler oldu, logları kontrol etsen iyi olur !",
   "collection-created-successfully":"__name__ koleksiyonu oluşturuldu",
   "collection-not-found":"__name__ koleksiyonu bulunamadı",

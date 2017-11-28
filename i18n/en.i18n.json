@@ -36,6 +36,7 @@
   "connection-closed":"Please refresh collections or re-connect, connection has been closed",
 
   // client
+  "execution_time":"Last Execution Time",
   "unknown-error":"Unknown error occurred, please check server logs",
   "collection-created-successfully":"Successfully created collection with name __name__",
   "collection-not-found":"Collection, __name__ not found",
