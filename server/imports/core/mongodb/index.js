@@ -14,11 +14,7 @@ const MongoDB = function () {
   this.tunnelsBySessionId = {};
 };
 
-const proceedConnectingMongodb = function (dbName, sessionId, connectionUrl, connectionOptions, done) {
-  if (!connectionOptions) {
-    connectionOptions = {};
-  }
-
+const proceedConnectingMongodb = function (dbName, sessionId, connectionUrl, connectionOptions = {}, done) {
   mongodbApi.MongoClient.connect(connectionUrl, connectionOptions, (mainError, db) => {
     try {
       if (mainError || !db) {
