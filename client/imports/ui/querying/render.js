@@ -27,8 +27,8 @@ const getEditor = function () {
 QueryRender.prototype = {
   setOptionsComboboxChangeEvent(cmb, sessionVar) {
     cmb.on('change', (evt, params) => {
-      const array = SessionManager.get(sessionVar || SessionManager.strSessionSelectedOptions);
-      if (params.deselected) array.remove(params.deselected);
+      let array = SessionManager.get(sessionVar || SessionManager.strSessionSelectedOptions);
+      if (params.deselected) array = array.filter(item => params.deselected.indexOf(item) === -1);
       else array.push(params.selected);
 
       SessionManager.set(sessionVar || SessionManager.strSessionSelectedOptions, array);

@@ -64,8 +64,8 @@ StoredFunctions.prototype = {
   },
 
   getObjectToSave() {
-    const functionVal = UIComponents.Editor.getCodeMirrorValue($('#divStoredFunction'));
-    if (!functionVal.parseFunction()) {
+    const functionVal = Helper.convertStrToFunction(UIComponents.Editor.getCodeMirrorValue($('#divStoredFunction')));
+    if (!functionVal) {
       Notification.error('syntax-error-stored-function');
       return;
     }

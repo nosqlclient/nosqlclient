@@ -95,8 +95,8 @@ const getFromHistoryOrEditor = function (historyParams, divSelector, historyFiel
 
 const getFromHistoryOrEditorAsFunction = function (historyParams, divSelector, historyField) {
   let result;
-  if (historyParams) result = JSON.stringify(historyParams[historyField]).parseFunction();
-  else result = UIComponents.Editor.getCodeMirrorValue(divSelector).parseFunction();
+  if (historyParams) result = Helper.convertStrToFunction(JSON.stringify(historyParams[historyField]));
+  else result = Helper.convertStrToFunction(UIComponents.Editor.getCodeMirrorValue(divSelector));
 
   return result;
 };
@@ -801,7 +801,8 @@ Querying.prototype = {
         const command = $('#inputCommand').iCheck('update')[0].checked;
 
         if (keys.startsWith('function')) {
-          if (!keys.parseFunction()) {
+          keys = Helper.convertStrToFunction(keys);
+          if (!keys) {
             Notification.error('syntax-error-keys-function');
             return;
           }
@@ -904,7 +905,7 @@ Querying.prototype = {
 
         if (!checkFunction(reduce, 'reduce')) return;
         if (!checkFunction(map, 'map')) return;
-        if (checkErrorField(options)) return;
+        if (!checkErrorField(options)) return;
 
         proceedQueryExecution('mapReduce', { selectedCollection, map, reduce, options }, false, { map, reduce, options }, (!historyParams));
       },

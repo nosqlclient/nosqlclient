@@ -39,8 +39,8 @@ UIComponents.prototype = {
     });
     cmb.chosen();
     cmb.on('change', (evt, params) => {
-      const array = SessionManager.get(sessionKey);
-      if (params.deselected) array.remove(params.deselected);
+      let array = SessionManager.get(sessionKey);
+      if (params.deselected) array = array.filter(item => params.deselected.indexOf(item) === -1);
       else array.push(params.selected);
       SessionManager.set(sessionKey, array);
     });
