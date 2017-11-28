@@ -15,20 +15,11 @@ const fixHeight = function () {
     const navbarHeigh = $('nav.navbar-default').height();
     const wrapperHeigh = pageWrapper.height();
 
-    if (navbarHeigh > wrapperHeigh) {
-      pageWrapper.css('min-height', `${navbarHeigh}px`);
-    }
-
-    if (navbarHeigh < wrapperHeigh) {
-      pageWrapper.css('min-height', `${$(window).height()}px`);
-    }
-
+    if (navbarHeigh > wrapperHeigh) pageWrapper.css('min-height', `${navbarHeigh}px`);
+    if (navbarHeigh < wrapperHeigh) pageWrapper.css('min-height', `${$(window).height()}px`);
     if (body.hasClass('fixed-nav')) {
-      if (navbarHeigh > wrapperHeigh) {
-        pageWrapper.css('min-height', `${navbarHeigh}px`);
-      } else {
-        pageWrapper.css('min-height', `${$(window).height() - 60}px`);
-      }
+      if (navbarHeigh > wrapperHeigh) pageWrapper.css('min-height', `${navbarHeigh}px`);
+      else pageWrapper.css('min-height', `${$(window).height() - 60}px`);
     }
   }
 };
