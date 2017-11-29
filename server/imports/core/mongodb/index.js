@@ -15,10 +15,11 @@ const MongoDB = function () {
 };
 
 const proceedConnectingMongodb = function (dbName, sessionId, connectionUrl, connectionOptions = {}, done) {
+  const metadataToLog = { sessionId, connectionUrl, connectionOptions };
   mongodbApi.MongoClient.connect(connectionUrl, connectionOptions, (mainError, db) => {
     try {
       if (mainError || !db) {
-        done(Error.createWithoutThrow({ type: Error.types.ConnectionError, externalError: mainError, metadataToLog: { sessionId, db } }), db);
+        done(Error.createWithoutThrow({ type: Error.types.ConnectionError, externalError: mainError, metadataToLog }), db);
         if (db) db.close();
         if (this.tunnelsBySessionId[sessionId]) {
           this.tunnelsBySessionId[sessionId].close();
@@ -28,12 +29,14 @@ const proceedConnectingMongodb = function (dbName, sessionId, connectionUrl, con
       }
       this.dbObjectsBySessionId[sessionId] = db.db(dbName);
       this.dbObjectsBySessionId[sessionId].listCollections().toArray((err, collections) => {
-        done(err, collections);
+        let errorToBeThrown = null;
+        if (err) errorToBeThrown = Error.createWithoutThrow({ type: Error.types.ConnectionError, externalError: err, metadataToLog });
+        done(errorToBeThrown, collections);
       });
 
       Logger.info({ message: 'connect', metadataToLog: { sessionLength: `${Object.keys(this.dbObjectsBySessionId).length}` } });
     } catch (exception) {
-      done(Error.createWithoutThrow({ type: Error.types.ConnectionError, metadataToLog: { connectionUrl, connectionOptions, sessionId }, externalError: exception }), null);
+      done(Error.createWithoutThrow({ type: Error.types.ConnectionError, metadataToLog, externalError: exception }), null);
 
       if (db) db.close();
       if (this.tunnelsBySessionId[sessionId]) {
@@ -105,7 +108,7 @@ MongoDB.prototype = {
     checkConnectionIsAlive.call(this, sessionId, metadataToLog);
 
     const execution = this.dbObjectsBySessionId[sessionId].collection(selectedCollection);
-    return MongoDBHelper.proceedExecutingQuery({ methodArray, execution, sessionId, removeCollectionTopology });
+    return MongoDBHelper.proceedExecutingQuery({ methodArray, execution, removeCollectionTopology, metadataToLog });
   },
 
   executeAdmin({ methodArray, runOnAdminDB, sessionId, removeCollectionTopology }) {
@@ -115,7 +118,7 @@ MongoDB.prototype = {
     checkConnectionIsAlive.call(this, sessionId, metadataToLog);
 
     const execution = runOnAdminDB ? this.dbObjectsBySessionId[sessionId].admin() : this.dbObjectsBySessionId[sessionId];
-    return MongoDBHelper.proceedExecutingQuery({ methodArray, execution, sessionId, removeCollectionTopology });
+    return MongoDBHelper.proceedExecutingQuery({ methodArray, execution, removeCollectionTopology, metadataToLog });
   },
 
   executeMapReduce({ selectedCollection, map, reduce, options, sessionId }) {
@@ -125,7 +128,7 @@ MongoDB.prototype = {
     checkConnectionIsAlive.call(this, sessionId, metadataToLog);
 
     const execution = this.dbObjectsBySessionId[sessionId].collection(selectedCollection);
-    return MongoDBHelper.proceedMapReduceExecution({ execution, map, reduce, options });
+    return MongoDBHelper.proceedMapReduceExecution({ execution, map, reduce, options, metadataToLog });
   },
 
   connect({ connectionId, username, password, sessionId }) {

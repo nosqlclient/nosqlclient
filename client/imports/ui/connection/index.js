@@ -66,10 +66,10 @@ Connection.prototype = {
         args: { connection: { url } },
         callback: (err, res) => {
           if (!err) this.prepareFormForUrlParse(res);
-          else Notification.error(err.message);
+          else ErrorHandler.showMeteorFuncError(err, res);
 
           // let blaze initialize
-          Meteor.setTimeout(() => { this.disableFormsForUri(); }, 150);
+          setTimeout(() => { this.disableFormsForUri(); }, 150);
         }
       });
     } else this.enableFormsForUri();
@@ -226,7 +226,7 @@ Connection.prototype = {
     this.selectedAuthType.set(connection.authenticationType);
 
     // let blaze render
-    Meteor.setTimeout(() => {
+    setTimeout(() => {
       if (connection.authenticationType === 'mongodb_cr') this.fillFormBasicAuth(connection.mongodb_cr);
       else if (connection.authenticationType === 'scram_sha_1') this.fillFormBasicAuth(connection.scram_sha_1);
       else if (connection.authenticationType === 'plain') {
