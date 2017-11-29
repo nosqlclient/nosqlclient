@@ -63,7 +63,11 @@ const connectThroughTunnel = function ({ connection, sessionId, done, connection
   Logger.info({ message: 'connect-ssh', metadataToLog: { sessionId, config } });
   this.tunnelsBySessionId[sessionId] = tunnelSsh(config, Meteor.bindEnvironment((error) => {
     if (error) {
-      done(new Meteor.Error(error.message), null);
+      done(Error.createWithoutThrow({
+        type: Error.types.ConnectionError,
+        metadataToLog: { connectionUrl, sessionId, connectionOptions, username, password },
+        externalError: error
+      }), null);
       return;
     }
     proceedConnectingMongodb.call(this, connection.databaseName, sessionId, connectionUrl, connectionOptions, done);
@@ -72,7 +76,13 @@ const connectThroughTunnel = function ({ connection, sessionId, done, connection
   }));
 
   this.tunnelsBySessionId[sessionId].on('error', (err) => {
-    if (err) done(new Meteor.Error(err.message), null);
+    if (err) {
+      done(Error.createWithoutThrow({
+        type: Error.types.ConnectionError,
+        metadataToLog: { connectionUrl, sessionId, connectionOptions, username, password },
+        externalError: err
+      }), null);
+    }
     if (this.tunnelsBySessionId[sessionId]) {
       this.tunnelsBySessionId[sessionId].close();
       this.tunnelsBySessionId[sessionId] = null;

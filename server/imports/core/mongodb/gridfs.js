@@ -1,6 +1,5 @@
 /* global Async */
 import { Logger, Error } from '/server/imports/modules';
-import { Meteor } from 'meteor/meteor';
 import MongoDB from './index';
 import ExtendedJSON from './extended_json';
 
@@ -152,11 +151,8 @@ MongoDBGridFS.prototype = {
       try {
         const filesCollection = MongoDB.dbObjectsBySessionId[sessionId].collection(`${bucketName}.files`);
         filesCollection.find({ _id: new mongodbApi.ObjectId(fileId) }).limit(1).next((err, doc) => {
-          if (doc) {
-            done(null, doc);
-          } else {
-            throw new Meteor.Error('no-file-found');
-          }
+          if (doc) done(null, doc);
+          else Error.create({ type: Error.types.GridFSError, externalError: 'no-file-found', metadataToLog });
         });
       } catch (exception) {
         done(Error.createWithoutThrow({ type: Error.types.GridFSError, formatters: ['get-file'], metadataToLog, externalError: exception }), null);
