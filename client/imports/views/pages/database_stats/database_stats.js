@@ -1,5 +1,4 @@
 import { Template } from 'meteor/templating';
-import { Meteor } from 'meteor/meteor';
 import { DBStats } from '/client/imports/ui';
 import { Enums, SessionManager } from '/client/imports/modules';
 import { ReactivityProvider } from '/client/imports/facades';
@@ -31,7 +30,7 @@ Template.databaseStats.onRendered(function () {
     }
   });
 
-  Meteor.setTimeout(() => {
+  setTimeout(() => {
     DBStats.showWhatisNew();
   }, 500);
 });

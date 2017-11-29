@@ -1,3 +1,4 @@
+import { Meteor } from 'meteor/meteor';
 import { Notification, ErrorHandler, UIComponents, ExtendedJSON, SessionManager } from '/client/imports/modules';
 import { QueryRender } from '/client/imports/ui';
 import { Communicator, ReactivityProvider } from '/client/imports/facades';
@@ -250,7 +251,7 @@ Backup.prototype = {
     $('#cmbMongoimportArgs').val(['--host', '--file']).trigger('chosen:updated');
 
     // wait till --host input gets ready
-    Meteor.setTimeout(() => {
+    setTimeout(() => {
       const connection = ReactivityProvider.findOne(ReactivityProvider.types.Connections, { _id: SessionManager.get(SessionManager.strSessionConnection)._id });
       let hostStr = '';
       connection.servers.forEach((server) => { hostStr += `${server.host}:${server.port},`; });

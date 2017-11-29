@@ -11,13 +11,13 @@ const packageJson = require('/package.json');
 Template.topNavbar.onRendered(function () {
   this.subscribe('connections');
   $('.filestyle').filestyle({});
-  $('#switchDatabaseModal').on('shown.bs.modal', () => {
-    UIComponents.DataTable.initiateDatatable({
-      selector: $('#tblSwitchDatabases'),
-      clickCallback: (table, row) => { $('#inputDatabaseNameToSwitch').val(row.data().name); },
-      noDeleteEvent: true
-    });
+
+  UIComponents.DataTable.initiateDatatable({
+    selector: $('#tblSwitchDatabases'),
+    clickCallback: (table, row) => { $('#inputDatabaseNameToSwitch').val(row.data().name); },
+    noDeleteEvent: true
   });
+
   $('#versionText').html(packageJson.version);
 });
 

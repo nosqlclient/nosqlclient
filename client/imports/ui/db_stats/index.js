@@ -127,7 +127,7 @@ DBStats.prototype = {
     const fetchedSettings = ReactivityProvider.findOne(ReactivityProvider.types.Settings);
     if (fetchedSettings.showDBStats && !this.interval) {
       this.dataCountToKeep = (fetchedSettings.maxLiveChartDataPoints && fetchedSettings.maxLiveChartDataPoints > 0) ? fetchedSettings.maxLiveChartDataPoints : 15;
-      this.interval = Meteor.setInterval(() => {
+      this.interval = setInterval(() => {
         this.fetchStats();
         this.fetchStatus();
       }, fetchedSettings.dbStatsScheduler ? fetchedSettings.dbStatsScheduler : 3000);

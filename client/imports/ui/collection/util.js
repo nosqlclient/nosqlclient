@@ -329,7 +329,7 @@ CollectionUtil.prototype = {
   getCollectionInformation() {
     const settings = ReactivityProvider.findOne(ReactivityProvider.types.Settings);
 
-    Meteor.setTimeout(() => {
+    setTimeout(() => {
       const btnExecuteQuery = document.querySelector('#btnExecuteQuery');
       if (!settings || !btnExecuteQuery) return;
 

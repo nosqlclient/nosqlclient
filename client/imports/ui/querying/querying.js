@@ -33,26 +33,26 @@ const proceedQueryExecution = function (methodName, args, isAdmin = true, queryP
 };
 
 const renderCodeMirror = function (divSelector, value) {
-  Meteor.setTimeout(() => {
+  setTimeout(() => {
     UIComponents.Editor.setCodeMirrorValue(divSelector, JSON.stringify(value, null, 1));
   }, 100);
 };
 
 const renderFunction = function (divSelector, val) {
-  Meteor.setTimeout(() => {
+  setTimeout(() => {
     const str = JSON.stringify(val, null, 1).replace(/\\n/g, '\n');
     UIComponents.Editor.setCodeMirrorValue(divSelector, str.substring(1, str.length - 1));
   }, 100);
 };
 
 const renderInput = function (inputField, val) {
-  Meteor.setTimeout(() => {
+  setTimeout(() => {
     inputField.val(val);
   }, 100);
 };
 
 const renderBoolean = function (divSelector, val) {
-  Meteor.setTimeout(() => {
+  setTimeout(() => {
     divSelector.iCheck(val ? 'check' : 'uncheck');
   }, 100);
 };
@@ -107,7 +107,7 @@ const renderOptionsArray = function (options, optionEnum, cmbSelector) {
     if ((_.invert(optionEnum))[property]) optionsArray.push((_.invert(optionEnum))[property]);
   });
 
-  Meteor.setTimeout(() => {
+  setTimeout(() => {
     cmbSelector.val(optionsArray).trigger('chosen:updated');
     SessionManager.set(SessionManager.strSessionSelectedOptions, optionsArray);
   }, 100);
@@ -288,7 +288,7 @@ Querying.prototype = {
           const optionsArray = renderOptionsArray(query.queryParams.options, Enums.AGGREGATE_OPTIONS, $('#cmbAggregateOptions'));
 
           // options load
-          Meteor.setTimeout(() => {
+          setTimeout(() => {
             for (let i = 0; i < optionsArray.length; i += 1) {
               const option = optionsArray[i];
               const inverted = (_.invert(Enums.AGGREGATE_OPTIONS));
@@ -321,7 +321,7 @@ Querying.prototype = {
           const optionsArray = renderOptionsArray(query.queryParams.options, Enums.BULK_WRITE_OPTIONS, $('#cmbBulkWriteOptions'));
 
           // options load
-          Meteor.setTimeout(() => {
+          setTimeout(() => {
             for (let i = 0; i < optionsArray.length; i += 1) {
               const option = optionsArray[i];
               const inverted = (_.invert(Enums.BULK_WRITE_OPTIONS));
@@ -351,7 +351,7 @@ Querying.prototype = {
           const optionsArray = renderOptionsArray(query.queryParams.options, Enums.COUNT_OPTIONS, $('#cmbCountOptions'));
 
           // options load
-          Meteor.setTimeout(() => {
+          setTimeout(() => {
             for (let i = 0; i < optionsArray.length; i += 1) {
               const option = optionsArray[i];
               const inverted = (_.invert(Enums.COUNT_OPTIONS));
@@ -383,7 +383,7 @@ Querying.prototype = {
           const optionsArray = renderOptionsArray(query.queryParams.options, Enums.CREATE_INDEX_OPTIONS, $('#cmbCreateIndexOptions'));
 
           // options load
-          Meteor.setTimeout(() => {
+          setTimeout(() => {
             for (let i = 0; i < optionsArray.length; i += 1) {
               const option = optionsArray[i];
               const inverted = (_.invert(Enums.CREATE_INDEX_OPTIONS));
@@ -437,7 +437,7 @@ Querying.prototype = {
           const optionsArray = renderOptionsArray(query.queryParams.options, Enums.DISTINCT_OPTIONS, $('#cmbDistinctOptions'));
 
           // options load
-          Meteor.setTimeout(() => {
+          setTimeout(() => {
             for (let i = 0; i < optionsArray.length; i += 1) {
               const option = optionsArray[i];
               const inverted = (_.invert(Enums.DISTINCT_OPTIONS));
@@ -534,7 +534,7 @@ Querying.prototype = {
           const optionsArray = renderOptionsArray(query.queryParams.cursorOptions, Enums.CURSOR_OPTIONS, $('#cmbFindCursorOptions'));
 
           // options load
-          Meteor.setTimeout(() => {
+          setTimeout(() => {
             for (let i = 0; i < optionsArray.length; i += 1) {
               const option = optionsArray[i];
               const inverted = (_.invert(Enums.CURSOR_OPTIONS));
@@ -571,7 +571,7 @@ Querying.prototype = {
         if (query.queryParams.cursorOptions) {
           const optionsArray = renderOptionsArray(query.queryParams.cursorOptions, Enums.CURSOR_OPTIONS, $('#cmbFindOneCursorOptions'));
           // options load
-          Meteor.setTimeout(() => {
+          setTimeout(() => {
             for (let i = 0; i < optionsArray.length; i += 1) {
               const option = optionsArray[i];
               const inverted = (_.invert(Enums.CURSOR_OPTIONS));
@@ -606,7 +606,7 @@ Querying.prototype = {
           const optionsArray = renderOptionsArray(query.queryParams.options, Enums.FINDONE_MODIFY_OPTIONS, $('#cmbFindOneModifyOptions'));
 
           // options load
-          Meteor.setTimeout(() => {
+          setTimeout(() => {
             for (let i = 0; i < optionsArray.length; i += 1) {
               const option = optionsArray[i];
               const inverted = (_.invert(Enums.FINDONE_MODIFY_OPTIONS));
@@ -641,7 +641,7 @@ Querying.prototype = {
           const optionsArray = renderOptionsArray(query.queryParams.options, Enums.FINDONE_MODIFY_OPTIONS, $('#cmbFindOneModifyOptions'));
 
           // options load
-          Meteor.setTimeout(() => {
+          setTimeout(() => {
             for (let i = 0; i < optionsArray.length; i += 1) {
               const option = optionsArray[i];
               const inverted = (_.invert(Enums.FINDONE_MODIFY_OPTIONS));
@@ -683,7 +683,7 @@ Querying.prototype = {
           const optionsArray = renderOptionsArray(query.queryParams.options, Enums.FINDONE_MODIFY_OPTIONS, $('#cmbFindOneModifyOptions'));
 
           // options load
-          Meteor.setTimeout(() => {
+          setTimeout(() => {
             for (let i = 0; i < optionsArray.length; i += 1) {
               const option = optionsArray[i];
               const inverted = (_.invert(Enums.FINDONE_MODIFY_OPTIONS));
@@ -718,7 +718,7 @@ Querying.prototype = {
       },
       render(query) {
         if (query.queryParams.xAxis && query.queryParams.yAxis) {
-          Meteor.setTimeout(() => {
+          setTimeout(() => {
             $('#inputXAxis').val(query.queryParams.xAxis);
             $('#inputYAxis').val(query.queryParams.yAxis);
           }, 100);
@@ -728,7 +728,7 @@ Querying.prototype = {
           const optionsArray = renderOptionsArray(query.queryParams.options, Enums.GEO_HAYSTACK_SEARCH_OPTIONS, $('#cmbGeoHaystackSearchOptions'));
 
           // options load
-          Meteor.setTimeout(() => {
+          setTimeout(() => {
             for (let i = 0; i < optionsArray.length; i += 1) {
               const option = optionsArray[i];
               const inverted = (_.invert(Enums.GEO_HAYSTACK_SEARCH_OPTIONS));
@@ -761,7 +761,7 @@ Querying.prototype = {
       },
       render(query) {
         if (query.queryParams.xAxis && query.queryParams.yAxis) {
-          Meteor.setTimeout(() => {
+          setTimeout(() => {
             $('#inputXAxis').val(query.queryParams.xAxis);
             $('#inputYAxis').val(query.queryParams.yAxis);
           }, 100);
@@ -771,7 +771,7 @@ Querying.prototype = {
           const optionsArray = renderOptionsArray(query.queryParams.options, Enums.GEO_NEAR_OPTIONS, $('#cmbGeoNearOptions'));
 
           // options load
-          Meteor.setTimeout(() => {
+          setTimeout(() => {
             for (let i = 0; i < optionsArray.length; i += 1) {
               const option = optionsArray[i];
               const inverted = (_.invert(Enums.GEO_NEAR_OPTIONS));
@@ -823,7 +823,7 @@ Querying.prototype = {
       },
       render(query) {
         if (query.queryParams.keys) {
-          Meteor.setTimeout(() => {
+          setTimeout(() => {
             const divKeys = $('#divKeys');
             if (query.queryParams.keys.startsWith('function')) UIComponents.Editor.setCodeMirrorValue(divKeys, query.queryParams.keys);
             else {
@@ -850,7 +850,7 @@ Querying.prototype = {
         proceedQueryExecution('indexInformation', { selectedCollection, isFull: fullVal }, false, { full: fullVal }, (!historyParams));
       },
       render(query) {
-        Meteor.setTimeout(() => {
+        setTimeout(() => {
           $('#divFullInformation').iCheck(query.queryParams.full ? 'check' : 'uncheck');
         }, 100);
       }
@@ -874,7 +874,7 @@ Querying.prototype = {
           const optionsArray = renderOptionsArray(query.queryParams.options, Enums.INSERT_MANY_OPTIONS, $('#cmbInsertManyOptions'));
 
           // options load
-          Meteor.setTimeout(() => {
+          setTimeout(() => {
             for (let i = 0; i < optionsArray.length; i += 1) {
               const option = optionsArray[i];
               const inverted = (_.invert(Enums.INSERT_MANY_OPTIONS));
@@ -917,7 +917,7 @@ Querying.prototype = {
           const optionsArray = renderOptionsArray(query.queryParams.options, Enums.MAP_REDUCE_OPTIONS, $('#cmbMapReduceOptions'));
 
           // options load
-          Meteor.setTimeout(() => {
+          setTimeout(() => {
             for (let i = 0; i < optionsArray.length; i += 1) {
               const option = optionsArray[i];
               const inverted = (_.invert(Enums.MAP_REDUCE_OPTIONS));
@@ -995,7 +995,7 @@ Querying.prototype = {
           const optionsArray = renderOptionsArray(query.queryParams.options, Enums.STATS_OPTIONS, $('#cmbStatsOptions'));
 
           // options load
-          Meteor.setTimeout(() => {
+          setTimeout(() => {
             for (let i = 0; i < optionsArray.length; i += 1) {
               const option = optionsArray[i];
               const inverted = (_.invert(Enums.STATS_OPTIONS));
@@ -1030,7 +1030,7 @@ Querying.prototype = {
           const optionsArray = renderOptionsArray(query.queryParams.options, Enums.UPDATE_OPTIONS, $('#cmbUpdateManyOptions'));
 
           // options load
-          Meteor.setTimeout(() => {
+          setTimeout(() => {
             for (let i = 0; i < optionsArray.length; i += 1) {
               const option = optionsArray[i];
               const inverted = (_.invert(Enums.UPDATE_OPTIONS));
@@ -1065,7 +1065,7 @@ Querying.prototype = {
           const optionsArray = renderOptionsArray(query.queryParams.options, Enums.UPDATE_OPTIONS, $('#cmbUpdateOneOptions'));
 
           // options load
-          Meteor.setTimeout(() => {
+          setTimeout(() => {
             for (let i = 0; i < optionsArray.length; i += 1) {
               const option = optionsArray[i];
               const inverted = (_.invert(Enums.UPDATE_OPTIONS));

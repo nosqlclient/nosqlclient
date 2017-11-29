@@ -1,4 +1,3 @@
-import { Meteor } from 'meteor/meteor';
 import { Notification, SessionManager, UIComponents, ErrorHandler, Enums } from '/client/imports/modules';
 import { ReactivityProvider, Communicator } from '/client/imports/facades';
 import Helper from '/client/imports/helpers/helper';
@@ -353,7 +352,7 @@ QueryRender.prototype = {
     $('#cmbQueries').val((_.invert(Enums.QUERY_TYPES))[query.queryInfo]).trigger('chosen:updated');
     this.cmbQueriesChangeEvent();
 
-    Meteor.setTimeout(() => {
+    setTimeout(() => {
       Template[query.queryInfo].renderQuery(query);
     }, 150);
   },
