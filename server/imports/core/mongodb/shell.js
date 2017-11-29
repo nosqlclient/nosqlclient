@@ -69,7 +69,7 @@ const setEventsToShell = function (connectionId, sessionId) {
     });
 
     this.spawnedShellsBySessionId[sessionId] = null;
-    setTimeout(() => {
+    Meteor.setTimeout(() => {
       // remove all for further
       Database.remove({ type: Database.types.ShellCommands, selector: { sessionId } });
     }, 500);
