@@ -66,10 +66,10 @@ Connection.prototype = {
         args: { connection: { url } },
         callback: (err, res) => {
           if (!err) this.prepareFormForUrlParse(res);
-          else Notification.error(err.message);
+          else ErrorHandler.showMeteorFuncError(err, res);
 
           // let blaze initialize
-          Meteor.setTimeout(() => { this.disableFormsForUri(); }, 150);
+          setTimeout(() => { this.disableFormsForUri(); }, 150);
         }
       });
     } else this.enableFormsForUri();
@@ -78,6 +78,11 @@ Connection.prototype = {
   populateConnectionsTable() {
     UIComponents.DataTable.setupDatatable({
       selectorString: '#tblConnection',
+      extraOptions: {
+        createdRow(row) {
+          $(row).addClass('connection_row');
+        }
+      },
       data: ReactivityProvider.find(ReactivityProvider.types.Connections),
       columns: [
         { data: '_id', sClass: 'hide_column' },
@@ -126,6 +131,19 @@ Connection.prototype = {
           defaultContent: '<a href="" title="Delete" class="editor_remove"><i class="fa fa-remove text-navy"></i></a>',
         },
       ]
+    });
+
+    $.contextMenu({
+      selector: '.connection_row',
+      items: {
+        colorize: {
+          name: Helper.translate({ key: 'colorize' }),
+          icon: 'fa-image',
+          callback() {
+            // TODO
+          }
+        }
+      }
     });
   },
 
@@ -226,7 +244,7 @@ Connection.prototype = {
     this.selectedAuthType.set(connection.authenticationType);
 
     // let blaze render
-    Meteor.setTimeout(() => {
+    setTimeout(() => {
       if (connection.authenticationType === 'mongodb_cr') this.fillFormBasicAuth(connection.mongodb_cr);
       else if (connection.authenticationType === 'scram_sha_1') this.fillFormBasicAuth(connection.scram_sha_1);
       else if (connection.authenticationType === 'plain') {
