@@ -14,10 +14,10 @@ Template.storedFunctions.onRendered(function () {
   const connections = this.subscribe('connections');
 
   StoredFunctions.prepareEditModal();
+  UIComponents.DataTable.initiateDatatable({ selector: $('#tblStoredFunctions'), sessionKey: SessionManager.strSessionSelectedStoredFunction, noDeleteEvent: true });
 
   this.autorun(() => {
     if (settings.ready() && connections.ready()) {
-      UIComponents.DataTable.initiateDatatable({ selector: $('#tblStoredFunctions'), sessionKey: SessionManager.strSessionSelectedStoredFunction, noDeleteEvent: true });
       StoredFunctions.init();
     }
   });
