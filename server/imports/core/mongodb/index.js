@@ -58,6 +58,8 @@ const connectThroughTunnel = function ({ connection, sessionId, done, connection
   if (connection.ssh.passPhrase) config.passphrase = connection.ssh.passPhrase;
   if (connection.ssh.password) config.password = connection.ssh.password;
 
+  if (this.tunnelsBySessionId[sessionId]) this.tunnelsBySessionId[sessionId].close();
+
   Logger.info({ message: 'connect-ssh', metadataToLog: { sessionId, config } });
   this.tunnelsBySessionId[sessionId] = tunnelSsh(config, Meteor.bindEnvironment((error) => {
     if (error) {
