@@ -16,7 +16,7 @@ Template.schemaAnalyzer.onRendered(function () {
   const schemaAnalyzeResult = this.subscribe('schema_analyze_result');
 
   this.autorun(() => {
-    if (connections.ready() && settings.ready() && schemaAnalyzeResult.ready()) SchemaAnalyzer.init();
+    if (connections.ready() && settings.ready() && schemaAnalyzeResult.ready()) SchemaAnalyzer.init(Meteor.default_connection._lastSessionId);
   });
 });
 

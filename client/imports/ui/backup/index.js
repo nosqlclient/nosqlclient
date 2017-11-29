@@ -90,10 +90,10 @@ Backup.prototype = {
     });
   },
 
-  observeLogs() {
+  observeLogs(sessionId) {
     ReactivityProvider.observeChanges(
       ReactivityProvider.types.Dumps,
-      { sessionId: Meteor.default_connection._lastSessionId },
+      { sessionId },
       { sort: { date: -1 } },
       {
         added(id, fields) {
@@ -244,7 +244,7 @@ Backup.prototype = {
     Communicator.call({ methodName: 'removeDumpLogs' });
   },
 
-  init() {
+  init(sessionId) {
     $('#cmbMongodumpArgs').val(['--host', '--out']).trigger('chosen:updated');
     $('#cmbMongorestoreArgs').val(['--host', '--dir']).trigger('chosen:updated');
     $('#cmbMongoexportArgs').val(['--host', '--out']).trigger('chosen:updated');
@@ -263,7 +263,7 @@ Backup.prototype = {
       $('#mongoimport--host').val(hostStr);
     }, 100);
 
-    this.observeLogs();
+    this.observeLogs(sessionId);
   }
 };
 

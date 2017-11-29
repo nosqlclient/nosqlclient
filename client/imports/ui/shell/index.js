@@ -131,7 +131,7 @@ Shell.prototype = {
     Communicator.call({ methodName: 'clearShell' });
   },
 
-  init() {
+  init(sessionId) {
     $('#shellHistoriesModal').on('shown.bs.modal', () => { this.initShellHistories(); });
 
     const divResult = $('#divShellResult');
@@ -143,7 +143,7 @@ Shell.prototype = {
       ReactivityProvider.types.ShellCommands,
       {
         connectionId: SessionManager.get(SessionManager.strSessionConnection)._id,
-        sessionId: Meteor.default_connection._lastSessionId,
+        sessionId,
       },
       { sort: { date: -1 } },
       {

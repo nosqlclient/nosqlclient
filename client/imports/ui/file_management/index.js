@@ -235,9 +235,9 @@ FileManagement.prototype = {
     }
   },
 
-  download() {
+  download(sessionId) {
     const fileRow = SessionManager.get(SessionManager.strSessionSelectedFile);
-    if (fileRow) window.open(`download?fileId=${fileRow._id}&bucketName=${$('#txtBucketName').val()}&sessionId=${Meteor.default_connection._lastSessionId}`);
+    if (fileRow) window.open(`download?fileId=${fileRow._id}&bucketName=${$('#txtBucketName').val()}&sessionId=${sessionId}`);
   }
 };
 

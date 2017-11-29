@@ -42,7 +42,7 @@ Template.fileManagement.events({
 
   'click .editor_download': function (event) {
     event.preventDefault();
-    FileManagement.download();
+    FileManagement.download(Meteor.default_connection._lastSessionId);
   },
 
   'click .editor_delete': function (event) {
