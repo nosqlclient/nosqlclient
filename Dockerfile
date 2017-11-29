@@ -2,7 +2,7 @@ FROM debian:jessie
 
 RUN groupadd -r node && useradd -m -g node node
 
-ENV NODE_VERSION 4.8.2
+ENV NODE_VERSION 8.4.0
 ENV GOSU_VERSION 1.10
 
 # default values for Meteor environment variables
