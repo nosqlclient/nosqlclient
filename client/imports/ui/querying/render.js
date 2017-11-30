@@ -1,4 +1,3 @@
-import { Meteor } from 'meteor/meteor';
 import { Notification, SessionManager, UIComponents, ErrorHandler, Enums } from '/client/imports/modules';
 import { ReactivityProvider, Communicator } from '/client/imports/facades';
 import Helper from '/client/imports/helpers/helper';
@@ -26,13 +25,7 @@ const getEditor = function () {
 
 QueryRender.prototype = {
   setOptionsComboboxChangeEvent(cmb, sessionVar) {
-    cmb.on('change', (evt, params) => {
-      const array = SessionManager.get(sessionVar || SessionManager.strSessionSelectedOptions);
-      if (params.deselected) array.remove(params.deselected);
-      else array.push(params.selected);
-
-      SessionManager.set(sessionVar || SessionManager.strSessionSelectedOptions, array);
-    });
+    UIComponents.setOptionsComboboxChangeEvent(cmb, sessionVar || SessionManager.strSessionSelectedOptions);
   },
 
   renderAfterQueryExecution(err, result, isAdmin, queryInfo, queryParams, saveHistory) {
@@ -359,7 +352,7 @@ QueryRender.prototype = {
     $('#cmbQueries').val((_.invert(Enums.QUERY_TYPES))[query.queryInfo]).trigger('chosen:updated');
     this.cmbQueriesChangeEvent();
 
-    Meteor.setTimeout(() => {
+    setTimeout(() => {
       Template[query.queryInfo].renderQuery(query);
     }, 150);
   },

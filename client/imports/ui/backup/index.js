@@ -1,3 +1,4 @@
+import { Meteor } from 'meteor/meteor';
 import { Notification, ErrorHandler, UIComponents, ExtendedJSON, SessionManager } from '/client/imports/modules';
 import { QueryRender } from '/client/imports/ui';
 import { Communicator, ReactivityProvider } from '/client/imports/facades';
@@ -89,10 +90,10 @@ Backup.prototype = {
     });
   },
 
-  observeLogs() {
+  observeLogs(sessionId) {
     ReactivityProvider.observeChanges(
       ReactivityProvider.types.Dumps,
-      { sessionId: Meteor.default_connection._lastSessionId },
+      { sessionId },
       { sort: { date: -1 } },
       {
         added(id, fields) {
@@ -243,14 +244,14 @@ Backup.prototype = {
     Communicator.call({ methodName: 'removeDumpLogs' });
   },
 
-  init() {
+  init(sessionId) {
     $('#cmbMongodumpArgs').val(['--host', '--out']).trigger('chosen:updated');
     $('#cmbMongorestoreArgs').val(['--host', '--dir']).trigger('chosen:updated');
     $('#cmbMongoexportArgs').val(['--host', '--out']).trigger('chosen:updated');
     $('#cmbMongoimportArgs').val(['--host', '--file']).trigger('chosen:updated');
 
     // wait till --host input gets ready
-    Meteor.setTimeout(() => {
+    setTimeout(() => {
       const connection = ReactivityProvider.findOne(ReactivityProvider.types.Connections, { _id: SessionManager.get(SessionManager.strSessionConnection)._id });
       let hostStr = '';
       connection.servers.forEach((server) => { hostStr += `${server.host}:${server.port},`; });
@@ -262,7 +263,7 @@ Backup.prototype = {
       $('#mongoimport--host').val(hostStr);
     }, 100);
 
-    this.observeLogs();
+    this.observeLogs(sessionId);
   }
 };
 

@@ -190,8 +190,8 @@ Options.prototype = {
     this.checkAndAddOption('SCOPE', $('#divScope'), result, Enums.MAP_REDUCE_OPTIONS);
 
     if ($.inArray('FINALIZE', SessionManager.get(SessionManager.strSessionSelectedOptions)) !== -1) {
-      const finalize = UIComponents.Editor.getCodeMirrorValue($('#divFinalize'));
-      if (!finalize.parseFunction()) {
+      const finalize = Helper.convertStrToFunction(UIComponents.Editor.getCodeMirrorValue($('#divFinalize')));
+      if (!finalize) {
         result.ERROR = Helper.translate({ key: 'syntax-error-finalize-function' });
         return;
       }

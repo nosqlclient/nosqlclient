@@ -77,12 +77,13 @@ const extractMessage = function (externalError) {
 
 const createAndLogError = function (type, formatters, metadataToLog, externalError = '') {
   const error = resolveType(type);
+  const externalErrorMessage = extractMessage(externalError);
   Logger.error({
     message: util.format(error.message, ...formatters),
-    metadataToLog: Object.assign({ externalError }, metadataToLog)
+    metadataToLog: Object.assign({ externalError: externalErrorMessage }, metadataToLog)
   });
 
-  const details = { message: extractMessage(externalError) };
+  const details = { message: externalErrorMessage };
   return { error, details };
 };
 

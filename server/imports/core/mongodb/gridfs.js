@@ -1,6 +1,5 @@
 /* global Async */
 import { Logger, Error } from '/server/imports/modules';
-import { Meteor } from 'meteor/meteor';
 import MongoDB from './index';
 import ExtendedJSON from './extended_json';
 
@@ -48,23 +47,27 @@ MongoDBGridFS.prototype = {
 
         filesCollection.find(selector, { _id: 1 }).toArray((firstError, docs) => {
           if (firstError) {
-            done(firstError, docs);
+            done(Error.createWithoutThrow({ type: Error.types.GridFSError, externalError: firstError, metadataToLog }), docs);
             return;
           }
 
           const ids = [];
           docs.forEach(obj => ids.push(obj._id));
 
+          metadataToLog.ids = ids;
+
           Logger.info({ message: 'delete-from-files-collection', metadataToLog });
           filesCollection.deleteMany({ _id: { $in: ids } }, {}, (filesCollectionError) => {
             if (filesCollectionError) {
-              done(filesCollectionError, null);
+              done(Error.createWithoutThrow({ type: Error.types.GridFSError, externalError: filesCollectionError, metadataToLog }), null);
               return;
             }
 
             Logger.info({ message: 'delete-from-chunks-collection', metadataToLog });
             chunksCollection.deleteMany({ files_id: { $in: ids } }, (chunksCollectionError) => {
-              done(chunksCollectionError, null);
+              let errorToBeThrown = null;
+              if (chunksCollectionError) errorToBeThrown = Error.createWithoutThrow({ type: Error.types.GridFSError, externalError: chunksCollectionError, metadataToLog });
+              done(errorToBeThrown, null);
             });
           });
         });
@@ -84,7 +87,9 @@ MongoDBGridFS.prototype = {
       try {
         const bucket = new mongodbApi.GridFSBucket(MongoDB.dbObjectsBySessionId[sessionId], { bucketName });
         bucket.delete(new mongodbApi.ObjectId(fileId), (err) => {
-          done(err, null);
+          let errorToBeThrown = null;
+          if (err) errorToBeThrown = Error.createWithoutThrow({ type: Error.types.GridFSError, externalError: err, metadataToLog });
+          done(errorToBeThrown, null);
         });
       } catch (exception) {
         done(Error.createWithoutThrow({ type: Error.types.GridFSError, formatters: ['delete-file'], metadataToLog, externalError: exception }), null);
@@ -107,7 +112,9 @@ MongoDBGridFS.prototype = {
       try {
         const bucket = new mongodbApi.GridFSBucket(MongoDB.dbObjectsBySessionId[sessionId], { bucketName });
         bucket.find(selector, { limit }).toArray((err, files) => {
-          done(err, files);
+          let errorToBeThrown = null;
+          if (err) errorToBeThrown = Error.createWithoutThrow({ type: Error.types.GridFSError, externalError: err, metadataToLog });
+          done(errorToBeThrown, files);
         });
       } catch (exception) {
         done(Error.createWithoutThrow({ type: Error.types.GridFSError, formatters: ['get-files-info'], metadataToLog, externalError: exception }), null);
@@ -152,11 +159,8 @@ MongoDBGridFS.prototype = {
       try {
         const filesCollection = MongoDB.dbObjectsBySessionId[sessionId].collection(`${bucketName}.files`);
         filesCollection.find({ _id: new mongodbApi.ObjectId(fileId) }).limit(1).next((err, doc) => {
-          if (doc) {
-            done(null, doc);
-          } else {
-            throw new Meteor.Error('no-file-found');
-          }
+          if (doc) done(null, doc);
+          else Error.create({ type: Error.types.GridFSError, externalError: 'no-file-found', metadataToLog });
         });
       } catch (exception) {
         done(Error.createWithoutThrow({ type: Error.types.GridFSError, formatters: ['get-file'], metadataToLog, externalError: exception }), null);

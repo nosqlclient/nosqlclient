@@ -7,7 +7,6 @@ const StoredFunctions = function () {};
 StoredFunctions.prototype = {
   init(isRefresh) {
     Notification.start('#btnAddNewStoredFunction');
-    UIComponents.DataTable.initiateDatatable({ selector: $('#tblStoredFunctions'), sessionKey: SessionManager.strSessionSelectedStoredFunction, noDeleteEvent: true });
 
     Communicator.call({
       methodName: 'find',
@@ -15,6 +14,7 @@ StoredFunctions.prototype = {
       callback: (err, result) => {
         if (err || result.error) ErrorHandler.showMeteorFuncError(err, result);
         else {
+          result.result.forEach((obj) => { if (!obj.value.$code) obj.value.$code = ''; });
           UIComponents.DataTable.setupDatatable({
             selectorString: '#tblStoredFunctions',
             data: result.result,
@@ -64,8 +64,8 @@ StoredFunctions.prototype = {
   },
 
   getObjectToSave() {
-    const functionVal = UIComponents.Editor.getCodeMirrorValue($('#divStoredFunction'));
-    if (!functionVal.parseFunction()) {
+    const functionVal = Helper.convertStrToFunction(UIComponents.Editor.getCodeMirrorValue($('#divStoredFunction')));
+    if (!functionVal) {
       Notification.error('syntax-error-stored-function');
       return;
     }

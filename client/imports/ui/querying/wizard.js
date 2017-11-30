@@ -85,7 +85,7 @@ QueryWizard.prototype = {
     else if (this.selectedOption === '-6') query = `{ ${this.fieldName}:{ $lt: ${this.txtValue} }}`;
 
     UIComponents.Editor.setCodeMirrorValue($('#divSelector'), query);
-    Meteor.setTimeout(() => {
+    setTimeout(() => {
       $('#queryWizardModal').modal('hide');
       this.reset();
     }, 3350);

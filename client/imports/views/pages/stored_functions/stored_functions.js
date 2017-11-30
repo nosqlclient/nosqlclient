@@ -1,6 +1,6 @@
 import { Template } from 'meteor/templating';
 import { FlowRouter } from 'meteor/kadira:flow-router';
-import { SessionManager } from '/client/imports/modules';
+import { SessionManager, UIComponents } from '/client/imports/modules';
 import { StoredFunctions } from '/client/imports/ui';
 import Helper from '/client/imports/helpers/helper';
 import './stored_functions.html';
@@ -14,9 +14,12 @@ Template.storedFunctions.onRendered(function () {
   const connections = this.subscribe('connections');
 
   StoredFunctions.prepareEditModal();
+  UIComponents.DataTable.initiateDatatable({ selector: $('#tblStoredFunctions'), sessionKey: SessionManager.strSessionSelectedStoredFunction, noDeleteEvent: true });
 
   this.autorun(() => {
-    if (settings.ready() && connections.ready()) StoredFunctions.init();
+    if (settings.ready() && connections.ready()) {
+      StoredFunctions.init();
+    }
   });
 });
 

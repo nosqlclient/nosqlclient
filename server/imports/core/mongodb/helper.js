@@ -10,11 +10,13 @@ const MongoDBHelper = function () {
 };
 
 MongoDBHelper.prototype = {
-  proceedExecutionStepByStep(entry, last, done, execution) {
+  proceedExecutionStepByStep(entry, last, done, execution, metadataToLog) {
     Object.keys(entry).forEach((key) => {
       if (last && key === Object.keys(entry)[Object.keys(entry).length - 1]) {
         entry[key].push((err, docs) => {
-          done(err, docs);
+          let errorToBeThrown = null;
+          if (err) errorToBeThrown = Error.createWithoutThrow({ type: Error.types.QueryError, externalError: err, metadataToLog });
+          done(errorToBeThrown, docs);
         });
 
         execution[key](...entry[key]);
@@ -64,33 +66,35 @@ MongoDBHelper.prototype = {
     }
   },
 
-  proceedMapReduceExecution({ execution, map, reduce, options }) {
+  proceedMapReduceExecution({ execution, map, reduce, options, metadataToLog }) {
     options = ExtendedJSON.convertJSONtoBSON(options);
 
     const result = Async.runSync((done) => {
       try {
         execution.mapReduce(map, reduce, options, (firstError, resultCollection) => {
           if (firstError) {
-            done(firstError, null);
+            done(Error.createWithoutThrow({ type: Error.types.QueryError, externalError: firstError, metadataToLog }), null);
             return;
           }
           if ((typeof options.out) === 'string') {
             resultCollection.find().toArray((err, finalResult) => {
-              done(err, finalResult);
+              let errorToBeThrown = null;
+              if (err) errorToBeThrown = Error.createWithoutThrow({ type: Error.types.QueryError, externalError: err, metadataToLog });
+              done(errorToBeThrown, finalResult);
             });
           } else {
-            done(firstError, resultCollection);
+            done(null, resultCollection);
           }
         });
       } catch (exception) {
-        done(Error.createWithoutThrow({ type: Error.types.QueryError, metadataToLog: { map, reduce, options }, externalError: exception }), null);
+        done(Error.createWithoutThrow({ type: Error.types.QueryError, metadataToLog, externalError: exception }), null);
       }
     });
 
     return ExtendedJSON.convertBSONtoJSON(result);
   },
 
-  proceedExecutingQuery({ methodArray, execution, sessionId, removeCollectionTopology }) {
+  proceedExecutingQuery({ methodArray, execution, removeCollectionTopology, metadataToLog }) {
     const start = new Date();
     let result = Async.runSync((done) => {
       try {
@@ -98,10 +102,10 @@ MongoDBHelper.prototype = {
           const last = (i === (methodArray.length - 1));
           const entry = ExtendedJSON.convertJSONtoBSON(methodArray[i]);
 
-          execution = this.proceedExecutionStepByStep(entry, last, done, execution);
+          execution = this.proceedExecutionStepByStep(entry, last, done, execution, metadataToLog);
         }
       } catch (exception) {
-        done(Error.createWithoutThrow({ type: Error.types.QueryError, metadataToLog: { methodArray, sessionId }, externalError: exception }), null);
+        done(Error.createWithoutThrow({ type: Error.types.QueryError, metadataToLog, externalError: exception }), null);
       }
     });
 

@@ -1,4 +1,3 @@
-import { Meteor } from 'meteor/meteor';
 import { Template } from 'meteor/templating';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { ReactivityProvider } from '/client/imports/facades';
@@ -106,7 +105,7 @@ Template.navigation.helpers({
   },
 
   initializeMetisMenu() {
-    Meteor.setTimeout(() => {
+    setTimeout(() => {
       const sideMenu = $('#side-menu');
       sideMenu.removeData('mm');
       sideMenu.metisMenu();

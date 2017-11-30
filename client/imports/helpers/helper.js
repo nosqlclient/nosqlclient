@@ -37,35 +37,17 @@ Helper.prototype = {
 
   translate({ key, options, language }) {
     return TAPi18n.__(key, options, language);
+  },
+
+  convertStrToFunction(str) {
+    if (!str) return null;
+    const funcReg = /function *\(([^()]*)\)[ \n\t]*\{(.*)}/gmi;
+    const match = funcReg.exec(str.replace(/\n/g, ' '));
+    if (match) return new Function(match[1].split(','), match[2]);
+
+    return null;
   }
 };
 
 const helper = new Helper();
 export default helper;
-
-// TODO
-(function () {
-  Array.prototype.remove = function () {
-    let what;
-    const a = arguments;
-    let L = a.length,
-      ax;
-    while (L && this.length) {
-      what = a[--L];
-      while ((ax = this.indexOf(what)) !== -1) {
-        this.splice(ax, 1);
-      }
-    }
-    return this;
-  };
-
-  String.prototype.parseFunction = function () {
-    const funcReg = /function *\(([^()]*)\)[ \n\t]*\{(.*)}/gmi;
-    const match = funcReg.exec(this.replace(/\n/g, ' '));
-    if (match) {
-      return new Function(match[1].split(','), match[2]);
-    }
-
-    return null;
-  };
-}());

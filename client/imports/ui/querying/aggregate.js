@@ -86,7 +86,7 @@ Aggregate.prototype = {
                        <i class="fa fa-remove"></i> Remove</a><div id="wrapper${this.stageNumbers}" class="agile-detail">`;
 
       const stringInput = `<input type="text" class="form-control" id="txtStringStage${this.stageNumbers}"/>`;
-      const numberInput = `<input id="inputNumberStage${this.stageNumbers}" min="0" type="number" class="form-control">`;
+      const numberInput = `<input id="inputNumberStage${this.stageNumbers}" min="0" type="number" class="form-control"/>`;
       let initCodeMirror; let isNumber;
       switch (query) {
         case '$limit':

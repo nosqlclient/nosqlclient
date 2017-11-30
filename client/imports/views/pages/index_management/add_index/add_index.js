@@ -1,5 +1,4 @@
 import { Template } from 'meteor/templating';
-import { Meteor } from 'meteor/meteor';
 import { UIComponents, Notification } from '/client/imports/modules';
 import { IndexManagement } from '/client/imports/ui';
 import './add_index.html';
@@ -16,7 +15,7 @@ Template.addIndex.onRendered(() => {
   });
 
   $('#accordion').on('show.bs.collapse', () => {
-    Meteor.setTimeout(() => {
+    setTimeout(() => {
       UIComponents.Editor.initializeCodeMirror({ divSelector: $('#divPartial'), txtAreaId: 'txtPartial' });
     }, 150);
   });

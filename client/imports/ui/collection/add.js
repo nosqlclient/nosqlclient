@@ -186,7 +186,7 @@ CollectionAdd.prototype = {
       SessionManager.set(SessionManager.strSessionSelectedAddCollectionOptions, optionsToSelect);
 
       // let view initialize
-      Meteor.setTimeout(() => {
+      setTimeout(() => {
         $('#inputCappedCollectionMaxDocs').val(col.options.max);
         $('#inputCappedCollectionSize').val(col.options.size);
       }, 100);
@@ -196,7 +196,7 @@ CollectionAdd.prototype = {
       SessionManager.set(SessionManager.strSessionSelectedAddCollectionOptions, optionsToSelect);
 
       // let view initialize
-      Meteor.setTimeout(() => {
+      setTimeout(() => {
         const twoSizesIndexes = $('#inputTwoSizesIndexes');
         const noPadding = $('#inputNoPadding');
 
@@ -220,7 +220,7 @@ CollectionAdd.prototype = {
       optionsToSelect.push('INDEX_OPTION_DEFAULTS');
 
       // let view initialize
-      Meteor.setTimeout(() => {
+      setTimeout(() => {
         UIComponents.Editor.setCodeMirrorValue($('#divIndexOptionDefaults'), JSON.stringify(col.options.indexOptionDefaults), $('#txtIndexOptionDefaults'));
       }, 100);
     }

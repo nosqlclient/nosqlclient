@@ -36,5 +36,5 @@ Template.mcShell.onRendered(function () {
     if (settings.ready()) Shell.initializeCommandCodeMirror();
   });
 
-  Shell.init();
+  Shell.init(Meteor.default_connection._lastSessionId);
 });

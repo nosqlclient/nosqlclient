@@ -29,7 +29,7 @@ Template.databaseDumpRestore.onRendered(function () {
   Backup.initializeUI();
 
   this.autorun(() => {
-    if (settings.ready() && connections.ready() && dumps.ready()) Backup.init();
+    if (settings.ready() && connections.ready() && dumps.ready()) Backup.init(Meteor.default_connection._lastSessionId);
   });
 });
 

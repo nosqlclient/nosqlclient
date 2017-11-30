@@ -1,5 +1,6 @@
 import { ReactiveVar } from 'meteor/reactive-var';
 import { UIComponents, SessionManager } from '/client/imports/modules';
+import $ from 'jquery';
 
 const CollectionFilter = function () {
   this.filterRegex = new ReactiveVar('');
@@ -43,9 +44,9 @@ CollectionFilter.prototype = {
           data: null,
           width: '10%',
           render(data) {
-            if ($.inArray(data.name, self.excludedCollectionsByFilter.get()) === -1) return `<input name="${data.name}" type="checkbox" checked="checked">`;
+            if ($.inArray(data.name, self.excludedCollectionsByFilter.get()) === -1) return `<input name="${data.name}" type="checkbox" checked="checked"/>`;
 
-            return `<input name="${data.name}" type="checkbox">`;
+            return `<input name="${data.name}" type="checkbox"/>`;
           },
         },
       ]
