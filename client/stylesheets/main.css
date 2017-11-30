@@ -198,3 +198,7 @@ tr.selected {
 .ace_text-input {
     position: absolute !important
 }
+
+.colorpicker, .colorpicker * {
+    z-index: 99999999999;
+}

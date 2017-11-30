@@ -36,6 +36,10 @@
   "connection-closed":"Lütfen koleksiyonları yenileyin, ya da tekrar bağlanın, bağlantı koptu !",
 
   // client
+  "colorize":"Renklendir",
+  "clear-color":"Arkaplan Rengini Temizle",
+  "choose_color":"Renk Seç",
+  "color-required":"Renk alanı gerekiyor",
   "execution_time":"Son İşletim Süresi",
   "unknown-error":"Kötü birşeyler oldu, logları kontrol etsen iyi olur !",
   "collection-created-successfully":"__name__ koleksiyonu oluşturuldu",

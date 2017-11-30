@@ -142,7 +142,7 @@ UIComponents.prototype = {
         columns,
         columnDefs,
         lengthMenu
-      }));
+      })).draw();
     }
   },
 

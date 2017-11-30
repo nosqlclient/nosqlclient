@@ -36,6 +36,10 @@
   "connection-closed":"Please refresh collections or re-connect, connection has been closed",
 
   // client
+  "colorize":"Colorize",
+  "clear-color":"Clear Background Color",
+  "choose_color":"Choose Color",
+  "color-required":"Color is required",
   "execution_time":"Last Execution Time",
   "unknown-error":"Unknown error occurred, please check server logs",
   "collection-created-successfully":"Successfully created collection with name __name__",
