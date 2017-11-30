@@ -17,6 +17,90 @@ Connection.prototype = {
     FlowRouter.go('/databaseStats');
   },
 
+  prepareContextMenu() {
+    const self = this;
+    $.contextMenu({
+      selector: '.connection_row',
+      items: {
+        colorize: {
+          name: Helper.translate({ key: 'colorize' }),
+          icon: 'fa-image',
+          callback(itemKey, opt) {
+            const row = $('#tblConnection').DataTable().row(opt.$trigger[0]);
+            const modal = $('#colorizeModal');
+            modal.data('connection', row.data()._id);
+            modal.modal('show');
+          }
+        },
+        clear_color: {
+          name: Helper.translate({ key: 'clear-color' }),
+          icon: 'fa-times-circle',
+          callback(itemKey, opt) {
+            const row = $('#tblConnection').DataTable().row(opt.$trigger[0]);
+            if (row && row.data()) {
+              const connection = ReactivityProvider.findOne(ReactivityProvider.types.Connections, { _id: row.data()._id });
+              connection.color = '';
+
+              Communicator.call({
+                methodName: 'saveConnection',
+                args: { connection },
+                callback: (err, result) => {
+                  if (err || (result && result.error)) ErrorHandler.showMeteorFuncError(err, result);
+                  else {
+                    self.populateConnectionsTable();
+                    Notification.success('saved-successfully');
+                  }
+                }
+              });
+            }
+          }
+        }
+      }
+    });
+  },
+
+  prepareColorizeModal() {
+    const input = $('#inputColor');
+    input.colorpicker({
+      align: 'left',
+      format: 'hex'
+    });
+    const colorizeModal = $('#colorizeModal');
+    colorizeModal.on('shown.bs.modal', () => {
+      const connection = ReactivityProvider.findOne(ReactivityProvider.types.Connections, { _id: colorizeModal.data('connection') });
+      input.colorpicker('setValue', connection.color);
+    });
+  },
+
+  colorize() {
+    const color = $('#inputColor');
+    const connectionId = $('#colorizeModal').data('connection');
+    if (!color.val()) {
+      Notification.error('color-required');
+      return;
+    }
+
+    if (!connectionId) {
+      Notification.error('select-connection');
+      return;
+    }
+
+    const connection = ReactivityProvider.findOne(ReactivityProvider.types.Connections, { _id: connectionId });
+    connection.color = color.val();
+
+    Communicator.call({
+      methodName: 'saveConnection',
+      args: { connection },
+      callback: (err, result) => {
+        if (err || (result && result.error)) ErrorHandler.showMeteorFuncError(err, result);
+        else {
+          Notification.success('saved-successfully');
+          this.populateConnectionsTable();
+        }
+      }
+    });
+  },
+
   switchDatabase() {
     const selector = $('#inputDatabaseNameToSwitch');
     if (!selector.val()) {
@@ -28,8 +112,14 @@ Connection.prototype = {
     const connection = ReactivityProvider.findOne(ReactivityProvider.types.Connections, { _id: SessionManager.get(SessionManager.strSessionConnection)._id });
     connection.databaseName = selector.val();
 
-    Communicator.call({ methodName: 'saveConnection', args: { connection } });
-    this.connect(false);
+    Communicator.call({
+      methodName: 'saveConnection',
+      args: { connection },
+      callback: (err, result) => {
+        if (err || (result && result.error)) ErrorHandler.showMeteorFuncError(err, result);
+        else this.connect(false);
+      }
+    });
   },
 
   showSwitchDatabaseModal() {
@@ -78,6 +168,12 @@ Connection.prototype = {
   populateConnectionsTable() {
     UIComponents.DataTable.setupDatatable({
       selectorString: '#tblConnection',
+      extraOptions: {
+        createdRow(row, data) {
+          if (data.color)$(row).css('background-color', data.color);
+          $(row).addClass('connection_row');
+        }
+      },
       data: ReactivityProvider.find(ReactivityProvider.types.Connections),
       columns: [
         { data: '_id', sClass: 'hide_column' },

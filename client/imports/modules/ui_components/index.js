@@ -129,10 +129,20 @@ UIComponents.prototype = {
       if (!noDeleteEvent) this.attachDeleteTableRowEvent(selector);
     },
 
-    setupDatatable({ selectorString, columns, columnDefs = [], data, autoWidth = true, lengthMenu = [5, 10, 20] }) {
+    setupDatatable({ selectorString, columns, columnDefs = [], data, extraOptions = {}, autoWidth = true, lengthMenu = [5, 10, 20] }) {
       const selector = $(selectorString);
       if ($.fn.dataTable.isDataTable(selectorString)) selector.DataTable().destroy();
-      selector.DataTable({ language: this.getDatatableLanguageOptions(), responsive: true, destroy: true, stateSave: true, autoWidth, data, columns, columnDefs, lengthMenu });
+      selector.DataTable(Object.assign(extraOptions, {
+        language: this.getDatatableLanguageOptions(),
+        responsive: true,
+        destroy: true,
+        stateSave: true,
+        autoWidth,
+        data,
+        columns,
+        columnDefs,
+        lengthMenu
+      })).draw();
     }
   },
 

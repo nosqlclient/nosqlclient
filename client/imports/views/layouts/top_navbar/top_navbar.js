@@ -6,6 +6,7 @@ import './connections/connections';
 import './top_navbar.html';
 
 require('bootstrap-filestyle');
+
 const packageJson = require('/package.json');
 
 Template.topNavbar.onRendered(function () {
@@ -18,6 +19,7 @@ Template.topNavbar.onRendered(function () {
     noDeleteEvent: true
   });
 
+  Connection.prepareColorizeModal();
   $('#versionText').html(packageJson.version);
 });
 
@@ -63,10 +65,15 @@ Template.topNavbar.events({
   'click #btnConnectionList': function () {
     if (!SessionManager.get(SessionManager.strSessionConnection)) {
       Connection.populateConnectionsTable();
+      Connection.prepareContextMenu();
 
       $('#tblConnection').DataTable().$('tr.selected').removeClass('selected');
       $('#btnConnect').prop('disabled', true);
     }
+  },
+
+  'click #btnSaveColor': function () {
+    Connection.colorize();
   },
 
   'click #btnConnectSwitchedDatabase': function () {
