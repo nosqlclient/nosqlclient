@@ -149,6 +149,24 @@ const renderUpdateQuery = function (query, cmb) {
   }
 };
 
+const proceedGeoQueryExecution = function (historyParams, query, optionsEnum) {
+  Notification.start('#btnExecuteQuery');
+  const selectedCollection = SessionManager.get(SessionManager.strSessionSelectedCollection);
+  let xAxis = historyParams ? historyParams.xAxis : $('#inputXAxis').val();
+  if (xAxis) xAxis = parseInt(xAxis, 10);
+
+  let yAxis = historyParams ? historyParams.yAxis : $('#inputYAxis').val();
+  if (yAxis) yAxis = parseInt(yAxis, 10);
+
+  const options = historyParams ? historyParams.options : QueryingOptions.getOptions(optionsEnum);
+  if (options.ERROR) {
+    Notification.error(options.ERROR);
+    return;
+  }
+
+  proceedQueryExecution(query, { selectedCollection, xAxis, yAxis, options }, false, { xAxis, yAxis, options }, (!historyParams));
+};
+
 Querying.prototype = {
   initOptions(optionEnum, showRunOnAdmin, ...excludedOptions) {
     switch (optionEnum) {
@@ -735,21 +753,7 @@ Querying.prototype = {
 
     GeoHayStackSearch: {
       execute(historyParams) {
-        Notification.start('#btnExecuteQuery');
-        const selectedCollection = SessionManager.get(SessionManager.strSessionSelectedCollection);
-        let xAxis = historyParams ? historyParams.xAxis : $('#inputXAxis').val();
-        if (xAxis) xAxis = parseInt(xAxis, 10);
-        let yAxis = historyParams ? historyParams.yAxis : $('#inputYAxis').val();
-        if (yAxis) yAxis = parseInt(yAxis, 10);
-
-        const options = historyParams ? historyParams.options : QueryingOptions.getOptions(Enums.GEO_HAYSTACK_SEARCH_OPTIONS);
-
-        if (options.ERROR) {
-          Notification.error(options.ERROR);
-          return;
-        }
-
-        proceedQueryExecution('geoHaystackSearch', { selectedCollection, xAxis, yAxis, options }, false, { xAxis, yAxis, options }, (!historyParams));
+        proceedGeoQueryExecution(historyParams, 'geoHaystackSearch', Enums.GEO_NEAR_OPTIONS);
       },
       render(query) {
         if (query.queryParams.xAxis && query.queryParams.yAxis) {
@@ -778,21 +782,7 @@ Querying.prototype = {
 
     GeoNear: {
       execute(historyParams) {
-        Notification.start('#btnExecuteQuery');
-        const selectedCollection = SessionManager.get(SessionManager.strSessionSelectedCollection);
-        let xAxis = historyParams ? historyParams.xAxis : $('#inputXAxis').val();
-        if (xAxis) xAxis = parseInt(xAxis, 10);
-
-        let yAxis = historyParams ? historyParams.yAxis : $('#inputYAxis').val();
-        if (yAxis) yAxis = parseInt(yAxis, 10);
-
-        const options = historyParams ? historyParams.options : QueryingOptions.getOptions(Enums.GEO_NEAR_OPTIONS);
-        if (options.ERROR) {
-          Notification.error(options.ERROR);
-          return;
-        }
-
-        proceedQueryExecution('geoNear', { selectedCollection, xAxis, yAxis, options }, false, { xAxis, yAxis, options }, (!historyParams));
+        proceedGeoQueryExecution(historyParams, 'geoNear', Enums.GEO_NEAR_OPTIONS);
       },
       render(query) {
         if (query.queryParams.xAxis && query.queryParams.yAxis) {
