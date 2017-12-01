@@ -114,6 +114,17 @@ const renderOptionsArray = function (options, optionEnum, cmbSelector) {
   return optionsArray;
 };
 
+const getUpdateParams = function (historyParams) {
+  const selectedCollection = SessionManager.get(SessionManager.strSessionSelectedCollection);
+  const options = historyParams ? historyParams.options : QueryingOptions.getOptions(Enums.UPDATE_OPTIONS);
+  const selector = getFromHistoryOrEditor(historyParams, $('#divSelector'));
+  let setObject = getFromHistoryOrEditor(historyParams, $('#divSet'), 'setObject');
+
+  if (!setObject.$set) setObject = { $set: setObject };
+
+  return { selectedCollection, options, selector, setObject };
+};
+
 Querying.prototype = {
   initOptions(optionEnum, showRunOnAdmin, ...excludedOptions) {
     switch (optionEnum) {
@@ -1009,16 +1020,11 @@ Querying.prototype = {
     UpdateMany: {
       execute(historyParams) {
         Notification.start('#btnExecuteQuery');
-        const selectedCollection = SessionManager.get(SessionManager.strSessionSelectedCollection);
-        const options = historyParams ? historyParams.options : QueryingOptions.getOptions(Enums.UPDATE_OPTIONS);
-        const selector = getFromHistoryOrEditor(historyParams, $('#divSelector'));
-        let setObject = getFromHistoryOrEditor(historyParams, $('#divSet'), 'setObject');
+        const { selector, selectedCollection, options, setObject } = getUpdateParams(historyParams);
 
         if (!checkErrorField(selector, 'selector')) return;
         if (!checkErrorField(options)) return;
         if (!checkErrorField(setObject, 'set')) return;
-
-        if (!setObject.$set) setObject = { $set: setObject };
 
         proceedQueryExecution('updateMany', { selectedCollection, selector, setObject, options }, false, { selector, setObject, options }, (!historyParams));
       },
@@ -1044,16 +1050,11 @@ Querying.prototype = {
     UpdateOne: {
       execute(historyParams) {
         Notification.start('#btnExecuteQuery');
-        const selectedCollection = SessionManager.get(SessionManager.strSessionSelectedCollection);
-        const options = historyParams ? historyParams.options : QueryingOptions.getOptions(Enums.UPDATE_OPTIONS);
-        const selector = getFromHistoryOrEditor(historyParams, $('#divSelector'));
-        let setObject = getFromHistoryOrEditor(historyParams, $('#divSet'), 'setObject');
+        const { selector, selectedCollection, options, setObject } = getUpdateParams(historyParams);
 
         if (!checkErrorField(selector, 'selector')) return;
         if (!checkErrorField(options)) return;
         if (!checkErrorField(setObject, 'set')) return;
-
-        if (!setObject.$set) setObject = { $set: setObject };
 
         proceedQueryExecution('updateOne', { selectedCollection, selector, setObject, options }, false, { selector, setObject, options }, (!historyParams));
       },
