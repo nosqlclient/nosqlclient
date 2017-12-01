@@ -115,6 +115,33 @@ const getCorrectScales = function (settings, forMemory) {
   return { scale, text };
 };
 
+const initChart = function ({ chartVariable, spanSelector, divSelector, data, total, translateKey = 'total', lineOptions, merge = true }) {
+  if (!SessionManager.get(SessionManager.strSessionCollectionNames)) return;
+
+  if (total) spanSelector.html(`, ${Helper.translate({ key: translateKey })}: ${total}`);
+
+  if (!data || data.length === 0) {
+    divSelector.html(Helper.translate({ key: 'feature_not_supported_mongodb_version' }));
+    return;
+  }
+
+  if (divSelector.find('.flot-base').length <= 0) {
+    try {
+      chartVariable = $.plot(divSelector, data, lineOptions);
+    } catch (e) {
+      chartVariable = null;
+    }
+  } else {
+    const mergedData = merge ? mergeChartData(chartVariable.getData(), data, this.dataCountToKeep) : data;
+
+    chartVariable.setData(mergedData);
+    chartVariable.setupGrid();
+    chartVariable.draw();
+  }
+
+  return chartVariable;
+};
+
 DBStats.prototype = {
   clear() {
     if (this.interval) {
@@ -367,185 +394,95 @@ DBStats.prototype = {
   },
 
   initOperationCountersChart(data) {
-    if (SessionManager.get(SessionManager.strSessionCollectionNames)) {
-      const divChart = $('#divOperationCountersChart');
-      if (!data || data.length === 0) {
-        divChart.html(Helper.translate({ key: 'not-supported-os' }));
-        return;
-      }
-      if (divChart.find('.flot-base').length <= 0) {
-        const customOptions = jQuery.extend(true, {}, this.lineOptions);
-        customOptions.colors = [];
-        customOptions.bars = {
-          align: 'center',
-          barWidth: 0.5,
-        };
-        customOptions.series = {
-          bars: {
-            show: true,
-          },
-          points: {
-            show: true,
-          },
-        };
-        customOptions.xaxis = {
-          show: true,
-          ticks: [[0, 'Insert'], [1, 'Query'], [2, 'Update'], [3, 'Delete'], [4, 'Getmore']],
-        };
-        try {
-          this.opCountersChart = $.plot(divChart, data, customOptions);
-        } catch (e) {
-          this.opCountersChart = null;
-        }
-      } else {
-        this.opCountersChart.setData(data);
-        this.opCountersChart.setupGrid();
-        this.opCountersChart.draw();
-      }
-    }
+    const customOptions = jQuery.extend(true, {}, this.lineOptions);
+    customOptions.colors = [];
+    customOptions.bars = {
+      align: 'center',
+      barWidth: 0.5,
+    };
+    customOptions.series = {
+      bars: {
+        show: true,
+      },
+      points: {
+        show: true,
+      },
+    };
+    customOptions.xaxis = {
+      show: true,
+      ticks: [[0, 'Insert'], [1, 'Query'], [2, 'Update'], [3, 'Delete'], [4, 'Getmore']],
+    };
+
+    this.opCountersChart = initChart.call(this, {
+      chartVariable: this.opCountersChart,
+      divSelector: $('#divOperationCountersChart'),
+      data,
+      merge: false,
+      lineOptions: customOptions,
+    });
   },
 
   initQueuedReadWriteChart(data, totalQueuedReadWrite) {
-    if (SessionManager.get(SessionManager.strSessionCollectionNames)) {
-      if (totalQueuedReadWrite) {
-        $('#spanTotalQueuedRW').html(`, ${Helper.translate({ key: 'total' })}: ${totalQueuedReadWrite}`);
-      }
-
-      const divChart = $('#divQueuedReadWrite');
-      if (!data || data.length === 0) {
-        divChart.html(Helper.translate({ key: 'feature_not_supported_mongodb_version' }));
-        return;
-      }
-
-      if (divChart.find('.flot-base').length <= 0) {
-        const customLineOptions = jQuery.extend(true, {}, this.lineOptions);
-        try {
-          this.queuedReadWriteChart = $.plot(divChart, data, customLineOptions);
-        } catch (e) {
-          this.queuedReadWriteChart = null;
-        }
-      } else {
-        const mergedData = mergeChartData(this.queuedReadWriteChart.getData(), data, this.dataCountToKeep);
-
-        this.queuedReadWriteChart.setData(mergedData);
-        this.queuedReadWriteChart.setupGrid();
-        this.queuedReadWriteChart.draw();
-      }
-    }
+    this.queuedReadWriteChart = initChart.call(this, {
+      chartVariable: this.queuedReadWriteChart,
+      spanSelector: $('#spanTotalQueuedRW'),
+      divSelector: $('#divQueuedReadWrite'),
+      data,
+      total: totalQueuedReadWrite,
+      lineOptions: jQuery.extend(true, {}, this.lineOptions),
+    });
   },
 
   initActiveReadWriteChart(data, totalActiveReadWrite) {
-    if (SessionManager.get(SessionManager.strSessionCollectionNames)) {
-      if (totalActiveReadWrite) {
-        $('#spanTotalActiveRW').html(`, ${Helper.translate({ key: 'total' })}: ${totalActiveReadWrite}`);
-      }
-
-      const divChart = $('#divActiveReadWrite');
-      if (!data || data.length === 0) {
-        divChart.html(Helper.translate({ key: 'feature_not_supported_mongodb_version' }));
-        return;
-      }
-
-      if (divChart.find('.flot-base').length <= 0) {
-        const customLineOptions = jQuery.extend(true, {}, this.lineOptions);
-
-        try {
-          this.activeReadWriteChart = $.plot(divChart, data, customLineOptions);
-        } catch (e) {
-          this.activeReadWriteChart = null;
-        }
-      } else {
-        const mergedData = mergeChartData(this.activeReadWriteChart.getData(), data, this.dataCountToKeep);
-
-        this.activeReadWriteChart.setData(mergedData);
-        this.activeReadWriteChart.setupGrid();
-        this.activeReadWriteChart.draw();
-      }
-    }
+    this.activeReadWriteChart = initChart.call(this, {
+      chartVariable: this.activeReadWriteChart,
+      spanSelector: $('#spanTotalActiveRW'),
+      divSelector: $('#divActiveReadWrite'),
+      data,
+      lineOptions: jQuery.extend(true, {}, this.lineOptions),
+      total: totalActiveReadWrite
+    });
   },
 
   initNetworkChart(data, totalRequests) {
-    if (SessionManager.get(SessionManager.strSessionCollectionNames)) {
-      if (totalRequests) $('#spanTotalRequests').html(`, ${Helper.translate({ key: 'total_requests' })}: ${totalRequests}`);
-
-      const divChart = $('#divNetworkChart');
-      if (!data || data.length === 0) {
-        divChart.html(Helper.translate({ key: 'feature_not_supported_mongodb_version' }));
-        return;
-      }
-
-      if (divChart.find('.flot-base').length <= 0) {
-        const customLineOptions = jQuery.extend(true, {}, this.lineOptions);
-        try {
-          this.networkChart = $.plot(divChart, data, customLineOptions);
-        } catch (e) {
-          this.networkChart = null;
-        }
-      } else {
-        const mergedData = mergeChartData(this.networkChart.getData(), data, this.dataCountToKeep);
-
-        this.networkChart.setData(mergedData);
-        this.networkChart.setupGrid();
-        this.networkChart.draw();
-      }
-    }
+    this.networkChart = initChart.call(this, {
+      chartVariable: this.networkChart,
+      spanSelector: $('#spanTotalRequests'),
+      divSelector: $('#divNetworkChart'),
+      data,
+      total: totalRequests,
+      lineOptions: jQuery.extend(true, {}, this.lineOptions),
+      translateKey: 'total_requests'
+    });
   },
 
   initConnectionsChart(data, availableConnections) {
-    if (SessionManager.get(SessionManager.strSessionCollectionNames)) {
-      const divChart = $('#divConnectionsChart');
-      if (!data || data.length === 0) {
-        divChart.html(Helper.translate({ key: 'feature_not_supported_mongodb_version' }));
-        return;
-      }
-
-      $('#spanAvailableConnections').html(`, ${Helper.translate({ key: 'available' })}: ${availableConnections}`);
-
-      if (divChart.find('.flot-base').length <= 0) {
-        try {
-          this.connectionsChart = $.plot(divChart, data, this.lineOptions);
-        } catch (e) {
-          this.connectionsChart = null;
-        }
-      } else {
-        const mergedData = mergeChartData(this.connectionsChart.getData(), data, this.dataCountToKeep);
-
-        this.connectionsChart.setData(mergedData);
-        this.connectionsChart.setupGrid();
-        this.connectionsChart.draw();
-      }
-    }
+    this.connectionsChart = initChart.call(this, {
+      chartVariable: this.connectionsChart,
+      spanSelector: $('#spanAvailableConnections'),
+      divSelector: $('#divConnectionsChart'),
+      data,
+      total: availableConnections,
+      lineOptions: this.lineOptions,
+      translateKey: 'available'
+    });
   },
 
   initMemoryChart(data, text) {
-    if (SessionManager.get(SessionManager.strSessionCollectionNames)) {
-      const divChart = $('#divHeapMemoryChart');
-      if (!data || data.length === 0) {
-        divChart.html(Helper.translate({ key: 'feature_not_supported_mongodb_version' }));
-        return;
-      }
+    const customLineOptions = jQuery.extend(true, {}, this.lineOptions);
+    customLineOptions.colors.push('#273be2');
+    customLineOptions.yaxis = {
+      tickFormatter(val) {
+        return `${val} ${text}`;
+      },
+    };
 
-      if (divChart.find('.flot-base').length <= 0) {
-        const customLineOptions = jQuery.extend(true, {}, this.lineOptions);
-        customLineOptions.colors.push('#273be2');
-        customLineOptions.yaxis = {
-          tickFormatter(val) {
-            return `${val} ${text}`;
-          },
-        };
-        try {
-          this.memoryChart = $.plot(divChart, data, customLineOptions);
-        } catch (e) {
-          this.memoryChart = null;
-        }
-      } else {
-        const mergedData = mergeChartData(this.memoryChart.getData(), data, this.dataCountToKeep);
-
-        this.memoryChart.setData(mergedData);
-        this.memoryChart.setupGrid();
-        this.memoryChart.draw();
-      }
-    }
+    this.memoryChart = initChart.call(this, {
+      chartVariable: this.memoryChart,
+      divSelector: $('#divHeapMemoryChart'),
+      data,
+      lineOptions: customLineOptions
+    });
   },
 
   showWhatisNew() {
