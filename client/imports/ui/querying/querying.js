@@ -122,6 +122,10 @@ const getUpdateParams = function (historyParams) {
 
   if (!setObject.$set) setObject = { $set: setObject };
 
+  if (!checkErrorField(selector, 'selector')) return false;
+  if (!checkErrorField(options)) return false;
+  if (!checkErrorField(setObject, 'set')) return false;
+
   return { selectedCollection, options, selector, setObject };
 };
 
@@ -1020,12 +1024,9 @@ Querying.prototype = {
     UpdateMany: {
       execute(historyParams) {
         Notification.start('#btnExecuteQuery');
+        if (!getUpdateParams(historyParams)) return;
+
         const { selector, selectedCollection, options, setObject } = getUpdateParams(historyParams);
-
-        if (!checkErrorField(selector, 'selector')) return;
-        if (!checkErrorField(options)) return;
-        if (!checkErrorField(setObject, 'set')) return;
-
         proceedQueryExecution('updateMany', { selectedCollection, selector, setObject, options }, false, { selector, setObject, options }, (!historyParams));
       },
       render(query) {
@@ -1050,12 +1051,9 @@ Querying.prototype = {
     UpdateOne: {
       execute(historyParams) {
         Notification.start('#btnExecuteQuery');
+        if (!getUpdateParams(historyParams)) return;
+
         const { selector, selectedCollection, options, setObject } = getUpdateParams(historyParams);
-
-        if (!checkErrorField(selector, 'selector')) return;
-        if (!checkErrorField(options)) return;
-        if (!checkErrorField(setObject, 'set')) return;
-
         proceedQueryExecution('updateOne', { selectedCollection, selector, setObject, options }, false, { selector, setObject, options }, (!historyParams));
       },
       render(query) {
