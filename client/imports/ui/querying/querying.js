@@ -114,7 +114,9 @@ const renderOptionsArray = function (options, optionEnum, cmbSelector) {
   return optionsArray;
 };
 
-const getUpdateParams = function (historyParams) {
+const proceedUpdateQueryExecution = function (historyParams, query) {
+  Notification.start('#btnExecuteQuery');
+
   const selectedCollection = SessionManager.get(SessionManager.strSessionSelectedCollection);
   const options = historyParams ? historyParams.options : QueryingOptions.getOptions(Enums.UPDATE_OPTIONS);
   const selector = getFromHistoryOrEditor(historyParams, $('#divSelector'));
@@ -122,11 +124,11 @@ const getUpdateParams = function (historyParams) {
 
   if (!setObject.$set) setObject = { $set: setObject };
 
-  if (!checkErrorField(selector, 'selector')) return false;
-  if (!checkErrorField(options)) return false;
-  if (!checkErrorField(setObject, 'set')) return false;
+  if (!checkErrorField(selector, 'selector')) return;
+  if (!checkErrorField(options)) return;
+  if (!checkErrorField(setObject, 'set')) return;
 
-  return { selectedCollection, options, selector, setObject };
+  proceedQueryExecution(query, { selectedCollection, selector, setObject, options }, false, { selector, setObject, options }, (!historyParams));
 };
 
 Querying.prototype = {
@@ -1023,11 +1025,7 @@ Querying.prototype = {
 
     UpdateMany: {
       execute(historyParams) {
-        Notification.start('#btnExecuteQuery');
-        if (!getUpdateParams(historyParams)) return;
-
-        const { selector, selectedCollection, options, setObject } = getUpdateParams(historyParams);
-        proceedQueryExecution('updateMany', { selectedCollection, selector, setObject, options }, false, { selector, setObject, options }, (!historyParams));
+        proceedUpdateQueryExecution(historyParams, 'updateMany');
       },
       render(query) {
         if (query.queryParams.selector) renderCodeMirror($('#divSelector'), query.queryParams.selector);
@@ -1050,11 +1048,7 @@ Querying.prototype = {
 
     UpdateOne: {
       execute(historyParams) {
-        Notification.start('#btnExecuteQuery');
-        if (!getUpdateParams(historyParams)) return;
-
-        const { selector, selectedCollection, options, setObject } = getUpdateParams(historyParams);
-        proceedQueryExecution('updateOne', { selectedCollection, selector, setObject, options }, false, { selector, setObject, options }, (!historyParams));
+        proceedUpdateQueryExecution(historyParams, 'updateOne');
       },
       render(query) {
         if (query.queryParams.selector) renderCodeMirror($('#divSelector'), query.queryParams.selector);
