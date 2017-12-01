@@ -753,7 +753,7 @@ Querying.prototype = {
 
     GeoHayStackSearch: {
       execute(historyParams) {
-        proceedGeoQueryExecution(historyParams, 'geoHaystackSearch', Enums.GEO_NEAR_OPTIONS);
+        proceedGeoQueryExecution(historyParams, 'geoHaystackSearch', Enums.GEO_HAYSTACK_SEARCH_OPTIONS);
       },
       render(query) {
         if (query.queryParams.xAxis && query.queryParams.yAxis) {
