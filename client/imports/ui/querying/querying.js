@@ -131,6 +131,24 @@ const proceedUpdateQueryExecution = function (historyParams, query) {
   proceedQueryExecution(query, { selectedCollection, selector, setObject, options }, false, { selector, setObject, options }, (!historyParams));
 };
 
+const renderUpdateQuery = function (query, cmb) {
+  if (query.queryParams.selector) renderCodeMirror($('#divSelector'), query.queryParams.selector);
+  if (query.queryParams.setObject) renderCodeMirror($('#divSet'), query.queryParams.setObject);
+
+  if (query.queryParams.options) {
+    const optionsArray = renderOptionsArray(query.queryParams.options, Enums.UPDATE_OPTIONS, $(`#${cmb}`));
+
+    // options load
+    setTimeout(() => {
+      for (let i = 0; i < optionsArray.length; i += 1) {
+        const option = optionsArray[i];
+        const inverted = (_.invert(Enums.UPDATE_OPTIONS));
+        if (option === inverted.upsert) $('#divUpsert').iCheck(query.queryParams.options.upsert ? 'check' : 'uncheck');
+      }
+    }, 200);
+  }
+};
+
 Querying.prototype = {
   initOptions(optionEnum, showRunOnAdmin, ...excludedOptions) {
     switch (optionEnum) {
@@ -1028,21 +1046,7 @@ Querying.prototype = {
         proceedUpdateQueryExecution(historyParams, 'updateMany');
       },
       render(query) {
-        if (query.queryParams.selector) renderCodeMirror($('#divSelector'), query.queryParams.selector);
-        if (query.queryParams.setObject) renderCodeMirror($('#divSet'), query.queryParams.setObject);
-
-        if (query.queryParams.options) {
-          const optionsArray = renderOptionsArray(query.queryParams.options, Enums.UPDATE_OPTIONS, $('#cmbUpdateManyOptions'));
-
-          // options load
-          setTimeout(() => {
-            for (let i = 0; i < optionsArray.length; i += 1) {
-              const option = optionsArray[i];
-              const inverted = (_.invert(Enums.UPDATE_OPTIONS));
-              if (option === inverted.upsert) $('#divUpsert').iCheck(query.queryParams.options.upsert ? 'check' : 'uncheck');
-            }
-          }, 200);
-        }
+        renderUpdateQuery(query, 'cmbUpdateManyOptions');
       }
     },
 
@@ -1051,21 +1055,7 @@ Querying.prototype = {
         proceedUpdateQueryExecution(historyParams, 'updateOne');
       },
       render(query) {
-        if (query.queryParams.selector) renderCodeMirror($('#divSelector'), query.queryParams.selector);
-        if (query.queryParams.setObject) renderCodeMirror($('#divSet'), query.queryParams.setObject);
-
-        if (query.queryParams.options) {
-          const optionsArray = renderOptionsArray(query.queryParams.options, Enums.UPDATE_OPTIONS, $('#cmbUpdateOneOptions'));
-
-          // options load
-          setTimeout(() => {
-            for (let i = 0; i < optionsArray.length; i += 1) {
-              const option = optionsArray[i];
-              const inverted = (_.invert(Enums.UPDATE_OPTIONS));
-              if (option === inverted.upsert) $('#divUpsert').iCheck(query.queryParams.options.upsert ? 'check' : 'uncheck');
-            }
-          }, 200);
-        }
+        renderUpdateQuery(query, 'cmbUpdateOneOptions');
       }
     }
   }
