@@ -231,11 +231,12 @@ Connection.prototype = {
   },
 
   connect(isRefresh, message, messageTranslateOptions) {
-    const connection = ReactivityProvider.findOne(ReactivityProvider.types.Connections, { _id: SessionManager.get(SessionManager.strSessionConnection)._id });
-    if (!connection) {
+    if (!SessionManager.get(SessionManager.strSessionConnection)) {
       Notification.warning('select-connection');
       return;
     }
+
+    const connection = ReactivityProvider.findOne(ReactivityProvider.types.Connections, { _id: SessionManager.get(SessionManager.strSessionConnection)._id });
 
     // prompt for username && password
     if (this.isCredentialPromptNeeded(connection)) {

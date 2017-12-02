@@ -37,15 +37,6 @@ Helper.prototype = {
 
   translate({ key, options, language }) {
     return TAPi18n.__(key, options, language);
-  },
-
-  convertStrToFunction(str) {
-    if (!str) return null;
-    const funcReg = /function *\(([^()]*)\)[ \n\t]*\{(.*)}/gmi;
-    const match = funcReg.exec(str.replace(/\n/g, ' '));
-    if (match) return new Function(match[1].split(','), match[2]);
-
-    return null;
   }
 };
 

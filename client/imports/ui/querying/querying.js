@@ -37,31 +37,6 @@ const proceedQueryExecution = function ({ methodName, args = {}, isAdmin = true,
   });
 };
 
-const renderCodeMirror = function (divSelector, value) {
-  setTimeout(() => {
-    UIComponents.Editor.setCodeMirrorValue(divSelector, JSON.stringify(value, null, 1));
-  }, 100);
-};
-
-const renderFunction = function (divSelector, val) {
-  setTimeout(() => {
-    const str = JSON.stringify(val, null, 1).replace(/\\n/g, '\n');
-    UIComponents.Editor.setCodeMirrorValue(divSelector, str.substring(1, str.length - 1));
-  }, 100);
-};
-
-const renderInput = function (inputField, val) {
-  setTimeout(() => {
-    inputField.val(val);
-  }, 100);
-};
-
-const renderBoolean = function (divSelector, val) {
-  setTimeout(() => {
-    divSelector.iCheck(val ? 'check' : 'uncheck');
-  }, 100);
-};
-
 const checkExistance = function (variable, message) {
   if (!variable) {
     Notification.error(message);
@@ -85,10 +60,6 @@ const checkErrorField = function (obj, fieldName) {
   return true;
 };
 
-const checkFunction = function (obj, fieldName) {
-  return checkExistance(obj, `syntax-error-${fieldName}-function`);
-};
-
 const getFromHistoryOrEditorString = function (historyParams, divSelector, historyField = 'selector') {
   let result;
   if (historyParams) result = JSON.stringify(historyParams[historyField]);
@@ -99,10 +70,6 @@ const getFromHistoryOrEditorString = function (historyParams, divSelector, histo
 
 const getFromHistoryOrEditor = function (historyParams, divSelector, historyField = 'selector') {
   return ExtendedJSON.convertAndCheckJSON(getFromHistoryOrEditorString(historyParams, divSelector, historyField));
-};
-
-const getFromHistoryOrEditorAsFunction = function (historyParams, divSelector, historyField) {
-  return Helper.convertStrToFunction(getFromHistoryOrEditorString(historyParams, divSelector, historyField));
 };
 
 const fieldsCallback = function (option, inverted, options) {
@@ -259,19 +226,8 @@ const proceedUpdateQueryExecution = function (historyParams, query) {
     methodName: query,
     args: { selector, setObject, options },
     isAdmin: false,
-    queryParams: { selector, setObject, options },
+    queryParams: { selector, set: setObject, options },
     saveHistory: (!historyParams)
-  });
-};
-
-const renderUpdateQuery = function (query, cmb) {
-  if (query.queryParams.selector) renderCodeMirror($('#divSelector'), query.queryParams.selector);
-  if (query.queryParams.setObject) renderCodeMirror($('#divSet'), query.queryParams.setObject);
-
-  renderOptionsArray({
-    options: query.queryParams.options,
-    optionEnum: Enums.UPDATE_OPTIONS,
-    optionCombo: $(`#${cmb}`)
   });
 };
 
@@ -297,17 +253,39 @@ const proceedGeoQueryExecution = function (historyParams, query, optionsEnum) {
   });
 };
 
-const renderGeoQuery = function (query, optionEnum, optionCombo) {
-  if (query.queryParams.xAxis && query.queryParams.yAxis) {
+const renderParams = function (queryParams) {
+  Object.keys(queryParams).forEach((param) => {
+    const capitalizedParam = param.charAt(0).toUpperCase() + param.slice(1).toLowerCase();
+    const relatedJqueryDiv = $(`#${`div${capitalizedParam}`}`);
+    const relatedJqueryInput = $(`#${`input${capitalizedParam}`}`);
     setTimeout(() => {
-      $('#inputXAxis').val(query.queryParams.xAxis);
-      $('#inputYAxis').val(query.queryParams.yAxis);
+      if (relatedJqueryDiv.data('editor')) {
+        if (JSON.stringify(queryParams[param]).startsWith('"function')) {
+          let str = JSON.stringify(queryParams[param], null, 1).replace(/\\n/g, '\n');
+          str = str.substring(1, str.length - 1);
+          UIComponents.Editor.setCodeMirrorValue(relatedJqueryDiv, str);
+        } else UIComponents.Editor.setCodeMirrorValue(relatedJqueryDiv, JSON.stringify(queryParams[param], null, 1));
+      } else if (relatedJqueryDiv.find('input:checkbox')) relatedJqueryDiv.iCheck(queryParams[param] ? 'check' : 'uncheck');
+      else if (relatedJqueryInput) relatedJqueryInput.val(queryParams[param]);
     }, 100);
-  }
+  });
+};
+
+const renderGeoQuery = function (query, optionEnum, optionCombo) {
+  renderParams(query.queryParams);
   renderOptionsArray({
     options: query.queryParams.options,
     optionEnum,
     optionCombo
+  });
+};
+
+const renderUpdateQuery = function (query, cmb) {
+  renderParams(query.queryParams);
+  renderOptionsArray({
+    options: query.queryParams.options,
+    optionEnum: Enums.UPDATE_OPTIONS,
+    optionCombo: $(`#${cmb}`)
   });
 };
 
@@ -500,8 +478,7 @@ Querying.prototype = {
         });
       },
       render(query) {
-        if (query.queryParams && query.queryParams.pipeline) renderCodeMirror($('#divPipeline'), query.queryParams.pipeline);
-
+        renderParams(query.queryParams);
         renderOptionsArray({
           options: query.queryParams.options,
           optionEnum: Enums.AGGREGATE_OPTIONS,
@@ -521,13 +498,12 @@ Querying.prototype = {
           methodName: 'bulkWrite',
           args: { operations, options },
           isAdmin: false,
-          queryParams: { selector: operations, options },
+          queryParams: { bulkWrite: operations, options },
           saveHistory: (!historyParams)
         });
       },
       render(query) {
-        if (query.queryParams && query.queryParams.selector) renderCodeMirror($('#divBulkWrite'), query.queryParams.selector);
-
+        renderParams(query.queryParams);
         renderOptionsArray({
           options: query.queryParams.options,
           optionEnum: Enums.BULK_WRITE_OPTIONS,
@@ -552,8 +528,7 @@ Querying.prototype = {
         });
       },
       render(query) {
-        if (query.queryParams && query.queryParams.selector) renderCodeMirror($('#divSelector'), query.queryParams.selector);
-
+        renderParams(query.queryParams);
         renderOptionsArray({
           options: query.queryParams.options,
           optionEnum: Enums.COUNT_OPTIONS,
@@ -579,8 +554,7 @@ Querying.prototype = {
         });
       },
       render(query) {
-        if (query.queryParams.fields) renderCodeMirror($('#divFields'), query.queryParams.fields);
-
+        renderParams(query.queryParams);
         renderOptionsArray({
           options: query.queryParams.options,
           optionEnum: Enums.CREATE_INDEX_OPTIONS,
@@ -604,7 +578,7 @@ Querying.prototype = {
         });
       },
       render(query) {
-        if (query.queryParams.selector) renderCodeMirror($('#divSelector'), query.queryParams.selector);
+        renderParams(query.queryParams);
       }
     },
 
@@ -620,14 +594,12 @@ Querying.prototype = {
           methodName: 'distinct',
           args: { selector, fieldName, options },
           isAdmin: false,
-          queryParams: { selector, fieldName, options },
+          queryParams: { selector, field: fieldName, options },
           saveHistory: (!historyParams)
         });
       },
       render(query) {
-        if (query.queryParams.selector) renderCodeMirror($('#divSelector'), query.queryParams.selector);
-        if (query.queryParams.fieldName) renderInput($('#inputField'), query.queryParams.fieldName);
-
+        renderParams(query.queryParams);
         renderOptionsArray({
           options: query.queryParams.options,
           optionEnum: Enums.DISTINCT_OPTIONS,
@@ -649,7 +621,7 @@ Querying.prototype = {
         });
       },
       render(query) {
-        if (query.queryParams.indexName) renderInput($('#inputIndexName'), query.queryParams.indexName);
+        renderParams(query.queryParams);
       }
     },
 
@@ -726,9 +698,7 @@ Querying.prototype = {
       },
 
       render(query) {
-        if (query.queryParams.selector) renderCodeMirror($('#divSelector'), query.queryParams.selector);
-        renderBoolean($('#divExecuteExplain'), query.queryParams.executeExplain);
-
+        renderParams(query.queryParams);
         renderOptionsArray({
           options: query.queryParams.cursorOptions,
           optionEnum: Enums.CURSOR_OPTIONS,
@@ -754,8 +724,7 @@ Querying.prototype = {
         });
       },
       render(query) {
-        if (query.queryParams.selector) renderCodeMirror($('#divSelector'), query.queryParams.selector);
-
+        renderParams(query.queryParams);
         renderOptionsArray({
           options: query.queryParams.cursorOptions,
           optionEnum: Enums.CURSOR_OPTIONS,
@@ -781,8 +750,7 @@ Querying.prototype = {
         });
       },
       render(query) {
-        if (query.queryParams.selector) renderCodeMirror($('#divSelector'), query.queryParams.selector);
-
+        renderParams(query.queryParams);
         renderOptionsArray({
           options: query.queryParams.options,
           optionEnum: Enums.FINDONE_MODIFY_OPTIONS,
@@ -795,24 +763,22 @@ Querying.prototype = {
       execute(historyParams) {
         const options = historyParams ? historyParams.options : QueryingOptions.getOptions(Enums.FINDONE_MODIFY_OPTIONS);
         const selector = getFromHistoryOrEditor(historyParams, $('#divSelector'));
-        const replaceObject = getFromHistoryOrEditor(historyParams, $('#divReplacement'), 'replaceObject');
+        const replacement = getFromHistoryOrEditor(historyParams, $('#divReplacement'), 'replacement');
 
         if (!checkErrorField(selector, 'selector')) return;
-        if (!checkErrorField(replaceObject, 'replacement')) return;
+        if (!checkErrorField(replacement, 'replacement')) return;
         if (!checkErrorField(options)) return;
 
         proceedQueryExecution({
           methodName: 'findOneAndReplace',
-          args: { selector, replaceObject, options },
+          args: { selector, replacement, options },
           isAdmin: false,
-          queryParams: { selector, replaceObject, options },
+          queryParams: { selector, replacement, options },
           saveHistory: (!historyParams)
         });
       },
       render(query) {
-        if (query.queryParams.selector) renderCodeMirror($('#divSelector'), query.queryParams.selector);
-        if (query.queryParams.replaceObject) renderCodeMirror($('#divReplacement'), query.queryParams.replaceObject);
-
+        renderParams(query.queryParams);
         renderOptionsArray({
           options: query.queryParams.options,
           optionEnum: Enums.FINDONE_MODIFY_OPTIONS,
@@ -840,14 +806,12 @@ Querying.prototype = {
           methodName: 'findOneAndUpdate',
           args: { selector, setObject, options },
           isAdmin: false,
-          queryParams: { selector, setObject, options },
+          queryParams: { selector, set: setObject, options },
           saveHistory: (!historyParams)
         });
       },
       render(query) {
-        if (query.queryParams.selector) renderCodeMirror($('#divSelector'), query.queryParams.selector);
-        if (query.queryParams.setObject) renderCodeMirror($('#divSet'), query.queryParams.setObject);
-
+        renderParams(query.queryParams);
         renderOptionsArray({
           options: query.queryParams.options,
           optionEnum: Enums.FINDONE_MODIFY_OPTIONS,
@@ -876,20 +840,14 @@ Querying.prototype = {
 
     Group: {
       execute(historyParams) {
-        let keys = historyParams ? JSON.stringify(historyParams.keys) : UIComponents.Editor.getCodeMirrorValue($('#divKeys'));
+        let keys = getFromHistoryOrEditorString(historyParams, $('#divKeys'), 'keys');
         const condition = getFromHistoryOrEditor(historyParams, $('#divCondition'), 'condition');
         const initial = getFromHistoryOrEditor(historyParams, $('#divInitial'), 'initial');
-        const reduce = getFromHistoryOrEditorAsFunction(historyParams, $('#divReduce'), 'reduce');
-        const finalize = getFromHistoryOrEditorAsFunction(historyParams, $('#divFinalize'), 'finalize');
+        const reduce = getFromHistoryOrEditorString(historyParams, $('#divReduce'), 'reduce');
+        const finalize = getFromHistoryOrEditorString(historyParams, $('#divFinalize'), 'finalize');
         const command = $('#inputCommand').iCheck('update')[0].checked;
 
-        if (keys.startsWith('function')) {
-          keys = Helper.convertStrToFunction(keys);
-          if (!keys) {
-            Notification.error('syntax-error-keys-function');
-            return;
-          }
-        } else {
+        if (!keys.startsWith('function')) {
           keys = ExtendedJSON.convertAndCheckJSON(keys);
           if (keys.ERROR) {
             Notification.error('syntax-error-keys', null, { error: keys.ERROR });
@@ -899,8 +857,6 @@ Querying.prototype = {
 
         if (!checkErrorField(condition, 'condition')) return;
         if (!checkErrorField(initial, 'initial')) return;
-        if (!checkFunction(reduce, 'reduce')) return;
-        if (!checkFunction(finalize, 'finalize')) return;
 
         proceedQueryExecution({
           methodName: 'group',
@@ -911,22 +867,7 @@ Querying.prototype = {
         });
       },
       render(query) {
-        if (query.queryParams.keys) {
-          setTimeout(() => {
-            const divKeys = $('#divKeys');
-            if (query.queryParams.keys.startsWith('function')) UIComponents.Editor.setCodeMirrorValue(divKeys, query.queryParams.keys);
-            else {
-              const str = JSON.stringify(query.queryParams.keys, null, 1).replace(/\\n/g, '\n');
-              UIComponents.Editor.setCodeMirrorValue(divKeys, str.substring(1, str.length - 1));
-            }
-          }, 100);
-        }
-
-        if (query.queryParams.condition) renderCodeMirror($('#divCondition'), query.queryParams.condition);
-        if (query.queryParams.initial) renderCodeMirror($('#divInitial'), query.queryParams.initial);
-        if (query.queryParams.reduce) renderFunction($('#divReduce'), query.queryParams.reduce);
-        if (query.queryParams.finalize) renderFunction($('#divFinalize'), query.queryParams.finalize);
-        if (query.queryParams.command) renderBoolean($('#divCommand'), query.queryParams.options.command);
+        renderParams(query.queryParams);
       }
     },
 
@@ -938,14 +879,12 @@ Querying.prototype = {
           methodName: 'indexInformation',
           args: { isFull: fullVal },
           isAdmin: false,
-          queryParams: { full: fullVal },
+          queryParams: { fullInformation: fullVal },
           saveHistory: (!historyParams)
         });
       },
       render(query) {
-        setTimeout(() => {
-          $('#divFullInformation').iCheck(query.queryParams.full ? 'check' : 'uncheck');
-        }, 100);
+        renderParams(query.queryParams);
       }
     },
 
@@ -965,8 +904,7 @@ Querying.prototype = {
         });
       },
       render(query) {
-        if (query.queryParams.docs) renderCodeMirror($('#divDocs'), query.queryParams.docs);
-
+        renderParams(query.queryParams);
         renderOptionsArray({
           options: query.queryParams.options,
           optionEnum: Enums.INSERT_MANY_OPTIONS,
@@ -987,11 +925,9 @@ Querying.prototype = {
     MapReduce: {
       execute(historyParams) {
         const options = historyParams ? historyParams.options : QueryingOptions.getOptions(Enums.MAP_REDUCE_OPTIONS);
-        const map = getFromHistoryOrEditorAsFunction(historyParams, $('#divMap'), 'map');
-        const reduce = getFromHistoryOrEditorAsFunction(historyParams, $('#divReduce'), 'reduce');
+        const map = getFromHistoryOrEditorString(historyParams, $('#divMap'), 'map');
+        const reduce = getFromHistoryOrEditorString(historyParams, $('#divReduce'), 'reduce');
 
-        if (!checkFunction(reduce, 'reduce')) return;
-        if (!checkFunction(map, 'map')) return;
         if (!checkErrorField(options)) return;
 
         proceedQueryExecution({
@@ -1003,9 +939,7 @@ Querying.prototype = {
         });
       },
       render(query) {
-        if (query.queryParams.map) renderFunction($('#divMap'), query.queryParams.map);
-        if (query.queryParams.reduce) renderFunction($('#divReduce'), query.queryParams.reduce);
-
+        renderParams(query.queryParams);
         renderOptionsArray({
           options: query.queryParams.options,
           optionEnum: Enums.MAP_REDUCE_OPTIONS,

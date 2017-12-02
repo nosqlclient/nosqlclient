@@ -64,11 +64,7 @@ StoredFunctions.prototype = {
   },
 
   getObjectToSave() {
-    const functionVal = Helper.convertStrToFunction(UIComponents.Editor.getCodeMirrorValue($('#divStoredFunction')));
-    if (!functionVal) {
-      Notification.error('syntax-error-stored-function');
-      return;
-    }
+    const functionVal = UIComponents.Editor.getCodeMirrorValue($('#divStoredFunction'));
     const name = $('#inputStoredFunctionName').val();
     if (!name) {
       Notification.error('name-required');
