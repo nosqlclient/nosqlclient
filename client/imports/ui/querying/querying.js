@@ -22,7 +22,7 @@ const initOptions = function (combobox, enumValue, showRunOnAdmin, ...excludedOp
   this.setVisibilityOfRunOnAdminCheckbox(showRunOnAdmin);
 };
 
-const proceedQueryExecution = function (methodName, args, isAdmin = true, queryParams, saveHistory) {
+const proceedQueryExecution = function ({ methodName, args = {}, isAdmin = true, queryParams = {}, saveHistory }) {
   Communicator.call({
     methodName,
     args,
@@ -253,7 +253,13 @@ const proceedUpdateQueryExecution = function (historyParams, query) {
   if (!checkErrorField(options)) return;
   if (!checkErrorField(setObject, 'set')) return;
 
-  proceedQueryExecution(query, { selectedCollection, selector, setObject, options }, false, { selector, setObject, options }, (!historyParams));
+  proceedQueryExecution({
+    methodName: query,
+    args: { selectedCollection, selector, setObject, options },
+    isAdmin: false,
+    queryParams: { selector, setObject, options },
+    saveHistory: (!historyParams)
+  });
 };
 
 const renderUpdateQuery = function (query, cmb) {
@@ -282,7 +288,13 @@ const proceedGeoQueryExecution = function (historyParams, query, optionsEnum) {
     return;
   }
 
-  proceedQueryExecution(query, { selectedCollection, xAxis, yAxis, options }, false, { xAxis, yAxis, options }, (!historyParams));
+  proceedQueryExecution({
+    methodName: query,
+    args: { selectedCollection, xAxis, yAxis, options },
+    isAdmin: false,
+    queryParams: { xAxis, yAxis, options },
+    saveHistory: (!historyParams)
+  });
 };
 
 const renderGeoQuery = function (query, optionEnum, optionCombo) {
@@ -377,12 +389,17 @@ Querying.prototype = {
       if (!checkErrorField(options)) return;
 
       const runOnAdminDB = $('#aRunOnAdminDB').iCheck('update')[0].checked;
-      proceedQueryExecution('addUser', { username, password, runOnAdminDB, options });
+      proceedQueryExecution({
+        methodName: 'addUser',
+        args: { username, password, runOnAdminDB, options }
+      });
     },
 
     executeBuildInfoQuery() {
       Notification.start('#btnExecuteAdminQuery');
-      proceedQueryExecution('buildInfo');
+      proceedQueryExecution({
+        methodName: 'buildInfo'
+      });
     },
 
     executeCommandQuery() {
@@ -393,22 +410,32 @@ Querying.prototype = {
       if (!checkErrorField(command, 'command')) return;
 
       const runOnAdminDB = $('#aRunOnAdminDB').iCheck('update')[0].checked;
-      proceedQueryExecution('command', { command, runOnAdminDB, options });
+
+      proceedQueryExecution({
+        methodName: 'command',
+        args: { command, runOnAdminDB, options }
+      });
     },
 
     executeListDatabasesQuery() {
       Notification.start('#btnExecuteAdminQuery');
-      proceedQueryExecution('listDatabases');
+      proceedQueryExecution({
+        methodName: 'listDatabases'
+      });
     },
 
     executePingQuery() {
       Notification.start('#btnExecuteAdminQuery');
-      proceedQueryExecution('ping');
+      proceedQueryExecution({
+        methodName: 'ping'
+      });
     },
 
     executeProfilingInfoQuery() {
       Notification.start('#btnExecuteAdminQuery');
-      proceedQueryExecution('profilingInfo');
+      proceedQueryExecution({
+        methodName: 'profilingInfo'
+      });
     },
 
     executeRemoveUserQuery() {
@@ -418,27 +445,39 @@ Querying.prototype = {
       if (!checkStringInput(username, 'username')) return;
 
       const runOnAdminDB = $('#aRunOnAdminDB').iCheck('update')[0].checked;
-      proceedQueryExecution('removeUser', { username, runOnAdminDB });
+      proceedQueryExecution({
+        methodName: 'removeUser',
+        args: { username, runOnAdminDB }
+      });
     },
 
     executeReplSetGetStatusQuery() {
       Notification.start('#btnExecuteAdminQuery');
-      proceedQueryExecution('replSetGetStatus');
+      proceedQueryExecution({
+        methodName: 'replSetGetStatus'
+      });
     },
 
     executeServerInfoQuery() {
       Notification.start('#btnExecuteAdminQuery');
-      proceedQueryExecution('serverInfo');
+      proceedQueryExecution({
+        methodName: 'serverInfo'
+      });
     },
 
     executeServerStatusQuery() {
       Notification.start('#btnExecuteAdminQuery');
-      proceedQueryExecution('serverStatus');
+      proceedQueryExecution({
+        methodName: 'serverStatus'
+      });
     },
 
     executeSetProfilingLevelQuery() {
       Notification.start('#btnExecuteAdminQuery');
-      proceedQueryExecution('setProfilingLevel', { level: $('#cmbLevel').find('option:selected').text() });
+      proceedQueryExecution({
+        methodName: 'setProfilingLevel',
+        args: { level: $('#cmbLevel').find('option:selected').text() }
+      });
     },
 
     executeValidateCollectionQuery() {
@@ -449,7 +488,10 @@ Querying.prototype = {
       if (!checkStringInput(collectionName, 'collection_name')) return;
       if (!checkErrorField(options, 'options')) return;
 
-      proceedQueryExecution('validateCollection', { collectionName, options });
+      proceedQueryExecution({
+        methodName: 'validateCollection',
+        args: { collectionName, options }
+      });
     }
   },
 
@@ -464,7 +506,13 @@ Querying.prototype = {
         if (!checkErrorField(pipeline, 'pipeline')) return;
         if (!checkErrorField(options)) return;
 
-        proceedQueryExecution('aggregate', { selectedCollection, pipeline, options }, false, { pipeline, options }, (!historyParams));
+        proceedQueryExecution({
+          methodName: 'aggregate',
+          args: { selectedCollection, pipeline, options },
+          isAdmin: false,
+          queryParams: { pipeline, options },
+          saveHistory: (!historyParams)
+        });
       },
       render(query) {
         if (query.queryParams && query.queryParams.pipeline) renderCodeMirror($('#divPipeline'), query.queryParams.pipeline);
@@ -486,7 +534,13 @@ Querying.prototype = {
 
         if (!checkErrorField(operations, 'operations')) return;
 
-        proceedQueryExecution('bulkWrite', { selectedCollection, operations, options }, false, { selector: operations, options }, (!historyParams));
+        proceedQueryExecution({
+          methodName: 'bulkWrite',
+          args: { selectedCollection, operations, options },
+          isAdmin: false,
+          queryParams: { selector: operations, options },
+          saveHistory: (!historyParams)
+        });
       },
       render(query) {
         if (query.queryParams && query.queryParams.selector) renderCodeMirror($('#divBulkWrite'), query.queryParams.selector);
@@ -508,7 +562,13 @@ Querying.prototype = {
 
         if (!checkErrorField(selector, 'selector')) return;
 
-        proceedQueryExecution('count', { selectedCollection, selector, options }, false, { selector, options }, (!historyParams));
+        proceedQueryExecution({
+          methodName: 'count',
+          args: { selectedCollection, selector, options },
+          isAdmin: false,
+          queryParams: { selector, options },
+          saveHistory: (!historyParams)
+        });
       },
       render(query) {
         if (query.queryParams && query.queryParams.selector) renderCodeMirror($('#divSelector'), query.queryParams.selector);
@@ -531,7 +591,13 @@ Querying.prototype = {
         if (!checkErrorField(fields, 'fields')) return;
         if (!checkErrorField(options)) return;
 
-        proceedQueryExecution('createIndex', { selectedCollection, fields, options }, false, { fields, options }, (!historyParams));
+        proceedQueryExecution({
+          methodName: 'createIndex',
+          args: { selectedCollection, fields, options },
+          isAdmin: false,
+          queryParams: { fields, options },
+          saveHistory: (!historyParams)
+        });
       },
       render(query) {
         if (query.queryParams.fields) renderCodeMirror($('#divFields'), query.queryParams.fields);
@@ -552,7 +618,13 @@ Querying.prototype = {
 
         if (!checkErrorField(selector, 'selector')) return;
 
-        proceedQueryExecution('delete', { selectedCollection, selector }, false, { selector }, (!historyParams));
+        proceedQueryExecution({
+          methodName: 'delete',
+          args: { selectedCollection, selector },
+          isAdmin: false,
+          queryParams: { selector },
+          saveHistory: (!historyParams)
+        });
       },
       render(query) {
         if (query.queryParams.selector) renderCodeMirror($('#divSelector'), query.queryParams.selector);
@@ -569,7 +641,13 @@ Querying.prototype = {
 
         if (!checkErrorField(selector, 'selector')) return;
 
-        proceedQueryExecution('distinct', { selectedCollection, selector, fieldName, options }, false, { selector, fieldName, options }, (!historyParams));
+        proceedQueryExecution({
+          methodName: 'distinct',
+          args: { selectedCollection, selector, fieldName, options },
+          isAdmin: false,
+          queryParams: { selector, fieldName, options },
+          saveHistory: (!historyParams)
+        });
       },
       render(query) {
         if (query.queryParams.selector) renderCodeMirror($('#divSelector'), query.queryParams.selector);
@@ -589,7 +667,13 @@ Querying.prototype = {
         const selectedCollection = SessionManager.get(SessionManager.strSessionSelectedCollection);
         const indexName = historyParams ? historyParams.indexName : $('#inputIndexName').val();
 
-        proceedQueryExecution('dropIndex', { selectedCollection, indexName }, false, { indexName }, (!historyParams));
+        proceedQueryExecution({
+          methodName: 'dropIndex',
+          args: { selectedCollection, indexName },
+          isAdmin: false,
+          queryParams: { indexName },
+          saveHistory: (!historyParams)
+        });
       },
       render(query) {
         if (query.queryParams.indexName) renderInput($('#inputIndexName'), query.queryParams.indexName);
@@ -605,7 +689,13 @@ Querying.prototype = {
           Notification.stop();
         } else {
           const executeExplain = $('#inputExecuteExplain').iCheck('update')[0].checked;
-          proceedQueryExecution('find', { selectedCollection, selector, cursorOptions, executeExplain }, false, { selector, cursorOptions, executeExplain }, saveHistory);
+          proceedQueryExecution({
+            methodName: 'find',
+            args: { selectedCollection, selector, cursorOptions, executeExplain },
+            isAdmin: false,
+            queryParams: { selector, cursorOptions, executeExplain },
+            saveHistory
+          });
         }
       },
       checkAverageSize(count, avgObjSize, maxAllowedFetchSize) {
@@ -684,7 +774,13 @@ Querying.prototype = {
         if (!checkErrorField(selector, 'selector')) return;
         if (!checkErrorField(cursorOptions)) return;
 
-        proceedQueryExecution('findOne', { selectedCollection, selector, cursorOptions }, false, { selector, cursorOptions }, (!historyParams));
+        proceedQueryExecution({
+          methodName: 'findOne',
+          args: { selectedCollection, selector, cursorOptions },
+          isAdmin: false,
+          queryParams: { selector, cursorOptions },
+          saveHistory: (!historyParams)
+        });
       },
       render(query) {
         if (query.queryParams.selector) renderCodeMirror($('#divSelector'), query.queryParams.selector);
@@ -707,7 +803,13 @@ Querying.prototype = {
         if (!checkErrorField(selector, 'selector')) return;
         if (!checkErrorField(options)) return;
 
-        proceedQueryExecution('findOneAndDelete', { selectedCollection, selector, options }, false, { selector, options }, (!historyParams));
+        proceedQueryExecution({
+          methodName: 'findOneAndDelete',
+          args: { selectedCollection, selector, options },
+          isAdmin: false,
+          queryParams: { selector, options },
+          saveHistory: (!historyParams)
+        });
       },
       render(query) {
         if (query.queryParams.selector) renderCodeMirror($('#divSelector'), query.queryParams.selector);
@@ -732,7 +834,13 @@ Querying.prototype = {
         if (!checkErrorField(replaceObject, 'replacement')) return;
         if (!checkErrorField(options)) return;
 
-        proceedQueryExecution('findOneAndReplace', { selectedCollection, selector, replaceObject, options }, false, { selector, replaceObject, options }, (!historyParams));
+        proceedQueryExecution({
+          methodName: 'findOneAndReplace',
+          args: { selectedCollection, selector, replaceObject, options },
+          isAdmin: false,
+          queryParams: { selector, replaceObject, options },
+          saveHistory: (!historyParams)
+        });
       },
       render(query) {
         if (query.queryParams.selector) renderCodeMirror($('#divSelector'), query.queryParams.selector);
@@ -763,7 +871,13 @@ Querying.prototype = {
           return;
         }
 
-        proceedQueryExecution('findOneAndUpdate', { selectedCollection, selector, setObject, options }, false, { selector, setObject, options }, (!historyParams));
+        proceedQueryExecution({
+          methodName: 'findOneAndUpdate',
+          args: { selectedCollection, selector, setObject, options },
+          isAdmin: false,
+          queryParams: { selector, setObject, options },
+          saveHistory: (!historyParams)
+        });
       },
       render(query) {
         if (query.queryParams.selector) renderCodeMirror($('#divSelector'), query.queryParams.selector);
@@ -825,7 +939,13 @@ Querying.prototype = {
         if (!checkFunction(reduce, 'reduce')) return;
         if (!checkFunction(finalize, 'finalize')) return;
 
-        proceedQueryExecution('group', { selectedCollection, keys, condition, initial, reduce, finalize, command }, false, { keys, condition, initial, reduce, finalize, command }, (!historyParams));
+        proceedQueryExecution({
+          methodName: 'group',
+          args: { selectedCollection, keys, condition, initial, reduce, finalize, command },
+          isAdmin: false,
+          queryParams: { keys, condition, initial, reduce, finalize, command },
+          saveHistory: (!historyParams)
+        });
       },
       render(query) {
         if (query.queryParams.keys) {
@@ -853,7 +973,13 @@ Querying.prototype = {
         const selectedCollection = SessionManager.get(SessionManager.strSessionSelectedCollection);
         const fullVal = historyParams ? historyParams.full : $('#divFullInformation').iCheck('update')[0].checked;
 
-        proceedQueryExecution('indexInformation', { selectedCollection, isFull: fullVal }, false, { full: fullVal }, (!historyParams));
+        proceedQueryExecution({
+          methodName: 'indexInformation',
+          args: { selectedCollection, isFull: fullVal },
+          isAdmin: false,
+          queryParams: { full: fullVal },
+          saveHistory: (!historyParams)
+        });
       },
       render(query) {
         setTimeout(() => {
@@ -871,7 +997,13 @@ Querying.prototype = {
 
         if (!checkErrorField(docs, 'docs')) return;
 
-        proceedQueryExecution('insertMany', { selectedCollection, docs, options }, false, { docs, options }, (!historyParams));
+        proceedQueryExecution({
+          methodName: 'insertMany',
+          args: { selectedCollection, docs, options },
+          isAdmin: false,
+          queryParams: { docs, options },
+          saveHistory: (!historyParams)
+        });
       },
       render(query) {
         if (query.queryParams.docs) renderCodeMirror($('#divDocs'), query.queryParams.docs);
@@ -889,7 +1021,11 @@ Querying.prototype = {
         Notification.start('#btnExecuteQuery');
         const selectedCollection = SessionManager.get(SessionManager.strSessionSelectedCollection);
 
-        proceedQueryExecution('isCapped', { selectedCollection }, false, { });
+        proceedQueryExecution({
+          methodName: 'isCapped',
+          args: { selectedCollection },
+          isAdmin: false
+        });
       }
     },
 
@@ -905,7 +1041,13 @@ Querying.prototype = {
         if (!checkFunction(map, 'map')) return;
         if (!checkErrorField(options)) return;
 
-        proceedQueryExecution('mapReduce', { selectedCollection, map, reduce, options }, false, { map, reduce, options }, (!historyParams));
+        proceedQueryExecution({
+          methodName: 'mapReduce',
+          args: { selectedCollection, map, reduce, options },
+          isAdmin: false,
+          queryParams: { map, reduce, options },
+          saveHistory: (!historyParams)
+        });
       },
       render(query) {
         if (query.queryParams.map) renderFunction($('#divMap'), query.queryParams.map);
@@ -924,7 +1066,12 @@ Querying.prototype = {
         Notification.start('#btnExecuteQuery');
         const selectedCollection = SessionManager.get(SessionManager.strSessionSelectedCollection);
 
-        proceedQueryExecution('options', { selectedCollection }, false, { }, (!historyParams));
+        proceedQueryExecution({
+          methodName: 'options',
+          args: { selectedCollection },
+          isAdmin: false,
+          saveHistory: (!historyParams)
+        });
       }
     },
 
@@ -933,7 +1080,12 @@ Querying.prototype = {
         Notification.start('#btnExecuteQuery');
         const selectedCollection = SessionManager.get(SessionManager.strSessionSelectedCollection);
 
-        proceedQueryExecution('reIndex', { selectedCollection }, false, { }, (!historyParams));
+        proceedQueryExecution({
+          methodName: 'reIndex',
+          args: { selectedCollection },
+          isAdmin: false,
+          saveHistory: (!historyParams)
+        });
       }
     },
 
@@ -971,7 +1123,13 @@ Querying.prototype = {
         const selectedCollection = SessionManager.get(SessionManager.strSessionSelectedCollection);
         const options = historyParams ? historyParams.options : QueryingOptions.getOptions(Enums.STATS_OPTIONS);
 
-        proceedQueryExecution('stats', { selectedCollection, options }, false, { options }, (!historyParams));
+        proceedQueryExecution({
+          methodName: 'stats',
+          args: { selectedCollection, options },
+          isAdmin: false,
+          queryParams: { options },
+          saveHistory: (!historyParams)
+        });
       },
       render(query) {
         renderOptionsArray({
