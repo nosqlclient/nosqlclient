@@ -289,6 +289,15 @@ const renderUpdateQuery = function (query, cmb) {
   });
 };
 
+const renderFindOneAndModify = function (query) {
+  renderParams(query.queryParams);
+  renderOptionsArray({
+    options: query.queryParams.options,
+    optionEnum: Enums.FINDONE_MODIFY_OPTIONS,
+    optionCombo: $('#cmbFindOneModifyOptions')
+  });
+};
+
 Querying.prototype = {
   initOptions(optionEnum, showRunOnAdmin, ...excludedOptions) {
     switch (optionEnum) {
@@ -750,12 +759,7 @@ Querying.prototype = {
         });
       },
       render(query) {
-        renderParams(query.queryParams);
-        renderOptionsArray({
-          options: query.queryParams.options,
-          optionEnum: Enums.FINDONE_MODIFY_OPTIONS,
-          optionCombo: $('#cmbFindOneModifyOptions')
-        });
+        renderFindOneAndModify(query);
       }
     },
 
@@ -778,12 +782,7 @@ Querying.prototype = {
         });
       },
       render(query) {
-        renderParams(query.queryParams);
-        renderOptionsArray({
-          options: query.queryParams.options,
-          optionEnum: Enums.FINDONE_MODIFY_OPTIONS,
-          optionCombo: $('#cmbFindOneModifyOptions')
-        });
+        renderFindOneAndModify(query);
       }
     },
 
@@ -811,12 +810,7 @@ Querying.prototype = {
         });
       },
       render(query) {
-        renderParams(query.queryParams);
-        renderOptionsArray({
-          options: query.queryParams.options,
-          optionEnum: Enums.FINDONE_MODIFY_OPTIONS,
-          optionCombo: $('#cmbFindOneModifyOptions')
-        });
+        renderFindOneAndModify(query);
       }
     },
 
