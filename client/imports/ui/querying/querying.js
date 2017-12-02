@@ -57,13 +57,17 @@ const renderBoolean = function (divSelector, val) {
   }, 100);
 };
 
-const checkStringInput = function (variable, name) {
+const checkExistance = function (variable, message) {
   if (!variable) {
-    Notification.error(`${name}-required`);
+    Notification.error(message);
     return false;
   }
 
   return true;
+};
+
+const checkStringInput = function (variable, name) {
+  return checkExistance(variable, `${name}-required`);
 };
 
 const checkErrorField = function (obj, fieldName) {
@@ -77,28 +81,23 @@ const checkErrorField = function (obj, fieldName) {
 };
 
 const checkFunction = function (obj, fieldName) {
-  if (!obj) {
-    Notification.error(`syntax-error-${fieldName}-function`);
-    return false;
-  }
+  return checkExistance(obj, `syntax-error-${fieldName}-function`);
+};
 
-  return true;
+const getFromHistoryOrEditorString = function (historyParams, divSelector, historyField = 'selector') {
+  let result;
+  if (historyParams) result = JSON.stringify(historyParams[historyField]);
+  else result = UIComponents.Editor.getCodeMirrorValue(divSelector);
+
+  return result;
 };
 
 const getFromHistoryOrEditor = function (historyParams, divSelector, historyField = 'selector') {
-  let result;
-  if (historyParams) result = ExtendedJSON.convertAndCheckJSON(JSON.stringify(historyParams[historyField]));
-  else result = ExtendedJSON.convertAndCheckJSON(UIComponents.Editor.getCodeMirrorValue(divSelector));
-
-  return result;
+  return ExtendedJSON.convertAndCheckJSON(getFromHistoryOrEditorString(historyParams, divSelector, historyField));
 };
 
 const getFromHistoryOrEditorAsFunction = function (historyParams, divSelector, historyField) {
-  let result;
-  if (historyParams) result = Helper.convertStrToFunction(JSON.stringify(historyParams[historyField]));
-  else result = Helper.convertStrToFunction(UIComponents.Editor.getCodeMirrorValue(divSelector));
-
-  return result;
+  return Helper.convertStrToFunction(getFromHistoryOrEditorString(historyParams, divSelector, historyField));
 };
 
 const fieldsCallback = function (option, inverted, options) {
