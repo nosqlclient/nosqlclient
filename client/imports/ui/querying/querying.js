@@ -1,5 +1,5 @@
 import { Meteor } from 'meteor/meteor';
-import { Enums, Notification, ExtendedJSON, UIComponents, SessionManager, ErrorHandler } from '/client/imports/modules';
+import { Enums, Notification, ExtendedJSON, UIComponents, SessionManager } from '/client/imports/modules';
 import { QueryRender, QueryingOptions, CollectionUtil } from '/client/imports/ui';
 import { Communicator, ReactivityProvider } from '/client/imports/facades';
 import Helper from '/client/imports/helpers/helper';
@@ -22,12 +22,17 @@ const initOptions = function (combobox, enumValue, showRunOnAdmin, ...excludedOp
   this.setVisibilityOfRunOnAdminCheckbox(showRunOnAdmin);
 };
 
-const proceedQueryExecution = function ({ methodName, args = {}, isAdmin = true, queryParams = {}, saveHistory }) {
+const proceedQueryExecution = function ({ methodName, args = {}, isAdmin = true, queryParams = {}, saveHistory, successCallback }) {
+  if (!isAdmin) {
+    Object.assign(args, { selectedCollection: SessionManager.get(SessionManager.strSessionSelectedCollection) });
+    Notification.start('#btnExecuteQuery');
+  } else Notification.start('#btnExecuteAdminQuery');
   Communicator.call({
     methodName,
     args,
     callback: (err, result) => {
-      QueryRender.renderAfterQueryExecution(err, result, isAdmin, methodName, queryParams, saveHistory);
+      if (!successCallback) QueryRender.renderAfterQueryExecution(err, result, isAdmin, methodName, queryParams, saveHistory);
+      else successCallback();
     }
   });
 };
@@ -240,9 +245,6 @@ const renderOptionsArray = function ({ options, optionEnum, optionCombo }) {
 };
 
 const proceedUpdateQueryExecution = function (historyParams, query) {
-  Notification.start('#btnExecuteQuery');
-
-  const selectedCollection = SessionManager.get(SessionManager.strSessionSelectedCollection);
   const options = historyParams ? historyParams.options : QueryingOptions.getOptions(Enums.UPDATE_OPTIONS);
   const selector = getFromHistoryOrEditor(historyParams, $('#divSelector'));
   let setObject = getFromHistoryOrEditor(historyParams, $('#divSet'), 'setObject');
@@ -255,7 +257,7 @@ const proceedUpdateQueryExecution = function (historyParams, query) {
 
   proceedQueryExecution({
     methodName: query,
-    args: { selectedCollection, selector, setObject, options },
+    args: { selector, setObject, options },
     isAdmin: false,
     queryParams: { selector, setObject, options },
     saveHistory: (!historyParams)
@@ -274,8 +276,6 @@ const renderUpdateQuery = function (query, cmb) {
 };
 
 const proceedGeoQueryExecution = function (historyParams, query, optionsEnum) {
-  Notification.start('#btnExecuteQuery');
-  const selectedCollection = SessionManager.get(SessionManager.strSessionSelectedCollection);
   let xAxis = historyParams ? historyParams.xAxis : $('#inputXAxis').val();
   if (xAxis) xAxis = parseInt(xAxis, 10);
 
@@ -290,7 +290,7 @@ const proceedGeoQueryExecution = function (historyParams, query, optionsEnum) {
 
   proceedQueryExecution({
     methodName: query,
-    args: { selectedCollection, xAxis, yAxis, options },
+    args: { xAxis, yAxis, options },
     isAdmin: false,
     queryParams: { xAxis, yAxis, options },
     saveHistory: (!historyParams)
@@ -378,8 +378,6 @@ Querying.prototype = {
 
   Admin: {
     executeAddUserQuery() {
-      Notification.start('#btnExecuteAdminQuery');
-
       const options = QueryingOptions.getOptions(Enums.ADD_USER_OPTIONS);
       const username = $('#inputAddUserUsername').val();
       const password = $('#inputAddUserPassword').val();
@@ -396,14 +394,12 @@ Querying.prototype = {
     },
 
     executeBuildInfoQuery() {
-      Notification.start('#btnExecuteAdminQuery');
       proceedQueryExecution({
         methodName: 'buildInfo'
       });
     },
 
     executeCommandQuery() {
-      Notification.start('#btnExecuteAdminQuery');
       const command = ExtendedJSON.convertAndCheckJSON(UIComponents.Editor.getCodeMirrorValue($('#divCommand')));
       const options = QueryingOptions.getOptions(Enums.COMMAND_OPTIONS);
 
@@ -418,28 +414,24 @@ Querying.prototype = {
     },
 
     executeListDatabasesQuery() {
-      Notification.start('#btnExecuteAdminQuery');
       proceedQueryExecution({
         methodName: 'listDatabases'
       });
     },
 
     executePingQuery() {
-      Notification.start('#btnExecuteAdminQuery');
       proceedQueryExecution({
         methodName: 'ping'
       });
     },
 
     executeProfilingInfoQuery() {
-      Notification.start('#btnExecuteAdminQuery');
       proceedQueryExecution({
         methodName: 'profilingInfo'
       });
     },
 
     executeRemoveUserQuery() {
-      Notification.start('#btnExecuteAdminQuery');
       const username = $('#inputAddUserUsername').val();
 
       if (!checkStringInput(username, 'username')) return;
@@ -452,28 +444,24 @@ Querying.prototype = {
     },
 
     executeReplSetGetStatusQuery() {
-      Notification.start('#btnExecuteAdminQuery');
       proceedQueryExecution({
         methodName: 'replSetGetStatus'
       });
     },
 
     executeServerInfoQuery() {
-      Notification.start('#btnExecuteAdminQuery');
       proceedQueryExecution({
         methodName: 'serverInfo'
       });
     },
 
     executeServerStatusQuery() {
-      Notification.start('#btnExecuteAdminQuery');
       proceedQueryExecution({
         methodName: 'serverStatus'
       });
     },
 
     executeSetProfilingLevelQuery() {
-      Notification.start('#btnExecuteAdminQuery');
       proceedQueryExecution({
         methodName: 'setProfilingLevel',
         args: { level: $('#cmbLevel').find('option:selected').text() }
@@ -481,7 +469,6 @@ Querying.prototype = {
     },
 
     executeValidateCollectionQuery() {
-      Notification.start('#btnExecuteAdminQuery');
       const collectionName = $('#inputValidateCollection').val();
       const options = ExtendedJSON.convertAndCheckJSON(UIComponents.Editor.getCodeMirrorValue($('#divOptions')));
 
@@ -498,8 +485,6 @@ Querying.prototype = {
   Collection: {
     Aggregate: {
       execute(historyParams) {
-        Notification.start('#btnExecuteQuery');
-        const selectedCollection = SessionManager.get(SessionManager.strSessionSelectedCollection);
         const pipeline = getFromHistoryOrEditor(historyParams, $('#divPipeline'), 'pipeline');
         const options = historyParams ? historyParams.options : QueryingOptions.getOptions(Enums.AGGREGATE_OPTIONS);
 
@@ -508,7 +493,7 @@ Querying.prototype = {
 
         proceedQueryExecution({
           methodName: 'aggregate',
-          args: { selectedCollection, pipeline, options },
+          args: { pipeline, options },
           isAdmin: false,
           queryParams: { pipeline, options },
           saveHistory: (!historyParams)
@@ -527,8 +512,6 @@ Querying.prototype = {
 
     BulkWrite: {
       execute(historyParams) {
-        Notification.start('#btnExecuteQuery');
-        const selectedCollection = SessionManager.get(SessionManager.strSessionSelectedCollection);
         const operations = getFromHistoryOrEditor(historyParams, $('#divBulkWrite'));
         const options = historyParams ? historyParams.options : QueryingOptions.getOptions(Enums.BULK_WRITE_OPTIONS);
 
@@ -536,7 +519,7 @@ Querying.prototype = {
 
         proceedQueryExecution({
           methodName: 'bulkWrite',
-          args: { selectedCollection, operations, options },
+          args: { operations, options },
           isAdmin: false,
           queryParams: { selector: operations, options },
           saveHistory: (!historyParams)
@@ -555,8 +538,6 @@ Querying.prototype = {
 
     Count: {
       execute(historyParams) {
-        Notification.start('#btnExecuteQuery');
-        const selectedCollection = SessionManager.get(SessionManager.strSessionSelectedCollection);
         const selector = getFromHistoryOrEditor(historyParams, $('#divSelector'));
         const options = historyParams ? historyParams.options : QueryingOptions.getOptions(Enums.COUNT_OPTIONS);
 
@@ -564,7 +545,7 @@ Querying.prototype = {
 
         proceedQueryExecution({
           methodName: 'count',
-          args: { selectedCollection, selector, options },
+          args: { selector, options },
           isAdmin: false,
           queryParams: { selector, options },
           saveHistory: (!historyParams)
@@ -583,8 +564,6 @@ Querying.prototype = {
 
     CreateIndex: {
       execute(historyParams) {
-        Notification.start('#btnExecuteQuery');
-        const selectedCollection = SessionManager.get(SessionManager.strSessionSelectedCollection);
         const options = historyParams ? historyParams.options : QueryingOptions.getOptions(Enums.CREATE_INDEX_OPTIONS);
         const fields = getFromHistoryOrEditor(historyParams, $('#divFields'), 'fields');
 
@@ -593,7 +572,7 @@ Querying.prototype = {
 
         proceedQueryExecution({
           methodName: 'createIndex',
-          args: { selectedCollection, fields, options },
+          args: { fields, options },
           isAdmin: false,
           queryParams: { fields, options },
           saveHistory: (!historyParams)
@@ -612,15 +591,13 @@ Querying.prototype = {
 
     Delete: {
       execute(historyParams) {
-        Notification.start('#btnExecuteQuery');
-        const selectedCollection = SessionManager.get(SessionManager.strSessionSelectedCollection);
         const selector = getFromHistoryOrEditor(historyParams, $('#divSelector'));
 
         if (!checkErrorField(selector, 'selector')) return;
 
         proceedQueryExecution({
           methodName: 'delete',
-          args: { selectedCollection, selector },
+          args: { selector },
           isAdmin: false,
           queryParams: { selector },
           saveHistory: (!historyParams)
@@ -633,8 +610,6 @@ Querying.prototype = {
 
     Distinct: {
       execute(historyParams) {
-        Notification.start('#btnExecuteQuery');
-        const selectedCollection = SessionManager.get(SessionManager.strSessionSelectedCollection);
         const selector = getFromHistoryOrEditor(historyParams, $('#divSelector'));
         const fieldName = historyParams ? historyParams.fieldName : $('#inputField').val();
         const options = historyParams ? historyParams.options : QueryingOptions.getOptions(Enums.DISTINCT_OPTIONS);
@@ -643,7 +618,7 @@ Querying.prototype = {
 
         proceedQueryExecution({
           methodName: 'distinct',
-          args: { selectedCollection, selector, fieldName, options },
+          args: { selector, fieldName, options },
           isAdmin: false,
           queryParams: { selector, fieldName, options },
           saveHistory: (!historyParams)
@@ -663,13 +638,11 @@ Querying.prototype = {
 
     DropIndex: {
       execute(historyParams) {
-        Notification.start('#btnExecuteQuery');
-        const selectedCollection = SessionManager.get(SessionManager.strSessionSelectedCollection);
         const indexName = historyParams ? historyParams.indexName : $('#inputIndexName').val();
 
         proceedQueryExecution({
           methodName: 'dropIndex',
-          args: { selectedCollection, indexName },
+          args: { indexName },
           isAdmin: false,
           queryParams: { indexName },
           saveHistory: (!historyParams)
@@ -681,8 +654,9 @@ Querying.prototype = {
     },
 
     Find: {
-      proceedFindQuery(selectedCollection, selector, cursorOptions, saveHistory, exportFormat) {
+      proceedFindQuery(selector, cursorOptions, saveHistory, exportFormat) {
         if (exportFormat) {
+          const selectedCollection = SessionManager.get(SessionManager.strSessionSelectedCollection);
           window.open(`export?format=${exportFormat}&
     selectedCollection=${selectedCollection}&selector=${JSON.stringify(selector)}&cursorOptions=${JSON.stringify(cursorOptions)}&sessionId=${Meteor.default_connection._lastSessionId}`);
 
@@ -691,7 +665,7 @@ Querying.prototype = {
           const executeExplain = $('#inputExecuteExplain').iCheck('update')[0].checked;
           proceedQueryExecution({
             methodName: 'find',
-            args: { selectedCollection, selector, cursorOptions, executeExplain },
+            args: { selector, cursorOptions, executeExplain },
             isAdmin: false,
             queryParams: { selector, cursorOptions, executeExplain },
             saveHistory
@@ -710,7 +684,6 @@ Querying.prototype = {
         return true;
       },
       execute(historyParams, exportFormat) {
-        Notification.start('#btnExecuteQuery');
         const selectedCollection = SessionManager.get(SessionManager.strSessionSelectedCollection);
         const maxAllowedFetchSize = Math.round(ReactivityProvider.findOne(ReactivityProvider.types.Settings).maxAllowedFetchSize * 100) / 100;
         const cursorOptions = historyParams ? historyParams.cursorOptions : QueryingOptions.getOptions(Enums.CURSOR_OPTIONS);
@@ -726,22 +699,22 @@ Querying.prototype = {
             methodName: 'stats',
             args: { selectedCollection },
             callback: (statsError, statsResult) => {
-              if (statsError || statsResult.error || !(statsResult.result.avgObjSize)) this.proceedFindQuery(selectedCollection, selector, cursorOptions, (!historyParams), exportFormat);
+              if (statsError || statsResult.error || !(statsResult.result.avgObjSize)) this.proceedFindQuery(selector, cursorOptions, (!historyParams), exportFormat);
               else if (Enums.CURSOR_OPTIONS.LIMIT in cursorOptions) {
                 const count = cursorOptions.limit;
                 if (this.checkAverageSize(count, statsResult.result.avgObjSize, maxAllowedFetchSize)) {
-                  this.proceedFindQuery(selectedCollection, selector, cursorOptions, (!historyParams), exportFormat);
+                  this.proceedFindQuery(selector, cursorOptions, (!historyParams), exportFormat);
                 }
               } else {
                 Communicator.call({
                   methodName: 'count',
                   args: { selectedCollection, selector },
                   callback: (err, result) => {
-                    if (err || result.error) this.proceedFindQuery(selectedCollection, selector, cursorOptions, (!historyParams), exportFormat);
+                    if (err || result.error) this.proceedFindQuery(selector, cursorOptions, (!historyParams), exportFormat);
                     else {
                       const count = result.result;
                       if (this.checkAverageSize(count, statsResult.result.avgObjSize, maxAllowedFetchSize)) {
-                        this.proceedFindQuery(selectedCollection, selector, cursorOptions, (!historyParams), exportFormat);
+                        this.proceedFindQuery(selector, cursorOptions, (!historyParams), exportFormat);
                       }
                     }
                   }
@@ -749,7 +722,7 @@ Querying.prototype = {
               }
             }
           });
-        } else this.proceedFindQuery(selectedCollection, selector, cursorOptions, (!historyParams), exportFormat);
+        } else this.proceedFindQuery(selector, cursorOptions, (!historyParams), exportFormat);
       },
 
       render(query) {
@@ -766,8 +739,6 @@ Querying.prototype = {
 
     FindOne: {
       execute(historyParams) {
-        Notification.start('#btnExecuteQuery');
-        const selectedCollection = SessionManager.get(SessionManager.strSessionSelectedCollection);
         const cursorOptions = historyParams ? historyParams.cursorOptions : QueryingOptions.getOptions(Enums.CURSOR_OPTIONS);
         const selector = getFromHistoryOrEditor(historyParams, $('#divSelector'));
 
@@ -776,7 +747,7 @@ Querying.prototype = {
 
         proceedQueryExecution({
           methodName: 'findOne',
-          args: { selectedCollection, selector, cursorOptions },
+          args: { selector, cursorOptions },
           isAdmin: false,
           queryParams: { selector, cursorOptions },
           saveHistory: (!historyParams)
@@ -795,8 +766,6 @@ Querying.prototype = {
 
     FindOneAndDelete: {
       execute(historyParams) {
-        Notification.start('#btnExecuteQuery');
-        const selectedCollection = SessionManager.get(SessionManager.strSessionSelectedCollection);
         const options = historyParams ? historyParams.options : QueryingOptions.getOptions(Enums.FINDONE_MODIFY_OPTIONS);
         const selector = getFromHistoryOrEditor(historyParams, $('#divSelector'));
 
@@ -805,7 +774,7 @@ Querying.prototype = {
 
         proceedQueryExecution({
           methodName: 'findOneAndDelete',
-          args: { selectedCollection, selector, options },
+          args: { selector, options },
           isAdmin: false,
           queryParams: { selector, options },
           saveHistory: (!historyParams)
@@ -824,8 +793,6 @@ Querying.prototype = {
 
     FindOneAndReplace: {
       execute(historyParams) {
-        Notification.start('#btnExecuteQuery');
-        const selectedCollection = SessionManager.get(SessionManager.strSessionSelectedCollection);
         const options = historyParams ? historyParams.options : QueryingOptions.getOptions(Enums.FINDONE_MODIFY_OPTIONS);
         const selector = getFromHistoryOrEditor(historyParams, $('#divSelector'));
         const replaceObject = getFromHistoryOrEditor(historyParams, $('#divReplacement'), 'replaceObject');
@@ -836,7 +803,7 @@ Querying.prototype = {
 
         proceedQueryExecution({
           methodName: 'findOneAndReplace',
-          args: { selectedCollection, selector, replaceObject, options },
+          args: { selector, replaceObject, options },
           isAdmin: false,
           queryParams: { selector, replaceObject, options },
           saveHistory: (!historyParams)
@@ -856,8 +823,6 @@ Querying.prototype = {
 
     FindOneAndUpdate: {
       execute(historyParams) {
-        Notification.start('#btnExecuteQuery');
-        const selectedCollection = SessionManager.get(SessionManager.strSessionSelectedCollection);
         const options = historyParams ? historyParams.options : QueryingOptions.getOptions(Enums.FINDONE_MODIFY_OPTIONS);
         const selector = getFromHistoryOrEditor(historyParams, $('#divSelector'));
         let setObject = getFromHistoryOrEditor(historyParams, $('#divSet'), 'setObject');
@@ -873,7 +838,7 @@ Querying.prototype = {
 
         proceedQueryExecution({
           methodName: 'findOneAndUpdate',
-          args: { selectedCollection, selector, setObject, options },
+          args: { selector, setObject, options },
           isAdmin: false,
           queryParams: { selector, setObject, options },
           saveHistory: (!historyParams)
@@ -911,8 +876,6 @@ Querying.prototype = {
 
     Group: {
       execute(historyParams) {
-        Notification.start('#btnExecuteQuery');
-        const selectedCollection = SessionManager.get(SessionManager.strSessionSelectedCollection);
         let keys = historyParams ? JSON.stringify(historyParams.keys) : UIComponents.Editor.getCodeMirrorValue($('#divKeys'));
         const condition = getFromHistoryOrEditor(historyParams, $('#divCondition'), 'condition');
         const initial = getFromHistoryOrEditor(historyParams, $('#divInitial'), 'initial');
@@ -941,7 +904,7 @@ Querying.prototype = {
 
         proceedQueryExecution({
           methodName: 'group',
-          args: { selectedCollection, keys, condition, initial, reduce, finalize, command },
+          args: { keys, condition, initial, reduce, finalize, command },
           isAdmin: false,
           queryParams: { keys, condition, initial, reduce, finalize, command },
           saveHistory: (!historyParams)
@@ -969,13 +932,11 @@ Querying.prototype = {
 
     IndexInformation: {
       execute(historyParams) {
-        Notification.start('#btnExecuteQuery');
-        const selectedCollection = SessionManager.get(SessionManager.strSessionSelectedCollection);
         const fullVal = historyParams ? historyParams.full : $('#divFullInformation').iCheck('update')[0].checked;
 
         proceedQueryExecution({
           methodName: 'indexInformation',
-          args: { selectedCollection, isFull: fullVal },
+          args: { isFull: fullVal },
           isAdmin: false,
           queryParams: { full: fullVal },
           saveHistory: (!historyParams)
@@ -990,8 +951,6 @@ Querying.prototype = {
 
     InsertMany: {
       execute(historyParams) {
-        Notification.start('#btnExecuteQuery');
-        const selectedCollection = SessionManager.get(SessionManager.strSessionSelectedCollection);
         const docs = getFromHistoryOrEditor(historyParams, $('#divDocs'), 'docs');
         const options = historyParams ? historyParams.options : QueryingOptions.getOptions(Enums.INSERT_MANY_OPTIONS);
 
@@ -999,7 +958,7 @@ Querying.prototype = {
 
         proceedQueryExecution({
           methodName: 'insertMany',
-          args: { selectedCollection, docs, options },
+          args: { docs, options },
           isAdmin: false,
           queryParams: { docs, options },
           saveHistory: (!historyParams)
@@ -1018,12 +977,8 @@ Querying.prototype = {
 
     IsCapped: {
       execute() {
-        Notification.start('#btnExecuteQuery');
-        const selectedCollection = SessionManager.get(SessionManager.strSessionSelectedCollection);
-
         proceedQueryExecution({
           methodName: 'isCapped',
-          args: { selectedCollection },
           isAdmin: false
         });
       }
@@ -1031,8 +986,6 @@ Querying.prototype = {
 
     MapReduce: {
       execute(historyParams) {
-        Notification.start('#btnExecuteQuery');
-        const selectedCollection = SessionManager.get(SessionManager.strSessionSelectedCollection);
         const options = historyParams ? historyParams.options : QueryingOptions.getOptions(Enums.MAP_REDUCE_OPTIONS);
         const map = getFromHistoryOrEditorAsFunction(historyParams, $('#divMap'), 'map');
         const reduce = getFromHistoryOrEditorAsFunction(historyParams, $('#divReduce'), 'reduce');
@@ -1043,7 +996,7 @@ Querying.prototype = {
 
         proceedQueryExecution({
           methodName: 'mapReduce',
-          args: { selectedCollection, map, reduce, options },
+          args: { map, reduce, options },
           isAdmin: false,
           queryParams: { map, reduce, options },
           saveHistory: (!historyParams)
@@ -1063,12 +1016,8 @@ Querying.prototype = {
 
     Options: {
       execute(historyParams) {
-        Notification.start('#btnExecuteQuery');
-        const selectedCollection = SessionManager.get(SessionManager.strSessionSelectedCollection);
-
         proceedQueryExecution({
           methodName: 'options',
-          args: { selectedCollection },
           isAdmin: false,
           saveHistory: (!historyParams)
         });
@@ -1077,12 +1026,8 @@ Querying.prototype = {
 
     ReIndex: {
       execute(historyParams) {
-        Notification.start('#btnExecuteQuery');
-        const selectedCollection = SessionManager.get(SessionManager.strSessionSelectedCollection);
-
         proceedQueryExecution({
           methodName: 'reIndex',
-          args: { selectedCollection },
           isAdmin: false,
           saveHistory: (!historyParams)
         });
@@ -1091,27 +1036,18 @@ Querying.prototype = {
 
     Rename: {
       execute() {
-        Notification.start('#btnExecuteQuery');
-        const selectedCollection = SessionManager.get(SessionManager.strSessionSelectedCollection);
         const options = QueryingOptions.getOptions(Enums.RENAME_OPTIONS);
         const newName = $('#inputNewName').val();
 
-        if (newName === selectedCollection) {
-          Notification.warning('name-same-with-old');
-          return;
-        }
-
         if (newName) {
-          Communicator.call({
+          proceedQueryExecution({
             methodName: 'rename',
-            args: { selectedCollection, newName, options },
-            callback: (err, result) => {
-              if (err || result.error) ErrorHandler.showMeteorFuncError(err, result);
-              else {
-                Notification.success('saved-successfully');
-                CollectionUtil.renderCollectionNames();
-              }
-            }
+            args: { newName, options },
+            successCallback: () => {
+              Notification.success('saved-successfully');
+              CollectionUtil.renderCollectionNames();
+            },
+            isAdmin: false
           });
         } else Notification.error('name-required');
       }
@@ -1119,13 +1055,11 @@ Querying.prototype = {
 
     Stats: {
       execute(historyParams) {
-        Notification.start('#btnExecuteQuery');
-        const selectedCollection = SessionManager.get(SessionManager.strSessionSelectedCollection);
         const options = historyParams ? historyParams.options : QueryingOptions.getOptions(Enums.STATS_OPTIONS);
 
         proceedQueryExecution({
           methodName: 'stats',
-          args: { selectedCollection, options },
+          args: { options },
           isAdmin: false,
           queryParams: { options },
           saveHistory: (!historyParams)
