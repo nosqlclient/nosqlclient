@@ -101,17 +101,143 @@ const getFromHistoryOrEditorAsFunction = function (historyParams, divSelector, h
   return result;
 };
 
-const renderOptionsArray = function (options, optionEnum, cmbSelector) {
+const fieldsCallback = function (option, inverted, options) {
+  const divProject = $('#divProject');
+  switch (option) {
+    case inverted.collation:
+      UIComponents.Editor.setCodeMirrorValue($('#divCollation'), JSON.stringify(options.collation, null, 1));
+      break;
+    case inverted.bypassDocumentValidation:
+      $('#divBypassDocumentValidation').iCheck(options.bypassDocumentValidation ? 'check' : 'uncheck');
+      break;
+    case inverted.maxTimeMS:
+      $('#inputMaxTimeMs').val(options.maxTimeMS);
+      break;
+    case inverted.allowDiskUse:
+      $('#divAllowDiskUse').iCheck(options.allowDiskUse ? 'check' : 'uncheck');
+      break;
+    case inverted.explain:
+      $('#divExecuteExplain').iCheck(options.explain ? 'check' : 'uncheck');
+      break;
+    case inverted.upsert:
+      $('#divUpsert').iCheck(options.upsert ? 'check' : 'uncheck');
+      break;
+    case inverted.ordered:
+      $('#inputOrdered').val(options.ordered);
+      break;
+    case inverted.limit:
+      $('#inputLimit').val(options.limit);
+      break;
+    case inverted.skip:
+      $('#inputSkip').val(options.skip);
+      break;
+    case inverted.max:
+      UIComponents.Editor.setCodeMirrorValue($('#divMax'), JSON.stringify(options.max, null, 1));
+      break;
+    case inverted.min:
+      UIComponents.Editor.setCodeMirrorValue($('#divMin'), JSON.stringify(options.min, null, 1));
+      break;
+    case inverted.unique:
+      $('#divUnique').iCheck(options.unique ? 'check' : 'uncheck');
+      break;
+    case inverted.dropDups:
+      $('#divDropDups').iCheck(options.dropDups ? 'check' : 'uncheck');
+      break;
+    case inverted.sparse:
+      $('#divSparse').iCheck(options.sparse ? 'check' : 'uncheck');
+      break;
+    case inverted.background:
+      $('#divBackground').iCheck(options.background ? 'check' : 'uncheck');
+      break;
+    case inverted.name:
+      $('#inputIndexName').val(options.name);
+      break;
+    case inverted.expireAfterSeconds:
+      $('#inputExpireAfterSeconds').val(options.expireAfterSeconds);
+      break;
+    case inverted.project:
+      UIComponents.Editor.setCodeMirrorValue(divProject, JSON.stringify(options.project, null, 1));
+      break;
+    case inverted.sort:
+      UIComponents.Editor.setCodeMirrorValue($('#divSort'), JSON.stringify(options.sort, null, 1));
+      break;
+    case inverted.projection:
+      UIComponents.Editor.setCodeMirrorValue(divProject, JSON.stringify(options.projection, null, 1));
+      break;
+    case inverted.returnOriginal:
+      $('#divReturnOriginal').iCheck(options.returnOriginal ? 'check' : 'uncheck');
+      break;
+    case inverted.search:
+      UIComponents.Editor.setCodeMirrorValue($('#divSearch'), JSON.stringify(options.search, null, 1));
+      break;
+    case inverted.maxDistance:
+      $('#inputMaxDistance').val(options.maxDistance);
+      break;
+    case inverted.query:
+      UIComponents.Editor.setCodeMirrorValue($('#divSelector'), JSON.stringify(options.query, null, 1));
+      break;
+    case inverted.minDistance:
+      $('#inputMinDistance').val(options.minDistance);
+      break;
+    case inverted.num:
+      $('#inputMaxNumber').val(options.num);
+      break;
+    case inverted.distanceMultiplier:
+      $('#inputDistanceMultiplier').val(options.distanceMultiplier);
+      break;
+    case inverted.spherical:
+      $('#divSpherical').iCheck(options.spherical ? 'check' : 'uncheck');
+      break;
+    case inverted.uniqueDocs:
+      $('#divUniqueDocs').iCheck(options.uniqueDocs ? 'check' : 'uncheck');
+      break;
+    case inverted.includeLocs:
+      $('#inputIncludeLocs').iCheck(options.includeLocs ? 'check' : 'uncheck');
+      break;
+    case inverted.serializeFunctions:
+      $('#divSerializeFunctions').iCheck(options.serializeFunctions ? 'check' : 'uncheck');
+      break;
+    case inverted.out:
+      UIComponents.Editor.setCodeMirrorValue($('#divOut'), JSON.stringify(options.out, null, 1));
+      break;
+    case inverted.scope:
+      UIComponents.Editor.setCodeMirrorValue($('#divScope'), JSON.stringify(options.scope, null, 1));
+      break;
+    case inverted.finalize:
+      UIComponents.Editor.setCodeMirrorValue($('#divFinalize'), JSON.stringify(options.finalize, null, 1));
+      break;
+    case inverted.verbose:
+      $('#divVerbose').iCheck(options.verbose ? 'check' : 'uncheck');
+      break;
+    case inverted.keeptemp:
+      $('#divKeepTemp').iCheck(options.keeptemp ? 'check' : 'uncheck');
+      break;
+    case inverted.scale:
+      $('#inputScale').val(options.scale);
+      break;
+
+    default: break;
+  }
+};
+
+const renderOptionsArray = function ({ options, optionEnum, optionCombo }) {
+  if (!options) return;
+
   const optionsArray = [];
+  const inverted = (_.invert(optionEnum));
+
   Object.keys(options).forEach((property) => {
-    if ((_.invert(optionEnum))[property]) optionsArray.push((_.invert(optionEnum))[property]);
+    if (inverted[property]) optionsArray.push((_.invert(optionEnum))[property]);
   });
 
   setTimeout(() => {
-    cmbSelector.val(optionsArray).trigger('chosen:updated');
+    optionCombo.val(optionsArray).trigger('chosen:updated');
     SessionManager.set(SessionManager.strSessionSelectedOptions, optionsArray);
   }, 100);
-  return optionsArray;
+
+  setTimeout(() => {
+    for (let i = 0; i < optionsArray.length; i += 1) fieldsCallback(optionsArray[i], inverted, options);
+  }, 200);
 };
 
 const proceedUpdateQueryExecution = function (historyParams, query) {
@@ -135,18 +261,11 @@ const renderUpdateQuery = function (query, cmb) {
   if (query.queryParams.selector) renderCodeMirror($('#divSelector'), query.queryParams.selector);
   if (query.queryParams.setObject) renderCodeMirror($('#divSet'), query.queryParams.setObject);
 
-  if (query.queryParams.options) {
-    const optionsArray = renderOptionsArray(query.queryParams.options, Enums.UPDATE_OPTIONS, $(`#${cmb}`));
-
-    // options load
-    setTimeout(() => {
-      for (let i = 0; i < optionsArray.length; i += 1) {
-        const option = optionsArray[i];
-        const inverted = (_.invert(Enums.UPDATE_OPTIONS));
-        if (option === inverted.upsert) $('#divUpsert').iCheck(query.queryParams.options.upsert ? 'check' : 'uncheck');
-      }
-    }, 200);
-  }
+  renderOptionsArray({
+    options: query.queryParams.options,
+    optionEnum: Enums.UPDATE_OPTIONS,
+    optionCombo: $(`#${cmb}`)
+  });
 };
 
 const proceedGeoQueryExecution = function (historyParams, query, optionsEnum) {
@@ -337,22 +456,11 @@ Querying.prototype = {
       render(query) {
         if (query.queryParams && query.queryParams.pipeline) renderCodeMirror($('#divPipeline'), query.queryParams.pipeline);
 
-        if (query.queryParams.options) {
-          const optionsArray = renderOptionsArray(query.queryParams.options, Enums.AGGREGATE_OPTIONS, $('#cmbAggregateOptions'));
-
-          // options load
-          setTimeout(() => {
-            for (let i = 0; i < optionsArray.length; i += 1) {
-              const option = optionsArray[i];
-              const inverted = (_.invert(Enums.AGGREGATE_OPTIONS));
-              if (option === inverted.collation) UIComponents.Editor.setCodeMirrorValue($('#divCollation'), JSON.stringify(query.queryParams.options.collation, null, 1));
-              if (option === inverted.bypassDocumentValidation) $('#divBypassDocumentValidation').iCheck(query.queryParams.options.bypassDocumentValidation ? 'check' : 'uncheck');
-              if (option === inverted.maxTimeMS) $('#inputMaxTimeMs').val(query.queryParams.options.maxTimeMS);
-              if (option === inverted.allowDiskUse) $('#divAllowDiskUse').iCheck(query.queryParams.options.allowDiskUse ? 'check' : 'uncheck');
-              if (option === inverted.explain) $('#divExecuteExplain').iCheck(query.queryParams.options.explain ? 'check' : 'uncheck');
-            }
-          }, 200);
-        }
+        renderOptionsArray({
+          options: query.queryParams.options,
+          optionEnum: Enums.AGGREGATE_OPTIONS,
+          optionCombo: $('#cmbAggregateOptions')
+        });
       }
     },
 
@@ -370,19 +478,11 @@ Querying.prototype = {
       render(query) {
         if (query.queryParams && query.queryParams.selector) renderCodeMirror($('#divBulkWrite'), query.queryParams.selector);
 
-        if (query.queryParams.options) {
-          const optionsArray = renderOptionsArray(query.queryParams.options, Enums.BULK_WRITE_OPTIONS, $('#cmbBulkWriteOptions'));
-
-          // options load
-          setTimeout(() => {
-            for (let i = 0; i < optionsArray.length; i += 1) {
-              const option = optionsArray[i];
-              const inverted = (_.invert(Enums.BULK_WRITE_OPTIONS));
-              if (option === inverted.ordered) $('#inputOrdered').val(query.queryParams.options.ordered);
-              if (option === inverted.bypassDocumentValidation) $('#divBypassDocumentValidation').iCheck(query.queryParams.options.bypassDocumentValidation ? 'check' : 'uncheck');
-            }
-          }, 200);
-        }
+        renderOptionsArray({
+          options: query.queryParams.options,
+          optionEnum: Enums.BULK_WRITE_OPTIONS,
+          optionCombo: $('#cmbBulkWriteOptions')
+        });
       }
     },
 
@@ -400,20 +500,11 @@ Querying.prototype = {
       render(query) {
         if (query.queryParams && query.queryParams.selector) renderCodeMirror($('#divSelector'), query.queryParams.selector);
 
-        if (query.queryParams.options) {
-          const optionsArray = renderOptionsArray(query.queryParams.options, Enums.COUNT_OPTIONS, $('#cmbCountOptions'));
-
-          // options load
-          setTimeout(() => {
-            for (let i = 0; i < optionsArray.length; i += 1) {
-              const option = optionsArray[i];
-              const inverted = (_.invert(Enums.COUNT_OPTIONS));
-              if (option === inverted.maxTimeMS) $('#inputMaxTimeMs').val(query.queryParams.options.maxTimeMS);
-              if (option === inverted.limit) $('#inputLimit').val(query.queryParams.options.limit);
-              if (option === inverted.skip) $('#inputSkip').val(query.queryParams.options.skip);
-            }
-          }, 200);
-        }
+        renderOptionsArray({
+          options: query.queryParams.options,
+          optionEnum: Enums.COUNT_OPTIONS,
+          optionCombo: $('#cmbCountOptions')
+        });
       }
     },
 
@@ -432,26 +523,11 @@ Querying.prototype = {
       render(query) {
         if (query.queryParams.fields) renderCodeMirror($('#divFields'), query.queryParams.fields);
 
-        if (query.queryParams.options) {
-          const optionsArray = renderOptionsArray(query.queryParams.options, Enums.CREATE_INDEX_OPTIONS, $('#cmbCreateIndexOptions'));
-
-          // options load
-          setTimeout(() => {
-            for (let i = 0; i < optionsArray.length; i += 1) {
-              const option = optionsArray[i];
-              const inverted = (_.invert(Enums.CREATE_INDEX_OPTIONS));
-              if (option === inverted.collation) UIComponents.Editor.setCodeMirrorValue($('#divCollation'), JSON.stringify(query.queryParams.options.collation, null, 1));
-              if (option === inverted.max) UIComponents.Editor.setCodeMirrorValue($('#divMax'), JSON.stringify(query.queryParams.options.max, null, 1));
-              if (option === inverted.min) UIComponents.Editor.setCodeMirrorValue($('#divMin'), JSON.stringify(query.queryParams.options.min, null, 1));
-              if (option === inverted.unique) $('#divUnique').iCheck(query.queryParams.options.unique ? 'check' : 'uncheck');
-              if (option === inverted.dropDups) $('#divDropDups').iCheck(query.queryParams.options.dropDups ? 'check' : 'uncheck');
-              if (option === inverted.sparse) $('#divSparse').iCheck(query.queryParams.options.sparse ? 'check' : 'uncheck');
-              if (option === inverted.background) $('#divBackground').iCheck(query.queryParams.options.background ? 'check' : 'uncheck');
-              if (option === inverted.name) $('#inputIndexName').val(query.queryParams.options.name);
-              if (option === inverted.expireAfterSeconds) $('#inputExpireAfterSeconds').val(query.queryParams.options.expireAfterSeconds);
-            }
-          }, 200);
-        }
+        renderOptionsArray({
+          options: query.queryParams.options,
+          optionEnum: Enums.CREATE_INDEX_OPTIONS,
+          optionCombo: $('#cmbCreateIndexOptions')
+        });
       }
     },
 
@@ -486,18 +562,11 @@ Querying.prototype = {
         if (query.queryParams.selector) renderCodeMirror($('#divSelector'), query.queryParams.selector);
         if (query.queryParams.fieldName) renderInput($('#inputField'), query.queryParams.fieldName);
 
-        if (query.queryParams.options) {
-          const optionsArray = renderOptionsArray(query.queryParams.options, Enums.DISTINCT_OPTIONS, $('#cmbDistinctOptions'));
-
-          // options load
-          setTimeout(() => {
-            for (let i = 0; i < optionsArray.length; i += 1) {
-              const option = optionsArray[i];
-              const inverted = (_.invert(Enums.DISTINCT_OPTIONS));
-              if (option === inverted.maxTimeMS) $('#inputMaxTimeMs').val(query.queryParams.options.maxTimeMS);
-            }
-          }, 200);
-        }
+        renderOptionsArray({
+          options: query.queryParams.options,
+          optionEnum: Enums.DISTINCT_OPTIONS,
+          optionCombo: $('#cmbDistinctOptions')
+        });
       }
     },
 
@@ -582,27 +651,13 @@ Querying.prototype = {
 
       render(query) {
         if (query.queryParams.selector) renderCodeMirror($('#divSelector'), query.queryParams.selector);
-
-        if (query.queryParams.cursorOptions) {
-          const optionsArray = renderOptionsArray(query.queryParams.cursorOptions, Enums.CURSOR_OPTIONS, $('#cmbFindCursorOptions'));
-
-          // options load
-          setTimeout(() => {
-            for (let i = 0; i < optionsArray.length; i += 1) {
-              const option = optionsArray[i];
-              const inverted = (_.invert(Enums.CURSOR_OPTIONS));
-              if (option === inverted.project) UIComponents.Editor.setCodeMirrorValue($('#divProject'), JSON.stringify(query.queryParams.cursorOptions.project, null, 1));
-              if (option === inverted.skip) $('#inputSkip').val(query.queryParams.cursorOptions.skip);
-              if (option === inverted.sort) UIComponents.Editor.setCodeMirrorValue($('#divSort'), JSON.stringify(query.queryParams.cursorOptions.sort, null, 1));
-              if (option === inverted.limit) $('#inputLimit').val(query.queryParams.cursorOptions.limit);
-              if (option === inverted.maxTimeMS) $('#inputMaxTimeMs').val(query.queryParams.cursorOptions.maxTimeMS);
-              if (option === inverted.max) UIComponents.Editor.setCodeMirrorValue($('#divMax'), JSON.stringify(query.queryParams.cursorOptions.max, null, 1));
-              if (option === inverted.min) UIComponents.Editor.setCodeMirrorValue($('#divMin'), JSON.stringify(query.queryParams.cursorOptions.min, null, 1));
-            }
-          }, 200);
-        }
-
         renderBoolean($('#divExecuteExplain'), query.queryParams.executeExplain);
+
+        renderOptionsArray({
+          options: query.queryParams.cursorOptions,
+          optionEnum: Enums.CURSOR_OPTIONS,
+          optionCombo: $('#cmbFindCursorOptions')
+        });
       }
     },
 
@@ -621,22 +676,11 @@ Querying.prototype = {
       render(query) {
         if (query.queryParams.selector) renderCodeMirror($('#divSelector'), query.queryParams.selector);
 
-        if (query.queryParams.cursorOptions) {
-          const optionsArray = renderOptionsArray(query.queryParams.cursorOptions, Enums.CURSOR_OPTIONS, $('#cmbFindOneCursorOptions'));
-          // options load
-          setTimeout(() => {
-            for (let i = 0; i < optionsArray.length; i += 1) {
-              const option = optionsArray[i];
-              const inverted = (_.invert(Enums.CURSOR_OPTIONS));
-              if (option === inverted.project) UIComponents.Editor.setCodeMirrorValue($('#divProject'), JSON.stringify(query.queryParams.cursorOptions.project, null, 1));
-              if (option === inverted.skip) $('#inputSkip').val(query.queryParams.cursorOptions.skip);
-              if (option === inverted.sort) UIComponents.Editor.setCodeMirrorValue($('#divSort'), JSON.stringify(query.queryParams.cursorOptions.sort, null, 1));
-              if (option === inverted.maxTimeMS) $('#inputMaxTimeMs').val(query.queryParams.cursorOptions.maxTimeMS);
-              if (option === inverted.max) UIComponents.Editor.setCodeMirrorValue($('#divMax'), JSON.stringify(query.queryParams.cursorOptions.max, null, 1));
-              if (option === inverted.min) UIComponents.Editor.setCodeMirrorValue($('#divMin'), JSON.stringify(query.queryParams.cursorOptions.min, null, 1));
-            }
-          }, 200);
-        }
+        renderOptionsArray({
+          options: query.queryParams.cursorOptions,
+          optionEnum: Enums.CURSOR_OPTIONS,
+          optionCombo: $('#cmbFindOneCursorOptions')
+        });
       }
     },
 
@@ -655,20 +699,11 @@ Querying.prototype = {
       render(query) {
         if (query.queryParams.selector) renderCodeMirror($('#divSelector'), query.queryParams.selector);
 
-        if (query.queryParams.options) {
-          const optionsArray = renderOptionsArray(query.queryParams.options, Enums.FINDONE_MODIFY_OPTIONS, $('#cmbFindOneModifyOptions'));
-
-          // options load
-          setTimeout(() => {
-            for (let i = 0; i < optionsArray.length; i += 1) {
-              const option = optionsArray[i];
-              const inverted = (_.invert(Enums.FINDONE_MODIFY_OPTIONS));
-              if (option === inverted.projection) UIComponents.Editor.setCodeMirrorValue($('#divProject'), JSON.stringify(query.queryParams.options.projection, null, 1));
-              if (option === inverted.sort) UIComponents.Editor.setCodeMirrorValue($('#divSort'), JSON.stringify(query.queryParams.options.sort, null, 1));
-              if (option === inverted.maxTimeMS) $('#inputMaxTimeMs').val(query.queryParams.options.maxTimeMS);
-            }
-          }, 200);
-        }
+        renderOptionsArray({
+          options: query.queryParams.options,
+          optionEnum: Enums.FINDONE_MODIFY_OPTIONS,
+          optionCombo: $('#cmbFindOneModifyOptions')
+        });
       }
     },
 
@@ -690,22 +725,11 @@ Querying.prototype = {
         if (query.queryParams.selector) renderCodeMirror($('#divSelector'), query.queryParams.selector);
         if (query.queryParams.replaceObject) renderCodeMirror($('#divReplacement'), query.queryParams.replaceObject);
 
-        if (query.queryParams.options) {
-          const optionsArray = renderOptionsArray(query.queryParams.options, Enums.FINDONE_MODIFY_OPTIONS, $('#cmbFindOneModifyOptions'));
-
-          // options load
-          setTimeout(() => {
-            for (let i = 0; i < optionsArray.length; i += 1) {
-              const option = optionsArray[i];
-              const inverted = (_.invert(Enums.FINDONE_MODIFY_OPTIONS));
-              if (option === inverted.projection) UIComponents.Editor.setCodeMirrorValue($('#divProject'), JSON.stringify(query.queryParams.options.projection, null, 1));
-              if (option === inverted.maxTimeMS) $('#inputMaxTimeMs').val(query.queryParams.options.maxTimeMS);
-              if (option === inverted.sort) UIComponents.Editor.setCodeMirrorValue($('#divSort'), JSON.stringify(query.queryParams.options.sort, null, 1));
-              if (option === inverted.upsert) $('#divUpsert').iCheck(query.queryParams.options.upsert ? 'check' : 'uncheck');
-              if (option === inverted.returnOriginal) $('#divReturnOriginal').iCheck(query.queryParams.options.returnOriginal ? 'check' : 'uncheck');
-            }
-          }, 200);
-        }
+        renderOptionsArray({
+          options: query.queryParams.options,
+          optionEnum: Enums.FINDONE_MODIFY_OPTIONS,
+          optionCombo: $('#cmbFindOneModifyOptions')
+        });
       }
     },
 
@@ -732,22 +756,11 @@ Querying.prototype = {
         if (query.queryParams.selector) renderCodeMirror($('#divSelector'), query.queryParams.selector);
         if (query.queryParams.setObject) renderCodeMirror($('#divSet'), query.queryParams.setObject);
 
-        if (query.queryParams.options) {
-          const optionsArray = renderOptionsArray(query.queryParams.options, Enums.FINDONE_MODIFY_OPTIONS, $('#cmbFindOneModifyOptions'));
-
-          // options load
-          setTimeout(() => {
-            for (let i = 0; i < optionsArray.length; i += 1) {
-              const option = optionsArray[i];
-              const inverted = (_.invert(Enums.FINDONE_MODIFY_OPTIONS));
-              if (option === inverted.projection) UIComponents.Editor.setCodeMirrorValue($('#divProject'), JSON.stringify(query.queryParams.options.projection, null, 1));
-              if (option === inverted.sort) UIComponents.Editor.setCodeMirrorValue($('#divSort'), JSON.stringify(query.queryParams.options.sort, null, 1));
-              if (option === inverted.maxTimeMS) $('#inputMaxTimeMs').val(query.queryParams.options.maxTimeMS);
-              if (option === inverted.upsert) $('#divUpsert').iCheck(query.queryParams.options.upsert ? 'check' : 'uncheck');
-              if (option === inverted.returnOriginal) $('#divReturnOriginal').iCheck(query.queryParams.options.returnOriginal ? 'check' : 'uncheck');
-            }
-          }, 200);
-        }
+        renderOptionsArray({
+          options: query.queryParams.options,
+          optionEnum: Enums.FINDONE_MODIFY_OPTIONS,
+          optionCombo: $('#cmbFindOneModifyOptions')
+        });
       }
     },
 
@@ -763,20 +776,11 @@ Querying.prototype = {
           }, 100);
         }
 
-        if (query.queryParams.options) {
-          const optionsArray = renderOptionsArray(query.queryParams.options, Enums.GEO_HAYSTACK_SEARCH_OPTIONS, $('#cmbGeoHaystackSearchOptions'));
-
-          // options load
-          setTimeout(() => {
-            for (let i = 0; i < optionsArray.length; i += 1) {
-              const option = optionsArray[i];
-              const inverted = (_.invert(Enums.GEO_HAYSTACK_SEARCH_OPTIONS));
-              if (option === inverted.search) UIComponents.Editor.setCodeMirrorValue($('#divSearch'), JSON.stringify(query.queryParams.options.search, null, 1));
-              if (option === inverted.maxDistance) $('#inputMaxDistance').val(query.queryParams.options.maxDistance);
-              if (option === inverted.limit) $('#inputLimit').val(query.queryParams.options.limit);
-            }
-          }, 200);
-        }
+        renderOptionsArray({
+          options: query.queryParams.options,
+          optionEnum: Enums.GEO_HAYSTACK_SEARCH_OPTIONS,
+          optionCombo: $('#cmbGeoHaystackSearchOptions')
+        });
       }
     },
 
@@ -791,26 +795,11 @@ Querying.prototype = {
             $('#inputYAxis').val(query.queryParams.yAxis);
           }, 100);
         }
-
-        if (query.queryParams.options) {
-          const optionsArray = renderOptionsArray(query.queryParams.options, Enums.GEO_NEAR_OPTIONS, $('#cmbGeoNearOptions'));
-
-          // options load
-          setTimeout(() => {
-            for (let i = 0; i < optionsArray.length; i += 1) {
-              const option = optionsArray[i];
-              const inverted = (_.invert(Enums.GEO_NEAR_OPTIONS));
-              if (option === inverted.query) UIComponents.Editor.setCodeMirrorValue($('#divSelector'), JSON.stringify(query.queryParams.options.query, null, 1));
-              if (option === inverted.maxDistance) $('#inputMaxDistance').val(query.queryParams.options.maxDistance);
-              if (option === inverted.minDistance) $('#inputMinDistance').val(query.queryParams.options.minDistance);
-              if (option === inverted.num) $('#inputMaxNumber').val(query.queryParams.options.num);
-              if (option === inverted.distanceMultiplier) $('#inputDistanceMultiplier').val(query.queryParams.options.distanceMultiplier);
-              if (option === inverted.spherical) $('#divSpherical').iCheck(query.queryParams.options.spherical ? 'check' : 'uncheck');
-              if (option === inverted.uniqueDocs) $('#divUniqueDocs').iCheck(query.queryParams.options.uniqueDocs ? 'check' : 'uncheck');
-              if (option === inverted.includeLocs) $('#inputIncludeLocs').iCheck(query.queryParams.options.includeLocs ? 'check' : 'uncheck');
-            }
-          }, 200);
-        }
+        renderOptionsArray({
+          options: query.queryParams.options,
+          optionEnum: Enums.GEO_NEAR_OPTIONS,
+          optionCombo: $('#cmbGeoNearOptions')
+        });
       }
     },
 
@@ -895,19 +884,11 @@ Querying.prototype = {
       render(query) {
         if (query.queryParams.docs) renderCodeMirror($('#divDocs'), query.queryParams.docs);
 
-        if (query.queryParams.options) {
-          const optionsArray = renderOptionsArray(query.queryParams.options, Enums.INSERT_MANY_OPTIONS, $('#cmbInsertManyOptions'));
-
-          // options load
-          setTimeout(() => {
-            for (let i = 0; i < optionsArray.length; i += 1) {
-              const option = optionsArray[i];
-              const inverted = (_.invert(Enums.INSERT_MANY_OPTIONS));
-              if (option === inverted.bypassDocumentValidation) $('#divBypassDocumentValidation').iCheck(query.queryParams.options.bypassDocumentValidation ? 'check' : 'uncheck');
-              if (option === inverted.serializeFunctions) $('#divSerializeFunctions').iCheck(query.queryParams.options.serializeFunctions ? 'check' : 'uncheck');
-            }
-          }, 200);
-        }
+        renderOptionsArray({
+          options: query.queryParams.options,
+          optionEnum: Enums.INSERT_MANY_OPTIONS,
+          optionCombo: $('#cmbInsertManyOptions')
+        });
       }
     },
 
@@ -938,26 +919,11 @@ Querying.prototype = {
         if (query.queryParams.map) renderFunction($('#divMap'), query.queryParams.map);
         if (query.queryParams.reduce) renderFunction($('#divReduce'), query.queryParams.reduce);
 
-        if (query.queryParams.options) {
-          const optionsArray = renderOptionsArray(query.queryParams.options, Enums.MAP_REDUCE_OPTIONS, $('#cmbMapReduceOptions'));
-
-          // options load
-          setTimeout(() => {
-            for (let i = 0; i < optionsArray.length; i += 1) {
-              const option = optionsArray[i];
-              const inverted = (_.invert(Enums.MAP_REDUCE_OPTIONS));
-              if (option === inverted.out) UIComponents.Editor.setCodeMirrorValue($('#divOut'), JSON.stringify(query.queryParams.options.out, null, 1));
-              if (option === inverted.query) UIComponents.Editor.setCodeMirrorValue($('#divSelector'), JSON.stringify(query.queryParams.options.query, null, 1));
-              if (option === inverted.sort) UIComponents.Editor.setCodeMirrorValue($('#divSort'), JSON.stringify(query.queryParams.options.sort, null, 1));
-              if (option === inverted.scope) UIComponents.Editor.setCodeMirrorValue($('#divScope'), JSON.stringify(query.queryParams.options.scope, null, 1));
-              if (option === inverted.finalize) UIComponents.Editor.setCodeMirrorValue($('#divFinalize'), JSON.stringify(query.queryParams.options.finalize, null, 1));
-              if (option === inverted.limit) $('#inputLimit').val(query.queryParams.options.limit);
-              if (option === inverted.verbose) $('#divVerbose').iCheck(query.queryParams.options.verbose ? 'check' : 'uncheck');
-              if (option === inverted.keeptemp) $('#divKeepTemp').iCheck(query.queryParams.options.keeptemp ? 'check' : 'uncheck');
-              if (option === inverted.bypassDocumentValidation) $('#divBypassDocumentValidation').iCheck(query.queryParams.options.bypassDocumentValidation ? 'check' : 'uncheck');
-            }
-          }, 200);
-        }
+        renderOptionsArray({
+          options: query.queryParams.options,
+          optionEnum: Enums.MAP_REDUCE_OPTIONS,
+          optionCombo: $('#cmbMapReduceOptions')
+        });
       }
     },
 
@@ -1016,18 +982,11 @@ Querying.prototype = {
         proceedQueryExecution('stats', { selectedCollection, options }, false, { options }, (!historyParams));
       },
       render(query) {
-        if (query.queryParams.options) {
-          const optionsArray = renderOptionsArray(query.queryParams.options, Enums.STATS_OPTIONS, $('#cmbStatsOptions'));
-
-          // options load
-          setTimeout(() => {
-            for (let i = 0; i < optionsArray.length; i += 1) {
-              const option = optionsArray[i];
-              const inverted = (_.invert(Enums.STATS_OPTIONS));
-              if (option === inverted.scale) $('#inputScale').val(query.queryParams.options.scale);
-            }
-          }, 200);
-        }
+        renderOptionsArray({
+          options: query.queryParams.options,
+          optionEnum: Enums.STATS_OPTIONS,
+          optionCombo: $('#cmbStatsOptions')
+        });
       }
     },
 

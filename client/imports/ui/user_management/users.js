@@ -1,11 +1,11 @@
 import { Communicator, ReactivityProvider } from '/client/imports/facades';
 import { Notification, ErrorHandler, SessionManager, UIComponents, ExtendedJSON } from '/client/imports/modules';
 import Helper from '/client/imports/helpers/helper';
+import UsermanagementHelper from './helper';
 
 const JSONEditor = require('jsoneditor');
 
 const UserManagementUsers = function () {
-
 };
 
 UserManagementUsers.prototype = {
@@ -181,32 +181,8 @@ UserManagementUsers.prototype = {
   },
 
   deleteUser() {
-    if (!SessionManager.get(SessionManager.strSessionUsermanagementUser)) return;
-
-    Notification.modal({
-      title: 'are-you-sure',
-      text: 'recover-not-possible',
-      type: 'warning',
-      callback: (isConfirm) => {
-        if (isConfirm) {
-          Notification.start('#btnCloseUMDB');
-          const command = { dropUser: SessionManager.get(SessionManager.strSessionUsermanagementUser).user };
-          const runOnAdminDB = $('#aRunOnAdminDBToFetchUsers').iCheck('update')[0].checked;
-
-          Communicator.call({
-            methodName: 'command',
-            args: { command, runOnAdminDB },
-            callback: (err, result) => {
-              if (err || result.error) ErrorHandler.showMeteorFuncError(err, result);
-              else {
-                this.initUsers();
-                Notification.success('deleted-successfully');
-              }
-            }
-          });
-        }
-      }
-    });
+    const command = { dropUser: SessionManager.get(SessionManager.strSessionUsermanagementUser).user };
+    UsermanagementHelper.proceedDroppingRoleOrUser('#btnCloseUMDB', command);
   },
 
   populateTableData(users) {

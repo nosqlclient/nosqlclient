@@ -142,6 +142,22 @@ const initChart = function ({ chartVariable, spanSelector, divSelector, data, to
   return chartVariable;
 };
 
+const proceedGettingReadWriteDataFromGlobalLock = function (result, data, lockField) {
+  if (result.globalLock && result.globalLock[lockField]) {
+    const readers = [];
+    const writers = [];
+    const time = new Date().getTime();
+
+    readers.push([time, result.globalLock[lockField].readers]);
+    writers.push([time, result.globalLock[lockField].writers]);
+
+    data.push({ data: readers, label: Helper.translate({ key: 'readers' }) });
+    data.push({ data: writers, label: Helper.translate({ key: 'writers' }) });
+
+    return result.globalLock[lockField].total;
+  }
+};
+
 DBStats.prototype = {
   clear() {
     if (this.interval) {
@@ -193,19 +209,7 @@ DBStats.prototype = {
   },
 
   poopulateActiveReadWriteData(result, data) {
-    if (result.globalLock && result.globalLock.activeClients) {
-      const readers = [];
-      const writers = [];
-      const time = new Date().getTime();
-
-      readers.push([time, result.globalLock.activeClients.readers]);
-      writers.push([time, result.globalLock.activeClients.writers]);
-
-      data.push({ data: readers, label: Helper.translate({ key: 'readers' }) });
-      data.push({ data: writers, label: Helper.translate({ key: 'writers' }) });
-
-      return result.globalLock.activeClients.total;
-    }
+    return proceedGettingReadWriteDataFromGlobalLock(result, data, 'activeClients');
   },
 
   fetchStatus() {
@@ -267,18 +271,7 @@ DBStats.prototype = {
   },
 
   poopulateQueuedReadWriteData(result, data) {
-    if (result.globalLock && result.globalLock.currentQueue) {
-      const readers = []; const writers = [];
-      const time = new Date().getTime();
-
-      readers.push([time, result.globalLock.currentQueue.readers]);
-      writers.push([time, result.globalLock.currentQueue.writers]);
-
-      data.push({ data: readers, label: Helper.translate({ key: 'readers' }) });
-      data.push({ data: writers, label: Helper.translate({ key: 'writers' }) });
-
-      return result.globalLock.currentQueue.total;
-    }
+    return proceedGettingReadWriteDataFromGlobalLock(result, data, 'currentQueue');
   },
 
   populateTopReadWriteData(data) {

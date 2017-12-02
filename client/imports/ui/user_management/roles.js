@@ -1,6 +1,7 @@
 import { Communicator, ReactivityProvider } from '/client/imports/facades';
 import { Notification, ErrorHandler, SessionManager, UIComponents } from '/client/imports/modules';
 import Helper from '/client/imports/helpers/helper';
+import UsermanagementHelper from './helper';
 
 const UserManagementRoles = function () {
 
@@ -606,32 +607,8 @@ UserManagementRoles.prototype = {
   },
 
   deleteRole() {
-    if (!SessionManager.get(SessionManager.strSessionUsermanagementRole)) return;
-    Notification.modal({
-      title: 'are-you-sure',
-      text: 'recover-not-possible',
-      type: 'warning',
-      callback: (isConfirm) => {
-        if (isConfirm) {
-          Notification.start('#btnCloseUMRoles');
-
-          const command = { dropRole: SessionManager.get(SessionManager.strSessionUsermanagementRole).role };
-          const runOnAdminDB = $('#aRunOnAdminDBToFetchUsers').iCheck('update')[0].checked;
-
-          Communicator.call({
-            methodName: 'command',
-            args: { command, runOnAdminDB },
-            callback: (err, result) => {
-              if (err || result.error) ErrorHandler.showMeteorFuncError(err, result);
-              else {
-                this.initRoles();
-                Notification.success('deleted-successfully');
-              }
-            }
-          });
-        }
-      }
-    });
+    const command = { dropRole: SessionManager.get(SessionManager.strSessionUsermanagementRole).role };
+    UsermanagementHelper.proceedDroppingRoleOrUser('#btnCloseUMRoles', command);
   }
 };
 
