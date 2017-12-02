@@ -286,6 +286,20 @@ const proceedGeoQueryExecution = function (historyParams, query, optionsEnum) {
   proceedQueryExecution(query, { selectedCollection, xAxis, yAxis, options }, false, { xAxis, yAxis, options }, (!historyParams));
 };
 
+const renderGeoQuery = function (query, optionEnum, optionCombo) {
+  if (query.queryParams.xAxis && query.queryParams.yAxis) {
+    setTimeout(() => {
+      $('#inputXAxis').val(query.queryParams.xAxis);
+      $('#inputYAxis').val(query.queryParams.yAxis);
+    }, 100);
+  }
+  renderOptionsArray({
+    options: query.queryParams.options,
+    optionEnum,
+    optionCombo
+  });
+};
+
 Querying.prototype = {
   initOptions(optionEnum, showRunOnAdmin, ...excludedOptions) {
     switch (optionEnum) {
@@ -769,18 +783,7 @@ Querying.prototype = {
         proceedGeoQueryExecution(historyParams, 'geoHaystackSearch', Enums.GEO_HAYSTACK_SEARCH_OPTIONS);
       },
       render(query) {
-        if (query.queryParams.xAxis && query.queryParams.yAxis) {
-          setTimeout(() => {
-            $('#inputXAxis').val(query.queryParams.xAxis);
-            $('#inputYAxis').val(query.queryParams.yAxis);
-          }, 100);
-        }
-
-        renderOptionsArray({
-          options: query.queryParams.options,
-          optionEnum: Enums.GEO_HAYSTACK_SEARCH_OPTIONS,
-          optionCombo: $('#cmbGeoHaystackSearchOptions')
-        });
+        renderGeoQuery(query, Enums.GEO_HAYSTACK_SEARCH_OPTIONS, $('#cmbGeoHaystackSearchOptions'));
       }
     },
 
@@ -789,17 +792,7 @@ Querying.prototype = {
         proceedGeoQueryExecution(historyParams, 'geoNear', Enums.GEO_NEAR_OPTIONS);
       },
       render(query) {
-        if (query.queryParams.xAxis && query.queryParams.yAxis) {
-          setTimeout(() => {
-            $('#inputXAxis').val(query.queryParams.xAxis);
-            $('#inputYAxis').val(query.queryParams.yAxis);
-          }, 100);
-        }
-        renderOptionsArray({
-          options: query.queryParams.options,
-          optionEnum: Enums.GEO_NEAR_OPTIONS,
-          optionCombo: $('#cmbGeoNearOptions')
-        });
+        renderGeoQuery(query, Enums.GEO_NEAR_OPTIONS, $('#cmbGeoNearOptions'));
       }
     },
 
