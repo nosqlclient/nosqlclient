@@ -607,8 +607,10 @@ UserManagementRoles.prototype = {
   },
 
   deleteRole() {
+    if (!SessionManager.get(SessionManager.strSessionUsermanagementRole)) return;
+
     const command = { dropRole: SessionManager.get(SessionManager.strSessionUsermanagementRole).role };
-    UsermanagementHelper.proceedDroppingRoleOrUser('#btnCloseUMRoles', command);
+    UsermanagementHelper.proceedDroppingRoleOrUser('#btnCloseUMRoles', command, () => { this.initRoles(); });
   }
 };
 

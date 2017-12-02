@@ -181,8 +181,10 @@ UserManagementUsers.prototype = {
   },
 
   deleteUser() {
+    if (!SessionManager.get(SessionManager.strSessionUsermanagementUser)) return;
+
     const command = { dropUser: SessionManager.get(SessionManager.strSessionUsermanagementUser).user };
-    UsermanagementHelper.proceedDroppingRoleOrUser('#btnCloseUMDB', command);
+    UsermanagementHelper.proceedDroppingRoleOrUser('#btnCloseUMDB', command, () => { this.initUsers(); });
   },
 
   populateTableData(users) {

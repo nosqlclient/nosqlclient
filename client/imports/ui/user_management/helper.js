@@ -1,14 +1,11 @@
-import {ErrorHandler, Notification, SessionManager} from "../../modules";
-import {Communicator} from "../../facades";
+import { ErrorHandler, Notification } from '/client/imports/modules';
+import { Communicator } from '/client/imports/facades';
 
 const UsermanagemenetHelper = function () {
-
 };
 
 UsermanagemenetHelper.prototype = {
-  proceedDroppingRoleOrUser(notificationButton, command ){
-    if (!SessionManager.get(SessionManager.strSessionUsermanagementUser)) return;
-
+  proceedDroppingRoleOrUser(notificationButton, command, successCallback) {
     Notification.modal({
       title: 'are-you-sure',
       text: 'recover-not-possible',
@@ -25,7 +22,7 @@ UsermanagemenetHelper.prototype = {
             callback: (err, result) => {
               if (err || result.error) ErrorHandler.showMeteorFuncError(err, result);
               else {
-                this.initUsers();
+                successCallback();
                 Notification.success('deleted-successfully');
               }
             }
