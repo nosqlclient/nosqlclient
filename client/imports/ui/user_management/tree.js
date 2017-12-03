@@ -56,6 +56,38 @@ const getInfo = function (args, methodName) {
   });
 };
 
+const executeCommand = function (command, runOnAdminDB, successCallback) {
+  Communicator.call({
+    methodName: 'command',
+    args: { command, runOnAdminDB },
+    callback: (err, result) => {
+      if (err || (result && result.error)) ErrorHandler.showMeteorFuncError(err, result);
+      else successCallback(result);
+      Notification.stop();
+    }
+  });
+};
+
+const selectNodeCallback = function (evt, data) {
+  $('#btnEditUser').hide();
+  $('#btnManageUsers').hide();
+  $('#btnManageRoles').hide();
+
+  if (this.loading) {
+    $('#userTree').jstree(true).deselect_node(data.node);
+    return;
+  }
+
+  const node = data.instance.get_node(data.selected[0]);
+  if (node.text === SessionManager.get(SessionManager.strSessionSelectionUserManagement)) return;
+
+  // clear texts
+  SessionManager.set(SessionManager.strSessionUsermanagementInfo, '');
+  SessionManager.set(SessionManager.strSessionSelectionUserManagement, this.defaultInformationText);
+
+  SessionManager.set(SessionManager.strSessionSelectionUserManagement, this.getNodeInformation(node));
+};
+
 UserManagementTree.prototype = {
   init() {
     Notification.start('#btnRefreshUsers');
@@ -85,89 +117,41 @@ UserManagementTree.prototype = {
 
     const runOnAdminDB = $('#aRunOnAdminDBToFetchUsers').iCheck('update')[0].checked;
     const self = this;
-    Communicator.call({
-      methodName: 'command',
-      args: { command, runOnAdminDB },
-      callback: (err, result) => {
-        if (err || result.error) ErrorHandler.showMeteorFuncError(err, result);
-        else {
-          const dbName = runOnAdminDB ? 'admin' : connection.databaseName;
-          const children = this.populateTreeChildrenForUsers(result.result.users);
-          const finalObject = {
-            core: {
-              data(node, callback) {
-                if (node.id === '#') {
-                  callback([
-                    {
-                      text: dbName,
-                      icon: 'fa fa-database',
-                      data: [{ db: true }],
-                      state: {
-                        opened: true,
-                      },
-                      children,
-                    },
-                  ]);
-                } else if (node.data[0].user) {
-                  const userInfoCommand = {
-                    usersInfo: { user: node.text, db: dbName },
-                    showCredentials: true,
-                    showPrivileges: true,
-                  };
-
-                  Communicator.call({
-                    methodName: 'command',
-                    args: { command: userInfoCommand, runOnAdminDB },
-                    callback: (userInfoCommandError, userInfoCommandResult) => {
-                      if (userInfoCommandError || userInfoCommandResult.error) ErrorHandler.showMeteorFuncError(userInfoCommandError, userInfoCommandResult);
-                      else callback(self.populateTreeChildrenForRoles(userInfoCommandResult.result.users[0]));
-                    }
-                  });
-                } else if (node.data[0].role) {
-                  const roleInfoCommand = {
-                    rolesInfo: { role: node.data[0].text, db: dbName },
-                    showPrivileges: true,
-                    showBuiltinRoles: true,
-                  };
-
-                  Communicator.call({
-                    methodName: 'command',
-                    args: { command: roleInfoCommand, runOnAdminDB },
-                    callback: (roleInfoCommandError, roleInfoCommandResult) => {
-                      if (roleInfoCommandError || roleInfoCommandResult.error) ErrorHandler.showMeteorFuncError(roleInfoCommandError, roleInfoCommandResult);
-                      else callback(self.populateTreeChildrenForPrivileges(roleInfoCommandResult.result.roles[0]));
-                    }
-                  });
-                }
-              },
-            },
-          };
-
-          const tree = $('#userTree');
-          tree.jstree(finalObject);
-
-          tree.bind('select_node.jstree', (evt, data) => {
-            $('#btnEditUser').hide();
-            $('#btnManageUsers').hide();
-            $('#btnManageRoles').hide();
-
-            if (this.loading) {
-              tree.jstree(true).deselect_node(data.node);
-              return;
+    executeCommand.call(this, command, runOnAdminDB, (result) => {
+      const dbName = runOnAdminDB ? 'admin' : connection.databaseName;
+      const children = this.populateTreeChildrenForUsers(result.result.users);
+      const finalObject = {
+        core: {
+          data(node, callback) {
+            if (node.id === '#') {
+              callback([
+                {
+                  text: dbName,
+                  icon: 'fa fa-database',
+                  data: [{ db: true }],
+                  state: {
+                    opened: true,
+                  },
+                  children,
+                },
+              ]);
+            } else if (node.data[0].user) {
+              executeCommand.call(this, { usersInfo: { user: node.text, db: dbName }, showCredentials: true, showPrivileges: true }, runOnAdminDB, (usersInfoResult) => {
+                callback(self.populateTreeChildrenForRoles(usersInfoResult.result.users[0]));
+              });
+            } else if (node.data[0].role) {
+              executeCommand.call(this, { rolesInfo: { role: node.data[0].text, db: dbName }, showPrivileges: true, showBuiltinRoles: true }, runOnAdminDB, (roleInfoCommandResult) => {
+                callback(self.populateTreeChildrenForPrivileges(roleInfoCommandResult.result.roles[0]));
+              });
             }
+          },
+        },
+      };
 
-            const node = data.instance.get_node(data.selected[0]);
-            if (node.text === SessionManager.get(SessionManager.strSessionSelectionUserManagement)) return;
-
-            // clear texts
-            SessionManager.set(SessionManager.strSessionUsermanagementInfo, '');
-            SessionManager.set(SessionManager.strSessionSelectionUserManagement, this.defaultInformationText);
-
-            SessionManager.set(SessionManager.strSessionSelectionUserManagement, this.getNodeInformation(node));
-          });
-          Notification.stop();
-        }
-      }
+      const tree = $('#userTree');
+      tree.jstree(finalObject);
+      tree.bind('select_node.jstree', selectNodeCallback.bind(this));
+      Notification.stop();
     });
   },
 
