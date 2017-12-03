@@ -65,7 +65,7 @@ const fillInformation = function (node) {
     SessionManager.set(SessionManager.strSessionUsermanagementManageSelection, node.data[0].text);
     this.getInfo({ roleName: node.data[0].text }, 'getRoleInfo');
   } else if (node.data[0].privilege) this.getInfo({ resource: node.data[0].privilegeType }, 'getResourceInfo');
-  else if (node.data[0].action) this.getActionInfo(node.text);
+  else if (node.data[0].action) this.getInfo({ action: node.text }, 'getActionInfo');
 };
 
 const selectNodeCallback = function (evt, data) {
@@ -156,6 +156,11 @@ UserManagementTree.prototype = {
     });
   },
 
+  getNodeInformation(node) {
+    if (!node.data || !node.data[0]) return this.defaultInformationText;
+    return node.text;
+  },
+
   getInfo(args, methodName) {
     Notification.start('#btnRefreshUsers');
     this.loading = true;
@@ -167,27 +172,6 @@ UserManagementTree.prototype = {
         if (err) SessionManager.set(SessionManager.strSessionUsermanagementInfo, err.message);
         else SessionManager.set(SessionManager.strSessionUsermanagementInfo, result);
 
-        this.loading = false;
-        Notification.stop();
-      }
-    });
-  },
-
-  getNodeInformation(node) {
-    if (!node.data || !node.data[0]) return this.defaultInformationText;
-    return node.text;
-  },
-
-  getActionInfo(action) {
-    Notification.start('#btnRefreshUsers');
-    this.loading = true;
-
-    Communicator.call({
-      methodName: 'getActionInfo',
-      args: { action },
-      callback: (err, result) => {
-        if (err) SessionManager.set(SessionManager.strSessionUsermanagementInfo, err.message);
-        else SessionManager.set(SessionManager.strSessionUsermanagementInfo, result);
         this.loading = false;
         Notification.stop();
       }
