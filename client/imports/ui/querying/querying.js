@@ -116,7 +116,7 @@ const proceedRendering = function ({ options, optionEnum, optionCombo, params })
 const proceedUpdateQueryExecution = function (historyParams, query) {
   const options = historyParams ? historyParams.options : QueryingOptions.getOptions(Enums.UPDATE_OPTIONS);
   const selector = getFromHistoryOrEditor(historyParams, $('#divSelector'));
-  let setObject = getFromHistoryOrEditor(historyParams, $('#divSet'), 'setObject');
+  let setObject = getFromHistoryOrEditor(historyParams, $('#divSet'), 'set');
 
   if (!setObject.$set) setObject = { $set: setObject };
 
@@ -355,7 +355,7 @@ Querying.prototype = {
 
     BulkWrite: {
       execute(historyParams) {
-        const operations = getFromHistoryOrEditor(historyParams, $('#divBulkWrite'));
+        const operations = getFromHistoryOrEditor(historyParams, $('#divBulkWrite'), 'bulkWrite');
         const options = historyParams ? historyParams.options : QueryingOptions.getOptions(Enums.BULK_WRITE_OPTIONS);
 
         if (!checkErrorField(operations, 'operations')) return;
@@ -451,7 +451,7 @@ Querying.prototype = {
     Distinct: {
       execute(historyParams) {
         const selector = getFromHistoryOrEditor(historyParams, $('#divSelector'));
-        const fieldName = historyParams ? historyParams.fieldName : $('#inputField').val();
+        const fieldName = historyParams ? historyParams.field : $('#inputField').val();
         const options = historyParams ? historyParams.options : QueryingOptions.getOptions(Enums.DISTINCT_OPTIONS);
 
         if (!checkErrorField(selector, 'selector')) return;
@@ -476,7 +476,7 @@ Querying.prototype = {
 
     DropIndex: {
       execute(historyParams) {
-        const indexName = historyParams ? historyParams.indexName : $('#inputName').val();
+        const indexName = historyParams ? historyParams.name : $('#inputName').val();
 
         proceedQueryExecution({
           methodName: 'dropIndex',
@@ -610,7 +610,7 @@ Querying.prototype = {
       execute(historyParams) {
         const options = historyParams ? historyParams.options : QueryingOptions.getOptions(Enums.FINDONE_MODIFY_OPTIONS);
         const selector = getFromHistoryOrEditor(historyParams, $('#divSelector'));
-        let setObject = getFromHistoryOrEditor(historyParams, $('#divSet'), 'setObject');
+        let setObject = getFromHistoryOrEditor(historyParams, $('#divSet'), 'set');
 
         if (!checkErrorField(selector, 'selector')) return;
         if (!checkErrorField(setObject, 'set')) return;
@@ -702,7 +702,7 @@ Querying.prototype = {
 
     IndexInformation: {
       execute(historyParams) {
-        const fullVal = historyParams ? historyParams.full : $('#divFullInformation').iCheck('update')[0].checked;
+        const fullVal = historyParams ? historyParams.fullInformation : $('#divFullInformation').iCheck('update')[0].checked;
 
         proceedQueryExecution({
           methodName: 'indexInformation',
