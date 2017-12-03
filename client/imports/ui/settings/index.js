@@ -12,7 +12,6 @@ Settings.prototype = {
     settings.autoCompleteShortcut = $('#inputAutocompleteShortcut').val();
     settings.scale = $('#cmbScale').val();
     settings.defaultResultView = $('#cmbResultView').val();
-    settings.maxAllowedFetchSize = $('#inputMaxAllowedFetchSize').val();
     settings.socketTimeoutInSeconds = $('#inputSocketTimeout').val();
     settings.connectionTimeoutInSeconds = $('#inputConnectionTimeout').val();
     settings.dbStatsScheduler = $('#inputDBStatsScheduler').val();
@@ -49,7 +48,6 @@ Settings.prototype = {
     const cmbLang = $('#cmbMongoclientLanguage');
     cmbLang.val(settings.language || 'en');
 
-    $('#inputMaxAllowedFetchSize').val(settings.maxAllowedFetchSize || 0);
     $('#inputSocketTimeout').val(settings.socketTimeoutInSeconds || 0);
     $('#inputConnectionTimeout').val(settings.connectionTimeoutInSeconds || 0);
     $('#inputDBStatsScheduler').val(settings.dbStatsScheduler || 3000);

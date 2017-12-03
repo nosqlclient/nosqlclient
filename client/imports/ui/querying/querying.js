@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Enums, Notification, ExtendedJSON, UIComponents, SessionManager } from '/client/imports/modules';
 import { QueryRender, QueryingOptions, CollectionUtil } from '/client/imports/ui';
-import { Communicator, ReactivityProvider } from '/client/imports/facades';
+import { Communicator } from '/client/imports/facades';
 import Helper from '/client/imports/helpers/helper';
 import QueryingHelper from './helper';
 
@@ -492,12 +492,17 @@ Querying.prototype = {
     },
 
     Find: {
-      proceedFindQuery(selector, cursorOptions, saveHistory, exportFormat) {
+      execute(historyParams, exportFormat) {
+        const cursorOptions = historyParams ? historyParams.cursorOptions : QueryingOptions.getOptions(Enums.CURSOR_OPTIONS);
+        const selector = getFromHistoryOrEditor(historyParams, $('#divSelector'));
+
+        if (!checkErrorField(selector, 'selector')) return;
+        if (!checkErrorField(cursorOptions)) return;
+
         if (exportFormat) {
           const selectedCollection = SessionManager.get(SessionManager.strSessionSelectedCollection);
           window.open(`export?format=${exportFormat}&
     selectedCollection=${selectedCollection}&selector=${JSON.stringify(selector)}&cursorOptions=${JSON.stringify(cursorOptions)}&sessionId=${Meteor.default_connection._lastSessionId}`);
-
           Notification.stop();
         } else {
           const executeExplain = $('#inputExplain').iCheck('update')[0].checked;
@@ -506,61 +511,9 @@ Querying.prototype = {
             args: { selector, cursorOptions, executeExplain },
             isAdmin: false,
             queryParams: { selector, cursorOptions, executeExplain },
-            saveHistory
+            saveHistory: (!historyParams)
           });
         }
-      },
-      checkAverageSize(count, avgObjSize, maxAllowedFetchSize) {
-        const totalBytes = (count * avgObjSize) / (1024 * 1024);
-        const totalMegabytes = Math.round(totalBytes * 100) / 100;
-
-        if (totalMegabytes > maxAllowedFetchSize) {
-          Notification.error('exceeds-max-size', null, { maxAllowedFetchSize, totalMegabytes });
-          return false;
-        }
-
-        return true;
-      },
-      execute(historyParams, exportFormat) {
-        const selectedCollection = SessionManager.get(SessionManager.strSessionSelectedCollection);
-        const maxAllowedFetchSize = Math.round(ReactivityProvider.findOne(ReactivityProvider.types.Settings).maxAllowedFetchSize * 100) / 100;
-        const cursorOptions = historyParams ? historyParams.cursorOptions : QueryingOptions.getOptions(Enums.CURSOR_OPTIONS);
-        const selector = getFromHistoryOrEditor(historyParams, $('#divSelector'));
-
-        if (!checkErrorField(selector, 'selector')) return;
-        if (!checkErrorField(cursorOptions)) return;
-
-        // max allowed fetch size  != 0 and there's no project option, check for size
-        if (maxAllowedFetchSize && maxAllowedFetchSize !== 0 && !(Enums.CURSOR_OPTIONS.PROJECT in cursorOptions)) {
-          // get stats to calculate fetched documents size from avgObjSize (stats could be changed, therefore we can't get it from html )
-          Communicator.call({
-            methodName: 'stats',
-            args: { selectedCollection },
-            callback: (statsError, statsResult) => {
-              if (statsError || statsResult.error || !(statsResult.result.avgObjSize)) this.proceedFindQuery(selector, cursorOptions, (!historyParams), exportFormat);
-              else if (Enums.CURSOR_OPTIONS.LIMIT in cursorOptions) {
-                const count = cursorOptions.limit;
-                if (this.checkAverageSize(count, statsResult.result.avgObjSize, maxAllowedFetchSize)) {
-                  this.proceedFindQuery(selector, cursorOptions, (!historyParams), exportFormat);
-                }
-              } else {
-                Communicator.call({
-                  methodName: 'count',
-                  args: { selectedCollection, selector },
-                  callback: (err, result) => {
-                    if (err || result.error) this.proceedFindQuery(selector, cursorOptions, (!historyParams), exportFormat);
-                    else {
-                      const count = result.result;
-                      if (this.checkAverageSize(count, statsResult.result.avgObjSize, maxAllowedFetchSize)) {
-                        this.proceedFindQuery(selector, cursorOptions, (!historyParams), exportFormat);
-                      }
-                    }
-                  }
-                });
-              }
-            }
-          });
-        } else this.proceedFindQuery(selector, cursorOptions, (!historyParams), exportFormat);
       },
 
       render(query) {
