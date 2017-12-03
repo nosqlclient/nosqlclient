@@ -41,7 +41,7 @@ IndexManagement.prototype = {
 
   proceedPreparingFormForView(index) {
     $('#addIndexModalTitle').html(index.name);
-    $('#inputIndexName').val(index.name);
+    $('#inputName').val(index.name);
     $('#btnSaveIndex').prop('disabled', true);
 
     if (index.key) {
@@ -80,7 +80,7 @@ IndexManagement.prototype = {
 
     $('.divField:visible').remove();
     $('.divFieldWeight:visible').remove();
-    $('#inputIndexName').val('');
+    $('#inputName').val('');
     $('#input2DBit').val('');
     $('#input2DMax').val('');
     $('#input2DMin').val('');
@@ -223,7 +223,7 @@ IndexManagement.prototype = {
     }
 
     const ttl = $('#inputTTL').val();
-    const indexName = $('#inputIndexName').val();
+    const indexName = $('#inputName').val();
     const index = { key: {} };
     let textExists = false; let twodExists = false; let twodSphereExists = false; let geoHaystackExists = false;
 

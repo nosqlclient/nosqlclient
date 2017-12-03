@@ -3,6 +3,7 @@ import { Enums, Notification, ExtendedJSON, UIComponents, SessionManager } from 
 import { QueryRender, QueryingOptions, CollectionUtil } from '/client/imports/ui';
 import { Communicator, ReactivityProvider } from '/client/imports/facades';
 import Helper from '/client/imports/helpers/helper';
+import QueryingHelper from './helper';
 
 const Querying = function () {};
 
@@ -72,143 +73,45 @@ const getFromHistoryOrEditor = function (historyParams, divSelector, historyFiel
   return ExtendedJSON.convertAndCheckJSON(getFromHistoryOrEditorString(historyParams, divSelector, historyField));
 };
 
-const fieldsCallback = function (option, inverted, options) {
-  const divProject = $('#divProject');
-  switch (option) {
-    case inverted.collation:
-      UIComponents.Editor.setCodeMirrorValue($('#divCollation'), JSON.stringify(options.collation, null, 1));
-      break;
-    case inverted.bypassDocumentValidation:
-      $('#divBypassDocumentValidation').iCheck(options.bypassDocumentValidation ? 'check' : 'uncheck');
-      break;
-    case inverted.maxTimeMS:
-      $('#inputMaxTimeMs').val(options.maxTimeMS);
-      break;
-    case inverted.allowDiskUse:
-      $('#divAllowDiskUse').iCheck(options.allowDiskUse ? 'check' : 'uncheck');
-      break;
-    case inverted.explain:
-      $('#divExecuteExplain').iCheck(options.explain ? 'check' : 'uncheck');
-      break;
-    case inverted.upsert:
-      $('#divUpsert').iCheck(options.upsert ? 'check' : 'uncheck');
-      break;
-    case inverted.ordered:
-      $('#inputOrdered').val(options.ordered);
-      break;
-    case inverted.limit:
-      $('#inputLimit').val(options.limit);
-      break;
-    case inverted.skip:
-      $('#inputSkip').val(options.skip);
-      break;
-    case inverted.max:
-      UIComponents.Editor.setCodeMirrorValue($('#divMax'), JSON.stringify(options.max, null, 1));
-      break;
-    case inverted.min:
-      UIComponents.Editor.setCodeMirrorValue($('#divMin'), JSON.stringify(options.min, null, 1));
-      break;
-    case inverted.unique:
-      $('#divUnique').iCheck(options.unique ? 'check' : 'uncheck');
-      break;
-    case inverted.dropDups:
-      $('#divDropDups').iCheck(options.dropDups ? 'check' : 'uncheck');
-      break;
-    case inverted.sparse:
-      $('#divSparse').iCheck(options.sparse ? 'check' : 'uncheck');
-      break;
-    case inverted.background:
-      $('#divBackground').iCheck(options.background ? 'check' : 'uncheck');
-      break;
-    case inverted.name:
-      $('#inputIndexName').val(options.name);
-      break;
-    case inverted.expireAfterSeconds:
-      $('#inputExpireAfterSeconds').val(options.expireAfterSeconds);
-      break;
-    case inverted.project:
-      UIComponents.Editor.setCodeMirrorValue(divProject, JSON.stringify(options.project, null, 1));
-      break;
-    case inverted.sort:
-      UIComponents.Editor.setCodeMirrorValue($('#divSort'), JSON.stringify(options.sort, null, 1));
-      break;
-    case inverted.projection:
-      UIComponents.Editor.setCodeMirrorValue(divProject, JSON.stringify(options.projection, null, 1));
-      break;
-    case inverted.returnOriginal:
-      $('#divReturnOriginal').iCheck(options.returnOriginal ? 'check' : 'uncheck');
-      break;
-    case inverted.search:
-      UIComponents.Editor.setCodeMirrorValue($('#divSearch'), JSON.stringify(options.search, null, 1));
-      break;
-    case inverted.maxDistance:
-      $('#inputMaxDistance').val(options.maxDistance);
-      break;
-    case inverted.query:
-      UIComponents.Editor.setCodeMirrorValue($('#divSelector'), JSON.stringify(options.query, null, 1));
-      break;
-    case inverted.minDistance:
-      $('#inputMinDistance').val(options.minDistance);
-      break;
-    case inverted.num:
-      $('#inputMaxNumber').val(options.num);
-      break;
-    case inverted.distanceMultiplier:
-      $('#inputDistanceMultiplier').val(options.distanceMultiplier);
-      break;
-    case inverted.spherical:
-      $('#divSpherical').iCheck(options.spherical ? 'check' : 'uncheck');
-      break;
-    case inverted.uniqueDocs:
-      $('#divUniqueDocs').iCheck(options.uniqueDocs ? 'check' : 'uncheck');
-      break;
-    case inverted.includeLocs:
-      $('#inputIncludeLocs').iCheck(options.includeLocs ? 'check' : 'uncheck');
-      break;
-    case inverted.serializeFunctions:
-      $('#divSerializeFunctions').iCheck(options.serializeFunctions ? 'check' : 'uncheck');
-      break;
-    case inverted.out:
-      UIComponents.Editor.setCodeMirrorValue($('#divOut'), JSON.stringify(options.out, null, 1));
-      break;
-    case inverted.scope:
-      UIComponents.Editor.setCodeMirrorValue($('#divScope'), JSON.stringify(options.scope, null, 1));
-      break;
-    case inverted.finalize:
-      UIComponents.Editor.setCodeMirrorValue($('#divFinalize'), JSON.stringify(options.finalize, null, 1));
-      break;
-    case inverted.verbose:
-      $('#divVerbose').iCheck(options.verbose ? 'check' : 'uncheck');
-      break;
-    case inverted.keeptemp:
-      $('#divKeepTemp').iCheck(options.keeptemp ? 'check' : 'uncheck');
-      break;
-    case inverted.scale:
-      $('#inputScale').val(options.scale);
-      break;
+// project +, projection / query, selector +
+const renderParams = function (queryParams) {
+  Object.keys(queryParams).forEach((param) => {
+    const { relatedJqueryDiv, relatedJqueryInput } = QueryingHelper.getRelatedDom(param);
 
-    default: break;
-  }
+    setTimeout(() => {
+      if (relatedJqueryDiv.length !== 0) {
+        if (relatedJqueryDiv.data('editor')) {
+          if (JSON.stringify(queryParams[param]).startsWith('"function')) {
+            let str = JSON.stringify(queryParams[param], null, 1).replace(/\\n/g, '\n');
+            str = str.substring(1, str.length - 1);
+            UIComponents.Editor.setCodeMirrorValue(relatedJqueryDiv, str);
+          } else UIComponents.Editor.setCodeMirrorValue(relatedJqueryDiv, JSON.stringify(queryParams[param], null, 1));
+        } else if (relatedJqueryDiv.find('input:checkbox').length !== 0) relatedJqueryDiv.iCheck(queryParams[param] ? 'check' : 'uncheck');
+      } else if (relatedJqueryInput.length !== 0) relatedJqueryInput.val(queryParams[param]);
+    }, 100);
+  });
 };
 
-const renderOptionsArray = function ({ options, optionEnum, optionCombo }) {
-  if (!options) return;
+const proceedRendering = function ({ options, optionEnum, optionCombo, params }) {
+  if (options) {
+    const optionsArray = [];
+    const inverted = (_.invert(optionEnum));
 
-  const optionsArray = [];
-  const inverted = (_.invert(optionEnum));
+    Object.keys(options).forEach((property) => {
+      if (inverted[property]) optionsArray.push(inverted[property]);
+    });
 
-  Object.keys(options).forEach((property) => {
-    if (inverted[property]) optionsArray.push((_.invert(optionEnum))[property]);
-  });
+    setTimeout(() => {
+      optionCombo.val(optionsArray).trigger('chosen:updated');
+      SessionManager.set(SessionManager.strSessionSelectedOptions, optionsArray);
+    }, 100);
 
-  setTimeout(() => {
-    optionCombo.val(optionsArray).trigger('chosen:updated');
-    SessionManager.set(SessionManager.strSessionSelectedOptions, optionsArray);
-  }, 100);
+    setTimeout(() => {
+      renderParams(options);
+    }, 200);
+  }
 
-  setTimeout(() => {
-    for (let i = 0; i < optionsArray.length; i += 1) fieldsCallback(optionsArray[i], inverted, options);
-  }, 200);
+  if (params) renderParams(params);
 };
 
 const proceedUpdateQueryExecution = function (historyParams, query) {
@@ -250,51 +153,6 @@ const proceedGeoQueryExecution = function (historyParams, query, optionsEnum) {
     isAdmin: false,
     queryParams: { xAxis, yAxis, options },
     saveHistory: (!historyParams)
-  });
-};
-
-const renderParams = function (queryParams) {
-  Object.keys(queryParams).forEach((param) => {
-    const capitalizedParam = param.charAt(0).toUpperCase() + param.slice(1).toLowerCase();
-    const relatedJqueryDiv = $(`#${`div${capitalizedParam}`}`);
-    const relatedJqueryInput = $(`#${`input${capitalizedParam}`}`);
-    setTimeout(() => {
-      if (relatedJqueryDiv.data('editor')) {
-        if (JSON.stringify(queryParams[param]).startsWith('"function')) {
-          let str = JSON.stringify(queryParams[param], null, 1).replace(/\\n/g, '\n');
-          str = str.substring(1, str.length - 1);
-          UIComponents.Editor.setCodeMirrorValue(relatedJqueryDiv, str);
-        } else UIComponents.Editor.setCodeMirrorValue(relatedJqueryDiv, JSON.stringify(queryParams[param], null, 1));
-      } else if (relatedJqueryDiv.find('input:checkbox')) relatedJqueryDiv.iCheck(queryParams[param] ? 'check' : 'uncheck');
-      else if (relatedJqueryInput) relatedJqueryInput.val(queryParams[param]);
-    }, 100);
-  });
-};
-
-const renderGeoQuery = function (query, optionEnum, optionCombo) {
-  renderParams(query.queryParams);
-  renderOptionsArray({
-    options: query.queryParams.options,
-    optionEnum,
-    optionCombo
-  });
-};
-
-const renderUpdateQuery = function (query, cmb) {
-  renderParams(query.queryParams);
-  renderOptionsArray({
-    options: query.queryParams.options,
-    optionEnum: Enums.UPDATE_OPTIONS,
-    optionCombo: $(`#${cmb}`)
-  });
-};
-
-const renderFindOneAndModify = function (query) {
-  renderParams(query.queryParams);
-  renderOptionsArray({
-    options: query.queryParams.options,
-    optionEnum: Enums.FINDONE_MODIFY_OPTIONS,
-    optionCombo: $('#cmbFindOneModifyOptions')
   });
 };
 
@@ -487,8 +345,8 @@ Querying.prototype = {
         });
       },
       render(query) {
-        renderParams(query.queryParams);
-        renderOptionsArray({
+        proceedRendering({
+          params: query.queryParams,
           options: query.queryParams.options,
           optionEnum: Enums.AGGREGATE_OPTIONS,
           optionCombo: $('#cmbAggregateOptions')
@@ -512,8 +370,8 @@ Querying.prototype = {
         });
       },
       render(query) {
-        renderParams(query.queryParams);
-        renderOptionsArray({
+        proceedRendering({
+          params: query.queryParams,
           options: query.queryParams.options,
           optionEnum: Enums.BULK_WRITE_OPTIONS,
           optionCombo: $('#cmbBulkWriteOptions')
@@ -537,8 +395,8 @@ Querying.prototype = {
         });
       },
       render(query) {
-        renderParams(query.queryParams);
-        renderOptionsArray({
+        proceedRendering({
+          params: query.queryParams,
           options: query.queryParams.options,
           optionEnum: Enums.COUNT_OPTIONS,
           optionCombo: $('#cmbCountOptions')
@@ -563,8 +421,8 @@ Querying.prototype = {
         });
       },
       render(query) {
-        renderParams(query.queryParams);
-        renderOptionsArray({
+        proceedRendering({
+          params: query.queryParams,
           options: query.queryParams.options,
           optionEnum: Enums.CREATE_INDEX_OPTIONS,
           optionCombo: $('#cmbCreateIndexOptions')
@@ -608,8 +466,8 @@ Querying.prototype = {
         });
       },
       render(query) {
-        renderParams(query.queryParams);
-        renderOptionsArray({
+        proceedRendering({
+          params: query.queryParams,
           options: query.queryParams.options,
           optionEnum: Enums.DISTINCT_OPTIONS,
           optionCombo: $('#cmbDistinctOptions')
@@ -619,13 +477,13 @@ Querying.prototype = {
 
     DropIndex: {
       execute(historyParams) {
-        const indexName = historyParams ? historyParams.indexName : $('#inputIndexName').val();
+        const indexName = historyParams ? historyParams.indexName : $('#inputName').val();
 
         proceedQueryExecution({
           methodName: 'dropIndex',
           args: { indexName },
           isAdmin: false,
-          queryParams: { indexName },
+          queryParams: { name: indexName },
           saveHistory: (!historyParams)
         });
       },
@@ -643,7 +501,7 @@ Querying.prototype = {
 
           Notification.stop();
         } else {
-          const executeExplain = $('#inputExecuteExplain').iCheck('update')[0].checked;
+          const executeExplain = $('#inputExplain').iCheck('update')[0].checked;
           proceedQueryExecution({
             methodName: 'find',
             args: { selector, cursorOptions, executeExplain },
@@ -707,8 +565,8 @@ Querying.prototype = {
       },
 
       render(query) {
-        renderParams(query.queryParams);
-        renderOptionsArray({
+        proceedRendering({
+          params: query.queryParams,
           options: query.queryParams.cursorOptions,
           optionEnum: Enums.CURSOR_OPTIONS,
           optionCombo: $('#cmbFindCursorOptions')
@@ -733,8 +591,8 @@ Querying.prototype = {
         });
       },
       render(query) {
-        renderParams(query.queryParams);
-        renderOptionsArray({
+        proceedRendering({
+          params: query.queryParams,
           options: query.queryParams.cursorOptions,
           optionEnum: Enums.CURSOR_OPTIONS,
           optionCombo: $('#cmbFindOneCursorOptions')
@@ -759,7 +617,12 @@ Querying.prototype = {
         });
       },
       render(query) {
-        renderFindOneAndModify(query);
+        proceedRendering({
+          params: query.queryParams,
+          options: query.queryParams.options,
+          optionEnum: Enums.FINDONE_MODIFY_OPTIONS,
+          optionCombo: $('#cmbFindOneModifyOptions')
+        });
       }
     },
 
@@ -782,7 +645,12 @@ Querying.prototype = {
         });
       },
       render(query) {
-        renderFindOneAndModify(query);
+        proceedRendering({
+          params: query.queryParams,
+          options: query.queryParams.options,
+          optionEnum: Enums.FINDONE_MODIFY_OPTIONS,
+          optionCombo: $('#cmbFindOneModifyOptions')
+        });
       }
     },
 
@@ -810,7 +678,12 @@ Querying.prototype = {
         });
       },
       render(query) {
-        renderFindOneAndModify(query);
+        proceedRendering({
+          params: query.queryParams,
+          options: query.queryParams.options,
+          optionEnum: Enums.FINDONE_MODIFY_OPTIONS,
+          optionCombo: $('#cmbFindOneModifyOptions')
+        });
       }
     },
 
@@ -819,7 +692,12 @@ Querying.prototype = {
         proceedGeoQueryExecution(historyParams, 'geoHaystackSearch', Enums.GEO_HAYSTACK_SEARCH_OPTIONS);
       },
       render(query) {
-        renderGeoQuery(query, Enums.GEO_HAYSTACK_SEARCH_OPTIONS, $('#cmbGeoHaystackSearchOptions'));
+        proceedRendering({
+          params: query.queryParams,
+          options: query.queryParams.options,
+          optionEnum: Enums.GEO_HAYSTACK_SEARCH_OPTIONS,
+          optionCombo: $('#cmbGeoHaystackSearchOptions')
+        });
       }
     },
 
@@ -828,7 +706,12 @@ Querying.prototype = {
         proceedGeoQueryExecution(historyParams, 'geoNear', Enums.GEO_NEAR_OPTIONS);
       },
       render(query) {
-        renderGeoQuery(query, Enums.GEO_NEAR_OPTIONS, $('#cmbGeoNearOptions'));
+        proceedRendering({
+          params: query.queryParams,
+          options: query.queryParams.options,
+          optionEnum: Enums.GEO_NEAR_OPTIONS,
+          optionCombo: $('#cmbGeoNearOptions')
+        });
       }
     },
 
@@ -898,8 +781,8 @@ Querying.prototype = {
         });
       },
       render(query) {
-        renderParams(query.queryParams);
-        renderOptionsArray({
+        proceedRendering({
+          params: query.queryParams,
           options: query.queryParams.options,
           optionEnum: Enums.INSERT_MANY_OPTIONS,
           optionCombo: $('#cmbInsertManyOptions')
@@ -933,8 +816,8 @@ Querying.prototype = {
         });
       },
       render(query) {
-        renderParams(query.queryParams);
-        renderOptionsArray({
+        proceedRendering({
+          params: query.queryParams,
           options: query.queryParams.options,
           optionEnum: Enums.MAP_REDUCE_OPTIONS,
           optionCombo: $('#cmbMapReduceOptions')
@@ -994,7 +877,7 @@ Querying.prototype = {
         });
       },
       render(query) {
-        renderOptionsArray({
+        proceedRendering({
           options: query.queryParams.options,
           optionEnum: Enums.STATS_OPTIONS,
           optionCombo: $('#cmbStatsOptions')
@@ -1007,7 +890,12 @@ Querying.prototype = {
         proceedUpdateQueryExecution(historyParams, 'updateMany');
       },
       render(query) {
-        renderUpdateQuery(query, 'cmbUpdateManyOptions');
+        proceedRendering({
+          params: query.queryParams,
+          options: query.queryParams.options,
+          optionEnum: Enums.UPDATE_OPTIONS,
+          optionCombo: $('#cmbUpdateManyOptions')
+        });
       }
     },
 
@@ -1016,7 +904,12 @@ Querying.prototype = {
         proceedUpdateQueryExecution(historyParams, 'updateOne');
       },
       render(query) {
-        renderUpdateQuery(query, 'cmbUpdateOneOptions');
+        proceedRendering({
+          params: query.queryParams,
+          options: query.queryParams.options,
+          optionEnum: Enums.UPDATE_OPTIONS,
+          optionCombo: $('#cmbUpdateOneOptions')
+        });
       }
     }
   }

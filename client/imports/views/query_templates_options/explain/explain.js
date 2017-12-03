@@ -3,8 +3,8 @@ import { Template } from 'meteor/templating';
 import './explain.html';
 
 Template.explain.onRendered(() => {
-  $('#divExecuteExplain').iCheck({
+  $('#divExplain').iCheck({
     checkboxClass: 'icheckbox_square-green',
   });
-  $('#inputExecuteExplain').iCheck('uncheck');
+  $('#inputExplain').iCheck('uncheck');
 });

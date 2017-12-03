@@ -26,7 +26,7 @@ Template.jsMode.onRendered(() => {
 });
 
 Template.keepTemp.onRendered(() => {
-  $('#divKeepTemp').iCheck({
+  $('#divKeeptemp').iCheck({
     checkboxClass: 'icheckbox_square-green',
   });
 });
