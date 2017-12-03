@@ -39,6 +39,23 @@ const populateRoles = function (result, user, key, index) {
   }
 };
 
+const getInfo = function (args, methodName) {
+  Notification.start('#btnRefreshUsers');
+  this.loading = true;
+
+  Communicator.call({
+    methodName,
+    args,
+    callback: (err, result) => {
+      if (err) SessionManager.set(SessionManager.strSessionUsermanagementInfo, err.message);
+      else SessionManager.set(SessionManager.strSessionUsermanagementInfo, result);
+
+      this.loading = false;
+      Notification.stop();
+    }
+  });
+};
+
 UserManagementTree.prototype = {
   init() {
     Notification.start('#btnRefreshUsers');
@@ -196,37 +213,11 @@ UserManagementTree.prototype = {
   },
 
   getResourceInfo(resourceType) {
-    Notification.start('#btnRefreshUsers');
-    this.loading = true;
-
-    Communicator.call({
-      methodName: 'getResourceInfo',
-      args: { resource: resourceType },
-      callback: (err, result) => {
-        if (err) SessionManager.set(SessionManager.strSessionUsermanagementInfo, err.message);
-        else SessionManager.set(SessionManager.strSessionUsermanagementInfo, result);
-
-        this.loading = false;
-        Notification.stop();
-      }
-    });
+    getInfo.call(this, { resource: resourceType }, 'getResourceInfo');
   },
 
   getRoleInfo(role) {
-    Notification.start('#btnRefreshUsers');
-    this.loading = true;
-
-    Communicator.call({
-      methodName: 'getRoleInfo',
-      args: { roleName: role },
-      callback: (err, result) => {
-        if (err) SessionManager.set(SessionManager.strSessionUsermanagementInfo, err.message);
-        else SessionManager.set(SessionManager.strSessionUsermanagementInfo, result);
-
-        this.loading = false;
-        Notification.stop();
-      }
-    });
+    getInfo.call(this, { roleName: role }, 'getRoleInfo');
   },
 
   populateTreeChildrenForPrivileges(role) {
