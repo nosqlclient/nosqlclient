@@ -73,7 +73,6 @@ const getFromHistoryOrEditor = function (historyParams, divSelector, historyFiel
   return ExtendedJSON.convertAndCheckJSON(getFromHistoryOrEditorString(historyParams, divSelector, historyField));
 };
 
-// project +, projection / query, selector +
 const renderParams = function (queryParams) {
   Object.keys(queryParams).forEach((param) => {
     const { relatedJqueryDiv, relatedJqueryInput } = QueryingHelper.getRelatedDom(param);

@@ -9,7 +9,6 @@ QueryingHelper.prototype = {
     else if (param === 'projection') capitalizedParam = 'Project';
     else capitalizedParam = param.charAt(0).toUpperCase() + param.slice(1);
 
-    console.log(capitalizedParam);
     const relatedJqueryDiv = $(`#${`div${capitalizedParam}`}`);
     const relatedJqueryInput = $(`#${`input${capitalizedParam}`}`);
 
