@@ -39,23 +39,6 @@ const populateRoles = function (result, user, key, index) {
   }
 };
 
-const getInfo = function (args, methodName) {
-  Notification.start('#btnRefreshUsers');
-  this.loading = true;
-
-  Communicator.call({
-    methodName,
-    args,
-    callback: (err, result) => {
-      if (err) SessionManager.set(SessionManager.strSessionUsermanagementInfo, err.message);
-      else SessionManager.set(SessionManager.strSessionUsermanagementInfo, result);
-
-      this.loading = false;
-      Notification.stop();
-    }
-  });
-};
-
 const executeCommand = function (command, runOnAdminDB, successCallback) {
   Communicator.call({
     methodName: 'command',
@@ -66,6 +49,23 @@ const executeCommand = function (command, runOnAdminDB, successCallback) {
       Notification.stop();
     }
   });
+};
+
+const fillInformation = function (node) {
+  if (!node.data || !node.data[0]) return;
+
+  if (node.data[0].user) {
+    SessionManager.set(SessionManager.strSessionUsermanagementManageSelection, node.text);
+    $('#btnEditUser').show();
+  } else if (node.data[0].db) {
+    SessionManager.set(SessionManager.strSessionUsermanagementManageSelection, node.text);
+    $('#btnManageUsers').show();
+    $('#btnManageRoles').show();
+  } else if (node.data[0].role) {
+    SessionManager.set(SessionManager.strSessionUsermanagementManageSelection, node.data[0].text);
+    this.getInfo({ roleName: node.data[0].text }, 'getRoleInfo');
+  } else if (node.data[0].privilege) this.getInfo({ resource: node.data[0].privilegeType }, 'getResourceInfo');
+  else if (node.data[0].action) this.getActionInfo(node.text);
 };
 
 const selectNodeCallback = function (evt, data) {
@@ -85,6 +85,7 @@ const selectNodeCallback = function (evt, data) {
   SessionManager.set(SessionManager.strSessionUsermanagementInfo, '');
   SessionManager.set(SessionManager.strSessionSelectionUserManagement, this.defaultInformationText);
 
+  fillInformation.call(this, node);
   SessionManager.set(SessionManager.strSessionSelectionUserManagement, this.getNodeInformation(node));
 };
 
@@ -155,28 +156,25 @@ UserManagementTree.prototype = {
     });
   },
 
-  getNodeInformation(node) {
-    if (!node.data || node.data[0].db || node.data[0].user) {
-      if (!node.data || !node.data[0]) return this.defaultInformationText;
+  getInfo(args, methodName) {
+    Notification.start('#btnRefreshUsers');
+    this.loading = true;
 
-      if (node.data[0].user) {
-        SessionManager.set(SessionManager.strSessionUsermanagementManageSelection, node.text);
-        $('#btnEditUser').show();
-      } else if (node.data[0].db) {
-        SessionManager.set(SessionManager.strSessionUsermanagementManageSelection, node.text);
-        $('#btnManageUsers').show();
-        $('#btnManageRoles').show();
+    Communicator.call({
+      methodName,
+      args,
+      callback: (err, result) => {
+        if (err) SessionManager.set(SessionManager.strSessionUsermanagementInfo, err.message);
+        else SessionManager.set(SessionManager.strSessionUsermanagementInfo, result);
+
+        this.loading = false;
+        Notification.stop();
       }
+    });
+  },
 
-      return this.defaultInformationText;
-    }
-
-    if (node.data[0].role) {
-      SessionManager.set(SessionManager.strSessionUsermanagementManageSelection, node.data[0].text);
-      this.getRoleInfo(node.data[0].text);
-    } else if (node.data[0].privilege) this.getResourceInfo(node.data[0].privilegeType);
-    else if (node.data[0].action) this.getActionInfo(node.text);
-
+  getNodeInformation(node) {
+    if (!node.data || !node.data[0]) return this.defaultInformationText;
     return node.text;
   },
 
@@ -194,14 +192,6 @@ UserManagementTree.prototype = {
         Notification.stop();
       }
     });
-  },
-
-  getResourceInfo(resourceType) {
-    getInfo.call(this, { resource: resourceType }, 'getResourceInfo');
-  },
-
-  getRoleInfo(role) {
-    getInfo.call(this, { roleName: role }, 'getRoleInfo');
   },
 
   populateTreeChildrenForPrivileges(role) {
@@ -253,11 +243,8 @@ UserManagementTree.prototype = {
 
   getPrivilegeType(resource) {
     if (!resource) return '';
-    if (resource.anyResource) return 'anyResource';
-    if (resource.cluster) return 'cluster';
+    if (Object.keys(resource).length === 1) return Object.keys(resource)[0];
     if (resource.db && resource.collection) return 'db+collection';
-    if (resource.db) return 'db';
-    if (resource.collection) return 'collection';
 
     return 'non-system';
   },
