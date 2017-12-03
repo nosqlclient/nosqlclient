@@ -7,6 +7,38 @@ const UserManagementTree = function () {
   this.defaultInformationText = '';
 };
 
+const populatePrivileges = function (result, role, key, index) {
+  for (let i = 0; i < role[key].length; i += 1) {
+    result[index].children.push({
+      data: [
+        {
+          privilege: true,
+          privilegeType: this.getPrivilegeType(role[key][i].resource),
+        }
+      ],
+      text: this.getPrivilegeText(role[key][i].resource),
+      icon: 'fa fa-gears',
+      children: this.getPrivilegeActions(role[key][i].actions),
+    });
+  }
+};
+
+const populateRoles = function (result, user, key, index) {
+  for (let i = 0; i < user[key].length; i += 1) {
+    result[index].children.push({
+      data: [
+        {
+          role: true,
+          text: user[key][i].role,
+        },
+      ],
+      text: `${user[key][i].role}@${user[key][i].db}`,
+      icon: 'fa fa-bars',
+      children: true,
+    });
+  }
+};
+
 UserManagementTree.prototype = {
   init() {
     Notification.start('#btnRefreshUsers');
@@ -218,45 +250,14 @@ UserManagementTree.prototype = {
       children: [],
     });
 
-    if (role.privileges) {
-      for (let i = 0; i < role.privileges.length; i += 1) {
-        result[0].children.push({
-          data: [
-            {
-              privilege: true,
-              privilegeType: this.getPrivilegeType(role.privileges[i].resource),
-            },
-          ],
-          text: this.getPrivilegeText(role.privileges[i].resource),
-          icon: 'fa fa-gears',
-          children: this.getPrivilegeActions(role.privileges[i].actions),
-        });
-      }
-    }
-
-    if (role.inheritedPrivileges) {
-      for (let i = 0; i < role.inheritedPrivileges.length; i += 1) {
-        result[1].children.push({
-          data: [
-            {
-              privilege: true,
-              privilegeType: this.getPrivilegeType(role.inheritedPrivileges[i].resource),
-            },
-          ],
-          text: this.getPrivilegeText(role.inheritedPrivileges[i].resource),
-          icon: 'fa fa-gears',
-          children: this.getPrivilegeActions(role.inheritedPrivileges[i].actions),
-        });
-      }
-    }
+    if (role.privileges) populatePrivileges.call(this, result, role, 'privileges', 0);
+    if (role.inheritedPrivileges) populatePrivileges.call(this, result, role, 'inheritedPrivileges', 1);
 
     return result;
   },
 
   getPrivilegeActions(actions) {
-    if (!actions) {
-      return [];
-    }
+    if (!actions) return [];
 
     const result = [];
     for (let i = 0; i < actions.length; i += 1) {
@@ -315,37 +316,9 @@ UserManagementTree.prototype = {
       children: [],
     });
 
-    if (user.roles) {
-      for (let i = 0; i < user.roles.length; i += 1) {
-        result[0].children.push({
-          data: [
-            {
-              role: true,
-              text: user.roles[i].role,
-            },
-          ],
-          text: `${user.roles[i].role}@${user.roles[i].db}`,
-          icon: 'fa fa-bars',
-          children: true,
-        });
-      }
-    }
+    if (user.roles) populateRoles(result, user, 'roles', 0);
+    if (user.inheritedRoles) populateRoles(result, user, 'inheritedRoles', 1);
 
-    if (user.inheritedRoles) {
-      for (let i = 0; i < user.inheritedRoles.length; i += 1) {
-        result[1].children.push({
-          data: [
-            {
-              role: true,
-              text: user.inheritedRoles[i].role,
-            },
-          ],
-          text: `${user.inheritedRoles[i].role}@${user.inheritedRoles[i].db}`,
-          icon: 'fa fa-bars',
-          children: true,
-        });
-      }
-    }
     return result;
   },
 
