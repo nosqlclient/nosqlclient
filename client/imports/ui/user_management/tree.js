@@ -89,6 +89,13 @@ const selectNodeCallback = function (evt, data) {
   SessionManager.set(SessionManager.strSessionSelectionUserManagement, this.getNodeInformation(node));
 };
 
+const createEmptyChildrenNode = function ({ text, isBuiltin = null, icon }) {
+  const result = { text, icon, children: [] };
+  if (isBuiltin !== null) result.data = [{ isBuiltin }];
+
+  return result;
+};
+
 UserManagementTree.prototype = {
   init() {
     Notification.start('#btnRefreshUsers');
@@ -178,26 +185,26 @@ UserManagementTree.prototype = {
     });
   },
 
+  populateTreeChildrenForRoles(user) {
+    if (!user) {
+      return [];
+    }
+    const result = [];
+    result.push(createEmptyChildrenNode({ text: 'Roles', icon: 'fa fa-list-alt' }));
+    result.push(createEmptyChildrenNode({ text: 'Inherited Roles', icon: 'fa fa-list-alt' }));
+
+    if (user.roles) populateRoles(result, user, 'roles', 0);
+    if (user.inheritedRoles) populateRoles(result, user, 'inheritedRoles', 1);
+
+    return result;
+  },
+
   populateTreeChildrenForPrivileges(role) {
     if (!role) return [];
 
     const result = [];
-    result.push({
-      text: 'Privileges',
-      data: [{
-        isBuiltin: role.isBuiltin,
-      }],
-      icon: 'fa fa-list-ul',
-      children: [],
-    });
-    result.push({
-      text: 'Inherited Privileges',
-      data: [{
-        isBuiltin: role.isBuiltin,
-      }],
-      icon: 'fa fa-list-ul',
-      children: [],
-    });
+    result.push(createEmptyChildrenNode({ text: 'Privileges', isBuiltin: role.isBuiltin, icon: 'fa fa-list-ul' }));
+    result.push(createEmptyChildrenNode({ text: 'Inherited Privileges', isBuiltin: role.isBuiltin, icon: 'fa fa-list-ul' }));
 
     if (role.privileges) populatePrivileges.call(this, result, role, 'privileges', 0);
     if (role.inheritedPrivileges) populatePrivileges.call(this, result, role, 'inheritedPrivileges', 1);
@@ -244,28 +251,6 @@ UserManagementTree.prototype = {
     if (type === 'non-system') return 'all non-system collections';
 
     return type;
-  },
-
-  populateTreeChildrenForRoles(user) {
-    if (!user) {
-      return [];
-    }
-    const result = [];
-    result.push({
-      text: 'Roles',
-      icon: 'fa fa-list-alt',
-      children: [],
-    });
-    result.push({
-      text: 'Inherited Roles',
-      icon: 'fa fa-list-alt',
-      children: [],
-    });
-
-    if (user.roles) populateRoles(result, user, 'roles', 0);
-    if (user.inheritedRoles) populateRoles(result, user, 'inheritedRoles', 1);
-
-    return result;
   },
 
   populateTreeChildrenForUsers(users) {
