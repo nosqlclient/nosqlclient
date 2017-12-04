@@ -67,12 +67,16 @@ const addData = function (index, existingData, data) {
   if (existingData.length >= (index + 1) && existingData[index].data && data[index].data) existingData[index].data.push(...data[index].data);
 };
 
+const replaceData = function (index, existingData, dataCountToKeep) {
+  if (existingData.length >= (index + 1) && existingData[index].data) existingData[index].data = existingData[index].data.slice(1, dataCountToKeep);
+};
+
 const mergeChartData = function (existingData, data, dataCountToKeep) {
   if (existingData[0].data.length >= dataCountToKeep) {
     existingData[0].data = existingData[0].data.slice(1, dataCountToKeep);
 
-    if (existingData.length >= 2 && existingData[1].data) existingData[1].data = existingData[1].data.slice(1, dataCountToKeep);
-    if (existingData.length >= 3 && existingData[2].data) existingData[2].data = existingData[2].data.slice(1, dataCountToKeep);
+    replaceData(1, existingData, dataCountToKeep);
+    replaceData(2, existingData, dataCountToKeep);
   }
 
   existingData[0].data.push(...data[0].data);

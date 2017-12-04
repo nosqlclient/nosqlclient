@@ -137,10 +137,10 @@ Meteor.methods({
     return MongoDB.execute({ selectedCollection, methodArray, sessionId });
   },
 
-  findOneAndReplace({ selectedCollection, selector, setObject, options, sessionId }) {
+  findOneAndReplace({ selectedCollection, selector, replacement, options, sessionId }) {
     const methodArray = [
       {
-        findOneAndReplace: [selector, setObject, options],
+        findOneAndReplace: [selector, replacement, options],
       },
     ];
     return MongoDB.execute({ selectedCollection, methodArray, sessionId });

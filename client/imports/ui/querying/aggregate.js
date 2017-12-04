@@ -30,7 +30,6 @@ Aggregate.prototype = {
 
       // open a new tab
       const tabID = QueryRender.clarifyTabID(SessionManager.strSessionUsedTabIDsAggregate);
-      const tabContent = QueryRender.getResultTabContent(tabID, 'Jsoneditor');
       const tabTitle = `${selectedCollection} - ${pipeline.length} stages`;
       QueryRender.setAllTabsInactive();
 
@@ -38,13 +37,8 @@ Aggregate.prototype = {
       resultTabs.append($(`<li><a href="#tab-${tabID}" data-toggle="tab"><i class="fa fa-book"></i>${tabTitle}
                             <button class="close" type="button" title="Close">×</button></a></li>`));
 
-      // set tab content
-      $('#resultTabContents').append(tabContent);
 
-      // show last tab
-      const lastTab = resultTabs.find('a:last');
-      lastTab.tab('show');
-
+      QueryRender.showLastTab(resultTabs, tabID);
       QueryRender.setResultToEditors(tabID, result, pipeline, selectedCollection);
     }
 

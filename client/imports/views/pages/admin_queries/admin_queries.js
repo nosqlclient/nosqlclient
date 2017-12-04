@@ -1,6 +1,7 @@
 import { Template } from 'meteor/templating';
 import { FlowRouter } from 'meteor/kadira:flow-router';
-import { Enums, SessionManager, Notification } from '/client/imports/modules';
+import { Enums, SessionManager } from '/client/imports/modules';
+import { QueryRender } from '/client/imports/ui';
 import Helper from '/client/imports/helpers/helper';
 import '/client/imports/views/query_templates/admin/add_user/add_user';
 import '/client/imports/views/query_templates/admin/build_info/build_info';
@@ -74,9 +75,7 @@ Template.adminQueries.events({
     }
   },
   'click #btnExecuteAdminQuery': function () {
-    const queryTemplate = SessionManager.get(SessionManager.strSessionSelectedQuery);
-    if (queryTemplate) Template[queryTemplate].executeQuery();
-    else Notification.warning('select-query');
+    QueryRender.executeQuery();
   },
 });
 

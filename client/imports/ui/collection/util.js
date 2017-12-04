@@ -8,20 +8,28 @@ const CollectionUtil = function () {
 
 };
 
-const specifyActiveClass = function (li, name) {
-  const liObject = $(li);
-  if (liObject[0].textContent.trim() === name) liObject.addClass('active');
-  else liObject.removeClass('active');
+const specifyActiveClass = function (selector, name) {
+  selector.find('li').each((index, li) => {
+    const liObject = $(li);
+    if (liObject[0].textContent.trim() === name) liObject.addClass('active');
+    else liObject.removeClass('active');
+  });
 };
 
 const getCollectionNameFromContextMenu = function (clickedItem) {
   if (clickedItem && clickedItem.context && clickedItem.context.innerText) return clickedItem.context.innerText.trim();
 };
 
+const deactivateListItems = function (selector) {
+  selector.find('li').each((index, li) => {
+    $(li).removeClass('active');
+  });
+};
+
 CollectionUtil.prototype = {
   setSessionForNavigation(name) {
-    $('#listCollectionNames').find('li').each((index, li) => { specifyActiveClass(li, name); });
-    $('#listSystemCollections').find('li').each((index, li) => { specifyActiveClass(li, name); });
+    specifyActiveClass($('#listCollectionNames'), name);
+    specifyActiveClass($('#listSystemCollections'), name);
 
     SessionManager.set(SessionManager.strSessionSelectedCollection, name);
   },
@@ -161,13 +169,8 @@ CollectionUtil.prototype = {
   },
 
   handleNavigationAndSessions() {
-    $('#listCollectionNames').find('li').each((index, li) => {
-      $(li).removeClass('active');
-    });
-
-    $('#listSystemCollections').find('li').each((index, li) => {
-      $(li).removeClass('active');
-    });
+    deactivateListItems($('#listCollectionNames'));
+    deactivateListItems($('#listSystemCollections'));
 
     SessionManager.set(SessionManager.strSessionSelectedCollection, null);
     SessionManager.set(SessionManager.strSessionSelectedQuery, null);
@@ -377,6 +380,24 @@ CollectionUtil.prototype = {
     });
 
     return { filterModal, addCollectionModal, convertToCappedModal, renameModal, validationRulesModal };
+  },
+
+  getCollectionNames(isSystem) {
+    const collectionNames = SessionManager.get(SessionManager.strSessionCollectionNames);
+    if (collectionNames) {
+      const result = [];
+      collectionNames.forEach((collectionName) => {
+        if (CollectionFilter.filterRegex.get() && !collectionName.name.match(new RegExp(CollectionFilter.filterRegex.get(), 'i'))) return;
+        if ($.inArray(collectionName.name, CollectionFilter.excludedCollectionsByFilter.get()) !== -1) return;
+
+        if (isSystem && collectionName.name.startsWith('system')) result.push(collectionName);
+        else if (!isSystem && !collectionName.name.startsWith('system')) result.push(collectionName);
+      });
+
+      return result;
+    }
+
+    return collectionNames;
   }
 };
 

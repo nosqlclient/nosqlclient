@@ -4,6 +4,10 @@ import { Notification } from '/client/imports/modules';
 import $ from 'jquery';
 import './connections.html';
 
+const setCurrentInputType = function (event, type) {
+  $(event.currentTarget).parent('span').siblings('input').attr('type', type);
+};
+
 Template.sslTemplate.onRendered(() => {
   Connection.initializeSSLTemplate();
 });
@@ -20,13 +24,13 @@ Template.connections.helpers({
 
 Template.connections.events({
   'mousedown .showpass': function (event) {
-    $(event.currentTarget).parent('span').siblings('input').attr('type', 'text');
+    setCurrentInputType(event, 'text');
   },
   'mouseup .showpass': function (event) {
-    $(event.currentTarget).parent('span').siblings('input').attr('type', 'password');
+    setCurrentInputType(event, 'password');
   },
   'mouseout .showpass': function (event) {
-    $(event.currentTarget).parent('span').siblings('input').attr('type', 'password');
+    setCurrentInputType(event, 'password');
   },
 
   'click #btnProceedConnecting': function () {

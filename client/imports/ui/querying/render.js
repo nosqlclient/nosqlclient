@@ -1,4 +1,5 @@
 import { Notification, SessionManager, UIComponents, ErrorHandler, Enums } from '/client/imports/modules';
+import { Template } from 'meteor/templating';
 import { ReactivityProvider, Communicator } from '/client/imports/facades';
 import Helper from '/client/imports/helpers/helper';
 import moment from 'moment';
@@ -11,6 +12,12 @@ const QueryRender = function () {
 };
 
 QueryRender.prototype = {
+  executeQuery() {
+    const queryTemplate = SessionManager.get(SessionManager.strSessionSelectedQuery);
+    if (queryTemplate) Template[queryTemplate].executeQuery();
+    else Notification.warning('select-query');
+  },
+
   setOptionsComboboxChangeEvent(cmb, sessionVar) {
     UIComponents.setOptionsComboboxChangeEvent(cmb, sessionVar || SessionManager.strSessionSelectedOptions);
   },
@@ -126,20 +133,13 @@ QueryRender.prototype = {
 
       // open a new tab
       const tabID = this.clarifyTabID();
-      const tabContent = this.getResultTabContent(tabID, settings.defaultResultView);
       const tabTitle = `${queryInfo} - ${SessionManager.get(SessionManager.strSessionSelectedCollection)}`;
       this.setAllTabsInactive();
 
       // set tab href
       resultTabs.append($(`<li><a href="#tab-${tabID}" data-toggle="tab"><i class="fa fa-book"></i>${tabTitle}<button class="close" type="button" title="Close">×</button></a></li>`));
 
-      // set tab content
-      $('#resultTabContents').append(tabContent);
-
-      // show last tab
-      const lastTab = resultTabs.find('a:last');
-      lastTab.tab('show');
-
+      this.showLastTab(resultTabs, tabID);
       this.setResultToEditors(tabID, result, queryParams, queryInfo);
     }
 
@@ -227,15 +227,11 @@ QueryRender.prototype = {
 
     let whichIsDisplayed = 'none';
     jsonViews.each(function () {
-      if ($(this).css('display') !== 'none') {
-        whichIsDisplayed = 'jsonEditor';
-      }
+      if ($(this).css('display') !== 'none') whichIsDisplayed = 'jsonEditor';
     });
 
     aceViews.each(function () {
-      if ($(this).css('display') !== 'none') {
-        whichIsDisplayed = 'aceEditor';
-      }
+      if ($(this).css('display') !== 'none') whichIsDisplayed = 'aceEditor';
     });
 
     return whichIsDisplayed;
@@ -393,6 +389,15 @@ QueryRender.prototype = {
         });
       }
     }
+  },
+
+  showLastTab(resultTabs, tabID) {
+    // set tab content
+    $('#resultTabContents').append(this.getResultTabContent(tabID, 'Jsoneditor'));
+
+    // show last tab
+    const lastTab = resultTabs.find('a:last');
+    lastTab.tab('show');
   }
 };
 

@@ -115,8 +115,7 @@ QueryWizard.prototype = {
           return;
         }
         chatDiv.append($(`<div class="right"><div class="author-name">Me </div> <div class="chat-message">${txt.val()}</div></div>`));
-        chatDiv.append($('<div class="left"><div class="author-name">Nosqlclient </div> <div class="chat-message active"></div></div>'));
-        chatDiv.find('.left').last().find('.chat-message').html(Helper.translate({ key: 'wizard_step_1' }));
+        addNosqlclientChatStep(chatDiv, Helper.translate({ key: 'wizard_step_1' }));
         txtDiv.css('display', 'none');
         cmbDiv.css('display', '');
         cmb.chosen({
@@ -151,8 +150,7 @@ QueryWizard.prototype = {
         if (this.selectedOption === '4' || this.selectedOption === '-4') {
           const convertedValue = ExtendedJSON.convertAndCheckJSON(this.txtValue);
           if (convertedValue.ERROR || Object.prototype.toString.call(convertedValue) !== '[object Array]') {
-            chatDiv.append($('<div class="left"><div class="author-name">Nosqlclient </div> <div class="chat-message active"></div></div>'));
-            chatDiv.find('.left').last().find('.chat-message').html(Helper.translate({ key: 'wizard_step_3_array_error' }));
+            addNosqlclientChatStep(chatDiv, Helper.translate({ key: 'wizard_step_3_array_error' }));
             break;
           }
         }
@@ -202,36 +200,12 @@ QueryWizard.prototype = {
       return this.redirectText;
     }
 
-    const setTxtField = function () {
-      txtDiv.css('display', '');
-      cmbDiv.css('display', 'none');
-      txt.val('');
-    };
+    txtDiv.css('display', '');
+    cmbDiv.css('display', 'none');
+    txt.val('');
 
-    if (this.selectedOption === '2' || this.selectedOption === '-2') {
-      setTxtField();
-      return Helper.translate({ key: 'wizard_step_2_option_2' });
-    }
-    if (this.selectedOption === '3') {
-      setTxtField();
-      return Helper.translate({ key: 'wizard_step_2_option_3' });
-    }
-    if (this.selectedOption === '-3') {
-      setTxtField();
-      return Helper.translate({ key: 'wizard_step_2_option_minus_3' });
-    }
-    if (this.selectedOption === '4' || this.selectedOption === '-4') {
-      setTxtField();
-      return Helper.translate({ key: 'wizard_step_2_option_4' });
-    }
-    if (this.selectedOption === '5' || this.selectedOption === '-5') {
-      setTxtField();
-      return Helper.translate({ key: 'wizard_step_2_option_5_6' });
-    }
-    if (this.selectedOption === '6' || this.selectedOption === '-6') {
-      setTxtField();
-      return Helper.translate({ key: 'wizard_step_2_option_5_6' });
-    }
+    if (this.selectedOption === '5' || this.selectedOption === '-5' || this.selectedOption === '6' || this.selectedOption === '-6') return Helper.translate({ key: 'wizard_step_2_option_5_6' });
+    return Helper.translate({ key: `wizard_step_2_option_${this.selectedOption.replace(/-/g, '')}` });
   },
 
   step3() {

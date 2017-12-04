@@ -11,9 +11,11 @@ const Connection = function () {
   this.selectedAuthType = new ReactiveVar('');
 };
 
-const toggleDivTemplate = function (divSelector, inputSelector) {
-  if (inputSelector.iCheck('update')[0].checked) divSelector.show();
-  else divSelector.hide();
+const setDivToggle = function (divUseSelector, divSelector, inputSelector) {
+  divUseSelector.on('ifToggled', () => {
+    if (inputSelector.iCheck('update')[0].checked) divSelector.show();
+    else divSelector.hide();
+  });
 };
 
 const sortArrayByName = function (obj) {
@@ -600,13 +602,9 @@ Connection.prototype = {
     $('#divConnectWithNoPrimary, #divUseSSL, #divUseSSH').iCheck({
       checkboxClass: 'icheckbox_square-green',
     });
-    $('#divUseSSH').on('ifToggled', () => {
-      toggleDivTemplate($('#divSshTemplate'), $('#inputUseSSH'));
-    });
 
-    $('#divUseSSL').on('ifToggled', () => {
-      toggleDivTemplate($('#divSslTemplate'), $('#inputUseSSL'));
-    });
+    setDivToggle($('#divUseSSH'), $('#divSshTemplate'), $('#inputUseSSH'));
+    setDivToggle($('#divUseSSL'), $('#divSslTemplate'), $('#inputUseSSL'));
   },
 
   disableFormsForUri() {

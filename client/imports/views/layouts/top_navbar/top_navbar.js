@@ -23,6 +23,14 @@ Template.topNavbar.onRendered(function () {
   $('#versionText').html(packageJson.version);
 });
 
+const toggleSideMenu = function (sideMenu) {
+  sideMenu.hide();
+  // For smoothly turn on menu
+  setTimeout(() => {
+    sideMenu.fadeIn(400);
+  }, 200);
+};
+
 Template.topNavbar.events({
   'click #btnProceedImportExport': function (event) {
     event.preventDefault();
@@ -93,22 +101,9 @@ Template.topNavbar.events({
     body.toggleClass('mini-navbar');
 
     // Enable smoothly hide/show menu
-    if (!body.hasClass('mini-navbar') || body.hasClass('body-small')) {
-      // Hide menu in order to smoothly turn on when maximize menu
-      sideMenu.hide();
-      // For smoothly turn on menu
-      setTimeout(() => {
-        sideMenu.fadeIn(400);
-      }, 200);
-    } else if (body.hasClass('fixed-sidebar')) {
-      sideMenu.hide();
-      setTimeout(() => {
-        sideMenu.fadeIn(400);
-      }, 100);
-    } else {
-      // Remove all inline style from jquery fadeIn  to reset menu state
-      sideMenu.removeAttr('style');
-    }
+    if (!body.hasClass('mini-navbar') || body.hasClass('body-small')) toggleSideMenu(sideMenu);
+    else if (body.hasClass('fixed-sidebar')) toggleSideMenu(sideMenu);
+    else sideMenu.removeAttr('style');
 
     setTimeout(() => {
       nav.removeAttr('style');

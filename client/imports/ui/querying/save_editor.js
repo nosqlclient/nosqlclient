@@ -22,14 +22,13 @@ Editor.prototype = {
     });
   },
 
-  checkAllElementsAreObject(arr, arr2) {
+  checkAllElementsAreObject(...arr) {
     let result = true;
-    arr.forEach((obj) => {
-      if (obj === null || typeof obj !== 'object') result = false;
-    });
 
-    arr2.forEach((obj) => {
-      if (obj === null || typeof obj !== 'object') result = false;
+    arr.forEach((ar) => {
+      ar.forEach((obj) => {
+        if (obj === null || typeof obj !== 'object') result = false;
+      });
     });
 
     return result;

@@ -187,6 +187,53 @@ const getGeoFinalObject = function (queryStr, cmbOptionsSelector, optionsEnum) {
   };
 };
 
+const getFindModifyFinalObject = function (queryStr) {
+  return {
+    execute(historyParams) {
+      const options = historyParams ? historyParams.options : QueryingOptions.getOptions(Enums.FINDONE_MODIFY_OPTIONS);
+      const selector = getFromHistoryOrEditor(historyParams, $('#divSelector'));
+
+      if (!checkErrorField(selector, 'selector')) return;
+      if (options.ERROR) {
+        Notification.error(options.ERROR);
+        return;
+      }
+
+      const args = { selector, options };
+      const queryParams = { selector, options };
+
+      if (queryStr === 'findOneAndUpdate') {
+        let setObject = getFromHistoryOrEditor(historyParams, $('#divSet'), 'set');
+        if (!checkErrorField(setObject, 'set')) return;
+        if (!setObject.$set) setObject = { $set: setObject };
+        args.setObject = setObject;
+        queryParams.set = setObject;
+      } else if (queryStr === 'findOneAndReplace') {
+        const replacement = getFromHistoryOrEditor(historyParams, $('#divReplacement'), 'replacement');
+        if (!checkErrorField(replacement, 'replacement')) return;
+        args.replacement = replacement;
+        queryParams.replacement = replacement;
+      }
+
+      proceedQueryExecution({
+        methodName: queryStr,
+        args,
+        isAdmin: false,
+        queryParams,
+        saveHistory: (!historyParams)
+      });
+    },
+    render(query) {
+      proceedRendering({
+        params: query.queryParams,
+        options: query.queryParams.options,
+        optionEnum: Enums.FINDONE_MODIFY_OPTIONS,
+        optionCombo: $('#cmbFindOneModifyOptions')
+      });
+    }
+  };
+};
+
 Querying.prototype = {
   initOptions(optionEnum, showRunOnAdmin, ...excludedOptions) {
     switch (optionEnum) {
@@ -584,92 +631,9 @@ Querying.prototype = {
       }
     },
 
-    FindOneAndDelete: {
-      execute(historyParams) {
-        const options = historyParams ? historyParams.options : QueryingOptions.getOptions(Enums.FINDONE_MODIFY_OPTIONS);
-        const selector = getFromHistoryOrEditor(historyParams, $('#divSelector'));
-
-        if (!checkErrorField(selector, 'selector')) return;
-        if (!checkErrorField(options)) return;
-
-        proceedQueryExecution({
-          methodName: 'findOneAndDelete',
-          args: { selector, options },
-          isAdmin: false,
-          queryParams: { selector, options },
-          saveHistory: (!historyParams)
-        });
-      },
-      render(query) {
-        proceedRendering({
-          params: query.queryParams,
-          options: query.queryParams.options,
-          optionEnum: Enums.FINDONE_MODIFY_OPTIONS,
-          optionCombo: $('#cmbFindOneModifyOptions')
-        });
-      }
-    },
-
-    FindOneAndReplace: {
-      execute(historyParams) {
-        const options = historyParams ? historyParams.options : QueryingOptions.getOptions(Enums.FINDONE_MODIFY_OPTIONS);
-        const selector = getFromHistoryOrEditor(historyParams, $('#divSelector'));
-        const replacement = getFromHistoryOrEditor(historyParams, $('#divReplacement'), 'replacement');
-
-        if (!checkErrorField(selector, 'selector')) return;
-        if (!checkErrorField(replacement, 'replacement')) return;
-        if (!checkErrorField(options)) return;
-
-        proceedQueryExecution({
-          methodName: 'findOneAndReplace',
-          args: { selector, replacement, options },
-          isAdmin: false,
-          queryParams: { selector, replacement, options },
-          saveHistory: (!historyParams)
-        });
-      },
-      render(query) {
-        proceedRendering({
-          params: query.queryParams,
-          options: query.queryParams.options,
-          optionEnum: Enums.FINDONE_MODIFY_OPTIONS,
-          optionCombo: $('#cmbFindOneModifyOptions')
-        });
-      }
-    },
-
-    FindOneAndUpdate: {
-      execute(historyParams) {
-        const options = historyParams ? historyParams.options : QueryingOptions.getOptions(Enums.FINDONE_MODIFY_OPTIONS);
-        const selector = getFromHistoryOrEditor(historyParams, $('#divSelector'));
-        let setObject = getFromHistoryOrEditor(historyParams, $('#divSet'), 'set');
-
-        if (!checkErrorField(selector, 'selector')) return;
-        if (!checkErrorField(setObject, 'set')) return;
-        if (!setObject.$set) setObject = { $set: setObject };
-
-        if (options.ERROR) {
-          Notification.error(options.ERROR);
-          return;
-        }
-
-        proceedQueryExecution({
-          methodName: 'findOneAndUpdate',
-          args: { selector, setObject, options },
-          isAdmin: false,
-          queryParams: { selector, set: setObject, options },
-          saveHistory: (!historyParams)
-        });
-      },
-      render(query) {
-        proceedRendering({
-          params: query.queryParams,
-          options: query.queryParams.options,
-          optionEnum: Enums.FINDONE_MODIFY_OPTIONS,
-          optionCombo: $('#cmbFindOneModifyOptions')
-        });
-      }
-    },
+    FindOneAndDelete: getFindModifyFinalObject('findOneAndDelete'),
+    FindOneAndReplace: getFindModifyFinalObject('findOneAndReplace'),
+    FindOneAndUpdate: getFindModifyFinalObject('findOneAndUpdate'),
 
     GeoHayStackSearch: getGeoFinalObject('geoHaystackSearch', $('#cmbGeoHaystackSearchOptions', Enums.GEO_HAYSTACK_SEARCH_OPTIONS)),
     GeoNear: getGeoFinalObject('geoNear', $('#cmbGeoNearOptions', Enums.GEO_NEAR_OPTIONS)),

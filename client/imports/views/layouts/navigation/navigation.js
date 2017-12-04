@@ -117,36 +117,10 @@ Template.navigation.helpers({
   },
 
   getCollectionNames() {
-    const collectionNames = SessionManager.get(SessionManager.strSessionCollectionNames);
-    if (collectionNames) {
-      const result = [];
-      collectionNames.forEach((collectionName) => {
-        if (CollectionFilter.filterRegex.get() && !collectionName.name.match(new RegExp(CollectionFilter.filterRegex.get(), 'i'))) return;
-        if ($.inArray(collectionName.name, CollectionFilter.excludedCollectionsByFilter.get()) !== -1) return;
-
-        if (!collectionName.name.startsWith('system')) result.push(collectionName);
-      });
-
-      return result;
-    }
-
-    return collectionNames;
+    return CollectionUtil.getCollectionNames();
   },
 
   getSystemCollectionNames() {
-    const collectionNames = SessionManager.get(SessionManager.strSessionCollectionNames);
-    if (collectionNames) {
-      const result = [];
-      collectionNames.forEach((collectionName) => {
-        if (CollectionFilter.filterRegex.get() && !collectionName.name.match(new RegExp(CollectionFilter.filterRegex.get(), 'i'))) return;
-        if ($.inArray(collectionName.name, CollectionFilter.excludedCollectionsByFilter.get()) !== -1) return;
-
-        if (collectionName.name.startsWith('system')) result.push(collectionName);
-      });
-
-      return result;
-    }
-
-    return collectionNames;
+    return CollectionUtil.getCollectionNames(true);
   },
 });

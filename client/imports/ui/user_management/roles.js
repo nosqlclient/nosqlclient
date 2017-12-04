@@ -36,6 +36,22 @@ const isBuiltinRole = function () {
   }
 };
 
+const getActionColumn = function ({ isBuiltin = false, actionType = 'DELETE', targetIndex = 2, editClass = 'editor_edit_privilege', deleteClass = 'editor_delete' }) {
+  return {
+    targets: [targetIndex],
+    data: null,
+    width: '5%',
+    render(data, type, full) {
+      if (isBuiltin || full.isBuiltin) {
+        if (actionType === 'VIEW') return `<a href="" title="View" class="${editClass}"><i class="fa fa-eye text-navy"></i></a>`;
+        return '<a href="" title="Not Allowed"><i class="fa fa-ban text-navy"></i></a>';
+      }
+      if (actionType === 'DELETE') return `<a href="" title="Delete" class="${deleteClass}"><i class="fa fa-remove text-navy"></i></a>`;
+      return `<a href="" title="Edit" class="${editClass}"><i class="fa fa-edit text-navy"></i></a>`;
+    }
+  };
+};
+
 UserManagementRoles.prototype = {
   addInheritRole() {
     const db = $('#cmbDatabasesForInheritRole').val();
@@ -248,19 +264,7 @@ UserManagementRoles.prototype = {
         { data: 'role', width: '50%' },
         { data: 'db', width: '45%' },
       ],
-      columnDefs: [
-        {
-          targets: [2],
-          data: null,
-          width: '5%',
-          render() {
-            if (role && role.isBuiltin) {
-              return '<a href="" title="Not Allowed"><i class="fa fa-ban text-navy"></i></a>';
-            }
-            return '<a href="" title="Delete" class="editor_delete"><i class="fa fa-remove text-navy"></i></a>';
-          },
-        }
-      ]
+      columnDefs: [getActionColumn({ isBuiltin: role && role.isBuiltin })]
     });
   },
 
@@ -273,30 +277,7 @@ UserManagementRoles.prototype = {
         { data: 'resource', width: '40%' },
       ],
       columnDefs: [
-        {
-          targets: [2],
-          data: null,
-          width: '5%',
-          render() {
-            if (role && role.isBuiltin) {
-              return '<a href="" title="Not Allowed"><i class="fa fa-ban text-navy"></i></a>';
-            }
-
-            return '<a href="" title="Edit" class="editor_edit_privilege"><i class="fa fa-edit text-navy"></i></a>';
-          },
-        },
-        {
-          targets: [3],
-          data: null,
-          width: '5%',
-          render() {
-            if (role && role.isBuiltin) {
-              return '<a href="" title="Not Allowed"><i class="fa fa-ban text-navy"></i></a>';
-            }
-            return '<a href="" title="Delete" class="editor_delete"><i class="fa fa-remove text-navy"></i></a>';
-          },
-        },
-      ]
+        getActionColumn({ isBuiltin: role && role.isBuiltin }), getActionColumn({ isBuiltin: role && role.isBuiltin, actionType: 'EDIT', targetIndex: 3 })]
     });
   },
 
@@ -473,7 +454,7 @@ UserManagementRoles.prototype = {
     Communicator.call({
       methodName: 'getDatabases',
       callback: (err, result) => {
-        Helper.fillComboboxForDatabasesOrCollections({ cmb, err, result });
+        Helper.fillComboboxForDatabasesOrCollections({ cmb, err, result, stopNotif: false });
         this.initRolesForDBForInheritRole();
       }
     });
@@ -561,28 +542,8 @@ UserManagementRoles.prototype = {
               { data: 'isBuiltin', width: '20%' },
             ],
             columnDefs: [
-              {
-                targets: [3],
-                data: null,
-                width: '5%',
-                render(data, type, full) {
-                  if (!full.isBuiltin) {
-                    return '<a href="" title="Edit" class="editor_edit"><i class="fa fa-edit text-navy"></i></a>';
-                  }
-                  return '<a href="" title="View" class="editor_edit"><i class="fa fa-eye text-navy"></i></a>';
-                },
-              },
-              {
-                targets: [4],
-                data: null,
-                width: '5%',
-                render(data, type, full) {
-                  if (!full.isBuiltin) {
-                    return '<a href="" title="Delete" class="editor_delete_role"><i class="fa fa-remove text-navy"></i></a>';
-                  }
-                  return '<a href="" title="Not Allowed"><i class="fa fa-ban text-navy"></i></a>';
-                },
-              }
+              getActionColumn({ actionType: 'VIEW', editClass: 'editor_edit', targetIndex: 3 }),
+              getActionColumn({ deleteClass: 'editor_delete_role', targetIndex: 4 })
             ]
           });
         }
