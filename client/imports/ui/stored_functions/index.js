@@ -4,6 +4,15 @@ import Helper from '/client/imports/helpers/helper';
 
 const StoredFunctions = function () {};
 
+const saveCallback = function (modal, err, result) {
+  if (err || result.error) ErrorHandler.showMeteorFuncError(err, result);
+  else {
+    Notification.success('saved-successfully');
+    modal.modal('hide');
+    this.init();
+  }
+};
+
 StoredFunctions.prototype = {
   init(isRefresh) {
     Notification.start('#btnAddNewStoredFunction');
@@ -86,13 +95,8 @@ StoredFunctions.prototype = {
       Communicator.call({
         methodName: 'updateOne',
         args: { selectedCollection: 'system.js', selector: { _id: data._id }, setObject: objectToSave },
-        callback: (err, result) => {
-          if (err || result.error) ErrorHandler.showMeteorFuncError(err, result);
-          else {
-            Notification.success('saved-successfully');
-            modal.modal('hide');
-            this.init();
-          }
+        callback: (err, res) => {
+          saveCallback.call(this, modal, err, res);
         }
       });
     } else {
@@ -100,13 +104,8 @@ StoredFunctions.prototype = {
       Communicator.call({
         methodName: 'insertMany',
         args: { selectedCollection: 'system.js', docs: [objectToSave] },
-        callback: (err, result) => {
-          if (err || result.error) ErrorHandler.showMeteorFuncError(err, result);
-          else {
-            Notification.success('saved-successfully');
-            modal.modal('hide');
-            this.init();
-          }
+        callback: (err, res) => {
+          saveCallback.call(this, modal, err, res);
         }
       });
     }

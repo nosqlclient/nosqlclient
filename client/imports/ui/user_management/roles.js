@@ -28,6 +28,14 @@ const proceedCreatingCollectionsCombobox = function (cmb, collectionToSelect, cm
   if (stopLadda) Notification.stop();
 };
 
+const isBuiltinRole = function () {
+  if (SessionManager.get(SessionManager.strSessionUsermanagementRole) &&
+    SessionManager.get(SessionManager.strSessionUsermanagementRole).isBuiltin && $('#addEditRoleModalTitle').text() === Helper.translate({ key: 'edit_role' })) {
+    Notification.warning('builtin-roles-read-only');
+    return true;
+  }
+};
+
 UserManagementRoles.prototype = {
   addInheritRole() {
     const db = $('#cmbDatabasesForInheritRole').val();
@@ -149,11 +157,7 @@ UserManagementRoles.prototype = {
   },
 
   addNewInheritRoleToRole() {
-    if (SessionManager.get(SessionManager.strSessionUsermanagementRole) &&
-      SessionManager.get(SessionManager.strSessionUsermanagementRole).isBuiltin && $('#addEditRoleModalTitle').text() === Helper.translate({ key: 'edit_role' })) {
-      Notification.warning('builtin-roles-read-only');
-      return;
-    }
+    if (isBuiltinRole()) return;
     Notification.start('#btnAddInheritRole');
 
     this.initDatabasesForInheritRole();
@@ -161,11 +165,7 @@ UserManagementRoles.prototype = {
   },
 
   addNewPrivilegeToRole() {
-    if (SessionManager.get(SessionManager.strSessionUsermanagementRole) &&
-      SessionManager.get(SessionManager.strSessionUsermanagementRole).isBuiltin && $('#addEditRoleModalTitle').text() === Helper.translate({ key: 'edit_role' })) {
-      Notification.warning('builtin-roles-read-only');
-      return;
-    }
+    if (isBuiltinRole()) return;
 
     $('#addEditPrivilegeModalTitle').text(Helper.translate({ key: 'add_privilege' }));
     $('#addEditPrivilegeModalText').text(`${SessionManager.get(SessionManager.strSessionUsermanagementRole) ? SessionManager.get(SessionManager.strSessionUsermanagementRole).role : ''}`);

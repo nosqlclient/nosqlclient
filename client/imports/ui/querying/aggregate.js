@@ -1,8 +1,8 @@
 import { Notification, UIComponents, Enums, ExtendedJSON, ErrorHandler, SessionManager } from '/client/imports/modules';
 import { Communicator } from '/client/imports/facades';
 import { QueryRender } from '/client/imports/ui';
-import Helper from '/client/imports/helpers/helper';
 import moment from 'moment';
+import QueryingHelper from './helper';
 
 const Aggregate = function () {
   this.stageNumbers = 0;
@@ -145,39 +145,7 @@ Aggregate.prototype = {
     });
 
     $('#aggregateHistoriesModal').on('shown.bs.modal', () => this.initAggregateHistories());
-
-    $.contextMenu({
-      selector: '#resultTabs li',
-      items: {
-        close_others: {
-          name: Helper.translate({ key: 'close_others' }),
-          icon: 'fa-times-circle',
-          callback() {
-            const tabId = $(this).children('a').attr('href');
-            const resultTabsLi = $('#resultTabs').find('li');
-            resultTabsLi.each((idx, li) => {
-              const select = $(li);
-              if (select.children('a').attr('href') !== tabId) {
-                $(select.children('a').attr('href')).remove();
-                select.remove();
-              }
-            });
-          },
-        },
-        close_all: {
-          name: Helper.translate({ key: 'close_all' }),
-          icon: 'fa-times',
-          callback() {
-            const resultTabsList = $('#resultTabs').find('li');
-            resultTabsList.each((idx, li) => {
-              const select = $(li);
-              $(select.children('a').attr('href')).remove();
-              select.remove();
-            });
-          },
-        },
-      },
-    });
+    QueryingHelper.initializeTabContextMenu();
   },
 
   execute() {

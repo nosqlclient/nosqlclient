@@ -10,6 +10,11 @@ const QueryWizard = function () {
   this.redirectText = "I'm redirecting you with your query, just press Execute";
 };
 
+const addNosqlclientChatStep = function (chatDiv, stepText) {
+  chatDiv.append($('<div class="left"><div class="author-name">Nosqlclient </div> <div class="chat-message active"></div></div>'));
+  chatDiv.find('.left').last().find('.chat-message').html(stepText);
+};
+
 QueryWizard.prototype = {
   init() {
     this.step = 1;
@@ -128,8 +133,7 @@ QueryWizard.prototype = {
         const stepText = this.step2();
         chatDiv.append($(`<div class="right"><div class="author-name">Me </div> <div class="chat-message">I want to retrieve documents that ${
           text}</div></div>`));
-        chatDiv.append($('<div class="left"><div class="author-name">Nosqlclient </div> <div class="chat-message active"></div></div>'));
-        chatDiv.find('.left').last().find('.chat-message').html(stepText);
+        addNosqlclientChatStep(chatDiv, stepText);
 
         this.step += 1;
         break;
@@ -151,8 +155,7 @@ QueryWizard.prototype = {
 
         const stepText = this.step3();
         chatDiv.append($(`<div class="right"><div class="author-name">Me </div> <div class="chat-message">${txt.val()}</div></div>`));
-        chatDiv.append($('<div class="left"><div class="author-name">Nosqlclient </div> <div class="chat-message active"></div></div>'));
-        chatDiv.find('.left').last().find('.chat-message').html(stepText);
+        addNosqlclientChatStep(chatDiv, stepText);
 
         this.step += 1;
         break;

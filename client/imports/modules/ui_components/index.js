@@ -1,5 +1,6 @@
 import { Querying, SessionManager } from '/client/imports/modules';
 import { ReactivityProvider } from '/client/imports/facades';
+import { AceEditor } from 'meteor/arch:ace-editor';
 import $ from 'jquery';
 import Helper from '/client/imports/helpers/helper';
 
@@ -148,6 +149,24 @@ UIComponents.prototype = {
   },
 
   Editor: {
+    getAceEditorValue(selector) {
+      return AceEditor.instance(selector).getValue();
+    },
+
+    setAceEditorValue({ selector, value }) {
+      AceEditor.instance(selector, {
+        mode: 'javascript',
+        theme: 'dawn',
+      }, (editor) => {
+        editor.$blockScrolling = Infinity;
+        editor.setOptions({
+          fontSize: '12pt',
+          showPrintMargin: false,
+        });
+        editor.setValue(JSON.stringify(value, null, '\t'), -1);
+      });
+    },
+
     initializeJSONEditor({ selector, options = {}, setDivData = true }) {
       const editorDiv = $(`#${selector}`);
       let jsonEditor = editorDiv.data('jsoneditor');

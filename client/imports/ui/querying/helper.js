@@ -1,8 +1,60 @@
+import Helper from '/client/imports/helpers/helper';
+
 const QueryingHelper = function () {
 
 };
 
 QueryingHelper.prototype = {
+  hideSaveFootersIfNecessary(resultTabs) {
+    if (resultTabs.find('li').length === 0 || resultTabs.find('li.active').length === 0) {
+      $('#divBrowseCollectionFooter').hide();
+      $('#divBrowseCollectionFindFooter').hide();
+    }
+  },
+
+  initializeTabContextMenu(getActiveTabHeader) {
+    $.contextMenu({
+      selector: '#resultTabs li',
+      items: {
+        close_others: {
+          name: Helper.translate({ key: 'close_others' }),
+          icon: 'fa-times-circle',
+          callback() {
+            const tabId = $(this).children('a').attr('href');
+            const resultTabs = $('#resultTabs').find('li');
+            resultTabs.each((idx, li) => {
+              const select = $(li);
+              if (select.children('a').attr('href') !== tabId) {
+                $(select.children('a').attr('href')).remove();
+                select.remove();
+              }
+            });
+
+            if (getActiveTabHeader) {
+              const activeTabHeader = getActiveTabHeader();
+              if (activeTabHeader !== 'findOne') $('#divBrowseCollectionFooter').hide();
+              if (activeTabHeader !== 'find') $('#divBrowseCollectionFindFooter').hide();
+            }
+          },
+        },
+        close_all: {
+          name: Helper.translate({ key: 'close_all' }),
+          icon: 'fa-times',
+          callback() {
+            const resultTabs = $('#resultTabs').find('li');
+            resultTabs.each((idx, li) => {
+              const select = $(li);
+              $(select.children('a').attr('href')).remove();
+              select.remove();
+            });
+
+            this.hideSaveFootersIfNecessary(resultTabs);
+          },
+        },
+      },
+    });
+  },
+
   getRelatedDom(param) {
     let capitalizedParam;
     if (param === 'query') capitalizedParam = 'Selector';

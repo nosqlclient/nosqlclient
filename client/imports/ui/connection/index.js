@@ -11,6 +11,18 @@ const Connection = function () {
   this.selectedAuthType = new ReactiveVar('');
 };
 
+const toggleDivTemplate = function (divSelector, inputSelector) {
+  if (inputSelector.iCheck('update')[0].checked) divSelector.show();
+  else divSelector.hide();
+};
+
+const sortArrayByName = function (obj) {
+  obj.sort((a, b) => {
+    if (a.name < b.name) { return -1; } else if (a.name > b.name) { return 1; }
+    return 0;
+  });
+};
+
 Connection.prototype = {
   prepareModal(modalTitle, editOrClone) {
     $('#addEditConnectionModalTitle').text(Helper.translate({ key: modalTitle }));
@@ -141,10 +153,7 @@ Connection.prototype = {
       callback: (err, result) => {
         if (err || result.error) ErrorHandler.showMeteorFuncError(err, result);
         else {
-          result.result.databases.sort((a, b) => {
-            if (a.name < b.name) { return -1; } else if (a.name > b.name) { return 1; }
-            return 0;
-          });
+          sortArrayByName(result.result.databases);
 
           UIComponents.DataTable.setupDatatable({
             selectorString: '#tblSwitchDatabases',
@@ -264,10 +273,7 @@ Connection.prototype = {
       callback: (err, result) => {
         if (err || result.error) ErrorHandler.showMeteorFuncError(err, result);
         else {
-          result.result.sort((a, b) => {
-            if (a.name < b.name) { return -1; } else if (a.name > b.name) { return 1; }
-            return 0;
-          });
+          sortArrayByName(result.result);
 
           SessionManager.set(SessionManager.strSessionCollectionNames, result.result);
 
@@ -595,15 +601,11 @@ Connection.prototype = {
       checkboxClass: 'icheckbox_square-green',
     });
     $('#divUseSSH').on('ifToggled', () => {
-      const divTemplate = $('#divSshTemplate');
-      if ($('#inputUseSSH').iCheck('update')[0].checked) divTemplate.show();
-      else divTemplate.hide();
+      toggleDivTemplate($('#divSshTemplate'), $('#inputUseSSH'));
     });
 
     $('#divUseSSL').on('ifToggled', () => {
-      const divTemplate = $('#divSslTemplate');
-      if ($('#inputUseSSL').iCheck('update')[0].checked) divTemplate.show();
-      else divTemplate.hide();
+      toggleDivTemplate($('#divSslTemplate'), $('#inputUseSSL'));
     });
   },
 

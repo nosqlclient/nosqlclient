@@ -155,6 +155,38 @@ const proceedGeoQueryExecution = function (historyParams, query, optionsEnum) {
   });
 };
 
+const getUpdateFinalObject = function (queryStr, cmbOptionsSelector) {
+  return {
+    execute(historyParams) {
+      proceedUpdateQueryExecution(historyParams, queryStr);
+    },
+    render(query) {
+      proceedRendering({
+        params: query.queryParams,
+        options: query.queryParams.options,
+        optionEnum: Enums.UPDATE_OPTIONS,
+        optionCombo: cmbOptionsSelector
+      });
+    }
+  };
+};
+
+const getGeoFinalObject = function (queryStr, cmbOptionsSelector, optionsEnum) {
+  return {
+    execute(historyParams) {
+      proceedGeoQueryExecution(historyParams, queryStr, optionsEnum);
+    },
+    render(query) {
+      proceedRendering({
+        params: query.queryParams,
+        options: query.queryParams.options,
+        optionEnum: optionsEnum,
+        optionCombo: cmbOptionsSelector
+      });
+    }
+  };
+};
+
 Querying.prototype = {
   initOptions(optionEnum, showRunOnAdmin, ...excludedOptions) {
     switch (optionEnum) {
@@ -639,33 +671,8 @@ Querying.prototype = {
       }
     },
 
-    GeoHayStackSearch: {
-      execute(historyParams) {
-        proceedGeoQueryExecution(historyParams, 'geoHaystackSearch', Enums.GEO_HAYSTACK_SEARCH_OPTIONS);
-      },
-      render(query) {
-        proceedRendering({
-          params: query.queryParams,
-          options: query.queryParams.options,
-          optionEnum: Enums.GEO_HAYSTACK_SEARCH_OPTIONS,
-          optionCombo: $('#cmbGeoHaystackSearchOptions')
-        });
-      }
-    },
-
-    GeoNear: {
-      execute(historyParams) {
-        proceedGeoQueryExecution(historyParams, 'geoNear', Enums.GEO_NEAR_OPTIONS);
-      },
-      render(query) {
-        proceedRendering({
-          params: query.queryParams,
-          options: query.queryParams.options,
-          optionEnum: Enums.GEO_NEAR_OPTIONS,
-          optionCombo: $('#cmbGeoNearOptions')
-        });
-      }
-    },
+    GeoHayStackSearch: getGeoFinalObject('geoHaystackSearch', $('#cmbGeoHaystackSearchOptions', Enums.GEO_HAYSTACK_SEARCH_OPTIONS)),
+    GeoNear: getGeoFinalObject('geoNear', $('#cmbGeoNearOptions', Enums.GEO_NEAR_OPTIONS)),
 
     Group: {
       execute(historyParams) {
@@ -837,33 +844,8 @@ Querying.prototype = {
       }
     },
 
-    UpdateMany: {
-      execute(historyParams) {
-        proceedUpdateQueryExecution(historyParams, 'updateMany');
-      },
-      render(query) {
-        proceedRendering({
-          params: query.queryParams,
-          options: query.queryParams.options,
-          optionEnum: Enums.UPDATE_OPTIONS,
-          optionCombo: $('#cmbUpdateManyOptions')
-        });
-      }
-    },
-
-    UpdateOne: {
-      execute(historyParams) {
-        proceedUpdateQueryExecution(historyParams, 'updateOne');
-      },
-      render(query) {
-        proceedRendering({
-          params: query.queryParams,
-          options: query.queryParams.options,
-          optionEnum: Enums.UPDATE_OPTIONS,
-          optionCombo: $('#cmbUpdateOneOptions')
-        });
-      }
-    }
+    UpdateMany: getUpdateFinalObject('updateMany', $('#cmbUpdateManyOptions')),
+    UpdateOne: getUpdateFinalObject('updateOne', $('#cmbUpdateOneOptions'))
   }
 };
 

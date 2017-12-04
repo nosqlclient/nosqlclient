@@ -1,8 +1,8 @@
 import { Notification, SessionManager, UIComponents, ErrorHandler, Enums } from '/client/imports/modules';
 import { ReactivityProvider, Communicator } from '/client/imports/facades';
 import Helper from '/client/imports/helpers/helper';
-import { AceEditor } from 'meteor/arch:ace-editor';
 import moment from 'moment';
+import QueryingHelper from './helper';
 
 require('jquery-contextmenu');
 
@@ -39,9 +39,7 @@ QueryRender.prototype = {
     const whichIsDisplayed = this.getWhichResultViewShowing();
     if (whichIsDisplayed === 'aceEditor') {
       const foundAceEditor = resultContents.find('div.active').find('pre').attr('id');
-      if (foundAceEditor) {
-        return AceEditor.instance(foundAceEditor).getValue();
-      }
+      if (foundAceEditor) return UIComponents.Editor.getAceEditorValue(foundAceEditor);
     } else if (whichIsDisplayed === 'jsonEditor') {
       const tabId = resultTabs.find('li.active').find('a').attr('href');
       if ($(tabId).data('jsoneditor')) {
@@ -158,17 +156,7 @@ QueryRender.prototype = {
     this.jsonEditor.set(result);
 
     // set ace editor
-    AceEditor.instance('aceeditor', {
-      mode: 'javascript',
-      theme: 'dawn',
-    }, (editor) => {
-      editor.$blockScrolling = Infinity;
-      editor.setOptions({
-        fontSize: '12pt',
-        showPrintMargin: false,
-      });
-      editor.setValue(JSON.stringify(result, null, '\t'), -1);
-    });
+    UIComponents.Editor.setAceEditorValue({ selector: 'aceeditor', value: result });
 
     const jsonEditor = $('#divJsonEditor');
     const aceEditor = $('#divAceEditor');
@@ -209,30 +197,16 @@ QueryRender.prototype = {
     this.getEditor(tabID).set(result);
 
     // set ace
-    AceEditor.instance('activeAceEditor', {
-      mode: 'javascript',
-      theme: 'dawn',
-    }, (editor) => {
-      editor.$blockScrolling = Infinity;
-      editor.setOptions({
-        fontSize: '12pt',
-        showPrintMargin: false,
-      });
-      editor.setValue(JSON.stringify(result, null, '\t'), -1);
-    });
+    UIComponents.Editor.setAceEditorValue({ selector: 'activeAceEditor', value: result });
 
     const activeTab = $(`#tab-${tabID}`);
-
     // cache query data
     activeTab.data('query', {
       queryInfo,
       queryParams,
     });
-
     // cache find data for save button
-    if (queryInfo === 'find') {
-      activeTab.data('findData', result);
-    }
+    if (queryInfo === 'find') activeTab.data('findData', result);
   },
 
   clarifyTabID(sessionKey = SessionManager.strSessionUsedTabIDs) {
@@ -371,47 +345,7 @@ QueryRender.prototype = {
     });
     $('[data-toggle="tooltip"]').tooltip({ trigger: 'hover' });
 
-    const self = this;
-    $.contextMenu({
-      selector: '#resultTabs li',
-      items: {
-        close_others: {
-          name: Helper.translate({ key: 'close_others' }),
-          icon: 'fa-times-circle',
-          callback() {
-            const tabId = $(this).children('a').attr('href');
-            const resultTabs = $('#resultTabs').find('li');
-            resultTabs.each((idx, li) => {
-              const select = $(li);
-              if (select.children('a').attr('href') !== tabId) {
-                $(select.children('a').attr('href')).remove();
-                select.remove();
-              }
-            });
-
-            if (self.getActiveTabHeader() !== 'findOne') $('#divBrowseCollectionFooter').hide();
-            if (self.getActiveTabHeader() !== 'find') $('#divBrowseCollectionFindFooter').hide();
-          },
-        },
-        close_all: {
-          name: Helper.translate({ key: 'close_all' }),
-          icon: 'fa-times',
-          callback() {
-            const resultTabs = $('#resultTabs').find('li');
-            resultTabs.each((idx, li) => {
-              const select = $(li);
-              $(select.children('a').attr('href')).remove();
-              select.remove();
-            });
-
-            if (resultTabs.find('li').length === 0 || resultTabs.find('li.active').length === 0) {
-              $('#divBrowseCollectionFooter').hide();
-              $('#divBrowseCollectionFindFooter').hide();
-            }
-          },
-        },
-      },
-    });
+    QueryingHelper.initializeTabContextMenu(this.getActiveTabHeader);
 
     const resultTabs = $('#resultTabs');
     resultTabs.on('show.bs.tab', (e) => {
@@ -434,11 +368,7 @@ QueryRender.prototype = {
     resultTabs.on('click', '.close', function () {
       $(this).parents('li').remove();
       $($(this).parents('a').attr('href')).remove();
-
-      if (resultTabs.find('li').length === 0 || resultTabs.find('li.active').length === 0) {
-        $('#divBrowseCollectionFooter').hide();
-        $('#divBrowseCollectionFindFooter').hide();
-      }
+      QueryingHelper.hideSaveFootersIfNecessary(resultTabs);
     });
 
     this.clearQueryIfAdmin();
