@@ -44,7 +44,6 @@
   "unknown-error":"Kötü birşeyler oldu, logları kontrol etsen iyi olur !",
   "collection-created-successfully":"__name__ koleksiyonu oluşturuldu",
   "collection-not-found":"__name__ koleksiyonu bulunamadı",
-  "collection-converted-successfully":"Koleksiyon başarıyla sınırlı koleksiyona dönüştürüldü",
   "name-same-with-old":"İsim bir öncekinden farklı olmalı",
   "collection-renamed-successfully":"Koleksiyon başarıyla yeniden __name__ olarak isimlendirildi",
   "are-you-sure":"Emin misin ?",

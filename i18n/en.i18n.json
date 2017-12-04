@@ -44,7 +44,6 @@
   "unknown-error":"Unknown error occurred, please check server logs",
   "collection-created-successfully":"Successfully created collection with name __name__",
   "collection-not-found":"Collection, __name__ not found",
-  "collection-converted-successfully":"Successfully converted collection to capped",
   "name-same-with-old":"Name should be different form previous one",
   "collection-renamed-successfully":"Successfully renamed collection as __name__",
   "are-you-sure":"Are you sure ?",

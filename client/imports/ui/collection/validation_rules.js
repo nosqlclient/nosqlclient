@@ -1,6 +1,7 @@
 import { Notification, ErrorHandler, UIComponents, SessionManager, ExtendedJSON } from '/client/imports/modules';
 import { Communicator, ReactivityProvider } from '/client/imports/facades';
 import Helper from '/client/imports/helpers/helper';
+import CollectionHelper from './helper';
 
 const CollectionValidationRules = function () {};
 
@@ -70,17 +71,7 @@ CollectionValidationRules.prototype = {
     command.validationLevel = validationLevel;
     command.validationAction = validationAction;
 
-    Communicator.call({
-      methodName: 'command',
-      args: { command },
-      callback: (err, result) => {
-        if (err || result.error) ErrorHandler.showMeteorFuncError(err, result);
-        else {
-          Notification.success('saved-successfully');
-          $('#validationRulesModal').modal('hide');
-        }
-      }
-    });
+    CollectionHelper.executeCommand(command, 'validationRulesModal');
   }
 };
 

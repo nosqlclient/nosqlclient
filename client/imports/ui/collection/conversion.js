@@ -1,5 +1,5 @@
-import { Notification, ErrorHandler } from '/client/imports/modules';
-import { Communicator } from '/client/imports/facades';
+import { Notification } from '/client/imports/modules';
+import CollectionHelper from './helper';
 
 const CollectionConversion = function () {
 };
@@ -21,22 +21,7 @@ CollectionConversion.prototype = {
       return;
     }
 
-    const command = {
-      convertToCapped: collection,
-      size: parseInt(size, 10),
-    };
-
-    Communicator.call({
-      methodName: 'command',
-      args: { command },
-      callback: (err, result) => {
-        if (err || result.error) ErrorHandler.showMeteorFuncError(err, result);
-        else {
-          Notification.success('collection-converted-successfully');
-          $('#convertToCappedModal').modal('hide');
-        }
-      }
-    });
+    CollectionHelper.executeCommand({ convertToCapped: collection, size: parseInt(size, 10) }, 'convertToCappedModal');
   }
 };
 
