@@ -354,22 +354,7 @@ IndexManagement.prototype = {
     }
 
     const settings = ReactivityProvider.findOne(ReactivityProvider.types.Settings);
-    let scale = 1;
-    let text = 'Bytes';
-    switch (settings.scale) {
-      case 'MegaBytes':
-        scale = 1024 * 1024;
-        text = 'MB';
-        break;
-      case 'KiloBytes':
-        scale = 1024;
-        text = 'KB';
-        break;
-      default:
-        scale = 1;
-        text = 'Bytes';
-        break;
-    }
+    const { scale, text } = Helper.getScaleAndText(settings.scale);
     return Number.isNaN(Number(size / scale).toFixed(2)) ? `0 ${text}` : `${Number(size / scale).toFixed(2)} ${text}`;
   },
 

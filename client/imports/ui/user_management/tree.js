@@ -190,8 +190,8 @@ UserManagementTree.prototype = {
       return [];
     }
     const result = [];
-    result.push(createEmptyChildrenNode({ text: 'Roles', icon: 'fa fa-list-alt' }));
-    result.push(createEmptyChildrenNode({ text: 'Inherited Roles', icon: 'fa fa-list-alt' }));
+    result.push(createEmptyChildrenNode({ text: Helper.translate({ key: 'roles' }), icon: 'fa fa-list-alt' }));
+    result.push(createEmptyChildrenNode({ text: Helper.translate({ key: 'inherited_roles' }), icon: 'fa fa-list-alt' }));
 
     if (user.roles) populateRoles(result, user, 'roles', 0);
     if (user.inheritedRoles) populateRoles(result, user, 'inheritedRoles', 1);
@@ -203,8 +203,8 @@ UserManagementTree.prototype = {
     if (!role) return [];
 
     const result = [];
-    result.push(createEmptyChildrenNode({ text: 'Privileges', isBuiltin: role.isBuiltin, icon: 'fa fa-list-ul' }));
-    result.push(createEmptyChildrenNode({ text: 'Inherited Privileges', isBuiltin: role.isBuiltin, icon: 'fa fa-list-ul' }));
+    result.push(createEmptyChildrenNode({ text: Helper.translate({ key: 'privileges' }), isBuiltin: role.isBuiltin, icon: 'fa fa-list-ul' }));
+    result.push(createEmptyChildrenNode({ text: Helper.translate({ key: 'inherited_privileges' }), isBuiltin: role.isBuiltin, icon: 'fa fa-list-ul' }));
 
     if (role.privileges) populatePrivileges.call(this, result, role, 'privileges', 0);
     if (role.inheritedPrivileges) populatePrivileges.call(this, result, role, 'inheritedPrivileges', 1);

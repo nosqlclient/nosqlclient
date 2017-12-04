@@ -79,40 +79,8 @@ const mergeChartData = function (existingData, data, dataCountToKeep) {
 };
 
 const getCorrectScales = function (settings, forMemory) {
-  let scale = 1;
-  let text = 'MB';
-  if (forMemory) {
-    switch (settings.scale) {
-      case 'KiloBytes':
-        scale = 1024;
-        text = 'KB';
-        break;
-      case 'Bytes':
-        scale = 1024 * 1024;
-        text = 'Bytes';
-        break;
-      default:
-        scale = 1;
-        text = 'MB';
-        break;
-    }
-  } else {
-    switch (settings.scale) {
-      case 'MegaBytes':
-        scale = 1024 * 1024;
-        text = 'MB';
-        break;
-      case 'KiloBytes':
-        scale = 1024;
-        text = 'KB';
-        break;
-      default:
-        scale = 1;
-        text = 'Bytes';
-        break;
-    }
-  }
-  return { scale, text };
+  if (forMemory) return Helper.getScaleAndText(settings.scale, true);
+  return Helper.getScaleAndText(settings.scale);
 };
 
 const initChart = function ({ chartVariable, spanSelector, divSelector, data, total, translateKey = 'total', lineOptions, merge = true }) {

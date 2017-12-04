@@ -4,6 +4,7 @@ import $ from 'jquery';
 import Helper from '/client/imports/helpers/helper';
 
 const CodeMirror = require('codemirror');
+const JSONEditor = require('jsoneditor');
 
 require('datatables.net')(window, $);
 require('datatables.net-buttons')(window, $);
@@ -147,6 +148,22 @@ UIComponents.prototype = {
   },
 
   Editor: {
+    initializeJSONEditor({ selector, options = {}, setDivData = true }) {
+      const editorDiv = $(`#${selector}`);
+      let jsonEditor = editorDiv.data('jsoneditor');
+      if (!jsonEditor) {
+        jsonEditor = new JSONEditor(document.getElementById(selector), Object.assign({
+          mode: 'tree',
+          modes: ['code', 'form', 'text', 'tree', 'view'],
+          search: true,
+        }, options));
+
+        if (setDivData) editorDiv.data('jsoneditor', jsonEditor);
+      }
+
+      return jsonEditor;
+    },
+
     doCodeMirrorResizable(codeMirror) {
       $('.CodeMirror').resizable({
         resize() {

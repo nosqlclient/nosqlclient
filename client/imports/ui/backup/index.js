@@ -1,8 +1,8 @@
-import { Meteor } from 'meteor/meteor';
 import { Notification, ErrorHandler, UIComponents, ExtendedJSON, SessionManager } from '/client/imports/modules';
 import { QueryRender } from '/client/imports/ui';
 import { Communicator, ReactivityProvider } from '/client/imports/facades';
 import $ from 'jquery';
+import Helper from '../../helpers/helper';
 
 const Backup = function () {
 
@@ -22,22 +22,7 @@ Backup.prototype = {
     Communicator.call({
       methodName: 'getDatabases',
       callback: (err, result) => {
-        if (err || result.error) ErrorHandler.showMeteorFuncError(err, result);
-        else {
-          for (let i = 0; i < result.result.length; i += 1) {
-            cmb.append($('<option></option>')
-              .attr('value', result.result[i].name)
-              .text(result.result[i].name));
-          }
-        }
-
-        cmb.chosen({
-          create_option: true,
-          allow_single_deselect: true,
-          persistent_create_option: true,
-          skip_no_results: true,
-        });
-
+        Helper.fillComboboxForDatabasesOrCollections({ cmb, err, result, cmbOptions: { allow_single_deselect: true } });
         Notification.stop();
       }
     });
@@ -69,22 +54,7 @@ Backup.prototype = {
       methodName: 'listCollectionNames',
       args: { dbName: db },
       callback: (err, result) => {
-        if (err || result.error) ErrorHandler.showMeteorFuncError(err, result);
-        else {
-          for (let i = 0; i < result.result.length; i += 1) {
-            cmb.append($('<option></option>')
-              .attr('value', result.result[i].name)
-              .text(result.result[i].name));
-          }
-        }
-
-        cmb.chosen({
-          create_option: true,
-          allow_single_deselect: true,
-          persistent_create_option: true,
-          skip_no_results: true,
-        });
-        cmb.trigger('chosen:updated');
+        Helper.fillComboboxForDatabasesOrCollections({ cmb, err, result, cmbOptions: { allow_single_deselect: true } });
         Notification.stop();
       }
     });

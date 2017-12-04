@@ -473,22 +473,7 @@ UserManagementRoles.prototype = {
     Communicator.call({
       methodName: 'getDatabases',
       callback: (err, result) => {
-        if (err || result.error) ErrorHandler.showMeteorFuncError(err, result);
-        else {
-          for (let i = 0; i < result.result.length; i += 1) {
-            cmb.append($('<option></option>')
-              .attr('value', result.result[i].name)
-              .text(result.result[i].name));
-          }
-        }
-
-        cmb.chosen({
-          create_option: true,
-          persistent_create_option: true,
-          skip_no_results: true,
-        });
-
-        cmb.trigger('chosen:updated');
+        Helper.fillComboboxForDatabasesOrCollections({ cmb, err, result });
         this.initRolesForDBForInheritRole();
       }
     });

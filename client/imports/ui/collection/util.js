@@ -1,6 +1,5 @@
 import { Communicator, ReactivityProvider } from '/client/imports/facades';
 import { SessionManager, ErrorHandler, Notification, Enums, Querying } from '/client/imports/modules';
-import { FlowRouter } from 'meteor/kadira:flow-router';
 import { CollectionAdd, CollectionValidationRules, CollectionRename, CollectionFilter, CollectionConversion, Connection } from '/client/imports/ui';
 import Helper from '/client/imports/helpers/helper';
 import $ from 'jquery';
@@ -9,19 +8,20 @@ const CollectionUtil = function () {
 
 };
 
+const specifyActiveClass = function (li, name) {
+  const liObject = $(li);
+  if (liObject[0].textContent.trim() === name) liObject.addClass('active');
+  else liObject.removeClass('active');
+};
+
+const getCollectionNameFromContextMenu = function (clickedItem) {
+  if (clickedItem && clickedItem.context && clickedItem.context.innerText) return clickedItem.context.innerText.trim();
+};
+
 CollectionUtil.prototype = {
   setSessionForNavigation(name) {
-    $('#listCollectionNames').find('li').each((index, li) => {
-      const liObject = $(li);
-      if (liObject[0].textContent.substr(1).replace('Drop', '').trim() === name) liObject.addClass('active');
-      else liObject.removeClass('active');
-    });
-
-    $('#listSystemCollections').find('li').each((index, li) => {
-      const liObject = $(li);
-      if (liObject[0].textContent.substr(1).replace('Drop', '').trim() === name) liObject.addClass('active');
-      else liObject.removeClass('active');
-    });
+    $('#listCollectionNames').find('li').each((index, li) => { specifyActiveClass(li, name); });
+    $('#listSystemCollections').find('li').each((index, li) => { specifyActiveClass(li, name); });
 
     SessionManager.set(SessionManager.strSessionSelectedCollection, name);
   },
@@ -48,28 +48,6 @@ CollectionUtil.prototype = {
     });
   },
 
-  renderCollectionNames() {
-    Communicator.call({
-      methodName: 'connect',
-      args: { connectionId: SessionManager.get(SessionManager.strSessionConnection)._id },
-      callback: (err, result) => {
-        if (err || result.error) ErrorHandler.showMeteorFuncError(err, result);
-        else {
-          result.result.sort((a, b) => {
-            if (a.name < b.name) { return -1; } else if (a.name > b.name) { return 1; }
-            return 0;
-          });
-
-          SessionManager.set(SessionManager.strSessionCollectionNames, result.result);
-          SessionManager.set(SessionManager.strSessionSelectedQuery, null);
-          SessionManager.set(SessionManager.strSessionSelectedCollection, null);
-          SessionManager.set(SessionManager.strSessionSelectedOptions, null);
-          FlowRouter.go('/databaseStats');
-        }
-      }
-    });
-  },
-
   dropAllCollections() {
     Notification.modal({
       title: 'are-you-sure',
@@ -82,7 +60,7 @@ CollectionUtil.prototype = {
             callback: (err, result) => {
               if (err || result.error) ErrorHandler.showMeteorFuncError(err, result);
               else {
-                this.renderCollectionNames();
+                Connection.connect(false);
                 Notification.success('dropped-all-collections-successfully');
               }
             }
@@ -106,7 +84,7 @@ CollectionUtil.prototype = {
             callback: (err, result) => {
               if (err || result.error) ErrorHandler.showMeteorFuncError(err, result);
               else {
-                this.renderCollectionNames();
+                Connection.connect(false);
                 Notification.success('collection-dropped-successfully', null, { selectedCollection });
               }
             }
@@ -210,8 +188,8 @@ CollectionUtil.prototype = {
             name: Helper.translate({ key: 'show_coll_view_info' }),
             icon: 'fa-book',
             callback() {
-              if ($(this) && $(this).context && $(this).context.innerText) {
-                const collectionName = $(this).context.innerText.substring(1).split(' ')[0];
+              const collectionName = getCollectionNameFromContextMenu($(this));
+              if (collectionName) {
                 addCollectionModal.data('is-view', collectionName);
                 addCollectionModal.modal({
                   backdrop: 'static',
@@ -225,7 +203,7 @@ CollectionUtil.prototype = {
             icon: 'fa-level-down',
             name: Helper.translate({ key: 'convert_to_capped' }),
             callback() {
-              const collectionName = $(this).context.innerText.substring(1).split(' ')[0];
+              const collectionName = getCollectionNameFromContextMenu($(this));
               convertToCappedModal.data('collection', collectionName);
               convertToCappedModal.modal('show');
             },
@@ -235,7 +213,7 @@ CollectionUtil.prototype = {
             icon: 'fa-pencil-square-o',
             name: Helper.translate({ key: 'rename' }),
             callback() {
-              const collectionName = $(this).context.innerText.substring(1).split(' ')[0];
+              const collectionName = getCollectionNameFromContextMenu($(this));
               renameModal.data('collection', collectionName);
               renameModal.modal('show');
             },
@@ -245,8 +223,8 @@ CollectionUtil.prototype = {
             icon: 'fa-clone',
             name: Helper.translate({ key: 'clone' }),
             callback() {
-              const selectedCollection = $(this).context.innerText.substring(1).split(' ')[0];
-              self.cloneCollection(selectedCollection);
+              const collectionName = getCollectionNameFromContextMenu($(this));
+              self.cloneCollection(collectionName);
             }
           },
 
@@ -254,7 +232,7 @@ CollectionUtil.prototype = {
             icon: 'fa-check-circle',
             name: Helper.translate({ key: 'edit_validation_rules' }),
             callback() {
-              const collectionName = $(this).context.innerText.substring(1).split(' ')[0];
+              const collectionName = getCollectionNameFromContextMenu($(this));
               validationRulesModal.data('collection', collectionName);
               validationRulesModal.modal('show');
             },
@@ -264,10 +242,9 @@ CollectionUtil.prototype = {
             name: Helper.translate({ key: 'clear_collection' }),
             icon: 'fa-remove',
             callback() {
-              if ($(this) && $(this).context && $(this).context.innerText) {
-                const collectionName = $(this).context.innerText.substring(1).split(' ')[0];
-                self.clearCollection(collectionName);
-              } else Notification.warning('select_collection');
+              const collectionName = getCollectionNameFromContextMenu($(this));
+              if (collectionName) self.clearCollection(collectionName);
+              else Notification.warning('select_collection');
             }
           }
         }
@@ -310,10 +287,9 @@ CollectionUtil.prototype = {
         name: Helper.translate({ key: 'drop_collection' }),
         icon: 'fa-trash',
         callback() {
-          if ($(this) && $(this).context && $(this).context.innerText) {
-            const collectionName = $(this).context.innerText.substring(1).split(' ')[0];
-            self.dropCollection(collectionName);
-          } else Notification.warning('select_collection');
+          const collectionName = getCollectionNameFromContextMenu($(this));
+          if (collectionName) self.dropCollection(collectionName);
+          else Notification.warning('select_collection');
         },
       },
       drop_collections: {
@@ -354,23 +330,8 @@ CollectionUtil.prototype = {
   },
 
   populateCollectionInfo(statsResult, settings) {
-    let scale = 1;
-    let text = 'Bytes';
+    const { scale, text } = Helper.getScaleAndText(settings.scale);
 
-    switch (settings.scale) {
-      case 'MegaBytes':
-        scale = 1024 * 1024;
-        text = 'MB';
-        break;
-      case 'KiloBytes':
-        scale = 1024;
-        text = 'KB';
-        break;
-      default:
-        scale = 1;
-        text = 'Bytes';
-        break;
-    }
     // we are manually doing the scale to prevent showing 0 MB for sizes 0.7, 0.8, 0.9 etc. MBs as mongodb does.
     let resultString = `<div class="row"><div class="col-lg-7"><b>${Helper.translate({ key: 'count' })}:</b></div><div class="col-lg-5">${statsResult.count}</div></div>`;
     resultString += `<div class="row"><div class="col-lg-7"><b>${Helper.translate({ key: 'index_count' })}:</b></div><div class="col-lg-5">${statsResult.nindexes}</div></div>`;

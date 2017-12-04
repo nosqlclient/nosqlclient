@@ -3,6 +3,7 @@ import { FlowRouter } from 'meteor/kadira:flow-router';
 import { ReactivityProvider, Communicator } from '/client/imports/facades';
 import { UIComponents, SessionManager, Notification, ErrorHandler } from '/client/imports/modules';
 import Helper from '/client/imports/helpers/helper';
+import $ from 'jquery';
 
 require('bootstrap-filestyle');
 
@@ -11,6 +12,14 @@ const Connection = function () {
 };
 
 Connection.prototype = {
+  prepareModal(modalTitle, editOrClone) {
+    $('#addEditConnectionModalTitle').text(Helper.translate({ key: modalTitle }));
+    const modal = $('#addEditConnectionModal');
+    modal.data('edit', editOrClone === 'edit' ? SessionManager.get(SessionManager.strSessionConnection)._id : '');
+    modal.data('clone', editOrClone === 'clone' ? SessionManager.get(SessionManager.strSessionConnection)._id : '');
+    modal.modal('show');
+  },
+
   disconnect() {
     Communicator.call({ methodName: 'disconnect' });
     SessionManager.clear();
@@ -267,6 +276,9 @@ Connection.prototype = {
             $('#switchDatabaseModal').modal('hide');
             $('#promptUsernamePasswordModal').modal('hide');
 
+            SessionManager.set(SessionManager.strSessionSelectedQuery, null);
+            SessionManager.set(SessionManager.strSessionSelectedCollection, null);
+            SessionManager.set(SessionManager.strSessionSelectedOptions, null);
             FlowRouter.go('/databaseStats');
           } else if (!message) Notification.success('refreshed-successfully');
           else Notification.success(message, null, messageTranslateOptions);

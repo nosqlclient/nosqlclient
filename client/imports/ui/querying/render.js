@@ -6,21 +6,8 @@ import moment from 'moment';
 
 require('jquery-contextmenu');
 
-const JSONEditor = require('jsoneditor');
-
 const QueryRender = function () {
   this.jsonEditor = null;
-};
-
-const getEditor = function () {
-  if ($('.jsoneditor').length === 0) {
-    this.jsonEditor = new JSONEditor(document.getElementById('jsoneditor'), {
-      mode: 'tree',
-      modes: ['code', 'form', 'text', 'tree', 'view'],
-      search: true,
-    });
-  }
-  return this.jsonEditor;
 };
 
 QueryRender.prototype = {
@@ -167,7 +154,8 @@ QueryRender.prototype = {
 
   setAdminResult(result) {
     // set json editor
-    getEditor.call(this).set(result);
+    if ($('.jsoneditor').length === 0) this.jsonEditor = UIComponents.Editor.initializeJSONEditor({ selector: 'jsoneditor', setDivData: false });
+    this.jsonEditor.set(result);
 
     // set ace editor
     AceEditor.instance('aceeditor', {
@@ -209,12 +197,7 @@ QueryRender.prototype = {
   getEditor(tabID) {
     const tabView = $(`#tab-${tabID}`);
     if (!tabView.data('jsoneditor')) {
-      const jsonEditor = new JSONEditor(document.getElementById('activeJsonEditor'), {
-        mode: 'tree',
-        modes: ['code', 'form', 'text', 'tree', 'view'],
-        search: true,
-      });
-
+      const jsonEditor = UIComponents.Editor.initializeJSONEditor({ selector: 'activeJsonEditor', setDivData: false });
       tabView.data('jsoneditor', jsonEditor);
     }
 

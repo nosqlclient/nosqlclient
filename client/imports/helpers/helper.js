@@ -1,4 +1,5 @@
 import { TAPi18n } from 'meteor/tap:i18n';
+import { ErrorHandler } from '/client/imports/modules';
 
 const Helper = function () {
 };
@@ -37,6 +38,41 @@ Helper.prototype = {
 
   translate({ key, options, language }) {
     return TAPi18n.__(key, options, language);
+  },
+
+  fillComboboxForDatabasesOrCollections({ cmb, err, result, cmbOptions = {} }) {
+    if (err || result.error) ErrorHandler.showMeteorFuncError(err, result);
+    else {
+      for (let i = 0; i < result.result.length; i += 1) {
+        cmb.append($('<option></option>')
+          .attr('value', result.result[i].name)
+          .text(result.result[i].name));
+      }
+    }
+
+    cmb.chosen(Object.assign({ create_option: true, persistent_create_option: true, skip_no_results: true }, cmbOptions));
+    cmb.trigger('chosen:updated');
+  },
+
+  getScaleAndText(settingsScale, isMBOne) {
+    let scale;
+    let text;
+    switch (settingsScale) {
+      case 'MegaBytes':
+        scale = isMBOne ? 1 : 1024 * 1024;
+        text = 'MB';
+        break;
+      case 'KiloBytes':
+        scale = 1024;
+        text = 'KB';
+        break;
+      default:
+        scale = isMBOne ? 1024 * 1024 : 1;
+        text = 'Bytes';
+        break;
+    }
+
+    return { scale, text };
   }
 };
 

@@ -3,8 +3,6 @@ import { Notification, ErrorHandler, SessionManager, UIComponents, ExtendedJSON 
 import Helper from '/client/imports/helpers/helper';
 import UsermanagementHelper from './helper';
 
-const JSONEditor = require('jsoneditor');
-
 const UserManagementUsers = function () {
 };
 
@@ -141,18 +139,7 @@ UserManagementUsers.prototype = {
 
     const selectedUser = SessionManager.get(SessionManager.strSessionUsermanagementUser);
     if (selectedUser) {
-      const editorDiv = $('#jsonEditorOfCustomData');
-      let jsonEditor = editorDiv.data('jsoneditor');
-      if (!jsonEditor) {
-        jsonEditor = new JSONEditor(document.getElementById('jsonEditorOfCustomData'), {
-          mode: 'tree',
-          modes: ['code', 'form', 'text', 'tree', 'view'],
-          search: true,
-        });
-
-        editorDiv.data('jsoneditor', jsonEditor);
-      }
-
+      const jsonEditor = UIComponents.Editor.initializeJSONEditor({ selector: 'jsonEditorOfCustomData' });
       const connection = ReactivityProvider.findOne(ReactivityProvider.types.Connections, { _id: SessionManager.get(SessionManager.strSessionConnection)._id });
       const runOnAdminDB = $('#aRunOnAdminDBToFetchUsers').iCheck('update')[0].checked;
       const dbName = runOnAdminDB ? 'admin' : connection.databaseName;

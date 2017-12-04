@@ -1,7 +1,6 @@
 import { Template } from 'meteor/templating';
 import { Connection } from '/client/imports/ui';
-import { Notification, SessionManager } from '/client/imports/modules';
-import Helper from '/client/imports/helpers/helper';
+import { Notification } from '/client/imports/modules';
 import $ from 'jquery';
 import './connections.html';
 
@@ -84,11 +83,7 @@ Template.connections.events({
   },
 
   'click #btnCreateNewConnection': function () {
-    $('#addEditConnectionModalTitle').text(Helper.translate({ key: 'add_connection' }));
-    const modal = $('#addEditConnectionModal');
-    modal.data('edit', null);
-    modal.data('clone', null);
-    modal.modal('show');
+    Connection.prepareModal('add_connection');
   },
 
   'click .editor_remove': function (event) {
@@ -97,19 +92,11 @@ Template.connections.events({
   },
 
   'click .editor_edit': function () {
-    $('#addEditConnectionModalTitle').text(Helper.translate({ key: 'edit_connection' }));
-    const modal = $('#addEditConnectionModal');
-    modal.data('edit', SessionManager.get(SessionManager.strSessionConnection)._id);
-    modal.data('clone', '');
-    modal.modal('show');
+    Connection.prepareModal('edit_connection', 'edit');
   },
 
   'click .editor_duplicate': function () {
-    $('#addEditConnectionModalTitle').text(Helper.translate({ key: 'clone_connection' }));
-    const modal = $('#addEditConnectionModal');
-    modal.data('clone', SessionManager.get(SessionManager.strSessionConnection)._id);
-    modal.data('edit', '');
-    modal.modal('show');
+    Connection.prepareModal('clone_connection', 'clone');
   },
 
   'click #btnSaveConnection': function (event) {

@@ -1,6 +1,6 @@
 import { SessionManager, UIComponents, Enums, ExtendedJSON, ErrorHandler, Notification } from '/client/imports/modules';
 import { Communicator, ReactivityProvider } from '/client/imports/facades';
-import { CollectionUtil } from '/client/imports/ui';
+import { Connection } from '/client/imports/ui';
 import $ from 'jquery';
 
 import Helper from '/client/imports/helpers/helper';
@@ -297,7 +297,7 @@ CollectionAdd.prototype = {
         if (err || (res && res.error)) {
           ErrorHandler.showMeteorFuncError(err, res);
         } else {
-          CollectionUtil.renderCollectionNames();
+          Connection.connect();
           $('#collectionAddModal').modal('hide');
           Notification.success('collection-created-successfully', null, { name });
         }

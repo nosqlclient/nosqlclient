@@ -3,8 +3,6 @@ import { Communicator } from '/client/imports/facades';
 
 const FileManagement = function () {};
 
-const JSONEditor = require('jsoneditor');
-
 FileManagement.prototype = {
   keepUploading() {
     const contentType = $('#inputContentType').val();
@@ -218,18 +216,7 @@ FileManagement.prototype = {
 
     const fileRow = SessionManager.get(SessionManager.strSessionSelectedFile);
     if (fileRow) {
-      const editorDiv = $('#jsonEditorOfMetadata');
-      let jsonEditor = editorDiv.data('jsoneditor');
-      if (!jsonEditor) {
-        jsonEditor = new JSONEditor(document.getElementById('jsonEditorOfMetadata'), {
-          mode: 'tree',
-          modes: ['code', 'form', 'text', 'tree', 'view'],
-          search: true,
-        });
-
-        editorDiv.data('jsoneditor', jsonEditor);
-      }
-
+      const jsonEditor = UIComponents.Editor.initializeJSONEditor({ selector: 'jsonEditorOfMetadata' });
       $('#metaDataModal').modal('show');
       this.proceedShowingMetadata(fileRow._id, jsonEditor);
     }
