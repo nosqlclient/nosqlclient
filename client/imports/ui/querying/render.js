@@ -118,11 +118,7 @@ QueryRender.prototype = {
       // close all if setting for single tab is enabled
       const resultTabs = $('#resultTabs');
       if (settings.singleTabResultSets) {
-        resultTabs.find('li').each((idx, li) => {
-          const select = $(li);
-          $(select.children('a').attr('href')).remove();
-          select.remove();
-        });
+        QueryingHelper.closeAllTabs(resultTabs);
 
         $('#divBrowseCollectionFooter').hide();
         $('#divBrowseCollectionFindFooter').hide();

@@ -15,6 +15,10 @@ const addNosqlclientChatStep = function (chatDiv, stepText) {
   chatDiv.find('.left').last().find('.chat-message').html(stepText);
 };
 
+const createRegexOption = function (value, text) {
+  return $('<option></option>').attr('value', value).text(text);
+};
+
 QueryWizard.prototype = {
   init() {
     this.step = 1;
@@ -241,18 +245,10 @@ QueryWizard.prototype = {
     if (this.selectedOption === '2' || this.selectedOption === '-2') {
       cmb.empty();
       cmb.prop('multiple', 'true');
-      cmb.append($('<option></option>')
-        .attr('value', 'i')
-        .text('Case insensitive (i)'));
-      cmb.append($('<option></option>')
-        .attr('value', 'm')
-        .text('Multiline (m)'));
-      cmb.append($('<option></option>')
-        .attr('value', 'x')
-        .text('Extended (x)'));
-      cmb.append($('<option></option>')
-        .attr('value', 's')
-        .text('Dot (s)'));
+      cmb.append(createRegexOption('i', 'Case insensitive (i)'));
+      cmb.append(createRegexOption('x', 'Extended (x)'));
+      cmb.append(createRegexOption('m', 'Multiline (m)'));
+      cmb.append(createRegexOption('s', 'Dot (s)'));
       cmb.attr('data-placeholder', ' ');
       cmb.chosen('destroy');
       cmb.chosen();

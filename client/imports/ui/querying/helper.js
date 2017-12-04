@@ -5,6 +5,14 @@ const QueryingHelper = function () {
 };
 
 QueryingHelper.prototype = {
+  closeAllTabs(resultTabs) {
+    resultTabs.find('li').each((idx, li) => {
+      const select = $(li);
+      $(select.children('a').attr('href')).remove();
+      select.remove();
+    });
+  },
+
   hideSaveFootersIfNecessary(resultTabs) {
     if (resultTabs.find('li').length === 0 || resultTabs.find('li.active').length === 0) {
       $('#divBrowseCollectionFooter').hide();
@@ -13,6 +21,7 @@ QueryingHelper.prototype = {
   },
 
   initializeTabContextMenu(getActiveTabHeader) {
+    const self = this;
     $.contextMenu({
       selector: '#resultTabs li',
       items: {
@@ -41,14 +50,9 @@ QueryingHelper.prototype = {
           name: Helper.translate({ key: 'close_all' }),
           icon: 'fa-times',
           callback() {
-            const resultTabs = $('#resultTabs').find('li');
-            resultTabs.each((idx, li) => {
-              const select = $(li);
-              $(select.children('a').attr('href')).remove();
-              select.remove();
-            });
-
-            this.hideSaveFootersIfNecessary(resultTabs);
+            const resultTabs = $('#resultTabs');
+            self.closeAllTabs(resultTabs);
+            self.hideSaveFootersIfNecessary(resultTabs);
           },
         },
       },

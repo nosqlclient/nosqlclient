@@ -63,6 +63,10 @@ const DBStats = function () {
   };
 };
 
+const addData = function (index, existingData, data) {
+  if (existingData.length >= (index + 1) && existingData[index].data && data[index].data) existingData[index].data.push(...data[index].data);
+};
+
 const mergeChartData = function (existingData, data, dataCountToKeep) {
   if (existingData[0].data.length >= dataCountToKeep) {
     existingData[0].data = existingData[0].data.slice(1, dataCountToKeep);
@@ -72,8 +76,8 @@ const mergeChartData = function (existingData, data, dataCountToKeep) {
   }
 
   existingData[0].data.push(...data[0].data);
-  if (existingData.length >= 2 && existingData[1].data && data[1].data) existingData[1].data.push(...data[1].data);
-  if (existingData.length >= 3 && existingData[2].data && data[2].data) existingData[2].data.push(...data[2].data);
+  addData(1, existingData, data);
+  addData(2, existingData, data);
 
   return existingData;
 };
