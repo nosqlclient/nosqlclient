@@ -234,6 +234,49 @@ const getFindModifyFinalObject = function (queryStr) {
   };
 };
 
+const getFindFinalObject = function (queryStr, cmbOptions) {
+  return {
+    execute(historyParams, exportFormat) {
+      const cursorOptions = historyParams ? historyParams.cursorOptions : QueryingOptions.getOptions(Enums.CURSOR_OPTIONS);
+      const selector = getFromHistoryOrEditor(historyParams, $('#divSelector'));
+
+      if (!checkErrorField(selector, 'selector')) return;
+      if (!checkErrorField(cursorOptions)) return;
+
+      if (exportFormat) {
+        const selectedCollection = SessionManager.get(SessionManager.strSessionSelectedCollection);
+        window.open(`export?format=${exportFormat}&
+    selectedCollection=${selectedCollection}&selector=${JSON.stringify(selector)}&cursorOptions=${JSON.stringify(cursorOptions)}&sessionId=${Meteor.default_connection._lastSessionId}`);
+        Notification.stop();
+      } else {
+        const args = { selector, cursorOptions };
+        const queryParams = { selector, cursorOptions };
+        if (queryStr === 'find') {
+          const executeExplain = $('#inputExplain').iCheck('update')[0].checked;
+          args.executeExplain = executeExplain;
+          queryParams.executeExplain = executeExplain;
+        }
+        proceedQueryExecution({
+          methodName: queryStr,
+          args,
+          isAdmin: false,
+          queryParams,
+          saveHistory: (!historyParams)
+        });
+      }
+    },
+
+    render(query) {
+      proceedRendering({
+        params: query.queryParams,
+        options: query.queryParams.cursorOptions,
+        optionEnum: Enums.CURSOR_OPTIONS,
+        optionCombo: cmbOptions
+      });
+    }
+  };
+};
+
 Querying.prototype = {
   initOptions(optionEnum, showRunOnAdmin, ...excludedOptions) {
     switch (optionEnum) {
@@ -570,71 +613,11 @@ Querying.prototype = {
       }
     },
 
-    Find: {
-      execute(historyParams, exportFormat) {
-        const cursorOptions = historyParams ? historyParams.cursorOptions : QueryingOptions.getOptions(Enums.CURSOR_OPTIONS);
-        const selector = getFromHistoryOrEditor(historyParams, $('#divSelector'));
-
-        if (!checkErrorField(selector, 'selector')) return;
-        if (!checkErrorField(cursorOptions)) return;
-
-        if (exportFormat) {
-          const selectedCollection = SessionManager.get(SessionManager.strSessionSelectedCollection);
-          window.open(`export?format=${exportFormat}&
-    selectedCollection=${selectedCollection}&selector=${JSON.stringify(selector)}&cursorOptions=${JSON.stringify(cursorOptions)}&sessionId=${Meteor.default_connection._lastSessionId}`);
-          Notification.stop();
-        } else {
-          const executeExplain = $('#inputExplain').iCheck('update')[0].checked;
-          proceedQueryExecution({
-            methodName: 'find',
-            args: { selector, cursorOptions, executeExplain },
-            isAdmin: false,
-            queryParams: { selector, cursorOptions, executeExplain },
-            saveHistory: (!historyParams)
-          });
-        }
-      },
-
-      render(query) {
-        proceedRendering({
-          params: query.queryParams,
-          options: query.queryParams.cursorOptions,
-          optionEnum: Enums.CURSOR_OPTIONS,
-          optionCombo: $('#cmbFindCursorOptions')
-        });
-      }
-    },
-
-    FindOne: {
-      execute(historyParams) {
-        const cursorOptions = historyParams ? historyParams.cursorOptions : QueryingOptions.getOptions(Enums.CURSOR_OPTIONS);
-        const selector = getFromHistoryOrEditor(historyParams, $('#divSelector'));
-
-        if (!checkErrorField(selector, 'selector')) return;
-        if (!checkErrorField(cursorOptions)) return;
-
-        proceedQueryExecution({
-          methodName: 'findOne',
-          args: { selector, cursorOptions },
-          isAdmin: false,
-          queryParams: { selector, cursorOptions },
-          saveHistory: (!historyParams)
-        });
-      },
-      render(query) {
-        proceedRendering({
-          params: query.queryParams,
-          options: query.queryParams.cursorOptions,
-          optionEnum: Enums.CURSOR_OPTIONS,
-          optionCombo: $('#cmbFindOneCursorOptions')
-        });
-      }
-    },
-
+    Find: getFindFinalObject('find', $('#cmbFindCursorOptions')),
+    FindOne: getFindFinalObject('findOne', $('#cmbFindOneCursorOptions')),
     FindOneAndDelete: getFindModifyFinalObject('findOneAndDelete'),
     FindOneAndReplace: getFindModifyFinalObject('findOneAndReplace'),
     FindOneAndUpdate: getFindModifyFinalObject('findOneAndUpdate'),
-
     GeoHayStackSearch: getGeoFinalObject('geoHaystackSearch', $('#cmbGeoHaystackSearchOptions', Enums.GEO_HAYSTACK_SEARCH_OPTIONS)),
     GeoNear: getGeoFinalObject('geoNear', $('#cmbGeoNearOptions', Enums.GEO_NEAR_OPTIONS)),
 

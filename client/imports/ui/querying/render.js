@@ -349,11 +349,11 @@ QueryRender.prototype = {
 
       // if active tab is not findOne hide save/delete footer
       if (activeTabQueryInfo === 'findOne') $('#divBrowseCollectionFooter').show();
-      else $('#divBrowseCollectionFooter').hide();
-
-      // if active tab is not find hide save footer
-      if (activeTabQueryInfo === 'find') $('#divBrowseCollectionFindFooter').show();
-      else $('#divBrowseCollectionFindFooter').hide();
+      else if (activeTabQueryInfo === 'find')$('#divBrowseCollectionFindFooter').show();
+      else {
+        $('#divBrowseCollectionFindFooter').hide();
+        $('#divBrowseCollectionFooter').hide();
+      }
     });
 
     // set onclose
