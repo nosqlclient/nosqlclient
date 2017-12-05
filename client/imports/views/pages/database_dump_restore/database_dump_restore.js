@@ -43,7 +43,7 @@ Template.databaseDumpRestore.events({
   },
 
   'click #btnExecuteMongoexport': function () {
-    Backup.callBinaryMethod('#btnExecuteMongoexport', 'mongoexport', Backup.getMongoexportArgs());
+    Backup.callBinaryMethod('#btnExecuteMongoexport', 'mongoexport', Backup.getMongoexportArgs);
   },
 
   'click #btnExecuteMongoimport': function () {

@@ -91,7 +91,7 @@
   "views-cant-have-storage-engine":"Views can not have storage engine !",
   "views-cant-have-validator":"Views can not have validator !",
   "disable-uri-to-use":"Disable URI connection to use this",
-  "ssl-set-view-x509":"SSL already set via Mongodb-X509",
+  "ssl-set-via-x509":"SSL already set via Mongodb-X509",
   "select-query":"Please select a query first",
   "new-version-available":"There's a new version of mongoclient: __version__, <a href='https://github.com/nosqlclient/nosqlclient/releases/latest' target='_blank'>download here</a>, if you're using docker just use pull for the <b>__version__</b> or <b>latest</b> tag !",
   "name-required":"Name is required",

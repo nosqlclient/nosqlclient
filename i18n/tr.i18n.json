@@ -91,7 +91,7 @@
   "views-cant-have-storage-engine":"Viewler storage engine sahibi olamaz !",
   "views-cant-have-validator":"Viewler validator sahibi olamaz !",
   "disable-uri-to-use":"Bunu kullanabilmek için URI'i temizlemelisin",
-  "ssl-set-view-x509":"SSL zaten Mongodb-X509 ile ayarlandı",
+  "ssl-set-via-x509":"SSL zaten Mongodb-X509 ile ayarlandı",
   "select-query":"Önce bir sorgu seçmelisin",
   "new-version-available":"Nosqlclient yeni versiyon çıktı: __version__, <a href='https://github.com/nosqlclient/nosqlclient/releases/latest' target='_blank'>download here</a>, Docker kullanıyorsan sadece pull komutu ile şu tagleri kullanabilirsin: <b>__version__</b> yada <b>latest</b> !",
   "name-required":"İsim alanı gerekiyor",

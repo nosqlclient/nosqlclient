@@ -8,6 +8,33 @@ const Backup = function () {
 
 };
 
+const getArgs = function (operation) {
+  let result = [];
+
+  const args = $(`#cmbMongo${operation}Args`).val();
+  if (!args) return result;
+  args.forEach((arg) => {
+    const argElement = $(`#mongo${operation}${arg}`);
+    result.push(arg);
+
+    if (arg === '--query') {
+      const query = ExtendedJSON.convertAndCheckJSON(UIComponents.Editor.getCodeMirrorValue($(`#mongo${operation}--query`)));
+      if (query.ERROR) {
+        Notification.error('syntax-error-query', null, { error: query.ERROR });
+        result = null;
+      } else result.push(JSON.stringify(query));
+    } else if (arg === '--sort') {
+      const sort = ExtendedJSON.convertAndCheckJSON(UIComponents.Editor.getCodeMirrorValue($(`#mongo${operation}--sort`)));
+      if (sort.ERROR) {
+        Notification.error('syntax-error-sort', null, { error: sort.ERROR });
+        result = null;
+      } else result.push(JSON.stringify(sort));
+    } else if (argElement.length !== 0) result.push(argElement.val());
+  });
+
+  return result;
+};
+
 Backup.prototype = {
   loadDatabases(prefix) {
     const cmb = $(`#${prefix}--db`);
@@ -132,80 +159,19 @@ Backup.prototype = {
   },
 
   getMongodumpArgs() {
-    const result = [];
-
-    const args = $('#cmbMongodumpArgs').val();
-    if (!args) return [];
-    args.forEach((arg) => {
-      const argElement = $(`#mongodump${arg}`);
-      result.push(arg);
-
-      if (arg === '--query') {
-        let query = UIComponents.Editor.getCodeMirrorValue($('#mongodump--query'));
-        query = ExtendedJSON.convertAndCheckJSON(query);
-        if (query.ERROR) Notification.error('syntax-error-query', null, { error: query.ERROR });
-        else result.push(JSON.stringify(query));
-      } else if (argElement.length !== 0) result.push(argElement.val());
-    });
-
-    return result;
+    return getArgs('dump');
   },
 
   getMongoexportArgs() {
-    let result = [];
-
-    const args = $('#cmbMongoexportArgs').val();
-    if (!args) return result;
-    args.forEach((arg) => {
-      const argElement = $(`#mongoexport${arg}`);
-      result.push(arg);
-
-      if (arg === '--query') {
-        const query = ExtendedJSON.convertAndCheckJSON(UIComponents.Editor.getCodeMirrorValue($('#mongoexport--query')));
-        if (query.ERROR) {
-          Notification.error('syntax-error-query', null, { error: query.ERROR });
-          result = null;
-        } else result.push(JSON.stringify(query));
-      } else if (arg === '--sort') {
-        const sort = ExtendedJSON.convertAndCheckJSON(UIComponents.Editor.getCodeMirrorValue($('#mongoexport--sort')));
-        if (sort.ERROR) {
-          Notification.error('syntax-error-sort', null, { error: sort.ERROR });
-          result = null;
-        } else result.push(JSON.stringify(sort));
-      } else if (argElement.length !== 0) result.push(argElement.val());
-    });
-
-    return result;
+    return getArgs('export');
   },
 
   getMongorestoreArgs() {
-    const result = [];
-
-    const args = $('#cmbMongorestoreArgs').val();
-    if (!args) return result;
-    args.forEach((arg) => {
-      const argElement = $(`#mongorestore${arg}`);
-      result.push(arg);
-
-      if (argElement.length !== 0) result.push(argElement.val());
-    });
-
-    return result;
+    return getArgs('restore');
   },
 
   getMongoimportArgs() {
-    const result = [];
-
-    const args = $('#cmbMongoimportArgs').val();
-    if (!args) return result;
-    args.forEach((arg) => {
-      const argElement = $(`#mongoimport${arg}`);
-      result.push(arg);
-
-      if (argElement.length !== 0) result.push(argElement.val());
-    });
-
-    return result;
+    return getArgs('import');
   },
 
   removeDumpLogs() {
