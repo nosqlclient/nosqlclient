@@ -3,7 +3,6 @@
 Cross-platform and self hosted, easy to use, MongoDB 3.4+ support and more features! 
 
 [![Build Status](https://travis-ci.org/nosqlclient/nosqlclient.svg?branch=master)](https://travis-ci.org/nosqlclient/nosqlclient)
-[![Code Climate](https://codeclimate.com/github/nosqlclient/nosqlclient/badges/gpa.svg)](https://codeclimate.com/github/nosqlclient/nosqlclient)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/6a75fc4e1d3f480f811b5339202400b5)](https://www.codacy.com/app/ozdemirsercan27/mongoclient?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=mongoclient/mongoclient&amp;utm_campaign=Badge_Grade)
 [![GitHub release](https://img.shields.io/github/release/nosqlclient/nosqlclient.svg)](https://github.com/nosqlclient/nosqlclient)
 [![Github All Releases](https://img.shields.io/github/downloads/nosqlclient/nosqlclient/total.svg)](https://github.com/nosqlclient/nosqlclient)
@@ -54,3 +53,6 @@ Please check [history](https://github.com/nosqlclient/nosqlclient/blob/master/HI
 
 ## License
 Nosqlclient is licensed under [MIT](https://en.wikipedia.org/wiki/MIT_License) for prior version 2.0.0, but for 2.0.0 and higher versions are licensed under [AGPLv3](https://www.gnu.org/licenses/agpl-3.0.html).
+
+### We use Jetbrains products to develop Nosqlclient !
+![www.jetbrains.com](https://github.com/nosqlclient/nosqlclient/blob/master/public/jetbrains.svg)
