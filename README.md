@@ -55,4 +55,4 @@ Please check [history](https://github.com/nosqlclient/nosqlclient/blob/master/HI
 Nosqlclient is licensed under [MIT](https://en.wikipedia.org/wiki/MIT_License) for prior version 2.0.0, but for 2.0.0 and higher versions are licensed under [AGPLv3](https://www.gnu.org/licenses/agpl-3.0.html).
 
 ### We use Jetbrains products to develop Nosqlclient !
-![www.jetbrains.com](https://github.com/nosqlclient/nosqlclient/blob/master/public/jetbrains.svg)
+[![www.jetbrains.com](https://github.com/nosqlclient/nosqlclient/blob/master/public/jetbrains.svg)](www.jetbrains.com)
