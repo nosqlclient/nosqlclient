@@ -32,7 +32,7 @@
     "ladda": "^1.0.0",
     "meteor-node-stubs": "^0.2.3",
     "moment": "^2.19.2",
-    "mongodb": "2.2.33",
+    "mongodb": "3.0.0-rc0",
     "parse-mongo-url": "^1.1.1",
     "spin.js": "^2.3.2",
     "toastr": "^2.1.2",

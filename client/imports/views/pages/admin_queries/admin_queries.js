@@ -8,12 +8,10 @@ import '/client/imports/views/query_templates/admin/build_info/build_info';
 import '/client/imports/views/query_templates/admin/command/command';
 import '/client/imports/views/query_templates/admin/list_databases/list_databases';
 import '/client/imports/views/query_templates/admin/ping/ping';
-import '/client/imports/views/query_templates/admin/profiling_info/profiling_info';
 import '/client/imports/views/query_templates/admin/remove_user/remove_user';
 import '/client/imports/views/query_templates/admin/repl_set_get_status/repl_set_get_status';
 import '/client/imports/views/query_templates/admin/server_info/server_info';
 import '/client/imports/views/query_templates/admin/server_status/server_status';
-import '/client/imports/views/query_templates/admin/set_profiling_level/set_profiling_level';
 import '/client/imports/views/query_templates/admin/validate_collection/validate_collection';
 
 import './admin_queries.html';

@@ -16,18 +16,18 @@ const MongoDB = function () {
 
 const proceedConnectingMongodb = function (dbName, sessionId, connectionUrl, connectionOptions = {}, done) {
   const metadataToLog = { sessionId, connectionUrl, connectionOptions };
-  mongodbApi.MongoClient.connect(connectionUrl, connectionOptions, (mainError, db) => {
+  mongodbApi.MongoClient.connect(connectionUrl, connectionOptions, (mainError, client) => {
     try {
-      if (mainError || !db) {
-        done(Error.createWithoutThrow({ type: Error.types.ConnectionError, externalError: mainError, metadataToLog }), db);
-        if (db) db.close();
+      if (mainError || !client) {
+        done(Error.createWithoutThrow({ type: Error.types.ConnectionError, externalError: mainError, metadataToLog }), client);
+        if (client) client.close();
         if (this.tunnelsBySessionId[sessionId]) {
           this.tunnelsBySessionId[sessionId].close();
           this.tunnelsBySessionId[sessionId] = null;
         }
         return;
       }
-      this.dbObjectsBySessionId[sessionId] = db.db(dbName);
+      this.dbObjectsBySessionId[sessionId] = client.db(dbName);
       this.dbObjectsBySessionId[sessionId].listCollections().toArray((err, collections) => {
         let errorToBeThrown = null;
         if (err) errorToBeThrown = Error.createWithoutThrow({ type: Error.types.ConnectionError, externalError: err, metadataToLog });
@@ -38,7 +38,7 @@ const proceedConnectingMongodb = function (dbName, sessionId, connectionUrl, con
     } catch (exception) {
       done(Error.createWithoutThrow({ type: Error.types.ConnectionError, metadataToLog, externalError: exception }), null);
 
-      if (db) db.close();
+      if (client) client.close();
       if (this.tunnelsBySessionId[sessionId]) {
         this.tunnelsBySessionId[sessionId].close();
         this.tunnelsBySessionId[sessionId] = null;
@@ -101,6 +101,16 @@ const checkConnectionIsAlive = function (sessionId, metadataToLog) {
 };
 
 MongoDB.prototype = {
+  executeOverDB({ methodArray, sessionId }) {
+    const metadataToLog = { methodArray, sessionId };
+    Logger.info({ message: 'collection-query-execution', metadataToLog });
+
+    checkConnectionIsAlive.call(this, sessionId, metadataToLog);
+
+    const execution = this.dbObjectsBySessionId[sessionId];
+    return MongoDBHelper.proceedExecutingQuery({ methodArray, execution, metadataToLog });
+  },
+
   execute({ selectedCollection, methodArray, sessionId, removeCollectionTopology }) {
     const metadataToLog = { methodArray, selectedCollection, sessionId };
     Logger.info({ message: 'collection-query-execution', metadataToLog });

@@ -33,6 +33,8 @@ const Enums = function () {
     STATS: 'stats',
     UPDATE_MANY: 'updateMany',
     UPDATE_ONE: 'updateOne',
+    PROFILING_INFO: 'profilingInfo',
+    SET_PROFILING_LEVEL: 'setProfilingLevel'
   };
 
   this.ADMIN_QUERY_TYPES = {
@@ -41,13 +43,11 @@ const Enums = function () {
     COMMAND: 'command',
     LIST_DATABASES: 'listDatabases',
     PING: 'ping',
-    PROFILING_INFO: 'profilingInfo',
     REMOVE_USER: 'removeUser',
     REPL_SET_GET_STATUS: 'replSetGetStatus',
     SERVER_STATUS: 'serverStatus',
     SERVER_INFO: 'serverInfo',
-    SET_PROFILING_LEVEL: 'setProfilingLevel',
-    VALIDATE_COLLECTION: 'validateCollection',
+    VALIDATE_COLLECTION: 'validateCollection'
   };
 
   this.COMMAND_OPTIONS = {
