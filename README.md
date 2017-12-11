@@ -9,6 +9,8 @@ Cross-platform and self hosted, easy to use, MongoDB 3.4+ support and more featu
 [![Docker Pulls](https://img.shields.io/docker/pulls/mongoclient/mongoclient.svg)](https://hub.docker.com/r/mongoclient/mongoclient/)
 [![AGPLv3 License](https://img.shields.io/github/license/nosqlclient/nosqlclient.svg)](https://github.com/nosqlclient/nosqlclient/blob/master/LICENSE)
 
+> Because of our main developer's compulsory military service we need to take a break for 6 months, no worries 3.6 will be supported in summer 2018, you can read more from [here](https://medium.com/mongoclient/were-having-a-break-for-a-short-time-a845ac70ebd6)
+
 ![Nosqlclient](https://www.nosqlclient.com/img/logo/mongoclient_logo_black_half_size.png)
 
 ## Name Change
