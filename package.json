@@ -29,7 +29,7 @@
     "jquery": "^2.2.0",
     "jquery-contextmenu": "2.6.1",
     "jsoneditor": "^5.9.6",
-    "ladda": "^1.0.0",
+    "ladda": "^2.0.1",
     "meteor-node-stubs": "^0.2.3",
     "moment": "^2.19.2",
     "mongodb": "2.2.33",
