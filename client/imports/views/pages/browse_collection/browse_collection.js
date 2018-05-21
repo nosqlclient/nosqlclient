@@ -1,8 +1,10 @@
 import { Template } from 'meteor/templating';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { QueryRender, Editor } from '/client/imports/ui';
-import { Enums, SessionManager, Notification } from '/client/imports/modules';
+import { Enums, SessionManager } from '/client/imports/modules';
 import Helper from '/client/imports/helpers/helper';
+import '/client/imports/views/query_templates/collection/profiling_info/profiling_info';
+import '/client/imports/views/query_templates/collection/set_profiling_level/set_profiling_level';
 import '/client/imports/views/query_templates/collection/aggregate/aggregate';
 import '/client/imports/views/query_templates/collection/bulk_write/bulk_write';
 import '/client/imports/views/query_templates/collection/count/count';

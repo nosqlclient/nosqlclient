@@ -391,12 +391,6 @@ Querying.prototype = {
       });
     },
 
-    executeProfilingInfoQuery() {
-      proceedQueryExecution({
-        methodName: 'profilingInfo'
-      });
-    },
-
     executeRemoveUserQuery() {
       const username = $('#inputAddUserUsername').val();
 
@@ -427,13 +421,6 @@ Querying.prototype = {
       });
     },
 
-    executeSetProfilingLevelQuery() {
-      proceedQueryExecution({
-        methodName: 'setProfilingLevel',
-        args: { level: $('#cmbLevel').find('option:selected').text() }
-      });
-    },
-
     executeValidateCollectionQuery() {
       const collectionName = $('#inputValidateCollection').val();
       const options = ExtendedJSON.convertAndCheckJSON(UIComponents.Editor.getCodeMirrorValue($('#divOptions')));
@@ -449,6 +436,47 @@ Querying.prototype = {
   },
 
   Collection: {
+    SetProfilingLevel: {
+      execute(historyParams) {
+        const selectedLevelOption = $('#cmbLevel').find('option:selected');
+        const level = historyParams ? historyParams.level : selectedLevelOption.text();
+        const options = {};
+        options[level] = selectedLevelOption.val();
+
+        proceedQueryExecution({
+          methodName: 'setProfilingLevel',
+          isAdmin: false,
+          args: { level },
+          queryParams: { options },
+          saveHistory: (!historyParams)
+        });
+      },
+
+      render(query) {
+        proceedRendering({
+          params: query.queryParams,
+          options: query.queryParams.options,
+          optionEnum: Enums.PROFILING_LEVELS,
+          optionCombo: $('#cmbLevel')
+        });
+      }
+    },
+
+    ProfilingInfo: {
+      execute(historyParams) {
+        proceedQueryExecution({
+          isAdmin: false,
+          methodName: 'profilingInfo',
+          saveHistory: (!historyParams)
+        });
+      },
+      render(query) {
+        proceedRendering({
+          params: query.queryParams
+        });
+      }
+    },
+
     Aggregate: {
       execute(historyParams) {
         const pipeline = getFromHistoryOrEditor(historyParams, $('#divPipeline'), 'pipeline');

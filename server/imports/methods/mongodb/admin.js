@@ -31,15 +31,6 @@ Meteor.methods({
     return MongoDB.executeAdmin({ methodArray, runOnAdminDB: true, sessionId });
   },
 
-  setProfilingLevel({ level, sessionId }) {
-    const methodArray = [
-      {
-        setProfilingLevel: [level],
-      },
-    ];
-    return MongoDB.executeAdmin({ methodArray, runOnAdminDB: true, sessionId });
-  },
-
   serverStatus({ sessionId }) {
     const methodArray = [
       {
@@ -75,15 +66,6 @@ Meteor.methods({
     ];
 
     return MongoDB.executeAdmin({ methodArray, runOnAdminDB, sessionId });
-  },
-
-  profilingInfo({ sessionId }) {
-    const methodArray = [
-      {
-        profilingInfo: [],
-      },
-    ];
-    return MongoDB.executeAdmin({ methodArray, runOnAdminDB: true, sessionId });
   },
 
   ping({ sessionId }) {

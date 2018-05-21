@@ -2,6 +2,24 @@ import { Meteor } from 'meteor/meteor';
 import { MongoDB } from '/server/imports/core';
 
 Meteor.methods({
+  profilingInfo({ sessionId }) {
+    const methodArray = [
+      {
+        profilingInfo: [],
+      },
+    ];
+    return MongoDB.executeOverDB({ methodArray, sessionId });
+  },
+
+  setProfilingLevel({ level, sessionId }) {
+    const methodArray = [
+      {
+        setProfilingLevel: [level],
+      },
+    ];
+    return MongoDB.executeOverDB({ methodArray, sessionId });
+  },
+
   isCapped({ selectedCollection, sessionId }) {
     const methodArray = [
       {
