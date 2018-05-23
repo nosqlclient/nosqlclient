@@ -162,10 +162,7 @@ MongoDB.prototype = {
   disconnect({ sessionId }) {
     Logger.info({ message: 'disconnect', metadataToLog: sessionId });
 
-    if (this.dbObjectsBySessionId[sessionId]) {
-      if (this.dbObjectsBySessionId[sessionId].db) this.dbObjectsBySessionId[sessionId].db.close();
-      if (this.dbObjectsBySessionId[sessionId].client) this.dbObjectsBySessionId[sessionId].client.close();
-    }
+    if (this.dbObjectsBySessionId[sessionId] && this.dbObjectsBySessionId[sessionId].client) this.dbObjectsBySessionId[sessionId].client.close();
 
     if (MongoDBShell.spawnedShellsBySessionId[sessionId]) {
       MongoDBShell.spawnedShellsBySessionId[sessionId].stdin.end();
