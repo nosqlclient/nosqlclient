@@ -8,7 +8,7 @@ Meteor.methods({
         profilingInfo: [],
       },
     ];
-    return MongoDB.executeOverDB({ methodArray, sessionId });
+    return MongoDB.executeAdmin({ methodArray, sessionId });
   },
 
   setProfilingLevel({ level, sessionId }) {
@@ -17,7 +17,7 @@ Meteor.methods({
         setProfilingLevel: [level],
       },
     ];
-    return MongoDB.executeOverDB({ methodArray, sessionId });
+    return MongoDB.executeAdmin({ methodArray, sessionId });
   },
 
   isCapped({ selectedCollection, sessionId }) {
@@ -42,15 +42,6 @@ Meteor.methods({
     const methodArray = [
       {
         indexInformation: [{ full: isFull }],
-      },
-    ];
-    return MongoDB.execute({ selectedCollection, methodArray, sessionId });
-  },
-
-  geoNear({ selectedCollection, xAxis, yAxis, options, sessionId }) {
-    const methodArray = [
-      {
-        geoNear: [xAxis, yAxis, options],
       },
     ];
     return MongoDB.execute({ selectedCollection, methodArray, sessionId });
@@ -137,11 +128,8 @@ Meteor.methods({
       }
     });
 
-    if (executeExplain) {
-      methodArray.push({ explain: [] });
-    } else {
-      methodArray.push({ toArray: [] });
-    }
+    if (executeExplain) methodArray.push({ explain: [] });
+    else methodArray.push({ toArray: [] });
 
     return MongoDB.execute({ selectedCollection, methodArray, sessionId });
   },
@@ -176,8 +164,9 @@ Meteor.methods({
   aggregate({ selectedCollection, pipeline, options = {}, sessionId }) {
     const methodArray = [
       {
-        aggregate: [pipeline, options],
+        aggregate: [pipeline, options]
       },
+      { toArray: [] }
     ];
     return MongoDB.execute({ selectedCollection, methodArray, sessionId });
   },
@@ -203,7 +192,7 @@ Meteor.methods({
 
   saveFindResult({ selectedCollection, updateObjects, deletedObjectIds, addedObjects, sessionId }) {
     for (let i = 0; i < updateObjects.length; i += 1) {
-      const result = MongoDB.execute({ selectedCollection, methodArray: [{ updateOne: [{ _id: updateObjects[i]._id }, updateObjects[i], {}] }], sessionId });
+      const result = MongoDB.execute({ selectedCollection, methodArray: [{ updateOne: [{ _id: updateObjects[i]._id }, { $set: updateObjects[i] }, {}] }], sessionId });
       if (result.error) return result;
     }
     if (deletedObjectIds.length > 0) {

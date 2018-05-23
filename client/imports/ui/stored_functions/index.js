@@ -94,7 +94,7 @@ StoredFunctions.prototype = {
       // edit
       Communicator.call({
         methodName: 'updateOne',
-        args: { selectedCollection: 'system.js', selector: { _id: data._id }, setObject: objectToSave },
+        args: { selectedCollection: 'system.js', selector: { _id: data._id }, setObject: { $set: objectToSave } },
         callback: (err, res) => {
           saveCallback.call(this, modal, err, res);
         }

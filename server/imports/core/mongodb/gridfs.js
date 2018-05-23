@@ -10,10 +10,10 @@ const MongoDBGridFS = function () {
 
 const tryDownloadingFile = function (sessionId, bucketName, fileId, res, metadataToLog) {
   try {
-    const filesCollection = MongoDB.dbObjectsBySessionId[sessionId].collection(`${bucketName}.files`);
+    const filesCollection = MongoDB.dbObjectsBySessionId[sessionId].db.collection(`${bucketName}.files`);
     filesCollection.find({ _id: new mongodbApi.ObjectId(fileId) }).limit(1).next((err, doc) => {
       if (doc) {
-        const bucket = new mongodbApi.GridFSBucket(MongoDB.dbObjectsBySessionId[sessionId], { bucketName });
+        const bucket = new mongodbApi.GridFSBucket(MongoDB.dbObjectsBySessionId[sessionId].db, { bucketName });
         const headers = {
           'Content-type': 'application/octet-stream',
           'Content-Disposition': `attachment; filename=${encodeURIComponent(doc.filename)}`,
@@ -42,8 +42,8 @@ MongoDBGridFS.prototype = {
 
     const result = Async.runSync((done) => {
       try {
-        const filesCollection = MongoDB.dbObjectsBySessionId[sessionId].collection(`${bucketName}.files`);
-        const chunksCollection = MongoDB.dbObjectsBySessionId[sessionId].collection(`${bucketName}.chunks`);
+        const filesCollection = MongoDB.dbObjectsBySessionId[sessionId].db.collection(`${bucketName}.files`);
+        const chunksCollection = MongoDB.dbObjectsBySessionId[sessionId].db.collection(`${bucketName}.chunks`);
 
         filesCollection.find(selector, { _id: 1 }).toArray((firstError, docs) => {
           if (firstError) {
@@ -85,7 +85,7 @@ MongoDBGridFS.prototype = {
 
     const result = Async.runSync((done) => {
       try {
-        const bucket = new mongodbApi.GridFSBucket(MongoDB.dbObjectsBySessionId[sessionId], { bucketName });
+        const bucket = new mongodbApi.GridFSBucket(MongoDB.dbObjectsBySessionId[sessionId].db, { bucketName });
         bucket.delete(new mongodbApi.ObjectId(fileId), (err) => {
           let errorToBeThrown = null;
           if (err) errorToBeThrown = Error.createWithoutThrow({ type: Error.types.GridFSError, externalError: err, metadataToLog });
@@ -110,7 +110,7 @@ MongoDBGridFS.prototype = {
 
     const result = Async.runSync((done) => {
       try {
-        const bucket = new mongodbApi.GridFSBucket(MongoDB.dbObjectsBySessionId[sessionId], { bucketName });
+        const bucket = new mongodbApi.GridFSBucket(MongoDB.dbObjectsBySessionId[sessionId].db, { bucketName });
         bucket.find(selector, { limit }).toArray((err, files) => {
           let errorToBeThrown = null;
           if (err) errorToBeThrown = Error.createWithoutThrow({ type: Error.types.GridFSError, externalError: err, metadataToLog });
@@ -135,7 +135,7 @@ MongoDBGridFS.prototype = {
 
     return Async.runSync((done) => {
       try {
-        const bucket = new mongodbApi.GridFSBucket(MongoDB.dbObjectsBySessionId[sessionId], { bucketName });
+        const bucket = new mongodbApi.GridFSBucket(MongoDB.dbObjectsBySessionId[sessionId].db, { bucketName });
         const uploadStream = bucket.openUploadStream(fileName, {
           metadata: metaData,
           contentType,
@@ -157,7 +157,7 @@ MongoDBGridFS.prototype = {
 
     const result = Async.runSync((done) => {
       try {
-        const filesCollection = MongoDB.dbObjectsBySessionId[sessionId].collection(`${bucketName}.files`);
+        const filesCollection = MongoDB.dbObjectsBySessionId[sessionId].db.collection(`${bucketName}.files`);
         filesCollection.find({ _id: new mongodbApi.ObjectId(fileId) }).limit(1).next((err, doc) => {
           if (doc) done(null, doc);
           else Error.create({ type: Error.types.GridFSError, externalError: 'no-file-found', metadataToLog });

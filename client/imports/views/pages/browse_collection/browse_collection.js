@@ -18,7 +18,6 @@ import '/client/imports/views/query_templates/collection/findone_and_delete/find
 import '/client/imports/views/query_templates/collection/findone_and_replace/findone_and_replace';
 import '/client/imports/views/query_templates/collection/findone_and_update/findone_and_update';
 import '/client/imports/views/query_templates/collection/geo_haystack_search/geo_haystack_search';
-import '/client/imports/views/query_templates/collection/geo_near/geo_near';
 import '/client/imports/views/query_templates/collection/index_information/index_information';
 import '/client/imports/views/query_templates/collection/insert_many/insert_many';
 import '/client/imports/views/query_templates/collection/is_capped/is_capped';

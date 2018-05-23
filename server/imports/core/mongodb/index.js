@@ -27,8 +27,8 @@ const proceedConnectingMongodb = function (dbName, sessionId, connectionUrl, con
         }
         return;
       }
-      this.dbObjectsBySessionId[sessionId] = client.db(dbName);
-      this.dbObjectsBySessionId[sessionId].listCollections().toArray((err, collections) => {
+      this.dbObjectsBySessionId[sessionId] = { db: client.db(dbName), client };
+      this.dbObjectsBySessionId[sessionId].db.listCollections().toArray((err, collections) => {
         let errorToBeThrown = null;
         if (err) errorToBeThrown = Error.createWithoutThrow({ type: Error.types.ConnectionError, externalError: err, metadataToLog });
         done(errorToBeThrown, collections);
@@ -101,13 +101,13 @@ const checkConnectionIsAlive = function (sessionId, metadataToLog) {
 };
 
 MongoDB.prototype = {
-  executeOverDB({ methodArray, sessionId }) {
-    const metadataToLog = { methodArray, sessionId };
-    Logger.info({ message: 'collection-query-execution', metadataToLog });
+  executeClientMethod({ dbName, methodArray, sessionId }) {
+    const metadataToLog = { methodArray, dbName, sessionId };
+    Logger.info({ message: 'client-query-execution', metadataToLog });
 
     checkConnectionIsAlive.call(this, sessionId, metadataToLog);
 
-    const execution = this.dbObjectsBySessionId[sessionId];
+    const execution = this.dbObjectsBySessionId[sessionId].client.db(dbName);
     return MongoDBHelper.proceedExecutingQuery({ methodArray, execution, metadataToLog });
   },
 
@@ -117,7 +117,7 @@ MongoDB.prototype = {
 
     checkConnectionIsAlive.call(this, sessionId, metadataToLog);
 
-    const execution = this.dbObjectsBySessionId[sessionId].collection(selectedCollection);
+    const execution = this.dbObjectsBySessionId[sessionId].db.collection(selectedCollection);
     return MongoDBHelper.proceedExecutingQuery({ methodArray, execution, removeCollectionTopology, metadataToLog });
   },
 
@@ -127,7 +127,7 @@ MongoDB.prototype = {
 
     checkConnectionIsAlive.call(this, sessionId, metadataToLog);
 
-    const execution = runOnAdminDB ? this.dbObjectsBySessionId[sessionId].admin() : this.dbObjectsBySessionId[sessionId];
+    const execution = runOnAdminDB ? this.dbObjectsBySessionId[sessionId].db.admin() : this.dbObjectsBySessionId[sessionId].db;
     return MongoDBHelper.proceedExecutingQuery({ methodArray, execution, removeCollectionTopology, metadataToLog });
   },
 
@@ -137,7 +137,7 @@ MongoDB.prototype = {
 
     checkConnectionIsAlive.call(this, sessionId, metadataToLog);
 
-    const execution = this.dbObjectsBySessionId[sessionId].collection(selectedCollection);
+    const execution = this.dbObjectsBySessionId[sessionId].db.collection(selectedCollection);
     return MongoDBHelper.proceedMapReduceExecution({ execution, map, reduce, options, metadataToLog });
   },
 
@@ -162,7 +162,10 @@ MongoDB.prototype = {
   disconnect({ sessionId }) {
     Logger.info({ message: 'disconnect', metadataToLog: sessionId });
 
-    if (this.dbObjectsBySessionId[sessionId]) this.dbObjectsBySessionId[sessionId].close();
+    if (this.dbObjectsBySessionId[sessionId]) {
+      if (this.dbObjectsBySessionId[sessionId].db) this.dbObjectsBySessionId[sessionId].db.close();
+      if (this.dbObjectsBySessionId[sessionId].client) this.dbObjectsBySessionId[sessionId].client.close();
+    }
 
     if (MongoDBShell.spawnedShellsBySessionId[sessionId]) {
       MongoDBShell.spawnedShellsBySessionId[sessionId].stdin.end();
@@ -181,7 +184,7 @@ MongoDB.prototype = {
 
     return Async.runSync((done) => {
       try {
-        this.dbObjectsBySessionId[sessionId].collections((err, collections) => {
+        this.dbObjectsBySessionId[sessionId].db.collections((err, collections) => {
           MongoDBHelper.keepDroppingCollections(collections, 0, done);
         });
       } catch (exception) {

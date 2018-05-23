@@ -5,12 +5,11 @@ Meteor.methods({
   listCollectionNames({ dbName, sessionId }) {
     const methodArray = [
       {
-        db: [dbName],
         listCollections: [],
         toArray: []
       }
     ];
-    return MongoDB.executeAdmin({ methodArray, sessionId });
+    return MongoDB.executeClientMethod({ dbName, methodArray, sessionId });
   },
 
   getDatabases({ sessionId }) {

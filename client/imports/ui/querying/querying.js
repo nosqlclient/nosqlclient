@@ -116,9 +116,7 @@ const proceedRendering = function ({ options, optionEnum, optionCombo, params })
 const proceedUpdateQueryExecution = function (historyParams, query) {
   const options = historyParams ? historyParams.options : QueryingOptions.getOptions(Enums.UPDATE_OPTIONS);
   const selector = getFromHistoryOrEditor(historyParams, $('#divSelector'));
-  let setObject = getFromHistoryOrEditor(historyParams, $('#divSet'), 'set');
-
-  if (!setObject.$set) setObject = { $set: setObject };
+  const setObject = getFromHistoryOrEditor(historyParams, $('#divSet'), 'set');
 
   if (!checkErrorField(selector, 'selector')) return;
   if (!checkErrorField(options)) return;
@@ -133,28 +131,6 @@ const proceedUpdateQueryExecution = function (historyParams, query) {
   });
 };
 
-const proceedGeoQueryExecution = function (historyParams, query, optionsEnum) {
-  let xAxis = historyParams ? historyParams.xAxis : $('#inputXAxis').val();
-  if (xAxis) xAxis = parseInt(xAxis, 10);
-
-  let yAxis = historyParams ? historyParams.yAxis : $('#inputYAxis').val();
-  if (yAxis) yAxis = parseInt(yAxis, 10);
-
-  const options = historyParams ? historyParams.options : QueryingOptions.getOptions(optionsEnum);
-  if (options.ERROR) {
-    Notification.error(options.ERROR);
-    return;
-  }
-
-  proceedQueryExecution({
-    methodName: query,
-    args: { xAxis, yAxis, options },
-    isAdmin: false,
-    queryParams: { xAxis, yAxis, options },
-    saveHistory: (!historyParams)
-  });
-};
-
 const getUpdateFinalObject = function (queryStr, cmbOptionsSelector) {
   return {
     execute(historyParams) {
@@ -165,22 +141,6 @@ const getUpdateFinalObject = function (queryStr, cmbOptionsSelector) {
         params: query.queryParams,
         options: query.queryParams.options,
         optionEnum: Enums.UPDATE_OPTIONS,
-        optionCombo: cmbOptionsSelector
-      });
-    }
-  };
-};
-
-const getGeoFinalObject = function (queryStr, cmbOptionsSelector, optionsEnum) {
-  return {
-    execute(historyParams) {
-      proceedGeoQueryExecution(historyParams, queryStr, optionsEnum);
-    },
-    render(query) {
-      proceedRendering({
-        params: query.queryParams,
-        options: query.queryParams.options,
-        optionEnum: optionsEnum,
         optionCombo: cmbOptionsSelector
       });
     }
@@ -203,9 +163,8 @@ const getFindModifyFinalObject = function (queryStr) {
       const queryParams = { selector, options };
 
       if (queryStr === 'findOneAndUpdate') {
-        let setObject = getFromHistoryOrEditor(historyParams, $('#divSet'), 'set');
+        const setObject = getFromHistoryOrEditor(historyParams, $('#divSet'), 'set');
         if (!checkErrorField(setObject, 'set')) return;
-        if (!setObject.$set) setObject = { $set: setObject };
         args.setObject = setObject;
         queryParams.set = setObject;
       } else if (queryStr === 'findOneAndReplace') {
@@ -310,9 +269,6 @@ Querying.prototype = {
         break;
       case Enums.GEO_HAYSTACK_SEARCH_OPTIONS:
         initOptions.call(this, $('#cmbGeoHaystackSearchOptions'), Enums.GEO_HAYSTACK_SEARCH_OPTIONS, showRunOnAdmin, ...excludedOptions);
-        break;
-      case Enums.GEO_NEAR_OPTIONS:
-        initOptions.call(this, $('#cmbGeoNearOptions'), Enums.GEO_NEAR_OPTIONS, showRunOnAdmin, ...excludedOptions);
         break;
       case Enums.INSERT_MANY_OPTIONS:
         initOptions.call(this, $('#cmbInsertManyOptions'), Enums.INSERT_MANY_OPTIONS, showRunOnAdmin, ...excludedOptions);
@@ -646,9 +602,38 @@ Querying.prototype = {
     FindOneAndDelete: getFindModifyFinalObject('findOneAndDelete'),
     FindOneAndReplace: getFindModifyFinalObject('findOneAndReplace'),
     FindOneAndUpdate: getFindModifyFinalObject('findOneAndUpdate'),
-    GeoHayStackSearch: getGeoFinalObject('geoHaystackSearch', $('#cmbGeoHaystackSearchOptions', Enums.GEO_HAYSTACK_SEARCH_OPTIONS)),
-    GeoNear: getGeoFinalObject('geoNear', $('#cmbGeoNearOptions', Enums.GEO_NEAR_OPTIONS)),
 
+    GeoHayStackSearch: {
+      execute(historyParams) {
+        let xAxis = historyParams ? historyParams.xAxis : $('#inputXAxis').val();
+        if (xAxis) xAxis = parseInt(xAxis, 10);
+
+        let yAxis = historyParams ? historyParams.yAxis : $('#inputYAxis').val();
+        if (yAxis) yAxis = parseInt(yAxis, 10);
+
+        const options = historyParams ? historyParams.options : QueryingOptions.getOptions(Enums.GEO_HAYSTACK_SEARCH_OPTIONS);
+        if (options.ERROR) {
+          Notification.error(options.ERROR);
+          return;
+        }
+
+        proceedQueryExecution({
+          methodName: 'geoHaystackSearch',
+          args: { xAxis, yAxis, options },
+          isAdmin: false,
+          queryParams: { xAxis, yAxis, options },
+          saveHistory: (!historyParams)
+        });
+      },
+      render(query) {
+        proceedRendering({
+          params: query.queryParams,
+          options: query.queryParams.options,
+          optionEnum: Enums.GEO_HAYSTACK_SEARCH_OPTIONS,
+          optionCombo: $('#cmbGeoHaystackSearchOptions')
+        });
+      }
+    },
     Group: {
       execute(historyParams) {
         let keys = getFromHistoryOrEditorString(historyParams, $('#divKeys'), 'keys');

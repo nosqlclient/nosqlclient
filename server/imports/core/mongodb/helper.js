@@ -20,9 +20,7 @@ MongoDBHelper.prototype = {
         });
 
         execution[key](...entry[key]);
-      } else {
-        execution = execution[key](...entry[key]);
-      }
+      } else execution = execution[key](...entry[key]);
     });
 
     return execution;

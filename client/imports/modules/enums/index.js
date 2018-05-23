@@ -22,7 +22,6 @@ const Enums = function () {
     DISTINCT: 'distinct',
     DROP_INDEX: 'dropIndex',
     GEO_HAYSTACK_SEARCH: 'geoHaystackSearch',
-    GEO_NEAR: 'geoNear',
     INDEX_INFORMATION: 'indexInformation',
     INSERT_MANY: 'insertMany',
     IS_CAPPED: 'isCapped',
@@ -88,6 +87,7 @@ const Enums = function () {
     MAX_TIME_MS: 'maxTimeMS',
     ALLOW_DISK_USE: 'allowDiskUse',
     EXPLAIN: 'explain',
+    COMMENT: 'comment'
   };
 
   this.UPDATE_OPTIONS = {
@@ -113,18 +113,6 @@ const Enums = function () {
     KEEP_TEMP: 'keeptemp',
     JS_MODE: 'jsMode',
     BYPASS_DOCUMENT_VALIDATION: 'bypassDocumentValidation',
-  };
-
-  this.GEO_NEAR_OPTIONS = {
-    MAX_NUMBER: 'num',
-    MIN_DISTANCE: 'minDistance',
-    MAX_DISTANCE: 'maxDistance',
-    DISTANCE_MULTIPLIER: 'distanceMultiplier',
-    QUERY: 'query',
-    SPHERICAL: 'spherical',
-    UNIQUE_DOCS: 'uniqueDocs',
-    INCLUDE_LOCS: 'includeLocs',
-
   };
 
   this.GEO_HAYSTACK_SEARCH_OPTIONS = {

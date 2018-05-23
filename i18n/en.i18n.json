@@ -148,6 +148,7 @@
   "user_management_default_tree_text":"Select a role or resource or privilege to see the details",
 
   // blaze
+  "comment":"Comment",
   "enter_or_choose_database":"Enter or choose a database",
   "enter_or_choose_collection":"Enter or choose a collection",
   "enter_or_choose_role":"Enter or choose a role",
@@ -617,6 +618,7 @@
   "selector":"Selector",
   "selector_info":"<b>Extended json</b> is valid for all selectors, <b>__key__</b> for autocompletion",
   "set":"Set",
+  "update_operator":"Update Operator",
   "skip":"Skip",
   "upsert":"Upsert",
   "language":"Language",

@@ -279,7 +279,7 @@ Connection.prototype = {
 
       connectionUrl += '@';
     }
-    connection.servers.forEach((server) => { connectionUrl += `${server.host}:${server.port},`; });
+    connection.servers.forEach((server) => { connectionUrl += `${encodeURIComponent(server.host)}:${server.port},`; });
 
     if (connectionUrl.endsWith(',')) connectionUrl = connectionUrl.substring(0, connectionUrl.length - 1);
     connectionUrl += '/';

@@ -1,4 +1,4 @@
-import { Meteor } from 'meteor/meteor';
+import { HTTP } from 'meteor/http';
 import { Database, Logger } from '/server/imports/modules';
 
 const cheerio = require('cheerio');
@@ -24,7 +24,7 @@ const fixHrefs = function fixHrefs(url, loadedUrl) {
   });
 };
 
-const load = url => cheerio.load(Meteor.http.get(url).content);
+const load = url => cheerio.load(HTTP.get(url).content);
 
 MongoDBUser.prototype = {
   getAllActions() {

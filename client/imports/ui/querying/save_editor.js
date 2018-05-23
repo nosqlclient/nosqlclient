@@ -108,7 +108,7 @@ Editor.prototype = {
           if (doc._id) {
             Communicator.call({
               methodName: 'updateOne',
-              args: { selectedCollection, selector: { _id: doc._id }, setObject: doc },
+              args: { selectedCollection, selector: { _id: doc._id }, setObject: { $set: doc } },
               callback: (err, result) => {
                 if (err || result.error) ErrorHandler.showMeteorFuncError(err, result);
                 else Notification.success('saved-successfully');

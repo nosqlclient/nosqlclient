@@ -18,6 +18,19 @@
     {{#if isOptionSelected "EXPLAIN"}}
         {{> explain}}
     {{/if}}
+
+    {{#if isOptionSelected "COMMENT"}}
+        {{> comment}}
+    {{/if}}
+</template>
+
+<template name="comment">
+    <div class="form-group">
+        <label class="col-lg-1 control-label">{{_ "comment"}}</label>
+        <div class="col-lg-11">
+            <input id="inputComment" type="text" placeholder="Enter comment" class="form-control">
+        </div>
+    </div>
 </template>
 
 <template name="allowDiskUse">

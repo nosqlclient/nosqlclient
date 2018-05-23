@@ -277,7 +277,9 @@ UserManagementRoles.prototype = {
         { data: 'resource', width: '40%' },
       ],
       columnDefs: [
-        getActionColumn({ isBuiltin: role && role.isBuiltin }), getActionColumn({ isBuiltin: role && role.isBuiltin, actionType: 'EDIT', targetIndex: 3 })]
+        getActionColumn({ isBuiltin: role && role.isBuiltin, actionType: 'EDIT', targetIndex: 2 }),
+        getActionColumn({ isBuiltin: role && role.isBuiltin, targetIndex: 3 })
+      ]
     });
   },
 

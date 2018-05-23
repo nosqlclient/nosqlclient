@@ -71,7 +71,6 @@ const Communicator = function () {
     findOneAndReplace: { selectedCollection: '', selector: {}, setObject: {}, options: {} },
     findOneAndUpdate: { selectedCollection: '', selector: {}, setObject: {}, options: {} },
     geoHaystackSearch: { selectedCollection: '', xAxis: 0, yAxis: 0, options: {} },
-    geoNear: { selectedCollection: '', xAxis: 0, yAxis: 0, options: {} },
     group: { selectedCollection: '', keys: [], condition: {}, initial: {}, reduce: {}, finalize: {}, command: {} },
     isCapped: { selectedCollection: '' },
     mapReduce: { selectedCollection: '', map: {}, reduce: {}, options: {} },

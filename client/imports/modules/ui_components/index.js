@@ -45,7 +45,7 @@ UIComponents.prototype = {
 
   setOptionsComboboxChangeEvent(cmb, sessionKey) {
     cmb.on('change', (evt, params) => {
-      let array = SessionManager.get(sessionKey);
+      let array = SessionManager.get(sessionKey) || [];
       if (params.deselected) array = array.filter(item => params.deselected.indexOf(item) === -1);
       else array.push(params.selected);
       SessionManager.set(sessionKey, array);
