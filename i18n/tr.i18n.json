@@ -619,6 +619,7 @@
   "selector":"Selector",
   "selector_info":"<b>Özelleştirilmiş json</b> tüm selectorler de geçerli, <b>__key__</b> kısayolu ile otomatik tamamlamayı etkinleştirebilirsin",
   "set":"Set",
+  "hint":"Hint",
   "update_operator":"Update Operatörü",
   "skip":"Skip",
   "upsert":"Upsert",

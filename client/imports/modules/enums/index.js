@@ -73,6 +73,7 @@ const Enums = function () {
   this.COUNT_OPTIONS = {
     LIMIT: 'limit',
     SKIP: 'skip',
+    HINT: 'hint',
     MAX_TIME_MS: 'maxTimeMS',
   };
 
@@ -87,7 +88,8 @@ const Enums = function () {
     MAX_TIME_MS: 'maxTimeMS',
     ALLOW_DISK_USE: 'allowDiskUse',
     EXPLAIN: 'explain',
-    COMMENT: 'comment'
+    COMMENT: 'comment',
+    HINT: 'hint'
   };
 
   this.UPDATE_OPTIONS = {
@@ -136,6 +138,7 @@ const Enums = function () {
   this.CURSOR_OPTIONS = {
     PROJECT: 'project',
     SKIP: 'skip',
+    HINT: 'hint',
     SORT: 'sort',
     LIMIT: 'limit',
     MAX: 'max',

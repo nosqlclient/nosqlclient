@@ -618,6 +618,7 @@
   "selector":"Selector",
   "selector_info":"<b>Extended json</b> is valid for all selectors, <b>__key__</b> for autocompletion",
   "set":"Set",
+  "hint":"Hint",
   "update_operator":"Update Operator",
   "skip":"Skip",
   "upsert":"Upsert",
