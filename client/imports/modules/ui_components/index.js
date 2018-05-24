@@ -191,25 +191,6 @@ UIComponents.prototype = {
       });
     },
 
-    setCodeMirrorAutoCompletion(method, outList) {
-      CodeMirror.hint.javascript = (editor) => {
-        const cursor = editor.getCursor();
-        const currentLine = editor.getLine(cursor.line);
-        let start = cursor.ch;
-        let end = start;
-        while (end < currentLine.length && /[\w.$]+/.test(currentLine.charAt(end))) end += 1;
-        while (start && /[\w.$]+/.test(currentLine.charAt(start - 1))) start -= 1;
-        const curWord = (start !== end) && currentLine.slice(start, end);
-        const list = method ? method(editor.getValue(), curWord) : outList;
-        const regex = new RegExp(`^${curWord}`, 'i');
-        return {
-          list: (!curWord ? list : list.filter(item => item.match(regex))).sort(),
-          from: CodeMirror.Pos(cursor.line, start),
-          to: CodeMirror.Pos(cursor.line, end),
-        };
-      };
-    },
-
     initializeCodeMirror({ divSelector, txtAreaId, keepValue = false, height = 100, noResize = false, extraKeysToAppend = {}, autoCompleteListMethod }) {
       const autoCompleteShortcut = ReactivityProvider.findOne(ReactivityProvider.types.Settings).autoCompleteShortcut || 'Ctrl-Space';
       let codeMirror;
@@ -235,7 +216,22 @@ UIComponents.prototype = {
         }
 
         codeMirror.setSize('%100', height);
-        this.setCodeMirrorAutoCompletion(autoCompleteListMethod, (SessionManager.get(SessionManager.strSessionDistinctFields) || []));
+        CodeMirror.hint.javascript = (editor) => {
+          const cursor = editor.getCursor();
+          const currentLine = editor.getLine(cursor.line);
+          let start = cursor.ch;
+          let end = start;
+          while (end < currentLine.length && /[\w.$]+/.test(currentLine.charAt(end))) end += 1;
+          while (start && /[\w.$]+/.test(currentLine.charAt(start - 1))) start -= 1;
+          const curWord = (start !== end) && currentLine.slice(start, end);
+          const list = autoCompleteListMethod ? autoCompleteListMethod(editor.getValue(), curWord) : SessionManager.get(SessionManager.strSessionDistinctFields) || [];
+          const regex = new RegExp(`^${curWord}`, 'i');
+          return {
+            list: (!curWord ? list : list.filter(item => item.match(regex))).sort(),
+            from: CodeMirror.Pos(cursor.line, start),
+            to: CodeMirror.Pos(cursor.line, end),
+          };
+        };
         divSelector.data('editor', codeMirror);
 
         if (!noResize) this.doCodeMirrorResizable(codeMirror);
