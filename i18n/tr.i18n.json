@@ -620,6 +620,8 @@
   "selector_info":"<b>Özelleştirilmiş json</b> tüm selectorler de geçerli, <b>__key__</b> kısayolu ile otomatik tamamlamayı etkinleştirebilirsin",
   "set":"Set",
   "hint":"Hint",
+  "array_filters":"Array Filters",
+  "array_filters_help":"Geçerli bir extended JSON <b>array</b> olmalı",
   "update_operator":"Update Operatörü",
   "skip":"Skip",
   "upsert":"Upsert",

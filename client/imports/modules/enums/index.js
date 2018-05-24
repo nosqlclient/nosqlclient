@@ -94,6 +94,7 @@ const Enums = function () {
 
   this.UPDATE_OPTIONS = {
     UPSERT: 'upsert',
+    ARRAY_FILTERS: 'arrayFilters'
   };
 
   this.STATS_OPTIONS = {
@@ -161,6 +162,7 @@ const Enums = function () {
     SORT: 'sort',
     UPSERT: 'upsert',
     RETURN_ORIGINAL: 'returnOriginal',
+    ARRAY_FILTERS: 'arrayFilters'
   };
 };
 
