@@ -17,7 +17,7 @@ const specifyActiveClass = function (selector, name) {
 };
 
 const getCollectionNameFromContextMenu = function (clickedItem) {
-  if (clickedItem && clickedItem.context && clickedItem.context.innerText) return clickedItem.context.innerText.trim();
+  if (clickedItem && clickedItem.context && clickedItem.context.innerText) return clickedItem.context.innerText.trim().split(' ')[0];
 };
 
 const deactivateListItems = function (selector) {
