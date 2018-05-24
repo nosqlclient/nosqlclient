@@ -16,7 +16,6 @@ Settings.prototype = {
     settings.connectionTimeoutInSeconds = $('#inputConnectionTimeout').val();
     settings.dbStatsScheduler = $('#inputDBStatsScheduler').val();
     settings.showDBStats = $('#divShowDBStats').iCheck('update')[0].checked;
-    settings.showLiveChat = $('#divShowLiveChat').iCheck('update')[0].checked;
     settings.mongoBinaryPath = $('#inputMongoExecutable').val() || '';
     settings.singleTabResultSets = $('#divUseSingleTab').iCheck('update')[0].checked;
     settings.maxLiveChartDataPoints = $('#inputMaxChartPoints').val();
@@ -52,7 +51,6 @@ Settings.prototype = {
     $('#inputConnectionTimeout').val(settings.connectionTimeoutInSeconds || 0);
     $('#inputDBStatsScheduler').val(settings.dbStatsScheduler || 3000);
     $('#inputAutoCompleteSamplesCount').val(settings.autoCompleteSamplesCount || 50);
-    $('#inputShowLiveChat').iCheck(settings.showLiveChat ? 'check' : 'uncheck');
     $('#inputUseSingleTab').iCheck(settings.singleTabResultSets ? 'check' : 'uncheck');
     $('#inputShowDBStats').iCheck(settings.showDBStats ? 'check' : 'uncheck');
     $('#inputMongoExecutable').val(settings.mongoBinaryPath || '');

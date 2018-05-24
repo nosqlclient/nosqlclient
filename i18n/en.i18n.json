@@ -506,8 +506,6 @@
   "autocomplete_shortcut_help_block":"Combination should be seperated by dash. E.g. <b>Ctrl-Space</b>, <b>Alt-A</b>. Shell also uses this combination.",
   "single_tab":"Single tab for results",
   "single_tab_help_block":"Specify to use single or multiple tabs for queries",
-  "show_live_chat":"Show live chat",
-  "live_chat_help_block":"In case, you're disturbed with live chat button you can disable it from here. <b>Requires restart</b>",
   "show_db_stats":"Show database statistics",
   "show_db_stats_help_block":"To prevent querying database at regular intervals for statistics, you can <strong>disable</strong> this feature",
   "max_chart_points":"Max. chart points",

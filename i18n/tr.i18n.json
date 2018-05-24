@@ -507,8 +507,6 @@
   "autocomplete_shortcut_help_block":"Kombinasyonlar tire ile ayrılmalı. Örn. <b>Ctrl-Space</b>, <b>Alt-A</b>. Ayrıca shell de bu kombinasyonu kullanır.",
   "single_tab":"Sonuçlar için tek tab",
   "single_tab_help_block":"Sonuçları birden fazla mı yoksa yalnızca bir tabda mı görmek istediğini ayarlayabilirsin",
-  "show_live_chat":"Canlı chat'i göster",
-  "live_chat_help_block":"Eğer chat seni rahatsız ediyorsa buradan kapatabilirsin. <b>Restart gerektirir</b>",
   "show_db_stats":"Veritabanı istatistiklerini göster",
   "show_db_stats_help_block":"Veritabanını belirli aralıklarla sorgulamaktan kurtulmak için buradan istatistikleri <strong>kapatabilirsin</strong>",
   "max_chart_points":"Max. chart nokta adedi",

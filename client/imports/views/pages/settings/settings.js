@@ -4,7 +4,7 @@ import Helper from '/client/imports/helpers/helper';
 import './settings.html';
 
 Template.settings.onRendered(function () {
-  $('#divShowDBStats, #divShowLiveChat, #divUseSingleTab').iCheck({
+  $('#divShowDBStats, #divUseSingleTab').iCheck({
     checkboxClass: 'icheckbox_square-green',
   });
   $('#cmbScale, #cmbResultView').chosen();

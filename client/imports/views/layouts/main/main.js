@@ -5,7 +5,6 @@ import '/client/imports/views/layouts/footer/footer.html';
 import { TAPi18n } from 'meteor/tap:i18n';
 import { Enums, Notification, SessionManager } from '/client/imports/modules';
 import { ReactivityProvider } from '/client/imports/facades';
-import LiveChat from '/client/imports/helpers/live_chat/index';
 import './main.html';
 
 const fixHeight = function () {
@@ -85,15 +84,9 @@ Template.mainLayout.onRendered(function () {
 
   const settings = this.subscribe('settings');
 
-  let initializedLiveChat = false;
   this.autorun(() => {
     if (settings.ready()) {
       const foundSettings = ReactivityProvider.findOne(ReactivityProvider.types.Settings);
-      if (foundSettings && foundSettings.showLiveChat && !initializedLiveChat) {
-        initializedLiveChat = true;
-        LiveChat.prepare(window, window.nudgespot || []);
-        window.nudgespot.init('748ae792d632f6c5e14ad610e53ef745');
-      }
       SessionManager.set(SessionManager.strSessionApplicationLanguage, foundSettings.language || 'en');
       TAPi18n.setLanguage(SessionManager.get(SessionManager.strSessionApplicationLanguage));
     }
