@@ -3,7 +3,7 @@
   "name": "mongoclient",
   "version": "2.2.0",
   "devDependencies": {
-    "eslint": "^4.19.1",
+    "eslint": "^5.0.0",
     "eslint-config-airbnb": "^17.0.0",
     "eslint-import-resolver-meteor": "^0.4.0",
     "eslint-plugin-import": "^2.12.0",
