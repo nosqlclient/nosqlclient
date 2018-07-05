@@ -38,6 +38,6 @@
     "spin.js": "^4.0.0",
     "toastr": "^2.1.4",
     "tunnel-ssh": "4.1.4",
-    "winston": "^2.4.2"
+    "winston": "^3.0.0"
   }
 }
