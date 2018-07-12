@@ -28,7 +28,7 @@
     "dot-object": "^1.7.0",
     "fbbk-json": "^1.1.1",
     "jquery": "^2.2.0",
-    "jquery-contextmenu": "2.6.4",
+    "jquery-contextmenu": "2.7.0",
     "jsoneditor": "^5.15.0",
     "ladda": "^1.0.6",
     "meteor-node-stubs": "^0.4.1",
