@@ -290,6 +290,7 @@
   "auth_type":"Doğrulama Tipi",
   "leave_empty_for_no_auth":"Doğrulama yoksa boş bırakabilirsin",
   "scram_sha_1":"Scram-Sha-1",
+  "scram_sha_256":"Scram-Sha-256",
   "mongodb_cr":"Mongodb-CR",
   "x509":"X509",
   "kerberos":"Kerberos (GSSAPI)",

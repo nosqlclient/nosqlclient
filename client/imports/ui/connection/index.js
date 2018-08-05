@@ -346,6 +346,7 @@ Connection.prototype = {
     setTimeout(() => {
       if (connection.authenticationType === 'mongodb_cr') this.fillFormBasicAuth(connection.mongodb_cr);
       else if (connection.authenticationType === 'scram_sha_1') this.fillFormBasicAuth(connection.scram_sha_1);
+      else if (connection.authenticationType === 'scram_sha_256') this.fillFormBasicAuth(connection.scram_sha_256);
       else if (connection.authenticationType === 'plain') {
         $('#inputLdapUsername').val(connection.plain.username);
         $('#inputLdapPassword').val(connection.plain.password);
@@ -539,7 +540,8 @@ Connection.prototype = {
   },
 
   fillCorrectAuthenticationType(connection) {
-    if (connection.authenticationType === 'scram_sha_1' || connection.authenticationType === 'mongodb_cr') {
+    if (connection.authenticationType === 'scram_sha_1' || connection.authenticationType === 'scram_sha_256'
+        || connection.authenticationType === 'mongodb_cr') {
       connection[connection.authenticationType] = {
         username: $('#inputUser').val(),
         password: $('#inputPassword').val(),

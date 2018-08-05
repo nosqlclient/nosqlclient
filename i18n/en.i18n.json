@@ -289,6 +289,7 @@
   "auth_type":"Authentication Type",
   "leave_empty_for_no_auth":"Leave empty for no authentication",
   "scram_sha_1":"Scram-Sha-1",
+  "scram_sha_256":"Scram-Sha-256",
   "mongodb_cr":"Mongodb-CR",
   "x509":"x509",
   "kerberos":"Kerberos (GSSAPI)",

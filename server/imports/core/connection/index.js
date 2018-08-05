@@ -43,13 +43,14 @@ const setAuthToConnectionFromParsedUrl = function (connection, parsedUrl) {
     connection[connection.authenticationType].username = parsedUrl.auth.user ? parsedUrl.auth.user : '';
     connection[connection.authenticationType].password = parsedUrl.auth.password ? parsedUrl.auth.password : '';
   }
-  if (connection.authenticationType === 'mongodb_cr' || connection.authenticationType === 'scram_sha_1') {
+  if (connection.authenticationType === 'mongodb_cr' || connection.authenticationType === 'scram_sha_1' || connection.authenticationType === 'scram_sha_256') {
     connection[connection.authenticationType].authSource = parsedUrl.db_options.authSource ? parsedUrl.db_options.authSource : connection.databaseName;
   }
 };
 
 const checkAuthenticationOfConnection = function (connection) {
   if (connection.authenticationType !== 'scram_sha_1') delete connection.scram_sha_1;
+  if (connection.authenticationType !== 'scram_sha_256') delete connection.scram_sha_256;
   if (connection.authenticationType !== 'mongodb_cr') delete connection.mongodb_cr;
   if (connection.authenticationType !== 'mongodb_x509') delete connection.mongodb_x509;
   if (connection.authenticationType !== 'gssapi') delete connection.gssapi;
@@ -286,7 +287,7 @@ Connection.prototype = {
     if (keepDB) connectionUrl += connection.databaseName;
 
     // options
-    if (connection.authenticationType === 'mongodb_cr' || connection.authenticationType === 'scram_sha_1') {
+    if (connection.authenticationType === 'mongodb_cr' || connection.authenticationType === 'scram_sha_1' || connection.authenticationType === 'scram_sha_256') {
       connectionUrl += ConnectionHelper.addOptionToUrl(connectionUrl, 'authSource', connection[connection.authenticationType].authSource);
     } else if (connection.authenticationType === 'mongodb_x509') {
       connectionUrl += ConnectionHelper.addOptionToUrl(connectionUrl, 'ssl', 'true');
@@ -314,7 +315,7 @@ Connection.prototype = {
     if (connection.authenticationType) connectionUrl += ConnectionHelper.addOptionToUrl(connectionUrl, 'authMechanism', connection.authenticationType.toUpperCase().replace(new RegExp('_', 'g'), '-'));
 
     if (addAuthSource) {
-      if (connection.authenticationType === 'mongodb_cr' || connection.authenticationType === 'scram_sha_1') {
+      if (connection.authenticationType === 'mongodb_cr' || connection.authenticationType === 'scram_sha_1' || connection.authenticationType === 'scram_sha_256') {
         if (connection[connection.authenticationType].authSource) connectionUrl += ConnectionHelper.addOptionToUrl(connectionUrl, 'authSource', connection[connection.authenticationType].authSource);
         else connectionUrl += ConnectionHelper.addOptionToUrl(connectionUrl, 'authSource', connection.databaseName);
       } else if (connection.authenticationType === 'gssapi' || connection.authenticationType === 'plain') {
@@ -332,7 +333,7 @@ Connection.prototype = {
     if (connection.options && connection.options.connectWithNoPrimary) result.connectWithNoPrimary = true;
 
     // added authSource to here to provide same authSource as DB name if it's not provided when connection is being used by URL
-    if (connection.authenticationType === 'mongodb_cr' || connection.authenticationType === 'scram_sha_1') {
+    if (connection.authenticationType === 'mongodb_cr' || connection.authenticationType === 'scram_sha_1' || connection.authenticationType === 'scram_sha_256') {
       if (connection[connection.authenticationType].authSource) result.authSource = connection[connection.authenticationType].authSource;
       else result.authSource = connection.databaseName;
     } else if (connection.authenticationType === 'gssapi' || connection.authenticationType === 'plain') {

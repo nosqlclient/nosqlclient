@@ -125,6 +125,7 @@
                                                             tabindex="-1">
                                                         <option></option>
                                                         <option value="scram_sha_1">{{_ "scram_sha_1"}}</option>
+                                                        <option value="scram_sha_256">{{_ "scram_sha_256"}}</option>
                                                         <option value="mongodb_cr">{{_ "mongodb_cr"}}</option>
                                                         <option value="mongodb_x509">{{_ "x509"}}</option>
                                                         <option value="gssapi">{{_ "kerberos"}}</option>
@@ -137,8 +138,8 @@
 
                                         <div class="hr-line-dashed"></div>
 
-                                        <!--MONGODB-CR/SCRAM-SHA-1 Form-->
-                                        {{#if authenticationMethod "scram_sha_1" "mongodb_cr"}}
+                                        <!--MONGODB-CR/SCRAM-SHA-1/SCRAM-SHA-256 Form-->
+                                        {{#if authenticationMethod "scram_sha_256" "scram_sha_1" "mongodb_cr"}}
                                             {{> basicAuthTemplate}}
                                         {{/if}}
 
