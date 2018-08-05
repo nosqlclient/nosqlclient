@@ -36,6 +36,7 @@
   "connection-closed":"Lütfen koleksiyonları yenileyin, ya da tekrar bağlanın, bağlantı koptu !",
 
   // client
+  "hint_info":"Sorgu için kullanılacak indexi belirler",
   "colorize":"Renklendir",
   "clear-color":"Arkaplan Rengini Temizle",
   "choose_color":"Renk Seç",

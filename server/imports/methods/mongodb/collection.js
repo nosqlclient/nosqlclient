@@ -174,7 +174,7 @@ Meteor.methods({
   count({ selectedCollection, selector, options, sessionId }) {
     const methodArray = [
       {
-        count: [selector, options],
+        countDocuments: [selector, options],
       },
     ];
     return MongoDB.execute({ selectedCollection, methodArray, sessionId });

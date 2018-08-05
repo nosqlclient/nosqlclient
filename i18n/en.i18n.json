@@ -1,5 +1,6 @@
 {
   // server
+  "hint_info":"The index to use for the aggregation",
   "service-name-is-required-for-gssapi":"Service name is required for GSSAPI connections",
   "destination-port-is-required-for-ssh":"Destination port is required for SSH tunnel",
   "username-is-required-for-ssh":"Username is required for SSH tunnel",
