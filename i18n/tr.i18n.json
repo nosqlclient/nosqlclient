@@ -36,7 +36,6 @@
   "connection-closed":"Lütfen koleksiyonları yenileyin, ya da tekrar bağlanın, bağlantı koptu !",
 
   // client
-  "hint_info":"Sorgu için kullanılacak indexi belirler",
   "colorize":"Renklendir",
   "clear-color":"Arkaplan Rengini Temizle",
   "choose_color":"Renk Seç",
@@ -150,6 +149,8 @@
 
 
   // blaze
+  "hint_info":"Sorgu için kullanılacak <b>indexi</b> belirler",
+  "update_operator_info": "Update operatörlerinden biriyle kullanın, örneğin; <b>$set</b>",
   "comment":"Yorum",
   "enter_or_choose_database":"Bir veritabanı seç yada gir",
   "enter_or_choose_collection":"Bir koleksiyon seç yada gir",

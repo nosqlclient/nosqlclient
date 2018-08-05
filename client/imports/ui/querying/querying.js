@@ -3,6 +3,7 @@ import { Enums, Notification, ExtendedJSON, UIComponents, SessionManager } from 
 import { Connection, QueryRender, QueryingOptions } from '/client/imports/ui';
 import { Communicator } from '/client/imports/facades';
 import { _ } from 'meteor/underscore';
+import $ from 'jquery';
 import Helper from '/client/imports/helpers/helper';
 import QueryingHelper from './helper';
 
@@ -102,9 +103,9 @@ const proceedRendering = function ({ options, optionEnum, optionCombo, params })
     });
 
     setTimeout(() => {
-      optionCombo.val(optionsArray).trigger('chosen:updated');
       SessionManager.set(SessionManager.strSessionSelectedOptions, optionsArray);
-    }, 100);
+      optionCombo.val(optionsArray).trigger('chosen:updated');
+    }, 150);
 
     setTimeout(() => {
       renderParams(options);
@@ -132,7 +133,7 @@ const proceedUpdateQueryExecution = function (historyParams, query) {
   });
 };
 
-const getUpdateFinalObject = function (queryStr, cmbOptionsSelector) {
+const getUpdateFinalObject = function (queryStr, cmbOptionsSelectorId) {
   return {
     execute(historyParams) {
       proceedUpdateQueryExecution(historyParams, queryStr);
@@ -142,7 +143,7 @@ const getUpdateFinalObject = function (queryStr, cmbOptionsSelector) {
         params: query.queryParams,
         options: query.queryParams.options,
         optionEnum: Enums.UPDATE_OPTIONS,
-        optionCombo: cmbOptionsSelector
+        optionCombo: $(`#${cmbOptionsSelectorId}`)
       });
     }
   };
@@ -194,7 +195,7 @@ const getFindModifyFinalObject = function (queryStr) {
   };
 };
 
-const getFindFinalObject = function (queryStr, cmbOptions) {
+const getFindFinalObject = function (queryStr, cmbOptionsId) {
   return {
     execute(historyParams, exportFormat) {
       const cursorOptions = historyParams ? historyParams.cursorOptions : QueryingOptions.getOptions(Enums.CURSOR_OPTIONS);
@@ -231,7 +232,7 @@ const getFindFinalObject = function (queryStr, cmbOptions) {
         params: query.queryParams,
         options: query.queryParams.cursorOptions,
         optionEnum: Enums.CURSOR_OPTIONS,
-        optionCombo: cmbOptions
+        optionCombo: $(`#${cmbOptionsId}`)
       });
     }
   };
@@ -598,8 +599,8 @@ Querying.prototype = {
       }
     },
 
-    Find: getFindFinalObject('find', $('#cmbFindCursorOptions')),
-    FindOne: getFindFinalObject('findOne', $('#cmbFindOneCursorOptions')),
+    Find: getFindFinalObject('find', 'cmbFindCursorOptions'),
+    FindOne: getFindFinalObject('findOne', 'cmbFindOneCursorOptions'),
     FindOneAndDelete: getFindModifyFinalObject('findOneAndDelete'),
     FindOneAndReplace: getFindModifyFinalObject('findOneAndReplace'),
     FindOneAndUpdate: getFindModifyFinalObject('findOneAndUpdate'),
@@ -805,8 +806,8 @@ Querying.prototype = {
       }
     },
 
-    UpdateMany: getUpdateFinalObject('updateMany', $('#cmbUpdateManyOptions')),
-    UpdateOne: getUpdateFinalObject('updateOne', $('#cmbUpdateOneOptions'))
+    UpdateMany: getUpdateFinalObject('updateMany', 'cmbUpdateManyOptions'),
+    UpdateOne: getUpdateFinalObject('updateOne', 'cmbUpdateOneOptions')
   }
 };
 

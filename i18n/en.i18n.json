@@ -1,6 +1,5 @@
 {
   // server
-  "hint_info":"The index to use for the aggregation",
   "service-name-is-required-for-gssapi":"Service name is required for GSSAPI connections",
   "destination-port-is-required-for-ssh":"Destination port is required for SSH tunnel",
   "username-is-required-for-ssh":"Username is required for SSH tunnel",
@@ -149,6 +148,8 @@
   "user_management_default_tree_text":"Select a role or resource or privilege to see the details",
 
   // blaze
+  "hint_info":"The <b>index</b> to use for the query",
+  "update_operator_info": "Use with operators such as <b>$set</b>",
   "comment":"Comment",
   "enter_or_choose_database":"Enter or choose a database",
   "enter_or_choose_collection":"Enter or choose a collection",
