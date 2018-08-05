@@ -1,6 +1,7 @@
 import { Meteor } from 'meteor/meteor';
-import { Database, Logger, Error } from '/server/imports/modules';
-import { Connection } from '/server/imports/core';
+import Database from '/server/imports/modules/database/index';
+import Logger from '/server/imports/modules/logger/index';
+import Connection from '/server/imports/core/connection/index';
 import MongoDBHelper from './helper';
 
 const spawn = require('cross-spawn');

@@ -2,6 +2,7 @@ import { Communicator, ReactivityProvider } from '/client/imports/facades';
 import { Notification, ErrorHandler, SessionManager, UIComponents } from '/client/imports/modules';
 import Helper from '/client/imports/helpers/helper';
 import UsermanagementHelper from './helper';
+import { _ } from 'meteor/underscore';
 
 const UserManagementRoles = function () {
 
@@ -29,8 +30,8 @@ const proceedCreatingCollectionsCombobox = function (cmb, collectionToSelect, cm
 };
 
 const isBuiltinRole = function () {
-  if (SessionManager.get(SessionManager.strSessionUsermanagementRole) &&
-    SessionManager.get(SessionManager.strSessionUsermanagementRole).isBuiltin && $('#addEditRoleModalTitle').text() === Helper.translate({ key: 'edit_role' })) {
+  if (SessionManager.get(SessionManager.strSessionUsermanagementRole)
+    && SessionManager.get(SessionManager.strSessionUsermanagementRole).isBuiltin && $('#addEditRoleModalTitle').text() === Helper.translate({ key: 'edit_role' })) {
     Notification.warning('builtin-roles-read-only');
     return true;
   }
@@ -132,8 +133,8 @@ UserManagementRoles.prototype = {
     const titleSelector = $('#addEditRoleModalTitle');
     const roleNameSelector = $('#inputRoleUM');
 
-    if (SessionManager.get(SessionManager.strSessionUsermanagementRole) && SessionManager.get(SessionManager.strSessionUsermanagementRole).isBuiltin &&
-      titleSelector.text() === Helper.translate({ key: 'edit_role' })) {
+    if (SessionManager.get(SessionManager.strSessionUsermanagementRole) && SessionManager.get(SessionManager.strSessionUsermanagementRole).isBuiltin
+      && titleSelector.text() === Helper.translate({ key: 'edit_role' })) {
       Notification.warning('builtin-roles-read-only');
       return;
     }
@@ -324,8 +325,8 @@ UserManagementRoles.prototype = {
       }
 
       return result;
-    } else if (resourceString === 'anyResource') return { anyResource: true };
-    else if (resourceString === 'cluster') return { cluster: true };
+    } if (resourceString === 'anyResource') return { anyResource: true };
+    if (resourceString === 'cluster') return { cluster: true };
 
     return { db: resourceString };
   },
@@ -366,8 +367,8 @@ UserManagementRoles.prototype = {
         });
 
         if (dbToSelect) {
-          if (dbToSelect !== 'anyResource' && dbToSelect !== 'cluster' &&
-          cmbDBGroup.find(`option[value = ${dbToSelect}]`).length === 0) {
+          if (dbToSelect !== 'anyResource' && dbToSelect !== 'cluster'
+          && cmbDBGroup.find(`option[value = ${dbToSelect}]`).length === 0) {
             cmbDBGroup.append($('<option></option>')
               .attr('value', dbToSelect)
               .text(dbToSelect));

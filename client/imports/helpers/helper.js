@@ -1,5 +1,9 @@
 import { TAPi18n } from 'meteor/tap:i18n';
-import { ErrorHandler, Notification } from '/client/imports/modules';
+import { ErrorHandler } from '/client/imports/modules';
+import $ from 'jquery';
+
+// just to prevent cycle-dependency added explicitly instead of Notification
+const ladda = require('ladda');
 
 const Helper = function () {
 };
@@ -12,7 +16,7 @@ Helper.prototype = {
     Object.keys(obj).forEach(key => keys.push(key));
 
     keys.sort();
-    jQuery.each(keys, (i, key) => {
+    $.each(keys, (i, key) => {
       sortedObject[key] = obj[key];
     });
 
@@ -52,7 +56,7 @@ Helper.prototype = {
 
     cmb.chosen(Object.assign({ create_option: true, persistent_create_option: true, skip_no_results: true }, cmbOptions));
     cmb.trigger('chosen:updated');
-    if (stopNotif) Notification.stop();
+    if (stopNotif) ladda.stopAll();
   },
 
   getScaleAndText(settingsScale, isMBOne) {

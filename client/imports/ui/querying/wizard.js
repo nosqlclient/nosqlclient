@@ -42,8 +42,8 @@ QueryWizard.prototype = {
     sendButton2.prop('disabled', false);
 
     chatDiv.empty();
-    chatDiv.append($(`<div class="left"> <div class="author-name"> Nosqlclient </div> <div class="chat-message active">${Helper.translate({ key: 'wizard_start' })}</div></div> ` +
-      '<div class="right"> <div class="author-name"> Me</div> <div class="chat-message"> Hmm...</div> </div>'));
+    chatDiv.append($(`<div class="left"> <div class="author-name"> Nosqlclient </div> <div class="chat-message active">${Helper.translate({ key: 'wizard_start' })}</div></div> `
+      + '<div class="right"> <div class="author-name"> Me</div> <div class="chat-message"> Hmm...</div> </div>'));
 
     this.step = 1; this.selectedOption = null; this.fieldName = null; this.txtValue = null; this.regexOptions = null;
 

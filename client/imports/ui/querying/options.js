@@ -2,6 +2,7 @@ import { SessionManager, UIComponents, ExtendedJSON } from '/client/imports/modu
 import $ from 'jquery';
 import Helper from '/client/imports/helpers/helper';
 import QueryingHelper from './helper';
+import { _ } from 'meteor/underscore';
 
 const Options = function () {
 };

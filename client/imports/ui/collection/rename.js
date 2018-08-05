@@ -1,7 +1,6 @@
 import { Notification, ErrorHandler } from '/client/imports/modules';
 import { Communicator } from '/client/imports/facades';
-import { CollectionUtil } from '/client/imports/ui';
-import {Connection} from "../index";
+import { Connection } from '../index';
 
 const CollectionRename = function () {
 };

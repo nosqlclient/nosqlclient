@@ -1,7 +1,9 @@
 /* global Async */
 import { Meteor } from 'meteor/meteor';
-import { Logger, Database, Error } from '/server/imports/modules';
-import { Connection } from '/server/imports/core';
+import Logger from '/server/imports/modules/logger/index';
+import Database from '/server/imports/modules/database/index';
+import Error from '/server/imports/modules/error_handler/index';
+import Connection from '/server/imports/core/connection/index';
 import MongoDBHelper from './helper';
 import MongoDBShell from './shell';
 

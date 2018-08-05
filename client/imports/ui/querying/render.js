@@ -4,6 +4,7 @@ import { ReactivityProvider, Communicator } from '/client/imports/facades';
 import Helper from '/client/imports/helpers/helper';
 import moment from 'moment';
 import QueryingHelper from './helper';
+import { _ } from 'meteor/underscore';
 
 require('jquery-contextmenu');
 
@@ -238,23 +239,23 @@ QueryRender.prototype = {
   },
 
   getResultTabContent(tabID, defaultView) {
-    const jsonEditorHtml = `<div class="tab-pane fade in active" id="tab-${tabID}">` +
-      '<div id="divActiveJsonEditor" class="form-group"> ' +
-      '<div id="activeJsonEditor" style="width: 100%;height:500px" class="col-lg-12"> ' +
-      '</div> </div> ' +
-      '<div id="divActiveAceEditor" class="form-group" style="display: none"> ' +
-      '<div class="col-lg-12"> ' +
-      '<pre id="activeAceEditor" style="height: 500px"></pre> ' +
-      '</div> </div> </div>';
+    const jsonEditorHtml = `<div class="tab-pane fade in active" id="tab-${tabID}">`
+      + '<div id="divActiveJsonEditor" class="form-group"> '
+      + '<div id="activeJsonEditor" style="width: 100%;height:500px" class="col-lg-12"> '
+      + '</div> </div> '
+      + '<div id="divActiveAceEditor" class="form-group" style="display: none"> '
+      + '<div class="col-lg-12"> '
+      + '<pre id="activeAceEditor" style="height: 500px"></pre> '
+      + '</div> </div> </div>';
 
-    const aceEditorHtml = `<div class="tab-pane fade in active" id="tab-${tabID}">` +
-      '<div id="divActiveJsonEditor" class="form-group" style="display:none;"> ' +
-      '<div id="activeJsonEditor" style="width: 100%;height:500px" class="col-lg-12"> ' +
-      '</div> </div> ' +
-      '<div id="divActiveAceEditor" class="form-group"> ' +
-      '<div class="col-lg-12"> ' +
-      '<pre id="activeAceEditor" style="height: 500px"></pre> ' +
-      '</div> </div> </div>';
+    const aceEditorHtml = `<div class="tab-pane fade in active" id="tab-${tabID}">`
+      + '<div id="divActiveJsonEditor" class="form-group" style="display:none;"> '
+      + '<div id="activeJsonEditor" style="width: 100%;height:500px" class="col-lg-12"> '
+      + '</div> </div> '
+      + '<div id="divActiveAceEditor" class="form-group"> '
+      + '<div class="col-lg-12"> '
+      + '<pre id="activeAceEditor" style="height: 500px"></pre> '
+      + '</div> </div> </div>';
 
     const whichIsDisplayed = this.getWhichResultViewShowing();
     let result;

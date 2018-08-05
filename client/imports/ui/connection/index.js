@@ -20,7 +20,7 @@ const setDivToggle = function (divUseSelector, divSelector, inputSelector) {
 
 const sortArrayByName = function (obj) {
   obj.sort((a, b) => {
-    if (a.name < b.name) { return -1; } else if (a.name > b.name) { return 1; }
+    if (a.name < b.name) { return -1; } if (a.name > b.name) { return 1; }
     return 0;
   });
 };
@@ -246,8 +246,8 @@ Connection.prototype = {
   },
 
   isCredentialPromptNeeded(connection) {
-    return connection.authenticationType && connection.authenticationType !== 'mongodb_x509' &&
-      (!connection[connection.authenticationType].username || !connection[connection.authenticationType].password);
+    return connection.authenticationType && connection.authenticationType !== 'mongodb_x509'
+      && (!connection[connection.authenticationType].username || !connection[connection.authenticationType].password);
   },
 
   connect(isRefresh, message, messageTranslateOptions) {
@@ -571,10 +571,10 @@ Connection.prototype = {
     $('.divHostField:visible').remove();
     this.selectedAuthType.set('');
 
-    $('#inputConnectionName, #inputUrl, #inputKerberosUsername, #inputKerberosPassword, #inputKerberosServiceName, ' +
-    '#inputLdapUsername, #inputLdapPassword, #inputConnectionTimeout, #inputSocketTimeout, #inputSshHostname, ' +
-    '#inputSshPort, #inputSshLocalPort, #inputSshDestinationPort, #inputSshUsername, #inputSshPassPhrase, #inputSshPassword, #inputUser, #inputPassword, ' +
-    '#inputAuthenticationDB, #inputPassPhrase, #inputX509Username').val('');
+    $('#inputConnectionName, #inputUrl, #inputKerberosUsername, #inputKerberosPassword, #inputKerberosServiceName, '
+    + '#inputLdapUsername, #inputLdapPassword, #inputConnectionTimeout, #inputSocketTimeout, #inputSshHostname, '
+    + '#inputSshPort, #inputSshLocalPort, #inputSshDestinationPort, #inputSshUsername, #inputSshPassPhrase, #inputSshPassword, #inputUser, #inputPassword, '
+    + '#inputAuthenticationDB, #inputPassPhrase, #inputX509Username').val('');
     $('#inputDatabaseName').val('test');
     $('#cmbAuthenticationType, #cmbSshAuthType, #cmbReadPreference').find('option').prop('selected', false).trigger('chosen:updated');
     $('#anchorConnectionSsl').attr('data-toggle', 'tab');
@@ -610,8 +610,8 @@ Connection.prototype = {
   disableFormsForUri() {
     $('.divHostField:visible').find('input, button').prop('disabled', true).parent('div')
       .attr('data-original-title', 'Clear URL to activate here');
-    $('#inputDatabaseName, #cmbAuthenticationType, #inputConnectionTimeoutOverride, #inputReplicaSetName, #inputSocketTimeoutOverride, #cmbReadPreference, ' +
-      '#inputUser, #inputPassword, #inputAuthenticationDB, #inputLdapUsername, #inputLdapPassword, #inputKerberosUsername, #inputKerberosPassword, #inputKerberosServiceName, #inputX509Username')
+    $('#inputDatabaseName, #cmbAuthenticationType, #inputConnectionTimeoutOverride, #inputReplicaSetName, #inputSocketTimeoutOverride, #cmbReadPreference, '
+      + '#inputUser, #inputPassword, #inputAuthenticationDB, #inputLdapUsername, #inputLdapPassword, #inputKerberosUsername, #inputKerberosPassword, #inputKerberosServiceName, #inputX509Username')
       .prop('disabled', true).trigger('chosen:updated').parent('div')
       .attr('data-original-title', 'Clear URL to activate here');
     $('#inputUseSSL').iCheck('disable');
@@ -624,8 +624,8 @@ Connection.prototype = {
     $('.nav-tabs a[href="#tab-1-connection"]').tab('show');
     $('.divHostField:visible').find('input, button').prop('disabled', false).parent('div')
       .attr('data-original-title', '');
-    $('#inputDatabaseName, #cmbAuthenticationType, #inputConnectionTimeoutOverride, #inputReplicaSetName, #inputSocketTimeoutOverride, #cmbReadPreference, ' +
-    '#inputUser, #inputPassword, #inputAuthenticationDB, #inputLdapUsername, #inputLdapPassword, #inputKerberosUsername, #inputKerberosPassword, #inputKerberosServiceName, #inputX509Username')
+    $('#inputDatabaseName, #cmbAuthenticationType, #inputConnectionTimeoutOverride, #inputReplicaSetName, #inputSocketTimeoutOverride, #cmbReadPreference, '
+    + '#inputUser, #inputPassword, #inputAuthenticationDB, #inputLdapUsername, #inputLdapPassword, #inputKerberosUsername, #inputKerberosPassword, #inputKerberosServiceName, #inputX509Username')
       .prop('disabled', false).trigger('chosen:updated').parent('div')
       .attr('data-original-title', '');
     $('#inputUseSSL').iCheck('enable');

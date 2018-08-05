@@ -1,4 +1,4 @@
-import { Notification } from '/client/imports/modules';
+import { Notification } from '/client/imports/modules/';
 import Helper from '/client/imports/helpers/helper';
 
 const ErrorHandler = function () {

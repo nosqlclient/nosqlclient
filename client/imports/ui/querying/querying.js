@@ -2,6 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { Enums, Notification, ExtendedJSON, UIComponents, SessionManager } from '/client/imports/modules';
 import { Connection, QueryRender, QueryingOptions } from '/client/imports/ui';
 import { Communicator } from '/client/imports/facades';
+import { _ } from 'meteor/underscore';
 import Helper from '/client/imports/helpers/helper';
 import QueryingHelper from './helper';
 

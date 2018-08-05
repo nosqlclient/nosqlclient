@@ -32,9 +32,9 @@ CollectionAdd.prototype = {
     const twoSizesIndexes = $('#divTwoSizesIndexes').iCheck('update')[0].checked;
     const noPadding = $('#divNoPadding').iCheck('update')[0].checked;
     if (!twoSizesIndexes && !noPadding) return 0;
-    else if (twoSizesIndexes && !noPadding) return 1;
-    else if (!twoSizesIndexes && noPadding) return 2;
-    else if (twoSizesIndexes && noPadding) return 3;
+    if (twoSizesIndexes && !noPadding) return 1;
+    if (!twoSizesIndexes && noPadding) return 2;
+    if (twoSizesIndexes && noPadding) return 3;
   },
 
   getOptions() {

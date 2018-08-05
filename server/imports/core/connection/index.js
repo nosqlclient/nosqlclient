@@ -19,10 +19,10 @@ const addSSLOptions = function (obj, result) {
 
 const setOptionsToConnectionFromParsedUrl = function (connection, parsedUrl) {
   if (parsedUrl.server_options) {
-    connection.options.connectionTimeout = (parsedUrl.server_options.socketOptions && parsedUrl.server_options.socketOptions.connectTimeoutMS) ?
-      parsedUrl.server_options.socketOptions.connectTimeoutMS : '';
-    connection.options.socketTimeout = (parsedUrl.server_options.socketOptions && parsedUrl.server_options.socketOptions.socketTimeoutMS) ?
-      parsedUrl.server_options.socketOptions.socketTimeoutMS : '';
+    connection.options.connectionTimeout = (parsedUrl.server_options.socketOptions && parsedUrl.server_options.socketOptions.connectTimeoutMS)
+      ? parsedUrl.server_options.socketOptions.connectTimeoutMS : '';
+    connection.options.socketTimeout = (parsedUrl.server_options.socketOptions && parsedUrl.server_options.socketOptions.socketTimeoutMS)
+      ? parsedUrl.server_options.socketOptions.socketTimeoutMS : '';
     connection.ssl.enabled = !!parsedUrl.server_options.ssl;
   }
 

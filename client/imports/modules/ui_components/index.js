@@ -1,4 +1,4 @@
-import { Querying, SessionManager } from '/client/imports/modules';
+import { Querying, SessionManager } from '/client/imports/modules/';
 import { ReactivityProvider } from '/client/imports/facades';
 import { AceEditor } from 'meteor/arch:ace-editor';
 import $ from 'jquery';

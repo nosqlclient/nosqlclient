@@ -1,5 +1,5 @@
 import { Meteor } from 'meteor/meteor';
-import { Logger } from '/server/imports/modules';
+import Logger from '/server/imports/modules/logger/index';
 
 const util = require('util');
 

@@ -2,6 +2,7 @@ import { SessionManager, ErrorHandler, UIComponents, Enums, Notification } from 
 import { Communicator, ReactivityProvider } from '/client/imports/facades';
 import Helper from '/client/imports/helpers/helper';
 import moment from 'moment';
+import $ from 'jquery';
 
 const packageJson = require('/package.json');
 
@@ -363,7 +364,7 @@ DBStats.prototype = {
   },
 
   initOperationCountersChart(data) {
-    const customOptions = jQuery.extend(true, {}, this.lineOptions);
+    const customOptions = $.extend(true, {}, this.lineOptions);
     customOptions.colors = [];
     customOptions.bars = {
       align: 'center',
@@ -398,7 +399,7 @@ DBStats.prototype = {
       divSelector: $('#divQueuedReadWrite'),
       data,
       total: totalQueuedReadWrite,
-      lineOptions: jQuery.extend(true, {}, this.lineOptions),
+      lineOptions: $.extend(true, {}, this.lineOptions),
     });
   },
 
@@ -408,7 +409,7 @@ DBStats.prototype = {
       spanSelector: $('#spanTotalActiveRW'),
       divSelector: $('#divActiveReadWrite'),
       data,
-      lineOptions: jQuery.extend(true, {}, this.lineOptions),
+      lineOptions: $.extend(true, {}, this.lineOptions),
       total: totalActiveReadWrite
     });
   },
@@ -420,7 +421,7 @@ DBStats.prototype = {
       divSelector: $('#divNetworkChart'),
       data,
       total: totalRequests,
-      lineOptions: jQuery.extend(true, {}, this.lineOptions),
+      lineOptions: $.extend(true, {}, this.lineOptions),
       translateKey: 'total_requests'
     });
   },
@@ -438,7 +439,7 @@ DBStats.prototype = {
   },
 
   initMemoryChart(data, text) {
-    const customLineOptions = jQuery.extend(true, {}, this.lineOptions);
+    const customLineOptions = $.extend(true, {}, this.lineOptions);
     customLineOptions.colors.push('#273be2');
     customLineOptions.yaxis = {
       tickFormatter(val) {

@@ -1,5 +1,5 @@
 import { Notification, ErrorHandler, UIComponents, ExtendedJSON, SessionManager } from '/client/imports/modules';
-import { QueryRender } from '/client/imports/ui';
+import { QueryRender } from '/client/imports/ui/querying';
 import { Communicator, ReactivityProvider } from '/client/imports/facades';
 import $ from 'jquery';
 import Helper from '../../helpers/helper';

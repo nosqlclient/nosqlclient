@@ -46,8 +46,8 @@ ExtendedJSON.prototype = {
     try {
       if (!json.startsWith('{') && !json.startsWith('[')) json = `{${json}`;
 
-      if ((!json.endsWith('}') && !json.endsWith(']')) ||
-        (json.split('\{').length - 1) > (json.split('\}').length - 1)) {
+      if ((!json.endsWith('}') && !json.endsWith(']'))
+        || (json.split('\{').length - 1) > (json.split('\}').length - 1)) {
         json = `${json}}`;
       }
 

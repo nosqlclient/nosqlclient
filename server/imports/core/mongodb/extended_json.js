@@ -5,27 +5,27 @@ const ExtendedJSON = function () {
 
 const convertBsonDocumentToJson = function (doc) {
   if (doc instanceof Binary || doc._bsontype === 'Binary') return { $binary: doc.buffer.toString('base64'), $type: Buffer.from([doc.sub_type]).toString('hex') };
-  else if (doc instanceof Code || doc._bsontype === 'Code') {
+  if (doc instanceof Code || doc._bsontype === 'Code') {
     const res = { $code: doc.code };
     if (doc.scope) res.$scope = doc.scope;
     return res;
-  } else if (doc instanceof Date) return { $date: doc.toISOString() };
-  else if (doc instanceof Long || doc._bsontype === 'Long') return { $numberLong: doc.toString() };
-  else if (doc instanceof MaxKey || doc._bsontype === 'MaxKey') return { $maxKey: true };
-  else if (doc instanceof MinKey || doc._bsontype === 'MinKey') return { $minKey: true };
-  else if (doc instanceof ObjectId || doc._bsontype === 'ObjectID') return { $oid: doc.toString() };
-  else if (doc instanceof BSONRegExp) return { $regex: doc.pattern, $options: doc.options };
-  else if (doc instanceof Timestamp || doc._bsontype === 'Timestamp') return { $timestamp: { t: doc.high_, i: doc.low_ } };
-  else if (doc instanceof Decimal128 || doc._bsontype === 'Decimal128') return { $numberDecimal: doc.toString() };
-  else if (doc === undefined) return { $undefined: true };
+  } if (doc instanceof Date) return { $date: doc.toISOString() };
+  if (doc instanceof Long || doc._bsontype === 'Long') return { $numberLong: doc.toString() };
+  if (doc instanceof MaxKey || doc._bsontype === 'MaxKey') return { $maxKey: true };
+  if (doc instanceof MinKey || doc._bsontype === 'MinKey') return { $minKey: true };
+  if (doc instanceof ObjectId || doc._bsontype === 'ObjectID') return { $oid: doc.toString() };
+  if (doc instanceof BSONRegExp) return { $regex: doc.pattern, $options: doc.options };
+  if (doc instanceof Timestamp || doc._bsontype === 'Timestamp') return { $timestamp: { t: doc.high_, i: doc.low_ } };
+  if (doc instanceof Decimal128 || doc._bsontype === 'Decimal128') return { $numberDecimal: doc.toString() };
+  if (doc === undefined) return { $undefined: true };
 };
 
 const convertJsonDocumentToBson = function (doc) {
   if (doc.$binary) return new Binary(Buffer.from(doc.$binary, 'base64'), Buffer.from(doc.$type, 'hex')[0]);
-  else if (doc.$code) return new Code(doc.$code, doc.$scope);
-  else if (doc.$date) {
+  if (doc.$code) return new Code(doc.$code, doc.$scope);
+  if (doc.$date) {
     if (typeof doc.$date === 'string') return new Date(doc.$date);
-    else if (typeof doc.$date === 'object' && doc.$date.$numberLong) {
+    if (typeof doc.$date === 'object' && doc.$date.$numberLong) {
       const date = new Date();
       date.setTime(parseInt(doc.$date.$numberLong, 10));
       return date;
@@ -41,8 +41,8 @@ const convertJsonDocumentToBson = function (doc) {
 };
 
 const isBsonDocConvertible = function (param) {
-  return param !== null && (typeof param === 'object') &&
-  Object.prototype.toString.call(param) !== '[object Array]' && convertBsonDocumentToJson(param);
+  return param !== null && (typeof param === 'object')
+  && Object.prototype.toString.call(param) !== '[object Array]' && convertBsonDocumentToJson(param);
 };
 
 const isJsonDocConvertible = function (param) {

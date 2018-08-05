@@ -18,4 +18,3 @@ Template.flags.onRendered(() => {
   $('#inputNoPadding').iCheck('uncheck');
   $('#inputTwoSizesIndexes').iCheck('uncheck');
 });
-
