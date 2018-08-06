@@ -148,6 +148,8 @@
   "user_management_default_tree_text":"Select a role or resource or privilege to see the details",
 
   // blaze
+  "donation_info":"We need your help ! Day by day it's getting harder to maintain an open source project and we need your help, every donated penny will be spent to the server and development costs, nothing else.<br/><b>Now we accept <b>crypto currencies</b>",
+  "help_us":"Help Us",
   "hint_info":"The <b>index</b> to use for the query",
   "update_operator_info": "Use with operators such as <b>$set</b>",
   "comment":"Comment",

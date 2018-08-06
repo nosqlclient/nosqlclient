@@ -149,6 +149,8 @@
 
 
   // blaze
+  "donation_info":"Yardımınıza ihtiyacımız var ! Gün geçtikçe açık kaynak kodlu bu yazılımı geliştirmemiz zorlaşıyor, verdiğiniz her kuruş kesinlikle server ve geliştirme ücretlerinin karşılanmasında kullanılacak.<br/><b>Artık, crypto paraları da kabul ediyoruz !</b>",
+  "help_us":"Yardımınız Gerekiyor",
   "hint_info":"Sorgu için kullanılacak <b>indexi</b> belirler",
   "update_operator_info": "Update operatörlerinden biriyle kullanın, örneğin; <b>$set</b>",
   "comment":"Yorum",
