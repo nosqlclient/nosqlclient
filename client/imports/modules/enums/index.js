@@ -1,7 +1,6 @@
 const Enums = function () {
   this.LOCAL_STORAGE_KEYS = {
     MONGO_BINARY_INFO: 'mongoclient-mongo-binary-220-warn',
-    WHAT_IS_NEW: 'mongoclient-whats-new-220-info',
     SHELL_COMMAND_HISTORY: 'mongoclient-shell-history',
     AGGREGATE_COMMAND_HISTORY: 'mongoclient-aggregate-history',
     MONGOCLIENT_SKIN: 'mongoclient-skin',

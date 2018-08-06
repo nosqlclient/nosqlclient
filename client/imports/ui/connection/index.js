@@ -162,6 +162,11 @@ Connection.prototype = {
             columns: [{ data: 'name' }],
             data: result.result.databases
           });
+
+          $('#tblSwitchDatabases').find('tbody').on('dblclick', 'tr', () => {
+            this.switchDatabase();
+          });
+
           Notification.stop();
         }
       }

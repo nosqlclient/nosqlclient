@@ -1,10 +1,8 @@
-import { SessionManager, ErrorHandler, UIComponents, Enums, Notification } from '/client/imports/modules';
+import { SessionManager, ErrorHandler, UIComponents, Notification } from '/client/imports/modules';
 import { Communicator, ReactivityProvider } from '/client/imports/facades';
 import Helper from '/client/imports/helpers/helper';
 import moment from 'moment';
 import $ from 'jquery';
-
-const packageJson = require('/package.json');
 
 const DBStats = function () {
   this.interval = null;
@@ -453,19 +451,6 @@ DBStats.prototype = {
       data,
       lineOptions: customLineOptions
     });
-  },
-
-  showWhatisNew() {
-    const modal = $('#whatsNewModal');
-    modal.on('shown.bs.modal', () => {
-      $('#whatsNewHeader').html(`${Helper.translate({ key: 'what_is_new', options: { version: packageJson.version } })}`);
-      $('#wizard').steps({
-        enableFinishButton: false,
-        enableCancelButton: false,
-      });
-    });
-
-    if (!localStorage.getItem(Enums.LOCAL_STORAGE_KEYS.WHAT_IS_NEW) && !SessionManager.get(SessionManager.strSessionCollectionNames)) modal.modal('show');
   }
 };
 

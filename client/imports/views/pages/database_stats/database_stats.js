@@ -1,15 +1,10 @@
 import { Template } from 'meteor/templating';
 import { DBStats } from '/client/imports/ui';
-import { Enums, SessionManager } from '/client/imports/modules';
+import { SessionManager } from '/client/imports/modules';
 import { ReactivityProvider } from '/client/imports/facades';
 import './database_stats.html';
 
 Template.databaseStats.events({
-  'click #btnDontShowWhatsNewAgain': function () {
-    localStorage.setItem(Enums.LOCAL_STORAGE_KEYS.WHAT_IS_NEW, 'true');
-    $('#whatsNewModal').modal('hide');
-  },
-
   'click #btnSubscribe': function () {
     DBStats.subscribe();
   },
@@ -29,10 +24,6 @@ Template.databaseStats.onRendered(function () {
       DBStats.init();
     }
   });
-
-  setTimeout(() => {
-    DBStats.showWhatisNew();
-  }, 500);
 });
 
 Template.databaseStats.onDestroyed(() => {
