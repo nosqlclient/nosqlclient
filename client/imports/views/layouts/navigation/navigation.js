@@ -48,6 +48,11 @@ Template.navigation.events({
     Connection.connect(true);
   },
 
+  'click #btnSwitchDatabase2': function (event) {
+    event.preventDefault();
+    Connection.showSwitchDatabaseModal();
+  },
+
   'click #btnDropAllCollections': function (event) {
     event.preventDefault();
     CollectionUtil.dropAllCollections();
