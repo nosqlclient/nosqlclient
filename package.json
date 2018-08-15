@@ -12,7 +12,7 @@
     "eslint-plugin-react": "^7.10.0"
   },
   "dependencies": {
-    "@babel/runtime": "7.0.0-beta.55",
+    "@babel/runtime": "7.0.0-rc.1",
     "babel-runtime": "^6.26.0",
     "bootstrap-filestyle": "^1.2.1",
     "bson": "^3.0.0",
