@@ -14,6 +14,7 @@
   "dependencies": {
     "@babel/runtime": "7.0.0-beta.55",
     "babel-runtime": "^6.26.0",
+    "basic-auth": "^2.0.0",
     "bootstrap-filestyle": "^1.2.1",
     "bson": "^3.0.0",
     "cheerio": "0.22.0",
@@ -38,6 +39,7 @@
     "spin.js": "^4.0.0",
     "toastr": "^2.1.4",
     "tunnel-ssh": "4.1.4",
+    "url": "^0.11.0",
     "winston": "^3.0.0"
   }
 }

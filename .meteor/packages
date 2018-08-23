@@ -23,7 +23,6 @@ twbs:bootstrap
 momentjs:moment
 arch:ace-editor
 http@1.4.1
-jabbslad:basic-auth
 standard-minifier-css@1.4.1
 standard-minifier-js@2.3.4
 meteorhacks:async
