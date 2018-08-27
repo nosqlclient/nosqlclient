@@ -1,6 +1,6 @@
 ## Nosqlclient (Formerly Mongoclient), MongoDB Management Tool
 
-Cross-platform and self hosted, easy to use, MongoDB 3.4+ support and more features! 
+Cross-platform and self hosted, easy to use, MongoDB 4.0+ support and more features! 
 
 [![Build Status](https://travis-ci.org/nosqlclient/nosqlclient.svg?branch=master)](https://travis-ci.org/nosqlclient/nosqlclient)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/6a75fc4e1d3f480f811b5339202400b5)](https://www.codacy.com/app/ozdemirsercan27/mongoclient?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=mongoclient/mongoclient&amp;utm_campaign=Badge_Grade)
@@ -9,7 +9,7 @@ Cross-platform and self hosted, easy to use, MongoDB 3.4+ support and more featu
 [![Docker Pulls](https://img.shields.io/docker/pulls/mongoclient/mongoclient.svg)](https://hub.docker.com/r/mongoclient/mongoclient/)
 [![AGPLv3 License](https://img.shields.io/github/license/nosqlclient/nosqlclient.svg)](https://github.com/nosqlclient/nosqlclient/blob/master/LICENSE)
 
-> We're BACK! 3.6 will be supported in a short time, you can read more about our break, from [here](https://medium.com/mongoclient/were-having-a-break-for-a-short-time-a845ac70ebd6)
+> We're BACK! 4.0 will be supported in a short time, you can read more about our break, from [here](https://medium.com/mongoclient/were-having-a-break-for-a-short-time-a845ac70ebd6)
 
 ![Nosqlclient](https://www.nosqlclient.com/img/logo/mongoclient_logo_black_half_size.png)
 
