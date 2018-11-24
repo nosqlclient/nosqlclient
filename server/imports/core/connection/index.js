@@ -190,7 +190,7 @@ Connection.prototype = {
       if (oldConnection.name) {
         let connection = { options: {} };
         if (oldConnection.url) {
-          connection = Connection.parseUrl({ url: oldConnection.url });
+          connection = this.parseUrl({ url: oldConnection.url });
           connection.url = oldConnection.url;
         }
 
