@@ -12,6 +12,10 @@ Logger.prototype = {
     this.log({ type: 'info', message, metadataToLog });
   },
 
+  debug({ message, metadataToLog = {} }) {
+    this.log({ type: 'debug', message, metadataToLog });
+  },
+
   error({ message, metadataToLog = {} }) {
     this.log({ type: 'error', message, metadataToLog });
   }
