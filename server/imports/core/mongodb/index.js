@@ -149,7 +149,7 @@ MongoDB.prototype = {
     const connectionOptions = Connection.getConnectionOptions(connection);
     const metadataToLog = { connectionUrl, options: MongoDBHelper.clearConnectionOptionsForLog(connectionOptions), sessionId };
 
-    Logger.info({ message: 'connect', metadataToLog });
+    Logger.debug({ message: 'connect', metadataToLog });
 
     return Async.runSync((done) => {
       try {
@@ -198,7 +198,7 @@ MongoDB.prototype = {
     const args = [connectionUrl, '--quiet', '--eval', `var collection =\"${collection}\", outputFormat=\"json\"`, `${MongoDBHelper.getMongoExternalsPath()}/variety/variety.js_`];
     const metadataToLog = { sessionId, args, collection };
 
-    Logger.info({ message: 'analyze-schema', metadataToLog });
+    Logger.debug({ message: 'analyze-schema', metadataToLog });
     try {
       const mongoPath = MongoDBHelper.getProperBinary('mongo');
       const spawned = spawn(mongoPath, args);

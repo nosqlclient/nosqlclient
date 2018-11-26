@@ -86,7 +86,7 @@ MongoDBShell.prototype = {
       if (!this.spawnedShellsBySessionId[sessionId]) {
         const connectionUrl = Connection.getConnectionUrl(connection, username, password, true);
         const mongoPath = MongoDBHelper.getProperBinary('mongo');
-        Logger.info({ message: 'shell', metadataToLog: { mongoPath, connectionUrl, sessionId } });
+        Logger.debug({ message: 'shell', metadataToLog: { mongoPath, connectionUrl, sessionId } });
         this.spawnedShellsBySessionId[sessionId] = spawn(mongoPath, [connectionUrl]);
         setEventsToShell.call(this, connectionId, sessionId);
       }
