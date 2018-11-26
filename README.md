@@ -1,6 +1,7 @@
 ## Nosqlclient (Formerly Mongoclient), MongoDB Management Tool
 
-Cross-platform and self hosted, easy to use, MongoDB 4.0+ support and more features! 
+Cross-platform and self hosted, easy to use, MongoDB 4.0+ support and more features!
+  
 
 [![Build Status](https://travis-ci.org/nosqlclient/nosqlclient.svg?branch=master)](https://travis-ci.org/nosqlclient/nosqlclient)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/6a75fc4e1d3f480f811b5339202400b5)](https://www.codacy.com/app/ozdemirsercan27/mongoclient?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=mongoclient/mongoclient&amp;utm_campaign=Badge_Grade)
@@ -10,6 +11,9 @@ Cross-platform and self hosted, easy to use, MongoDB 4.0+ support and more featu
 [![AGPLv3 License](https://img.shields.io/github/license/nosqlclient/nosqlclient.svg)](https://github.com/nosqlclient/nosqlclient/blob/master/LICENSE)
 
 ![Nosqlclient](https://www.nosqlclient.com/img/logo/mongoclient_logo_black_half_size.png)
+
+## Chat
+[Join us on Slack](https://join.slack.com/t/nosqlclient/shared_invite/enQtNDg3OTMzMzE0NjQ1LWZjZWZmY2FlOTgzMmJmYjJjNjQ1MjhkY2MwNTA5MWMzODM1Yzc2YmIzZmE4ZmE4M2MzN2YyZjM3NjUwOGNmODQ)
 
 ## Name Change
 [Read more about name change](https://medium.com/mongoclient/time-to-change-again-8db4dd56b171)
