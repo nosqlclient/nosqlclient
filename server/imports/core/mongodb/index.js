@@ -17,7 +17,7 @@ const MongoDB = function () {
 };
 
 const proceedConnectingMongodb = function (dbName, sessionId, connectionUrl, connectionOptions = {}, done) {
-  const metadataToLog = { sessionId, connectionUrl, connectionOptions };
+  const metadataToLog = { sessionId, connectionOptions };
   mongodbApi.MongoClient.connect(connectionUrl, connectionOptions, (mainError, client) => {
     try {
       if (mainError || !client) {
@@ -70,7 +70,7 @@ const connectThroughTunnel = function ({ connection, sessionId, done, connection
     if (error) {
       done(Error.createWithoutThrow({
         type: Error.types.ConnectionError,
-        metadataToLog: { connectionUrl, sessionId, connectionOptions, username, password },
+        metadataToLog: { sessionId, connectionOptions, username },
         externalError: error
       }), null);
       return;
@@ -84,7 +84,7 @@ const connectThroughTunnel = function ({ connection, sessionId, done, connection
     if (err) {
       done(Error.createWithoutThrow({
         type: Error.types.ConnectionError,
-        metadataToLog: { connectionUrl, sessionId, connectionOptions, username, password },
+        metadataToLog: { sessionId, connectionOptions, username },
         externalError: err
       }), null);
     }
