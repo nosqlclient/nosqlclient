@@ -1,7 +1,3 @@
 **/*{.,-}min.js
 node_modules
-packages/
-public/
-client/plugins/
-client/stylesheets/
-client/imports/helpers/live_chat/
+

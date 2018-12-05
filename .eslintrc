@@ -1,13 +1,9 @@
 extends:
   - airbnb
-  - plugin:meteor/recommended
+  - plugin:react/recommended
 
 plugins:
-  - meteor
-
-settings:
-  import/resolver: meteor
-  import/core-modules: [ meteor ]
+  - react
 
 rules:
   import/prefer-default-export: 0
@@ -33,5 +29,4 @@ env:
   browser: true
   es6: true
   jquery: true
-  meteor: true
   node: true
