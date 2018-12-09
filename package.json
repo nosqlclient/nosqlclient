@@ -4,8 +4,6 @@
   "version": "4.0.0",
   "devDependencies": {
     "concurrently": "^4.0.1",
-    "husky": "^1.2.0",
-    "lint-staged": "^8.1.0",
     "prettier": "^1.15.3"
   },
   "dependencies": {
@@ -17,16 +15,5 @@
     "client": "cd client && yarn start",
     "server": "cd server && nodemon server.js",
     "dev": "concurrently --kill-others-on-fail \"yarn server\" \"yarn client\""
-  },
-  "husky": {
-    "hooks": {
-      "pre-commit": "lint-staged"
-    }
-  },
-  "lint-staged": {
-    "src/**/*.{js,jsx,ts,tsx,json,css,scss,md}": [
-      "prettier --single-quote --write",
-      "git add"
-    ]
   }
 }
