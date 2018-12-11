@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import logo from "./logo.svg";
 import "./App.css";
+import Navigation from "./Navigation";
 
 class App extends Component {
   state = {
@@ -53,6 +54,7 @@ class App extends Component {
           </a>
         </header>
         <p>{this.state.response}</p>
+        <Navigation/>
         <form onSubmit={this.handleSubmit}>
           <p>
             <strong>Post to Server:</strong>
