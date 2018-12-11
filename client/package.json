@@ -7,8 +7,16 @@
   },
   "dependencies": {
     "react": "^16.6.3",
+    "react-bootstrap": "^0.32.4",
     "react-dom": "^16.6.3",
-    "react-scripts": "2.1.1"
+    "react-scripts": "2.1.1",
+    "react-pace": "^1.0.0",
+    "react-router": "^4.3.1",
+    "bootstrap": "^3.3.7",
+    "animate.css": "^3.7.0",
+    "font-awesome": "^4.7.0",
+    "jquery": "^3.3.1",
+    "metismenu": "^2.5.0"
   },
   "scripts": {
     "start": "react-scripts start",
