@@ -3,8 +3,7 @@
   "name": "mongoclient",
   "version": "4.0.0",
   "devDependencies": {
-    "concurrently": "^4.0.1",
-    "prettier": "^1.15.3"
+    "concurrently": "^4.0.1"
   },
   "dependencies": {
     "body-parser": "^1.18.3",

@@ -3,20 +3,22 @@
   "version": "0.1.0",
   "private": true,
   "devDependencies": {
-    "eslint": "5.6.0"
+    "eslint": "5.6.0",
+    "eslint-plugin-prettier": "^3.0.0",
+    "prettier": "1.15.3"
   },
   "dependencies": {
+    "animate.css": "^3.7.0",
+    "bootstrap": "^3.3.7",
+    "font-awesome": "^4.7.0",
+    "jquery": "^3.3.1",
+    "metismenu": "^2.5.0",
     "react": "^16.6.3",
     "react-bootstrap": "^0.32.4",
     "react-dom": "^16.6.3",
-    "react-scripts": "2.1.1",
-    "react-pace": "^1.0.0",
+    "react-pace-progress": "^2.0.0",
     "react-router": "^4.3.1",
-    "bootstrap": "^3.3.7",
-    "animate.css": "^3.7.0",
-    "font-awesome": "^4.7.0",
-    "jquery": "^3.3.1",
-    "metismenu": "^2.5.0"
+    "react-scripts": "2.1.1"
   },
   "scripts": {
     "start": "react-scripts start",
