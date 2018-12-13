@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import Pace from 'react-pace-progress';
 import { Navigation, Footer, TopHeader } from './components/common/';
+import { correctHeight, detectBody } from './Helpers';
+import $ from 'jquery';
 
 class App extends Component {
   render() {
@@ -18,6 +20,21 @@ class App extends Component {
         </div>
       </div>
     );
+  }
+
+  componentDidMount() {
+    // Run correctHeight function on load and resize window event
+    $(window).bind('load resize', function() {
+      correctHeight();
+      detectBody();
+    });
+
+    // Correct height of wrapper after metisMenu animation.
+    $('.metismenu a').click(() => {
+      setTimeout(() => {
+        correctHeight();
+      }, 300);
+    });
   }
 }
 
