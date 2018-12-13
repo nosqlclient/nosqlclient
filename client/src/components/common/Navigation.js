@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { Link } from 'react-router-dom';
 import $ from 'jquery';
 
 class Navigation extends Component {
@@ -7,13 +8,13 @@ class Navigation extends Component {
     $(menu).metisMenu();
   }
 
-  activeRoute(routeName) {
+  /*activeRoute(routeName) {
     return this.props.location.pathname.indexOf(routeName) > -1 ? 'active' : '';
   }
 
   secondLevelActive(routeName) {
     return this.props.location.pathname.indexOf(routeName) > -1 ? 'nav nav-second-level collapse in' : 'nav nav-second-level collapse';
-  }
+  }*/
 
   render() {
     return (
@@ -41,6 +42,11 @@ class Navigation extends Component {
             </div>
             <div className='logo-element'>IN+</div>
           </li>
+          {/* <li className={this.activeRoute('/databaseStats')}>
+            <Link to='/databaseStats'>
+              <i className='fa fa-th-large' /> <span className='nav-label'>Main view</span>
+            </Link>
+          </li>*/}
         </ul>
       </nav>
     );

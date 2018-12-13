@@ -1,20 +1,23 @@
 import React, { Component } from 'react';
 import Pace from 'react-pace-progress';
-import { Navigation, Footer, TopHeader } from './components/common/';
+import { Footer, Navigation, TopHeader } from './components/common/';
 import { correctHeight, detectBody } from './Helpers';
+import Main from './views/Main';
+
+//TODO how to get rid of this shit imports ?
 import $ from 'jquery';
+import metismenu from 'metismenu';
 
 class App extends Component {
   render() {
-    let wrapperClass = 'gray-bg ' + this.props.location.pathname;
-
     return (
       <div id='wrapper'>
         <Pace />
         <Navigation location={this.props.location} />
 
-        <div id='page-wrapper' className={wrapperClass}>
+        <div id='page-wrapper' className='gray-bg'>
           <TopHeader />
+          <Main />
           {this.props.children}
           <Footer />
         </div>
