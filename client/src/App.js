@@ -6,7 +6,6 @@ import Main from './views/Main';
 
 //TODO how to get rid of this shit imports ?
 import $ from 'jquery';
-import metismenu from 'metismenu';
 
 class App extends Component {
   render() {
