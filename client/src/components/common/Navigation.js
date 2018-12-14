@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import MetisMenu from 'react-metismenu';
 
 class Navigation extends Component {
-
   constructor() {
     super();
     this.state = {
@@ -10,12 +9,12 @@ class Navigation extends Component {
         {
           icon: 'eye',
           label: 'Database Stats',
-          to: 'menu-1',
+          to: 'menu-1'
         },
         {
           icon: 'wrench',
           label: 'Management',
-          to: 'menu-2',
+          to: 'menu-2'
         },
         {
           icon: 'bolt',
@@ -24,9 +23,9 @@ class Navigation extends Component {
             {
               icon: 'bolt',
               label: 'Sub Menu',
-              to: 'sub-menu',
-            },
-          ],
+              to: 'sub-menu'
+            }
+          ]
         },
         {
           icon: 'bolt',
@@ -35,37 +34,34 @@ class Navigation extends Component {
             {
               icon: 'bolt',
               label: 'Sub Menu',
-              to: 'sub-menu',
-            },
-          ],
+              to: 'sub-menu'
+            }
+          ]
         },
         {
           icon: 'bolt',
-          label: 'System',
-        },
+          label: 'System'
+        }
       ]
-    }
+    };
   }
 
   /*activeRoute(routeName) {
-    return this.props.location.pathname.indexOf(routeName) > -1 ? 'active' : '';
-  }
+      return this.props.location.pathname.indexOf(routeName) > -1 ? 'active' : '';
+    }
 
-  secondLevelActive(routeName) {
-    return this.props.location.pathname.indexOf(routeName) > -1 ? 'nav nav-second-level collapse in' : 'nav nav-second-level collapse';
-  }*/
+    secondLevelActive(routeName) {
+      return this.props.location.pathname.indexOf(routeName) > -1 ? 'nav nav-second-level collapse in' : 'nav nav-second-level collapse';
+    }*/
 
   render() {
-
     return (
       <div className='navbar-default navbar-static-side' role='navigation'>
         <ul className='nav metismenu' id='side-menu' ref='menu'>
-          <MetisMenu 
-          classNameContainer="nav metismenu"
-          content={this.state.menu} ref="menu" />
+          <MetisMenu classNameContainer='nav metismenu' content={this.state.menu} ref='menu' />
         </ul>
       </div>
-  );
+    );
   }
 }
 
