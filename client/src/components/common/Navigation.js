@@ -1,11 +1,11 @@
 import React, { Component } from 'react';
-import { Link } from 'react-router-dom';
 import $ from 'jquery';
 
 class Navigation extends Component {
+  connected = false; // TODO make this with redux
+
   componentDidMount() {
-    const { menu } = this.refs;
-    $(menu).metisMenu();
+    $('#side-menu').metisMenu();
   }
 
   /*activeRoute(routeName) {
@@ -19,35 +19,30 @@ class Navigation extends Component {
   render() {
     return (
       <nav className='navbar-default navbar-static-side' role='navigation'>
-        <ul className='nav metismenu' id='side-menu' ref='menu'>
-          <li className='nav-header'>
-            <div className='dropdown profile-element'>
-              <span />
-              <a data-toggle='dropdown' className='dropdown-toggle' href='#'>
-                <span className='clear'>
-                  <span className='block m-t-xs'>
-                    <strong className='font-bold'>Example user</strong>
+        <div className='sidebar-collapse'>
+          <ul className='nav metismenu' id='side-menu'>
+            <li className='nav-header'>
+              <div className='dropdown profile-element'>
+                <a data-toggle='dropdown' className='dropdown-toggle' href=''>
+                  <span className='clear'>
+                    if connected
+                    <span className='block m-t-xs'>
+                      <strong className='font-bold'>connection name</strong>
+                    </span>
+                    <span className='block m-t-xs'>server info</span>
+                    <span className='text-muted text-xs block'>
+                      db name <b className='caret' />
+                    </span>
+                    if not connected
+                    <span className='block mt-xs'>Not Connected</span>
+                    end of if
                   </span>
-                  <span className='text-muted text-xs block'>
-                    Example position
-                    <b className='caret' />
-                  </span>
-                </span>
-              </a>
-              <ul className='dropdown-menu animated fadeInRight m-t-xs'>
-                <li>
-                  <a href='#'> Logout</a>
-                </li>
-              </ul>
-            </div>
-            <div className='logo-element'>IN+</div>
-          </li>
-          {/* <li className={this.activeRoute('/databaseStats')}>
-            <Link to='/databaseStats'>
-              <i className='fa fa-th-large' /> <span className='nav-label'>Main view</span>
-            </Link>
-          </li>*/}
-        </ul>
+                </a>
+              </div>
+              <div className='logo-element'>MC+</div>
+            </li>
+          </ul>
+        </div>
       </nav>
     );
   }
