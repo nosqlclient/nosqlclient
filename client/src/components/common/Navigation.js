@@ -1,11 +1,50 @@
 import React, { Component } from 'react';
-import { Link } from 'react-router-dom';
-import $ from 'jquery';
+import MetisMenu from 'react-metismenu';
 
 class Navigation extends Component {
-  componentDidMount() {
-    const { menu } = this.refs;
-    $(menu).metisMenu();
+
+  constructor() {
+    super();
+    this.state = {
+      menu: [
+        {
+          icon: 'eye',
+          label: 'Database Stats',
+          to: 'menu-1',
+        },
+        {
+          icon: 'wrench',
+          label: 'Management',
+          to: 'menu-2',
+        },
+        {
+          icon: 'bolt',
+          label: 'Tools',
+          content: [
+            {
+              icon: 'bolt',
+              label: 'Sub Menu',
+              to: 'sub-menu',
+            },
+          ],
+        },
+        {
+          icon: 'bolt',
+          label: 'Collections',
+          content: [
+            {
+              icon: 'bolt',
+              label: 'Sub Menu',
+              to: 'sub-menu',
+            },
+          ],
+        },
+        {
+          icon: 'bolt',
+          label: 'System',
+        },
+      ]
+    }
   }
 
   /*activeRoute(routeName) {
@@ -17,39 +56,16 @@ class Navigation extends Component {
   }*/
 
   render() {
+
     return (
-      <nav className='navbar-default navbar-static-side' role='navigation'>
+      <div className='navbar-default navbar-static-side' role='navigation'>
         <ul className='nav metismenu' id='side-menu' ref='menu'>
-          <li className='nav-header'>
-            <div className='dropdown profile-element'>
-              <span />
-              <a data-toggle='dropdown' className='dropdown-toggle' href='#'>
-                <span className='clear'>
-                  <span className='block m-t-xs'>
-                    <strong className='font-bold'>Example user</strong>
-                  </span>
-                  <span className='text-muted text-xs block'>
-                    Example position
-                    <b className='caret' />
-                  </span>
-                </span>
-              </a>
-              <ul className='dropdown-menu animated fadeInRight m-t-xs'>
-                <li>
-                  <a href='#'> Logout</a>
-                </li>
-              </ul>
-            </div>
-            <div className='logo-element'>IN+</div>
-          </li>
-          {/* <li className={this.activeRoute('/databaseStats')}>
-            <Link to='/databaseStats'>
-              <i className='fa fa-th-large' /> <span className='nav-label'>Main view</span>
-            </Link>
-          </li>*/}
+          <MetisMenu 
+          classNameContainer="nav metismenu"
+          content={this.state.menu} ref="menu" />
         </ul>
-      </nav>
-    );
+      </div>
+  );
   }
 }
 
