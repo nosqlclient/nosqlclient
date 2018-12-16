@@ -12,11 +12,11 @@ Cross-platform and self hosted, easy to use, MongoDB 4.0+ support and more featu
 
 ![Nosqlclient](https://www.nosqlclient.com/img/logo/mongoclient_logo_black_half_size.png)
 
+## Rewrite (4.0.0)
+[Check it out here](https://medium.com/@mongoclient/new-year-update-2019-506400aee349)
+
 ## Chat
 [Join us on Slack](https://join.slack.com/t/nosqlclient/shared_invite/enQtNDg3OTMzMzE0NjQ1LWZjZWZmY2FlOTgzMmJmYjJjNjQ1MjhkY2MwNTA5MWMzODM1Yzc2YmIzZmE4ZmE4M2MzN2YyZjM3NjUwOGNmODQ)
-
-## Name Change
-[Read more about name change](https://medium.com/mongoclient/time-to-change-again-8db4dd56b171)
 
 ## Demo
 [Try Demo Application](https://www.nosqlclient.com/demo/)
