@@ -1,43 +1,52 @@
 import React, { Component } from 'react';
-import Pace from 'react-pace-progress';
-import { Footer, Navigation, TopHeader } from './components/common/';
-import { correctHeight, detectBody } from './Helpers';
-import Main from './views/Main';
+import { HashRouter, Route, Switch } from 'react-router-dom';
+// import { renderRoutes } from 'react-router-config';
+import Loadable from 'react-loadable';
+import './App.scss';
 
-//TODO how to get rid of this shit imports ?
-import $ from 'jquery';
-import metismenu from 'metismenu';
+const loading = () => <div className='animated fadeIn pt-3 text-center'>Loading...</div>;
+
+// Containers
+const DefaultLayout = Loadable({
+  loader: () => import('./containers/DefaultLayout'),
+  loading
+});
+
+// Pages
+const Login = Loadable({
+  loader: () => import('./views/Pages/Login'),
+  loading
+});
+
+const Register = Loadable({
+  loader: () => import('./views/Pages/Register'),
+  loading
+});
+
+const Page404 = Loadable({
+  loader: () => import('./views/Pages/Page404'),
+  loading
+});
+
+const Page500 = Loadable({
+  loader: () => import('./views/Pages/Page500'),
+  loading
+});
 
 class App extends Component {
+
   render() {
     return (
-      <div id='wrapper'>
-        <Pace />
-        <Navigation location={this.props.location} />
-
-        <div id='page-wrapper' className='gray-bg'>
-          <TopHeader />
-          <Main />
-          {this.props.children}
-          <Footer />
-        </div>
-      </div>
+      <HashRouter>
+          <Switch>
+            <Route exact path='/login' name='Login Page' component={Login} />
+            <Route exact path='/register' name='Register Page' component={Register} />
+            <Route exact path='/404' name='Page 404' component={Page404} />
+            <Route exact path='/500' name='Page 500' component={Page500} />
+            <Route path='/' name='Home' component={DefaultLayout} />
+          </Switch>
+      </HashRouter>
     );
-  }
-
-  componentDidMount() {
-    // Run correctHeight function on load and resize window event
-    $(window).bind('load resize', function() {
-      correctHeight();
-      detectBody();
-    });
-
-    // Correct height of wrapper after metisMenu animation.
-    $('.metismenu a').click(() => {
-      setTimeout(() => {
-        correctHeight();
-      }, 300);
-    });
   }
 }
 

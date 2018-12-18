@@ -1,6 +1,6 @@
 {
   "private": true,
-  "name": "mongoclient",
+  "name": "nosqlclient-server",
   "version": "4.0.0",
   "devDependencies": {
     "concurrently": "^4.0.1"

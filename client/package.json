@@ -1,36 +1,71 @@
 {
-  "name": "client",
-  "version": "0.1.0",
+  "name": "nosqlclient-client",
+  "version": "4.0.0",
+  "description": "An open source, on-premise MongoDB Management Tool",
+  "author": "Nosqlclient Team",
+  "homepage": "https://nosqlclient.com",
+  "copyright": "Copyright 2019 Nosqlclient",
+  "license": "AGPLv2",
   "private": true,
-  "devDependencies": {
-    "eslint": "5.6.0",
-    "eslint-plugin-prettier": "^3.0.0",
-    "prettier": "1.15.3"
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:nosqlclient/nosqlclient.git"
   },
   "dependencies": {
-    "animate.css": "^3.7.0",
-    "bootstrap": "^3.3.7",
+    "@coreui/coreui": "^2.1.1",
+    "@coreui/coreui-plugin-chartjs-custom-tooltips": "^1.2.0",
+    "@coreui/icons": "0.3.0",
+    "@coreui/react": "^2.1.1",
+    "bootstrap": "^4.1.3",
+    "chart.js": "^2.7.3",
+    "classnames": "^2.2.6",
+    "core-js": "^2.5.7",
+    "enzyme": "^3.7.0",
+    "enzyme-adapter-react-16": "^1.7.0",
+    "flag-icon-css": "^3.2.1",
     "font-awesome": "^4.7.0",
-    "jquery": "^3.3.1",
-    "metismenu": "^2.5.0",
+    "node-sass": "^4.10.0",
+    "prop-types": "^15.6.2",
     "react": "^16.6.3",
-    "react-bootstrap": "^0.32.4",
+    "react-app-polyfill": "^0.1.3",
+    "react-chartjs-2": "^2.7.2",
     "react-dom": "^16.6.3",
-    "react-pace-progress": "^2.0.0",
+    "react-loadable": "^5.5.0",
+    "react-router-config": "^4.4.0-beta.6",
     "react-router-dom": "^4.3.1",
-    "react-scripts": "2.1.1"
+    "react-test-renderer": "^16.6.3",
+    "reactstrap": "^6.5.0",
+    "simple-line-icons": "^2.4.1"
+  },
+  "devDependencies": {
+    "react-scripts": "^2.1.1"
   },
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
+    "test:cov": "react-scripts test --coverage",
+    "test:debug": "react-scripts --inspect-brk test --runInBand",
     "eject": "react-scripts eject"
+  },
+  "bugs": {
+    "url": "https://github.com/nosqlclient/nosqlclient/issues"
+  },
+  "eslintConfig": {
+    "extends": "react-app"
   },
   "browserslist": [
     ">0.2%",
     "not dead",
-    "not ie <= 11",
+    "not ie <= 9",
     "not op_mini all"
   ],
-  "proxy": "http://localhost:5000/"
+  "jest": {
+    "collectCoverageFrom": [
+      "src/**/*.{js,jsx}",
+      "!**/*index.js",
+      "!src/serviceWorker.js",
+      "!src/polyfill.js"
+    ]
+  }
 }
