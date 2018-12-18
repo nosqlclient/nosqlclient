@@ -1,6 +1,6 @@
 {
-  "short_name": "CoreUI-React",
-  "name": "CoreUI-React sample",
+  "short_name": "Nosqlclient",
+  "name": "Nosqlclient | MongoDB Management Tool",
   "icons": [
     {
       "src": "./assets/img/favicon.png",

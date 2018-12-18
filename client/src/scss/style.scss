@@ -1,0 +1,8 @@
+// Import styles
+@import "~@coreui/coreui/scss/coreui.scss";
+
+// Temp fix for reactstrap
+@import '~@coreui/coreui/scss/_dropdown-menu-right.scss';
+
+// ie fixes
+@import "ie-fix";

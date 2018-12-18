@@ -1,7 +1,16 @@
 {
-  "extends": ["react-app", "plugin:jsx-a11y/recommended"],
+  "extends": ["react-app", "plugin:jsx-a11y/recommended", "airbnb"],
   "plugins": ["jsx-a11y"],
   "rules": {
-    "jsx-quotes": ["error", "prefer-single"]
+    "jsx-quotes": ["error", "prefer-single"],
+    "react/jsx-filename-extension": [1, { "extensions": [".js", ".jsx"] }],
+    "react/prefer-stateless-function": 0,
+    "object-curly-newline": ["error", {
+      "ObjectExpression": { "multiline": true },
+      "ObjectPattern": { "multiline": true },
+      "ImportDeclaration": { "multiline": true },
+      "ExportDeclaration": { "multiline": true }
+    }],
+    "comma-dangle": ["error", "never"]
   }
 }

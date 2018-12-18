@@ -38,7 +38,8 @@
     "simple-line-icons": "^2.4.1"
   },
   "devDependencies": {
-    "react-scripts": "^2.1.1"
+    "react-scripts": "^2.1.1",
+    "eslint-config-airbnb": "^17.1.0"
   },
   "scripts": {
     "start": "react-scripts start",
@@ -50,9 +51,6 @@
   },
   "bugs": {
     "url": "https://github.com/nosqlclient/nosqlclient/issues"
-  },
-  "eslintConfig": {
-    "extends": "react-app"
   },
   "browserslist": [
     ">0.2%",
