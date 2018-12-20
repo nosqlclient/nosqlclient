@@ -1,13 +1,15 @@
 import React, { Component } from 'react';
 import { HashRouter, Route, Switch } from 'react-router-dom';
+import { ApolloProvider } from 'react-apollo';
 import Loadable from 'react-loadable';
-import './scss/App.scss';
+import Communicator from './modules/communicator';
+import './style/App.scss';
 
 const loading = () => <div className='animated fadeIn pt-3 text-center'>Loading...</div>;
 
 // Containers
 const MainLayout = Loadable({
-  loader: () => import('./containers'),
+  loader: () => import('./views/layout'),
   loading
 });
 
@@ -21,9 +23,11 @@ class App extends Component {
   render() {
     return (
       <HashRouter>
-        <Switch>
-          <Route path='/' name='Dashboard' component={MainLayout} />
-        </Switch>
+        <ApolloProvider client={Communicator.client}>
+          <Switch>
+            <Route path='/' name='Dashboard' component={MainLayout} />
+          </Switch>
+        </ApolloProvider>
       </HashRouter>
     );
   }

@@ -1,7 +1,7 @@
 import React from 'react';
-import MainLayout from './containers';
+import MainLayout from './views/layout';
 
-const Dashboard = React.lazy(() => import('./views/Dashboard'));
+const Dashboard = React.lazy(() => import('./views/yield/Dashboard'));
 
 // https://github.com/ReactTraining/react-router/tree/master/packages/react-router-config
 const routes = [
