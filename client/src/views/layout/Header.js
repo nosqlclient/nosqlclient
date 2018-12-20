@@ -8,11 +8,13 @@ import {
   NavItem,
   NavLink
 } from 'reactstrap';
+import About from './About';
 
 class Header extends Component {
   render() {
     return (
       <React.Fragment>
+        <About />
         <AppSidebarToggler className='d-lg-none' display='md' mobile />
         <AppSidebarToggler className='d-md-down-none' display='lg' />
         <Nav className='ml-auto' navbar>
@@ -34,7 +36,7 @@ class Header extends Component {
                 <i className='fa fa-upload' />
                 Export Nosqlclient Data
               </DropdownItem>
-              <DropdownItem>
+              <DropdownItem onClick={this.toggleModal}>
                 <i className='fa fa-globe' />
                 About
               </DropdownItem>
