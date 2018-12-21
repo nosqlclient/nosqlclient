@@ -20,7 +20,7 @@ class About extends Component {
         <Modal isOpen={this.state.show}>
           <ModalHeader toggle={this.toggleModal}>About Us</ModalHeader>
           <ModalBody>
-            <img className="text-align:center" width={80} height={100} src="/assets/logo.png" />
+            <img className="text-align:center" width={80} height={100} src="/assets/logo.png" alt="Logo" />
             <br />
                     Open Source Edition - Version
             <span>{this.state.version}</span>
