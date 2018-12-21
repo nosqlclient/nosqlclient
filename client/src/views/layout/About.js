@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { Modal, ModalHeader, ModalBody } from 'reactstrap';
+import logo from '../../assets/logo.png';
 
 class About extends Component {
   constructor(props) {
@@ -20,7 +21,7 @@ class About extends Component {
         <Modal isOpen={this.state.show}>
           <ModalHeader toggle={this.toggleModal}>About Us</ModalHeader>
           <ModalBody>
-            <img className="text-align:center" width={80} height={100} src="/assets/logo.png" alt="Logo" />
+            <img className="text-align:center" width={80} height={100} src={logo} alt="Logo" />
             <br />
                     Open Source Edition - Version
             <span>{this.state.version}</span>
