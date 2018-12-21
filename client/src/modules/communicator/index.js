@@ -15,7 +15,7 @@ class Communicator {
     });
 
     this.queries = {
-      getBooks: fields => `
+      getBooks: fields => gql`
         {
           allBooks {
             ${fields.join(',')}
@@ -24,11 +24,6 @@ class Communicator {
       `
     };
   }
-}
-
-export function createQuery(query) {
-  console.log(query); // TODO remove
-  return gql`${query}`; // tagged template literal gql.
 }
 
 export default new Communicator();
