@@ -14,7 +14,7 @@ class About extends Component {
 
   toggleModal = () => {
     this.setState({ show: !this.state.show });
-  }
+  };
 
   render() {
     return (
