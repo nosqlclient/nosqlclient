@@ -27,14 +27,6 @@ class Header extends Component {
                 Settings
               </DropdownItem>
               <DropdownItem>
-                <i className="fa fa-download" />
-                Import Nosqlclient Data
-              </DropdownItem>
-              <DropdownItem>
-                <i className="fa fa-upload" />
-                Export Nosqlclient Data
-              </DropdownItem>
-              <DropdownItem>
                 <i className="fa fa-globe" />
                 About
               </DropdownItem>
