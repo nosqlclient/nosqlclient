@@ -30,18 +30,18 @@ const navigation = {
 };
 
 class MainLayout extends Component {
-  loading = () => <div className='animated fadeIn pt-1 text-center'>Loading...</div>
+  loading = () => <div className="animated fadeIn pt-1 text-center">Loading...</div>
 
   render() {
     return (
-      <div className='app'>
+      <div className="app">
         <AppHeader fixed>
           <Suspense fallback={this.loading()}>
             <Header />
           </Suspense>
         </AppHeader>
-        <div className='app-body'>
-          <AppSidebar fixed display='lg'>
+        <div className="app-body">
+          <AppSidebar fixed display="lg">
             <AppSidebarHeader />
             <AppSidebarForm />
             <Suspense>
@@ -50,7 +50,7 @@ class MainLayout extends Component {
             <AppSidebarFooter />
             <AppSidebarMinimizer />
           </AppSidebar>
-          <main className='main'>
+          <main className="main">
             <AppBreadcrumb appRoutes={routes} />
             <Container fluid>
               <Suspense fallback={this.loading()}>
@@ -66,7 +66,7 @@ class MainLayout extends Component {
                       )}
                     />
                   ) : (null)))}
-                  <Redirect from='/' to='/dashboard' />
+                  <Redirect from="/" to="/dashboard" />
                 </Switch>
               </Suspense>
             </Container>

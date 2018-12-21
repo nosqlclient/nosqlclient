@@ -5,7 +5,7 @@ import Loadable from 'react-loadable';
 import Communicator from './modules/communicator';
 import './style/App.scss';
 
-const loading = () => <div className='animated fadeIn pt-3 text-center'>Loading...</div>;
+const loading = () => <div className="animated fadeIn pt-3 text-center">Loading...</div>;
 
 // Containers
 const MainLayout = Loadable({
@@ -25,7 +25,7 @@ class App extends Component {
       <HashRouter>
         <ApolloProvider client={Communicator.client}>
           <Switch>
-            <Route path='/' name='Dashboard' component={MainLayout} />
+            <Route path="/" name="Dashboard" component={MainLayout} />
           </Switch>
         </ApolloProvider>
       </HashRouter>

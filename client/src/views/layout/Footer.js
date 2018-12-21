@@ -5,12 +5,12 @@ class Footer extends Component {
     return (
       <React.Fragment>
         <span>
-          <a target='_blank' rel='noopener noreferrer' href='https://nosqlclient.com'>Nosqlclient </a>
+          <a target="_blank" rel="noopener noreferrer" href="https://nosqlclient.com">Nosqlclient </a>
             &copy; 2019
         </span>
-        <span className='ml-auto'>
+        <span className="ml-auto">
             Powered by
-          <a target='_blank' rel='noopener noreferrer' href='https://github.com/nosqlclient'> Nosqlclient Team</a>
+          <a target="_blank" rel="noopener noreferrer" href="https://github.com/nosqlclient"> Nosqlclient Team</a>
         </span>
       </React.Fragment>
     );

@@ -20,15 +20,15 @@ class About extends Component {
         <Modal isOpen={this.state.show}>
           <ModalHeader toggle={this.toggleModal}>About Us</ModalHeader>
           <ModalBody>
-            <img className='text-align:center' width={80} height={100} src='/assets/logo.png' />
+            <img className="text-align:center" width={80} height={100} src="/assets/logo.png" />
             <br />
-          Open Source Edition - Version
+                    Open Source Edition - Version
             <span>{this.state.version}</span>
-          Licensed with AGPLv3 © 2017
+                    Licensed with AGPLv3 © 2017
             <br />
-          Contact with
-            <a href='mailto:info@mongoclient.com'>info@mongoclient.com</a>
-            for Enterprise edition
+                    Contact with
+            <a href="mailto:info@mongoclient.com">info@mongoclient.com</a>
+                    for Enterprise edition
           </ModalBody>
         </Modal>
       );
