@@ -6,7 +6,7 @@ class About extends Component {
     super(props);
 
     this.state = {
-      show: true,
+      show: false,
       version: '4.0.0'
     };
   }
