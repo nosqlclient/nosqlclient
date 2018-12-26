@@ -170,53 +170,64 @@ UIComponents.prototype = {
     setGridEditorValue({ selector, value }) {
       // collect all keys
       const allKeys = new Set();
-      value.forEach(row => {
+      value.forEach((row) => {
         Object.keys(row).forEach(k => allKeys.add(k));
       });
+      if (allKeys.size === 0) {
+        allKeys.add('(empty)');
+      }
       // create HTML table
-      let html = "<table class=\"table table-bordered\">";
+      let html = '<table class="table table-bordered">';
       // table headers
-      html += "<thead><tr>";
-      allKeys.forEach(key => html += `<th>${key}</th>`);
-      html += "</tr></thead>";
-      // data rows
-      html += "<tbody>";
-      value.forEach(row => {
-        html += "<tr>";
-        allKeys.forEach(key => {
-          let val = row[key];
-          if(val !== null && typeof val === 'object') {
-            const valKeys = Object.keys(val);
-            if(valKeys.length === 1 && valKeys[0] === '$date')
-              val = val.$date;
-            else
-              val = JSON.stringify(val);
-          }
-          val = '' + val;
-          if(val.length > 50)
-            html += `<td title="${this.quoteAttr(val)}">${val.substr(0, 47)}...</td>`;
-          else
-            html += `<td>${val}</td>`;
-        });
-        html += "</tr>";
+      html += '<thead><tr>';
+      allKeys.forEach((key) => {
+        html += `<th>${key}</th>`;
       });
-      html += "</tbody>";
-      html += "</table>";
+      html += '</tr></thead>';
+      // data rows
+      html += '<tbody>';
+      value.forEach((row) => {
+        html += this._objectToGridRow(row, allKeys);
+      });
+      html += '</tbody></table>';
 
-      const container = $('#' + selector);
+      const container = $(`#${selector}`);
       container.html(html);
       const table = container.find('table');
       table.DataTable({
         paging: false
       });
       const self = this;
-      table.on('dblclick', 'td[title]', function() {
+      table.on('dblclick', 'td[title]', function () {
         self.displayJsonEditorModal(this.getAttribute('title'));
       });
     },
 
-    quoteAttr: function(s) {
-      return ('' + s) /* Forces the conversion to string. */
+    _objectToGridRow(obj, allKeys) {
+      let html = '<tr>';
+      allKeys.forEach((key) => {
+        let val = obj.hasOwnProperty(key) ? obj[key] : '';
+        if (val !== null && typeof val === 'object') {
+          const valKeys = Object.keys(val);
+          if (valKeys.length === 1 && valKeys[0] === '$date') {
+            val = val.$date;
+          } else {
+            val = JSON.stringify(val);
+          }
+        }
+        val = `${val}`;
+        if (val.length > 50) {
+          html += `<td title="${this._quoteAttr(val)}">${val.substr(0, 47)}...</td>`;
+        } else {
+          html += `<td>${val}</td>`;
+        }
+      });
+      html += '</tr>';
+      return html;
+    },
+
+    _quoteAttr(s) {
+      return `${s}` /* Forces the conversion to string. */
         .replace(/&/g, '&amp;') /* This MUST be the 1st replacement. */
         .replace(/'/g, '&apos;') /* The 4 other predefined entities, required. */
         .replace(/"/g, '&quot;')
@@ -228,25 +239,28 @@ UIComponents.prototype = {
 
     displayJsonEditorModal(sData) {
       let modal = $('#json-editor-modal');
-      if(modal.length === 0) {
-        modal = $('<div class="modal fade" id="json-editor-modal" tabindex="-1" role="dialog">' +
-          '  <div class="modal-dialog" role="document">\n' +
-          '    <div class="modal-content">' +
-          '    <div class="modal-header">' +
-          '        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>' +
-          '        <h4 class="modal-title">Cell data</h4>' +
-          '    </div>' +
-          '      <div class="modal-body" id="json-editor-modal-data" style="height: calc(100vh - 100px)"></div>' +
-          '    </div>' +
-          '  </div>' +
-          '</div>');
+      if (modal.length === 0) {
+        modal = $('<div class="modal fade" id="json-editor-modal" tabindex="-1" role="dialog">'
+          + '  <div class="modal-dialog" role="document">\n'
+          + '    <div class="modal-content">'
+          + '    <div class="modal-header">'
+          + '        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>'
+          + '        <h4 class="modal-title">Cell data</h4>'
+          + '    </div>'
+          + '      <div class="modal-body" id="json-editor-modal-data" style="height: calc(100vh - 100px)"></div>'
+          + '    </div>'
+          + '  </div>'
+          + '</div>');
         $('body').append(modal);
 
-        this.initializeJSONEditor({selector: 'json-editor-modal-data', options: {
-          mode: 'code',
-          modes: ['code', 'view'],
-          readOnly: true
-        }});
+        this.initializeJSONEditor({
+          selector: 'json-editor-modal-data',
+          options: {
+            mode: 'code',
+            modes: ['code', 'view'],
+            readOnly: true
+          }
+        });
       }
       modal.modal();
       $('#json-editor-modal-data').data('jsoneditor').set(JSON.parse(sData));

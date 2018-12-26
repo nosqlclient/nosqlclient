@@ -113,23 +113,18 @@ QueryRender.prototype = {
   },
 
   setQueryResult(result, queryInfo, queryParams, saveHistory) {
-    const jsonEditor = $('#divActiveJsonEditor');
-    const aceEditor = $('#divActiveAceEditor');
-    const gridEditor = $('#divActiveGridEditor');
-    const settings = ReactivityProvider.findOne(ReactivityProvider.types.Settings);
+    const isOnlyOneTab = $('#divActiveJsonEditor').css('display') === 'none'
+      && $('#divActiveAceEditor').css('display') === 'none'
+      && $('#divActiveGridEditor').css('display') === 'none';
 
-    if (jsonEditor.css('display') === 'none' && aceEditor.css('display') === 'none' && gridEditor.css('display') === 'none') {
+    if (isOnlyOneTab) {
       // there's only one tab, set results
-      if (settings.defaultResultView === 'Jsoneditor')
-        jsonEditor.show('slow');
-      else if (settings.defaultResultView === 'Datatable')
-        gridEditor.show('slow');
-      else
-        aceEditor.show('slow');
+      this.switchViewTo(this.getDefaultResultView());
       this.setResultToEditors(1, result, queryParams, queryInfo);
     } else {
       // close all if setting for single tab is enabled
       const resultTabs = $('#resultTabs');
+      const settings = ReactivityProvider.findOne(ReactivityProvider.types.Settings);
       if (settings.singleTabResultSets) {
         QueryingHelper.closeAllTabs(resultTabs);
 
@@ -253,22 +248,32 @@ QueryRender.prototype = {
     return whichIsDisplayed;
   },
 
-  getResultTabContent(tabID, defaultView) {
+  getDefaultResultView(defaultView = null) {
+    if (defaultView === null) {
+      const settings = ReactivityProvider.findOne(ReactivityProvider.types.Settings);
+      defaultView = settings.defaultResultView;
+    }
+    switch (defaultView) {
+      case 'Jsoneditor':
+        return 'jsonEditor';
+      case 'Datatable':
+        return 'gridEditor';
+      default:
+        return 'aceEditor';
+    }
+  },
+
+  getWhichResultViewShowingWithDefault(defaultView) {
     let whichIsDisplayed = this.getWhichResultViewShowing();
 
     if (whichIsDisplayed === 'none') {
-      switch (defaultView) {
-        case 'Jsoneditor':
-          whichIsDisplayed = 'jsonEditor';
-          break;
-        case 'Datatable':
-          whichIsDisplayed = 'gridEditor';
-          break;
-        default:
-          whichIsDisplayed = 'aceEditor';
-          break;
-      }
+      whichIsDisplayed = this.getDefaultResultView(defaultView);
     }
+    return whichIsDisplayed;
+  },
+
+  getResultTabContent(tabID, defaultView) {
+    const whichIsDisplayed = this.getWhichResultViewShowingWithDefault(defaultView);
 
     // main container
     let result = `<div class="tab-pane fade in active" id="tab-${tabID}">`;
@@ -289,7 +294,7 @@ QueryRender.prototype = {
     // GRID editor
     const gridStyle = whichIsDisplayed === 'gridEditor' ? '' : 'style="display: none"';
     result += `<div id="divActiveGridEditor" class="form-group" ${gridStyle}> `
-      + '<div id="activeGridEditor" style="width: 100%;min-height:500px" class="col-lg-12"> '
+      + '<div id="activeGridEditor" class="col-lg-12 active-grid-editor"> '
       + '</div></div>';
 
     // close main container
@@ -396,14 +401,10 @@ QueryRender.prototype = {
   },
 
   switchView() {
-    const jsonViews = $('div[id^="divActiveJsonEditor"]');
-    const gridViews = $('div[id^="divActiveGridEditor"]');
-    const aceViews = $('div[id^="divActiveAceEditor"]');
-
     const whichIsDisplayed = this.getWhichResultViewShowing();
-    if (whichIsDisplayed === 'none')
+    if (whichIsDisplayed === 'none') {
       return;
-
+    }
     let whichToShow;
     switch (whichIsDisplayed) {
       case 'jsonEditor':
@@ -416,22 +417,30 @@ QueryRender.prototype = {
         whichToShow = 'jsonEditor';
         break;
     }
+    this.switchViewTo(whichToShow);
+  },
 
-    const showFn = function() {
+  switchViewTo(whichToShow) {
+    const showFn = function () {
       $(this).show('slow');
     };
 
-    if(whichToShow === 'jsonEditor') {
+    const jsonViews = $('div[id^="divActiveJsonEditor"]');
+    if (whichToShow === 'jsonEditor') {
       jsonViews.each(showFn);
     } else {
       jsonViews.hide();
     }
-    if(whichToShow === 'gridEditor') {
+
+    const gridViews = $('div[id^="divActiveGridEditor"]');
+    if (whichToShow === 'gridEditor') {
       gridViews.each(showFn);
     } else {
       gridViews.hide();
     }
-    if(whichToShow === 'aceEditor') {
+
+    const aceViews = $('div[id^="divActiveAceEditor"]');
+    if (whichToShow === 'aceEditor') {
       aceViews.each(showFn);
     } else {
       aceViews.hide();
