@@ -169,13 +169,7 @@ UIComponents.prototype = {
 
     setGridEditorValue({ selector, value }) {
       // collect all keys
-      const allKeys = new Set();
-      value.forEach((row) => {
-        Object.keys(row).forEach(k => allKeys.add(k));
-      });
-      if (allKeys.size === 0) {
-        allKeys.add('(empty)');
-      }
+      const allKeys = this._collectAllKeys(value);
       // create HTML table
       let html = '<table class="table table-bordered">';
       // table headers
@@ -193,6 +187,7 @@ UIComponents.prototype = {
 
       const container = $(`#${selector}`);
       container.html(html);
+
       const table = container.find('table');
       table.DataTable({
         paging: false
@@ -203,10 +198,22 @@ UIComponents.prototype = {
       });
     },
 
+    _collectAllKeys(value) {
+      const allKeys = new Set();
+      value.forEach((row) => {
+        Object.keys(row).forEach(k => allKeys.add(k));
+      });
+      if (allKeys.size === 0) {
+        allKeys.add('(empty)');
+      }
+      return allKeys;
+    },
+
     _objectToGridRow(obj, allKeys) {
       let html = '<tr>';
       allKeys.forEach((key) => {
-        let val = obj.hasOwnProperty(key) ? obj[key] : '';
+        let val = obj[key];
+        if (typeof val === 'undefined') val = '';
         if (val !== null && typeof val === 'object') {
           const valKeys = Object.keys(val);
           if (valKeys.length === 1 && valKeys[0] === '$date') {

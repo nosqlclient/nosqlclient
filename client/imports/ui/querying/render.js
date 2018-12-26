@@ -421,27 +421,23 @@ QueryRender.prototype = {
   },
 
   switchViewTo(whichToShow) {
-    const showFn = function () {
-      $(this).show('slow');
-    };
-
     const jsonViews = $('div[id^="divActiveJsonEditor"]');
     if (whichToShow === 'jsonEditor') {
-      jsonViews.each(showFn);
+      jsonViews.show('slow');
     } else {
       jsonViews.hide();
     }
 
     const gridViews = $('div[id^="divActiveGridEditor"]');
     if (whichToShow === 'gridEditor') {
-      gridViews.each(showFn);
+      gridViews.show('slow');
     } else {
       gridViews.hide();
     }
 
     const aceViews = $('div[id^="divActiveAceEditor"]');
     if (whichToShow === 'aceEditor') {
-      aceViews.each(showFn);
+      aceViews.show('slow');
     } else {
       aceViews.hide();
     }
