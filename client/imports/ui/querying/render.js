@@ -113,18 +113,18 @@ QueryRender.prototype = {
   },
 
   setQueryResult(result, queryInfo, queryParams, saveHistory) {
-    const jsonEditor = $('#divActiveJsonEditor');
-    const aceEditor = $('#divActiveAceEditor');
-    const settings = ReactivityProvider.findOne(ReactivityProvider.types.Settings);
+    const isOnlyOneTab = $('#divActiveJsonEditor').css('display') === 'none'
+      && $('#divActiveAceEditor').css('display') === 'none'
+      && $('#divActiveGridEditor').css('display') === 'none';
 
-    if (jsonEditor.css('display') === 'none' && aceEditor.css('display') === 'none') {
+    if (isOnlyOneTab) {
       // there's only one tab, set results
-      if (settings.defaultResultView === 'Jsoneditor') jsonEditor.show('slow');
-      else aceEditor.show('slow');
+      this.switchViewTo(this.getDefaultResultView());
       this.setResultToEditors(1, result, queryParams, queryInfo);
     } else {
       // close all if setting for single tab is enabled
       const resultTabs = $('#resultTabs');
+      const settings = ReactivityProvider.findOne(ReactivityProvider.types.Settings);
       if (settings.singleTabResultSets) {
         QueryingHelper.closeAllTabs(resultTabs);
 
@@ -175,6 +175,8 @@ QueryRender.prototype = {
         otherTab.find('#activeJsonEditor').attr('id', `activeJsonEditor-${uniqueID}`);
         otherTab.find('#divActiveAceEditor').attr('id', `divActiveAceEditor-${uniqueID}`);
         otherTab.find('#activeAceEditor').attr('id', `activeAceEditor-${uniqueID}`);
+        otherTab.find('#divActiveGridEditor').attr('id', `divActiveGridEditor-${uniqueID}`);
+        otherTab.find('#activeGridEditor').attr('id', `activeGridEditor-${uniqueID}`);
       }
     });
   },
@@ -195,6 +197,9 @@ QueryRender.prototype = {
 
     // set ace
     UIComponents.Editor.setAceEditorValue({ selector: 'activeAceEditor', value: result });
+
+    // set grid editor dta
+    UIComponents.Editor.setGridEditorValue({ selector: 'activeGridEditor', value: result });
 
     const activeTab = $(`#tab-${tabID}`);
     // cache query data
@@ -225,6 +230,7 @@ QueryRender.prototype = {
   getWhichResultViewShowing() {
     const jsonViews = $('div[id^="divActiveJsonEditor"]');
     const aceViews = $('div[id^="divActiveAceEditor"]');
+    const gridViews = $('div[id^="divActiveGridEditor"]');
 
     let whichIsDisplayed = 'none';
     jsonViews.each(function () {
@@ -235,37 +241,64 @@ QueryRender.prototype = {
       if ($(this).css('display') !== 'none') whichIsDisplayed = 'aceEditor';
     });
 
+    gridViews.each(function () {
+      if ($(this).css('display') !== 'none') whichIsDisplayed = 'gridEditor';
+    });
+
+    return whichIsDisplayed;
+  },
+
+  getDefaultResultView(defaultView = null) {
+    if (defaultView === null) {
+      const settings = ReactivityProvider.findOne(ReactivityProvider.types.Settings);
+      defaultView = settings.defaultResultView;
+    }
+    switch (defaultView) {
+      case 'Jsoneditor':
+        return 'jsonEditor';
+      case 'Datatable':
+        return 'gridEditor';
+      default:
+        return 'aceEditor';
+    }
+  },
+
+  getWhichResultViewShowingWithDefault(defaultView) {
+    let whichIsDisplayed = this.getWhichResultViewShowing();
+
+    if (whichIsDisplayed === 'none') {
+      whichIsDisplayed = this.getDefaultResultView(defaultView);
+    }
     return whichIsDisplayed;
   },
 
   getResultTabContent(tabID, defaultView) {
-    const jsonEditorHtml = `<div class="tab-pane fade in active" id="tab-${tabID}">`
-      + '<div id="divActiveJsonEditor" class="form-group"> '
+    const whichIsDisplayed = this.getWhichResultViewShowingWithDefault(defaultView);
+
+    // main container
+    let result = `<div class="tab-pane fade in active" id="tab-${tabID}">`;
+
+    // JSON editor
+    const jsonStyle = whichIsDisplayed === 'jsonEditor' ? '' : 'style="display: none"';
+    result += `<div id="divActiveJsonEditor" class="form-group" ${jsonStyle}> `
       + '<div id="activeJsonEditor" style="width: 100%;height:500px" class="col-lg-12"> '
-      + '</div> </div> '
-      + '<div id="divActiveAceEditor" class="form-group" style="display: none"> '
+      + '</div> </div> ';
+
+    // ACE editor
+    const aceStyle = whichIsDisplayed === 'aceEditor' ? '' : 'style="display: none"';
+    result += `<div id="divActiveAceEditor" class="form-group" ${aceStyle}> `
       + '<div class="col-lg-12"> '
       + '<pre id="activeAceEditor" style="height: 500px"></pre> '
-      + '</div> </div> </div>';
+      + '</div> </div> ';
 
-    const aceEditorHtml = `<div class="tab-pane fade in active" id="tab-${tabID}">`
-      + '<div id="divActiveJsonEditor" class="form-group" style="display:none;"> '
-      + '<div id="activeJsonEditor" style="width: 100%;height:500px" class="col-lg-12"> '
-      + '</div> </div> '
-      + '<div id="divActiveAceEditor" class="form-group"> '
-      + '<div class="col-lg-12"> '
-      + '<pre id="activeAceEditor" style="height: 500px"></pre> '
-      + '</div> </div> </div>';
+    // GRID editor
+    const gridStyle = whichIsDisplayed === 'gridEditor' ? '' : 'style="display: none"';
+    result += `<div id="divActiveGridEditor" class="form-group" ${gridStyle}> `
+      + '<div id="activeGridEditor" class="col-lg-12 active-grid-editor"> '
+      + '</div></div>';
 
-    const whichIsDisplayed = this.getWhichResultViewShowing();
-    let result;
-
-    if (whichIsDisplayed === 'none') {
-      const defaultIsAce = (defaultView !== 'Jsoneditor');
-      if (!defaultIsAce) result = jsonEditorHtml;
-      else result = aceEditorHtml;
-    } else if (whichIsDisplayed === 'jsonEditor') result = jsonEditorHtml;
-    else result = aceEditorHtml;
+    // close main container
+    result += '</div>';
 
     return result;
   },
@@ -342,19 +375,10 @@ QueryRender.prototype = {
 
     const resultTabs = $('#resultTabs');
     resultTabs.on('show.bs.tab', (e) => {
-      const activeTabText = $(e.target).text();
-      const activeTabQueryInfo = activeTabText.substring(0, activeTabText.indexOf(' '));
-
       const query = $($(e.target).attr('href')).data('query');
       if (query) this.renderQuery(query);
 
-      // if active tab is not findOne hide save/delete footer
-      if (activeTabQueryInfo === 'findOne') $('#divBrowseCollectionFooter').show();
-      else if (activeTabQueryInfo === 'find')$('#divBrowseCollectionFindFooter').show();
-      else {
-        $('#divBrowseCollectionFindFooter').hide();
-        $('#divBrowseCollectionFooter').hide();
-      }
+      this.updateQueryResultFooter();
     });
 
     // set onclose
@@ -367,34 +391,68 @@ QueryRender.prototype = {
     this.clearQueryIfAdmin();
   },
 
+  updateQueryResultFooter() {
+    const activeTabText = $('#resultTabs .active').text();
+    const activeTabQueryInfo = activeTabText.substring(0, activeTabText.indexOf(' '));
+
+    const readOnly = this.getWhichResultViewShowing() === 'gridEditor';
+    if (activeTabQueryInfo === 'findOne' && !readOnly) $('#divBrowseCollectionFooter').show();
+    else if (activeTabQueryInfo === 'find' && !readOnly) $('#divBrowseCollectionFindFooter').show();
+    else {
+      // if active tab is not findOne hide save/delete footer
+      $('#divBrowseCollectionFindFooter').hide();
+      $('#divBrowseCollectionFooter').hide();
+    }
+  },
+
   switchView() {
-    const jsonViews = $('div[id^="divActiveJsonEditor"]');
-    const aceViews = $('div[id^="divActiveAceEditor"]');
-
     const whichIsDisplayed = this.getWhichResultViewShowing();
+    if (whichIsDisplayed === 'none') {
+      return;
+    }
+    let whichToShow;
+    switch (whichIsDisplayed) {
+      case 'jsonEditor':
+        whichToShow = 'gridEditor';
+        break;
+      case 'gridEditor':
+        whichToShow = 'aceEditor';
+        break;
+      default:
+        whichToShow = 'jsonEditor';
+        break;
+    }
+    this.switchViewTo(whichToShow);
+    this.updateQueryResultFooter();
+  },
 
-    if (whichIsDisplayed !== 'none') {
-      if (whichIsDisplayed === 'jsonEditor') {
-        aceViews.each(function () {
-          $(this).show('slow');
-        });
-        jsonViews.each(function () {
-          $(this).hide();
-        });
-      } else {
-        jsonViews.each(function () {
-          $(this).show('slow');
-        });
-        aceViews.each(function () {
-          $(this).hide();
-        });
-      }
+  switchViewTo(whichToShow) {
+    const jsonViews = $('div[id^="divActiveJsonEditor"]');
+    if (whichToShow === 'jsonEditor') {
+      jsonViews.show('slow');
+    } else {
+      jsonViews.hide();
+    }
+
+    const gridViews = $('div[id^="divActiveGridEditor"]');
+    if (whichToShow === 'gridEditor') {
+      gridViews.show('slow');
+    } else {
+      gridViews.hide();
+    }
+
+    const aceViews = $('div[id^="divActiveAceEditor"]');
+    if (whichToShow === 'aceEditor') {
+      aceViews.show('slow');
+    } else {
+      aceViews.hide();
     }
   },
 
   showLastTab(resultTabs, tabID) {
     // set tab content
-    $('#resultTabContents').append(this.getResultTabContent(tabID, 'Jsoneditor'));
+    const settings = ReactivityProvider.findOne(ReactivityProvider.types.Settings);
+    $('#resultTabContents').append(this.getResultTabContent(tabID, settings.defaultResultView || 'Jsoneditor'));
 
     // show last tab
     const lastTab = resultTabs.find('a:last');
