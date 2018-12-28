@@ -375,19 +375,10 @@ QueryRender.prototype = {
 
     const resultTabs = $('#resultTabs');
     resultTabs.on('show.bs.tab', (e) => {
-      const activeTabText = $(e.target).text();
-      const activeTabQueryInfo = activeTabText.substring(0, activeTabText.indexOf(' '));
-
       const query = $($(e.target).attr('href')).data('query');
       if (query) this.renderQuery(query);
 
-      // if active tab is not findOne hide save/delete footer
-      if (activeTabQueryInfo === 'findOne') $('#divBrowseCollectionFooter').show();
-      else if (activeTabQueryInfo === 'find')$('#divBrowseCollectionFindFooter').show();
-      else {
-        $('#divBrowseCollectionFindFooter').hide();
-        $('#divBrowseCollectionFooter').hide();
-      }
+      this.updateQueryResultFooter();
     });
 
     // set onclose
@@ -398,6 +389,20 @@ QueryRender.prototype = {
     });
 
     this.clearQueryIfAdmin();
+  },
+
+  updateQueryResultFooter() {
+    const activeTabText = $('#resultTabs .active').text();
+    const activeTabQueryInfo = activeTabText.substring(0, activeTabText.indexOf(' '));
+
+    const readOnly = this.getWhichResultViewShowing() === 'gridEditor';
+    if (activeTabQueryInfo === 'findOne' && !readOnly) $('#divBrowseCollectionFooter').show();
+    else if (activeTabQueryInfo === 'find' && !readOnly) $('#divBrowseCollectionFindFooter').show();
+    else {
+      // if active tab is not findOne hide save/delete footer
+      $('#divBrowseCollectionFindFooter').hide();
+      $('#divBrowseCollectionFooter').hide();
+    }
   },
 
   switchView() {
@@ -418,6 +423,7 @@ QueryRender.prototype = {
         break;
     }
     this.switchViewTo(whichToShow);
+    this.updateQueryResultFooter();
   },
 
   switchViewTo(whichToShow) {

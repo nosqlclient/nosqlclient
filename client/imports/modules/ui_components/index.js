@@ -168,6 +168,7 @@ UIComponents.prototype = {
     },
 
     setGridEditorValue({ selector, value }) {
+      if (!Array.isArray(value)) value = [value];
       // collect all keys
       const allKeys = this._collectAllKeys(value);
       // create HTML table
