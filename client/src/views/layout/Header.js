@@ -8,14 +8,14 @@ import {
   NavItem,
   NavLink
 } from 'reactstrap';
-import About from './About';
-import Connect from './Connect';
+import AboutModal from './AboutModal';
+import Connect from './ConnectModal';
 
 class Header extends Component {
   render() {
     return (
       <React.Fragment>
-        <About />
+        <AboutModal />
         <Connect />
         <AppSidebarToggler className="d-lg-none" display="md" mobile />
         <AppSidebarToggler className="d-md-down-none" display="lg" />

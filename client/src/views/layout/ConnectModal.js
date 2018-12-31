@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { Modal, ModalHeader, ModalBody, ModalFooter, Button, Table } from 'reactstrap';
 import { withNamespaces } from 'react-i18next';
 
-class Connect extends Component {
+class ConnectModal extends Component {
   constructor(props) {
     super(props);
 
@@ -46,4 +46,4 @@ class Connect extends Component {
   }
 }
 
-export default withNamespaces()(Connect);
+export default withNamespaces()(ConnectModal);

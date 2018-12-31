@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { Modal, ModalHeader, ModalBody } from 'reactstrap';
 import logo from '../../style/assets/logo.png';
 
-class About extends Component {
+class AboutModal extends Component {
   constructor(props) {
     super(props);
 
@@ -36,4 +36,4 @@ class About extends Component {
   }
 }
 
-export default About;
+export default AboutModal;

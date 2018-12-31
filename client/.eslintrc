@@ -11,6 +11,7 @@
       "ImportDeclaration": { "multiline": true },
       "ExportDeclaration": { "multiline": true }
     }],
-    "comma-dangle": ["error", "never"]
+    "comma-dangle": ["error", "never"],
+    "max-len": ["error", { "code": 150 }]
   }
 }
