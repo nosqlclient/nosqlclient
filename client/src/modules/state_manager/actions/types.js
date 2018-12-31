@@ -1,3 +1,0 @@
-// layout actions
-export const TOGGLE_CONNECT_MODAL = 'TOGGLE_CONNECT_MODAL';
-export const TOGGLE_ABOUT_MODAL = 'TOGGLE_ABOUT_MODAL';
