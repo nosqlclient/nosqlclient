@@ -1,9 +1,8 @@
 import { ApolloClient, InMemoryCache } from 'apollo-boost';
 import { createHttpLink } from 'apollo-link-http';
-import gql from 'graphql-tag';
 import defaults from './defaults';
 import resolvers from './resolvers';
-import typeDefs from './typeDefs';
+import { clientQueries, serverQueries, combinedQueries } from './queries';
 
 /**
  * Put any graphql related operations/serverQueries into here,
@@ -19,25 +18,11 @@ class Communicator {
       cache: new InMemoryCache(),
       clientState: {
         defaults, // initial state of cache
-        resolvers, // a map of functions that read and write to the cache
-        typeDefs // client side schema of cache
+        resolvers // a map of functions that read and write to the cache
       }
     });
-
-    this.serverQueries = {
-      getBooks: fields => gql`
-        {
-          allBooks {
-            ${fields.join(',')}
-          }
-        }
-      `
-    };
-
-    this.clientQueries = {};
-
-    this.combinedQueries = {};
   }
 }
 
 export default new Communicator();
+export const queries = { serverQueries, clientQueries, combinedQueries };
