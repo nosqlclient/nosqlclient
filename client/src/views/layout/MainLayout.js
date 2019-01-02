@@ -14,7 +14,7 @@ import {
   AppSidebarNav
 } from '@coreui/react';
 // routes config
-import routes from '../../routes';
+import routes from '../../util/routes';
 
 const Footer = React.lazy(() => import('./Footer'));
 const Header = React.lazy(() => import('./Header'));
