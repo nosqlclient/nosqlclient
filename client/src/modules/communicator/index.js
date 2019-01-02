@@ -31,4 +31,4 @@ class Communicator {
 }
 
 export default new Communicator();
-export const queries = { serverQueries, clientQueries, combinedQueries };
+export { serverQueries, clientQueries, combinedQueries };

@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { Col, Row } from 'reactstrap';
 import { Query } from 'react-apollo';
-import { queries } from '../../modules/communicator';
+import { serverQueries } from '../../modules/communicator';
 
 class Dashboard extends Component {
   render() {
@@ -9,7 +9,7 @@ class Dashboard extends Component {
       <div className="animated fadeIn">
         <Row>
           <Col xs="12" sm="12" lg="12">
-            <Query query={queries.serverQueries.getBooks(['author', 'title', 'id'])}>
+            <Query query={serverQueries.getBooks(['author', 'title', 'id'])}>
               {({ loading, error, data }) => {
                 if (loading) return <p>Loading...</p>;
                 if (error) {

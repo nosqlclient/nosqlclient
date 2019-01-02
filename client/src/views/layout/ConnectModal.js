@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { Modal, ModalHeader, ModalBody, ModalFooter, Button, Table } from 'reactstrap';
 import { withNamespaces } from 'react-i18next';
 import { graphql, compose } from 'react-apollo';
-import { queries } from '../../modules/communicator';
+import { clientQueries } from '../../modules/communicator';
 
 class ConnectModal extends Component {
   render() {
@@ -46,8 +46,8 @@ ConnectModal.propTypes = {
 };
 
 export default compose(
-  graphql(queries.clientQueries.connectionModal.toggleConnectionModal(), { name: 'toggleConnectionModal' }),
-  graphql(queries.clientQueries.connectionModal.getConnectionModal(), {
+  graphql(clientQueries.connectionModal.toggleConnectionModal(), { name: 'toggleConnectionModal' }),
+  graphql(clientQueries.connectionModal.getConnectionModal(), {
     props({ data: { connectionModal, loading } }) {
       return { show: connectionModal ? connectionModal.show : false, loading };
     }
