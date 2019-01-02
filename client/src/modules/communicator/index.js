@@ -1,5 +1,8 @@
-import { ApolloClient, InMemoryCache } from 'apollo-boost';
-import { createHttpLink } from 'apollo-link-http';
+import { ApolloClient } from 'apollo-client';
+import { InMemoryCache } from 'apollo-cache-inmemory';
+import { withClientState } from 'apollo-link-state';
+import { HttpLink } from 'apollo-link-http';
+import { ApolloLink } from 'apollo-link';
 import defaults from './defaults';
 import resolvers from './resolvers';
 import { clientQueries, serverQueries, combinedQueries } from './queries';
@@ -14,12 +17,15 @@ import { clientQueries, serverQueries, combinedQueries } from './queries';
 class Communicator {
   constructor() {
     this.client = new ApolloClient({
-      link: createHttpLink({ uri: 'https://graphql-demo-v2.now.sh' }), // TODO change URL as env variable
-      cache: new InMemoryCache(),
-      clientState: {
-        defaults, // initial state of cache
-        resolvers // a map of functions that read and write to the cache
-      }
+      link: ApolloLink.from([
+        withClientState({
+          cache: new InMemoryCache(),
+          defaults, // initial state of cache
+          resolvers // a map of functions that read and write to the cache
+        }),
+        new HttpLink({ uri: 'https://graphql-demo-v2.now.sh' }) // TODO change URL as env variable
+      ]),
+      cache: new InMemoryCache()
     });
   }
 }

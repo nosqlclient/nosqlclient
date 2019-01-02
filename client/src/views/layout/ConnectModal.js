@@ -48,9 +48,8 @@ ConnectModal.propTypes = {
 export default compose(
   graphql(queries.clientQueries.connectionModal.toggleConnectionModal(), { name: 'toggleConnectionModal' }),
   graphql(queries.clientQueries.connectionModal.getConnectionModal(), {
-    props: ({ data: { connectionModal, loading } }) => ({
-      show: connectionModal ? connectionModal.show : false,
-      loading
-    })
+    props({ data: { connectionModal, loading } }) {
+      return { show: connectionModal ? connectionModal.show : false, loading };
+    }
   })
 )(withNamespaces()(ConnectModal));
