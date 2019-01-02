@@ -9,7 +9,7 @@ class Dashboard extends Component {
       <div className="animated fadeIn">
         <Row>
           <Col xs="12" sm="12" lg="12">
-            <Query query={Communicator.queries.getBooks(['author', 'title', 'id'])}>
+            <Query query={Communicator.serverQueries.getBooks(['author', 'title', 'id'])}>
               {({ loading, error, data }) => {
                 if (loading) return <p>Loading...</p>;
                 if (error) {

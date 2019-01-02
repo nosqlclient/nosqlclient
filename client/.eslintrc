@@ -3,15 +3,20 @@
   "plugins": ["jsx-a11y"],
   "rules": {
     "jsx-quotes": ["error", "prefer-double"],
+
     "react/jsx-filename-extension": [1, { "extensions": [".js", ".jsx"] }],
+
     "react/prefer-stateless-function": 0,
+
     "object-curly-newline": ["error", {
       "ObjectExpression": { "multiline": true },
       "ObjectPattern": { "multiline": true },
       "ImportDeclaration": { "multiline": true },
       "ExportDeclaration": { "multiline": true }
     }],
+
     "comma-dangle": ["error", "never"],
+
     "max-len": ["error", { "code": 150 }]
   }
 }
