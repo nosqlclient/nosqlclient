@@ -12,9 +12,6 @@ Cross-platform and self hosted, easy to use, MongoDB 4.0+ support and more featu
 
 ![Nosqlclient](https://www.nosqlclient.com/img/logo/mongoclient_logo_black_half_size.png)
 
-## Rewrite (4.0.0)
-Are you planning to be a contributor of us but don't know what to do with MeteorJS, don't worry we're using top-noch tecnologies for 4.0.0 rewrite [check it out here](https://medium.com/@mongoclient/new-year-update-2019-506400aee349)
-
 ## Chat
 [Join us on Slack](https://join.slack.com/t/nosqlclient/shared_invite/enQtNDg3OTMzMzE0NjQ1LWZjZWZmY2FlOTgzMmJmYjJjNjQ1MjhkY2MwNTA5MWMzODM1Yzc2YmIzZmE4ZmE4M2MzN2YyZjM3NjUwOGNmODQ), feel free to request to join our private `#development` channel if you're planning to contribute. 
 
