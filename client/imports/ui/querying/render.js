@@ -1,6 +1,7 @@
-import { Notification, SessionManager, UIComponents, ErrorHandler, Enums } from '/client/imports/modules';
+import { Enums, ErrorHandler, Notification, SessionManager, UIComponents } from '/client/imports/modules';
+import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Template } from 'meteor/templating';
-import { ReactivityProvider, Communicator } from '/client/imports/facades';
+import { Communicator, ReactivityProvider } from '/client/imports/facades';
 import Helper from '/client/imports/helpers/helper';
 import moment from 'moment';
 import QueryingHelper from './helper';
@@ -15,8 +16,11 @@ const QueryRender = function () {
 QueryRender.prototype = {
   executeQuery() {
     const queryTemplate = SessionManager.get(SessionManager.strSessionSelectedQuery);
-    if (queryTemplate) Template[queryTemplate].executeQuery();
-    else Notification.warning('select-query');
+    // Since user can call here by CTRL-ENTER combination, it's a must to check URL.
+    if (FlowRouter.current().route.path === '/browseCollection') {
+      if (queryTemplate) Template[queryTemplate].executeQuery();
+      else Notification.warning('select-query');
+    }
   },
 
   setOptionsComboboxChangeEvent(cmb, sessionVar) {

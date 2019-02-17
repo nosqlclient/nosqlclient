@@ -3,6 +3,7 @@ import { ReactivityProvider } from '/client/imports/facades';
 import { AceEditor } from 'meteor/arch:ace-editor';
 import $ from 'jquery';
 import Helper from '/client/imports/helpers/helper';
+import { QueryRender } from '../../ui/querying';
 
 const CodeMirror = require('codemirror');
 const JSONEditor = require('jsoneditor');
@@ -301,7 +302,15 @@ UIComponents.prototype = {
     initializeCodeMirror({ divSelector, txtAreaId, keepValue = false, height = 100, noResize = false, extraKeysToAppend = {}, autoCompleteListMethod }) {
       const autoCompleteShortcut = ReactivityProvider.findOne(ReactivityProvider.types.Settings).autoCompleteShortcut || 'Ctrl-Space';
       let codeMirror;
-      const extraKeys = Object.assign(extraKeysToAppend, { 'Ctrl-Q': function (cm) { cm.foldCode(cm.getCursor()); } });
+
+      const extraKeys = Object.assign(extraKeysToAppend, {
+        'Ctrl-Q': function (cm) {
+          cm.foldCode(cm.getCursor());
+        },
+        'Ctrl-Enter': function () {
+          QueryRender.executeQuery();
+        }
+      });
       extraKeys[autoCompleteShortcut] = 'autocomplete';
 
       if (!divSelector.data('editor')) {
