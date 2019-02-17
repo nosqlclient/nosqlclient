@@ -35,11 +35,7 @@ class MainLayout extends Component {
   render() {
     return (
       <div className="app">
-        <AppHeader fixed>
-          <Suspense fallback={this.loading()}>
-            <Header />
-          </Suspense>
-        </AppHeader>
+        
         <div className="app-body">
           <AppSidebar fixed display="lg">
             <AppSidebarHeader />
@@ -51,6 +47,11 @@ class MainLayout extends Component {
             <AppSidebarMinimizer />
           </AppSidebar>
           <main className="main">
+          <AppHeader fixed>
+          <Suspense fallback={this.loading()}>
+            <Header />
+          </Suspense>
+        </AppHeader>
             <AppBreadcrumb appRoutes={routes} />
             <Container fluid>
               <Suspense fallback={this.loading()}>
