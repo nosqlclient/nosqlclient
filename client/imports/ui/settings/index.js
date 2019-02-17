@@ -8,6 +8,7 @@ Settings.prototype = {
     Notification.start('#btnSaveSettings');
 
     const settings = {};
+    settings.updates = $('#divToggleUpdates').iCheck('update')[0].checked;
     settings.autoCompleteSamplesCount = $('#inputAutoCompleteSamplesCount').val();
     settings.autoCompleteShortcut = $('#inputAutocompleteShortcut').val();
     settings.scale = $('#cmbScale').val();
@@ -53,6 +54,7 @@ Settings.prototype = {
     $('#inputAutoCompleteSamplesCount').val(settings.autoCompleteSamplesCount || 50);
     $('#inputUseSingleTab').iCheck(settings.singleTabResultSets ? 'check' : 'uncheck');
     $('#inputShowDBStats').iCheck(settings.showDBStats ? 'check' : 'uncheck');
+    $('#inputToggleUpdates').iCheck((settings.updates === undefined || settings.updates === true) ? 'check' : 'uncheck');
     $('#inputMongoExecutable').val(settings.mongoBinaryPath || '');
     $('#inputMaxChartPoints').val(settings.maxLiveChartDataPoints || 15);
     $('#inputAutocompleteShortcut').val(settings.autoCompleteShortcut || 'Ctrl-Space');

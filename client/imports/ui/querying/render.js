@@ -346,12 +346,21 @@ QueryRender.prototype = {
   },
 
   init() {
-    Communicator.call({
-      methodName: 'checkMongoclientVersion',
-      callback: (err, res) => {
-        if (res) Notification.info(res.message, { timeOut: 0, extendedTimeOut: 0, preventDuplicates: true }, { version: res.version });
-      }
-    });
+    const settings = ReactivityProvider.findOne(ReactivityProvider.types.Settings);
+    if (settings.updates === undefined || settings.updates === true) {
+      Communicator.call({
+        methodName: 'checkMongoclientVersion',
+        callback: (err, res) => {
+          if (res) {
+            Notification.info(res.message, {
+              timeOut: 0,
+              extendedTimeOut: 0,
+              preventDuplicates: true
+            }, { version: res.version });
+          }
+        }
+      });
+    }
 
     const cmb = $('#cmbQueries');
     cmb.append($("<optgroup id='optGroupCollectionQueries' label='Collection Queries'></optgroup>"));

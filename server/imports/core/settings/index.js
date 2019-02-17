@@ -61,7 +61,8 @@ Settings.prototype = {
           connectionTimeoutInSeconds: 3,
           dbStatsScheduler: 3000,
           showDBStats: true,
-          showLiveChat: true,
+          showLiveChat: false,
+          updates: true,
           singleTabResultSets: false,
           maxLiveChartDataPoints: 15,
         }

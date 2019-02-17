@@ -1,5 +1,4 @@
 {
-  // server
   "service-name-is-required-for-gssapi":"GSSAPI bağlantıları için servis adı gerekiyor",
   "destination-port-is-required-for-ssh":"SSH tunnel için hedef port gerekiyor",
   "username-is-required-for-ssh":"SSH tunnel için kullanıcı adı gerekiyor",
@@ -35,7 +34,6 @@
   "not-supported-os":"İşletim sistemin bu operasyon için desteklenmiyor",
   "connection-closed":"Lütfen koleksiyonları yenileyin, ya da tekrar bağlanın, bağlantı koptu !",
 
-  // client
   "colorize":"Renklendir",
   "clear-color":"Arkaplan Rengini Temizle",
   "choose_color":"Renk Seç",
@@ -148,7 +146,6 @@
   "user_management_default_tree_text":"Bir rol, yada kaynak seçerek detayları görebilirsin",
 
 
-  // blaze
   "donation_info":"Yardımınıza ihtiyacımız var ! Gün geçtikçe açık kaynak kodlu bu yazılımı geliştirmemiz zorlaşıyor, verdiğiniz her kuruş kesinlikle server ve geliştirme ücretlerinin karşılanmasında kullanılacak.<br/><b>Artık, crypto paraları da kabul ediyoruz !</b>",
   "help_us":"Yardımınız Gerekiyor",
   "hint_info":"Sorgu için kullanılacak <b>indexi</b> belirler",
@@ -517,6 +514,8 @@
   "max_chart_points_help_block":"Maximum <b>canlı</b> chart nokta adedi",
   "mongo_binary_path":"Mongo araçlarının yolu",
   "mongo_binary_path_help_block":"Mongo araçlarının <i>(mongo, mongodump, mongorestore, mongoexport, mongoimport)</i> yolu, <b>shell, şema analizi and yedekleme araçları</b> bunları kullanır.<br/> <b>Örn.:</b> <i>/home/sercan/my_apps/mongodb3.4/bin</i><br/> Nosqlclient'ın klasör üzerinde okuma hakkı olduğundan emin ol",
+  "toggle_mongoclient_update":"Nosqlclient Güncellemeler",
+  "toggle_mongoclient_update_help_block":"Nosqlclient'ın kendini güncellemesini açabilir ya da kapatabilirsiniz",
   "function":"Fonksiyon",
   "function_name":"Fonksiyon Adı",
   "manage_roles":"Rolleri Yönet",
@@ -631,7 +630,6 @@
   "english":"English",
   "turkish":"Türkçe",
 
-  // datatable
   "emptyTable": "Hiç veri bulunamadı",
   "info": "_START_ - _END_ arası gösteriliyor. Toplam: _TOTAL_",
   "infoEmpty": "0 - 0 arası gösterililyor. Toplam: 0",
