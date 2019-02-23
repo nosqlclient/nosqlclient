@@ -10,6 +10,8 @@ ENV ROOT_URL http://localhost
 ENV MONGO_URL mongodb://127.0.0.1:27017/meteor
 ENV PORT 3000
 ENV INSTALL_MONGO true
+ENV MONGOCLIENT_DEFAULT_CONNECTION_URL ''
+ENV MONGOCLIENT_CONNECTIONS_FILE_PATH /opt/meteor/dist/predefined_connections.json
 
 # build directories
 ENV APP_SOURCE_DIR /opt/meteor/src

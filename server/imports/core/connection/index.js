@@ -1,7 +1,9 @@
 import { Database, Logger, Error } from '/server/imports/modules';
 import ConnectionHelper from './helper';
 
+const fs = require('fs');
 const mongodbUrlParser = require('parse-mongo-url');
+const fbbkJson = require('fbbk-json');
 
 const Connection = function () {
 };
@@ -243,7 +245,8 @@ Connection.prototype = {
     const defaultConnection = process.env.MONGOCLIENT_DEFAULT_CONNECTION_URL;
     if (!defaultConnection) return;
 
-    const connection = Connection.parseUrl({ url: defaultConnection });
+    Logger.info({ message: 'inject-default-connection', metadataToLog: { defaultConnection } });
+    const connection = this.parseUrl({ url: defaultConnection });
     connection.url = defaultConnection;
     connection.connectionName = DEFAULT_CONNECTION_NAME;
 
@@ -255,6 +258,36 @@ Connection.prototype = {
     }
 
     Database.create({ type: Database.types.Connections, document: connection });
+  },
+
+  savePredefinedConnections() {
+    const filePath = process.env.MONGOCLIENT_CONNECTIONS_FILE_PATH;
+    if (!filePath || !fs.existsSync(filePath)) return;
+
+    const fileContent = fs.readFileSync(filePath, 'utf8');
+    if (!fileContent || fileContent.replace(/\s/g, '').length === 0) return;
+
+    Logger.info({ message: 'predefined-connections', metadataToLog: { connections: fileContent } });
+
+    try {
+      const connections = fbbkJson.parse(fileContent);
+      if (Array.isArray(connections) && connections.length > 0) {
+        // clear existing connections
+        Database.remove({ type: Database.types.Connections, selector: {} });
+
+        // insert new connection URLs.
+        connections.forEach((connectionObj) => {
+          Logger.info({ message: 'import-predefined-connection', metadataToLog: { connection: connectionObj } });
+          const connection = this.parseUrl({ url: connectionObj.url });
+          connection.url = connectionObj.url;
+          connection.connectionName = connectionObj.name;
+
+          Database.create({ type: Database.types.Connections, document: connection });
+        });
+      }
+    } catch (exception) {
+      Logger.error({ message: 'predefined-connections', exception });
+    }
   },
 
   getConnectionUrl(connection, username, password, addAuthSource, keepDB) {

@@ -30,4 +30,5 @@ Meteor.startup(() => {
   Settings.insertDefault();
   Connection.migrateConnectionsIfExist();
   Connection.tryInjectDefaultConnection();
+  Connection.savePredefinedConnections();
 });
