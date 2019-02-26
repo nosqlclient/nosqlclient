@@ -20,3 +20,5 @@ Template.registerHelper('getConnection', () => {
 Template.registerHelper('getSelectedCollection', () => SessionManager.get(SessionManager.strSessionSelectedCollection));
 
 Template.registerHelper('isConnected', () => !!SessionManager.get(SessionManager.strSessionCollectionNames));
+
+Template.registerHelper('absoluteUrl', () => Meteor.absoluteUrl());
