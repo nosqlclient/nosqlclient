@@ -19,13 +19,13 @@ describe('ExtendedJSON', () => {
 
     it('complex regex without $regex & $options', () => {
       // prepare
-      const str = '{a:true,b:123,c:{$regex:/^s^\\/d.*?.?\\/\\)\\(()/gi}}';
+      const str = '{a:true,b:123,c:{$regex:/^s^/d.*?.?/\\\\)\\\\(()/gi}}';
 
       // execute
       const convertedJson = ExtendedJSON.convertAndCheckJSON(str);
 
       // verify
-      expect(convertedJson).to.eql({ a: true, b: 123, c: { $regex: '^s^/d.*?.?/)(()', $options: 'gi' } });
+      expect(convertedJson).to.eql({ a: true, b: 123, c: { $regex: '^s^/d.*?.?/\\)\\(()', $options: 'gi' } });
     });
 
     it('simple regex without $regex with options', () => {
