@@ -1,7 +1,7 @@
-const fbbkJson = require('fbbk-json');
+const parser = require('fbbk-json');
 
-const ExtendedJSON = function () {
-};
+const string = '{a:true,b:123,c:{$regex:/^s^\/d.*?.?\/\\)\\(()/gi}}';
+const string2 = '{a:true,b:123,c:{$regex:/^,,}]^#%\\/^,\\/d\\/\\/\\/,/xm}}';
 
 const extractMiddleString = function (str) {
   if (!str) {
@@ -52,43 +52,45 @@ const convertToExtendedJson = function (str) {
     return;
   }
 
+  console.log(str);
   // support shell stuff
+  // replace regex occurrences
+  str = replaceRegex(str);
+
   // replace objectID variations with $oid
   str = replaceShellStuff(str, /objectid\("[A-Z0-9]*"\)/gmi, '$oid');
 
   // replace ISODate|date variations with $date
   str = replaceShellStuff(str, /isodate\("[A-Z0-9- :.]*"\)|date\("[A-Z0-9- :.]*"\)|newdate\("[A-Z0-9- :.]*"\)|newisodate\("[A-Z0-9 -:.]*"\)/gmi, '$date');
 
-  // replace regex occurrences
-  str = replaceRegex(str);
-
+  console.log(str);
   return str;
 };
 
-ExtendedJSON.prototype = {
-  convertAndCheckJSON(json) {
-    if (!json) return {};
+const convertAndCheckJSON = function (json) {
+  if (!json) return {};
 
-    const regexToCleanWhiteSpaces = /[^\s"']+|"([^"]*)"|'([^']*)'/gm;
-    if (json.match(regexToCleanWhiteSpaces)) json = json.match(regexToCleanWhiteSpaces).join('');
+  const regexToCleanWhiteSpaces = /[^\s"']+|"([^"]*)"|'([^']*)'/gm;
+  if (json.match(regexToCleanWhiteSpaces)) json = json.match(regexToCleanWhiteSpaces).join('');
 
-    let result = {};
-    try {
-      if (!json.startsWith('{') && !json.startsWith('[')) json = `{${json}`;
+  let result = {};
+  try {
+    if (!json.startsWith('{') && !json.startsWith('[')) json = `{${json}`;
 
-      if ((!json.endsWith('}') && !json.endsWith(']'))
+    if ((!json.endsWith('}') && !json.endsWith(']'))
         || (json.split('\{').length - 1) > (json.split('\}').length - 1)) {
-        json = `${json}}`;
-      }
-
-      json = convertToExtendedJson(json);
-      result = fbbkJson.parse(json);
-    } catch (err) {
-      result.ERROR = err.message;
+      json = `${json}}`;
     }
 
-    return result;
+    json = convertToExtendedJson(json);
+    result = parser.parse(json);
+  } catch (err) {
+    result.ERROR = err.message;
   }
+
+  console.log(result);
+  return result;
 };
 
-export default new ExtendedJSON();
+convertAndCheckJSON(string);
+convertAndCheckJSON(string2);
