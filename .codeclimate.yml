@@ -14,4 +14,6 @@ ratings:
 
 exclude_paths:
 - "client/plugins/**/*"
+
+exclude_patterns:
 - "**.tests.js"
