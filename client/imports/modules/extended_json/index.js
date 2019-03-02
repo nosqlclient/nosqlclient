@@ -15,13 +15,8 @@ const fixStringForSingleMatch = function (match, str) {
   const regexText = `'${match.substring(match.indexOf('/') + 1, match.lastIndexOf('/'))}'`;
   const regexOptions = `'${match.substring(match.lastIndexOf('/') + 1, match.length - 1)}'`;
 
-  if (str.substring(str.indexOf(match) - 7, str.indexOf(match))
-    .indexOf('$regex') !== -1) {
-    if (regexOptions) {
-      str = str.replace(match.substring(1, match.length - 1), `${regexText},$options:${regexOptions}`);
-    } else {
-      str = str.replace(match.substring(1, match.length - 1), regexText);
-    }
+  if (str.substring(str.indexOf(match) - 7, str.indexOf(match)).indexOf('$regex') !== -1) {
+    str = str.replace(match.substring(1, match.length - 1), regexOptions ? `${regexText},$options:${regexOptions}` : regexText);
   } else {
     str = str.replace(match.substring(1, match.length - 1), `{$regex:${regexText},$options:${regexOptions}}`);
   }
