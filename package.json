@@ -3,13 +3,16 @@
   "name": "mongoclient",
   "version": "2.2.0",
   "devDependencies": {
+    "chromedriver": "^2.41.0",
+    "cross-env": "^5.2.0",
     "eslint": "^5.9.0",
     "eslint-config-airbnb": "^17.1.0",
     "eslint-import-resolver-meteor": "^0.4.0",
     "eslint-plugin-import": "^2.14.0",
     "eslint-plugin-jsx-a11y": "^6.1.2",
     "eslint-plugin-meteor": "^5.1.0",
-    "eslint-plugin-react": "^7.11.1"
+    "eslint-plugin-react": "^7.11.1",
+    "selenium-webdriver": "^3.6.0"
   },
   "dependencies": {
     "@babel/runtime": "^7.1.5",
@@ -41,5 +44,10 @@
     "tunnel-ssh": "4.1.4",
     "url": "^0.11.0",
     "winston": "^3.1.0"
+  },
+  "scripts": {
+    "test": "cross-env TEST_WATCH=1 TEST_BROWSER_DRIVER=chrome meteor test --once --driver-package meteortesting:mocha",
+    "test-server": "cross-env TEST_WATCH=1 TEST_CLIENT=0 meteor test --once --driver-package meteortesting:mocha",
+    "test-client": "cross-env TEST_WATCH=1 TEST_BROWSER_DRIVER=chrome TEST_SERVER=0 meteor test --once --driver-package meteortesting:mocha"
   }
 }
