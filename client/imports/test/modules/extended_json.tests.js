@@ -269,4 +269,50 @@ describe('ExtendedJSON', () => {
       });
     });
   });
+
+  describe('quotes separation tests', () => {
+    it('double quotes in double quotes', () => {
+      // prepare
+      const str = '{a: true, b: "\\"testing\\""}';
+
+      // execute
+      const convertedJson = ExtendedJSON.convertAndCheckJSON(str);
+
+      // verify
+      expect(convertedJson).to.eql({ a: true, b: '"testing"' });
+    });
+
+    it('single quotes in double quotes', () => {
+      // prepare
+      const str = '{a: true, b: "\'testing\'"}';
+
+      // execute
+      const convertedJson = ExtendedJSON.convertAndCheckJSON(str);
+
+      // verify
+      expect(convertedJson).to.eql({ a: true, b: '\'testing\'' });
+    });
+
+    it('one single quote in double quotes', () => {
+      // prepare
+      const str = '{a: true, b: "\'testing"}';
+
+      // execute
+      const convertedJson = ExtendedJSON.convertAndCheckJSON(str);
+
+      // verify
+      expect(convertedJson).to.eql({ a: true, b: '\'testing\'' });
+    });
+
+    it('one double quote in double quotes', () => {
+      // prepare
+      const str = '{a: true, b: ""testing"}';
+
+      // execute
+      const convertedJson = ExtendedJSON.convertAndCheckJSON(str);
+
+      // verify
+      expect(convertedJson).to.eql({ a: true, b: '"testing' });
+    });
+  });
 });

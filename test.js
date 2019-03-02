@@ -1,7 +1,6 @@
 const parser = require('fbbk-json');
 
-const string = '{a:true,b:123,c:{$regex:/^s^\/d.*?.?\/\\\\)\\\\(()/gi}}';
-const string2 = '{a:true,b:123,c:{$regex:/^,,}]^#%\\/^,\\/d\\/\\/\\/,/xm}}';
+const string = '{"a":true,"b":"\\"testing"}';
 
 const extractMiddleString = function (str) {
   if (!str) {
@@ -93,4 +92,3 @@ const convertAndCheckJSON = function (json) {
 };
 
 convertAndCheckJSON(string);
-convertAndCheckJSON(string2);
