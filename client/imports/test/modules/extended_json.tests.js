@@ -85,7 +85,7 @@ describe('ExtendedJSON', () => {
 
     it('nested regex values with special charachters', () => {
     // prepare
-      const str = '{a:/^,^/,b:true,c:"sercan",d:123,e:/^//,f:{$regex:"asd"},g:/as/d/gi,h:" / sad / ",i:/asd/ig,"j":/^^!.?/,   "k":{$regex:/^asdas?!/i,$options:"gim"},'
+      const str = '{a:/^,^/,b:true,c:"sercan",d:123,e:/^//,f:{$regex:"asd"},g:/as/d/gi,h:"/ sad /",i:/asd/ig,"j":/^^!.?/,   "k":{$regex:/^asdas?!/i,$options:"gim"},'
       + '"l":{$regex:/xtcaq2^=!/mi},  "m" :[{"n":{"$regex":/^!??!/xim,"$options":"x"}}]}';
 
       // execute
@@ -100,7 +100,7 @@ describe('ExtendedJSON', () => {
         e: { $regex: '^/', $options: '' },
         f: { $regex: 'asd' },
         g: { $regex: 'as/d', $options: 'gi' },
-        h: ' / sad / ',
+        h: '/ sad /',
         i: { $regex: 'asd', $options: 'ig' },
         j: { $regex: '^^!.?', $options: '' },
         k: { $regex: '^asdas?!', $options: 'gim' },
@@ -270,49 +270,49 @@ describe('ExtendedJSON', () => {
     });
   });
 
-  describe('quotes separation tests', () => {
+  describe('quotes separation tests with spaces', () => {
     it('double quotes in double quotes', () => {
       // prepare
-      const str = '{a: true, b: "\\"testing\\""}';
+      const str = '{a: true, b: "\\"testin  g\\""}';
 
       // execute
       const convertedJson = ExtendedJSON.convertAndCheckJSON(str);
 
       // verify
-      expect(convertedJson).to.eql({ a: true, b: '"testing"' });
+      expect(convertedJson).to.eql({ a: true, b: '"testin  g"' });
     });
 
     it('single quotes in double quotes', () => {
       // prepare
-      const str = '{a: true, b: "\'testing\'"}';
+      const str = '{a: true, b: "\'tes      ting\'"}';
 
       // execute
       const convertedJson = ExtendedJSON.convertAndCheckJSON(str);
 
       // verify
-      expect(convertedJson).to.eql({ a: true, b: '\'testing\'' });
+      expect(convertedJson).to.eql({ a: true, b: '\'tes      ting\'' });
     });
 
     it('one single quote in double quotes', () => {
       // prepare
-      const str = '{a: true, b: "\'testing"}';
+      const str = '{a: true, b: "\'testi  ng\'"}';
 
       // execute
       const convertedJson = ExtendedJSON.convertAndCheckJSON(str);
 
       // verify
-      expect(convertedJson).to.eql({ a: true, b: '\'testing\'' });
+      expect(convertedJson).to.eql({ a: true, b: '\'testi  ng\'' });
     });
 
     it('one double quote in double quotes', () => {
       // prepare
-      const str = '{a: true, b: ""testing"}';
+      const str = '{a: true, b: "te \\"sting"}';
 
       // execute
       const convertedJson = ExtendedJSON.convertAndCheckJSON(str);
 
       // verify
-      expect(convertedJson).to.eql({ a: true, b: '"testing' });
+      expect(convertedJson).to.eql({ a: true, b: 'te "sting' });
     });
   });
 });

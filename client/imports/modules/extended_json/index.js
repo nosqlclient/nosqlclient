@@ -69,7 +69,7 @@ ExtendedJSON.prototype = {
   convertAndCheckJSON(json) {
     if (!json) return {};
 
-    const regexToCleanWhiteSpaces = /[^\s"']+|"([^"]*)"|'([^']*)'/gm;
+    const regexToCleanWhiteSpaces = /(\/.*?[^\\]\/|".*?[^\\]"|'.*?[^\\]')|[^\s]/gm;
     if (json.match(regexToCleanWhiteSpaces)) json = json.match(regexToCleanWhiteSpaces).join('');
 
     let result = {};
