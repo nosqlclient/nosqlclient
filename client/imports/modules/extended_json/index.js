@@ -11,6 +11,23 @@ const extractMiddleString = function (str) {
   return str.substring(str.indexOf('"') + 1, str.lastIndexOf('"'));
 };
 
+const fixStringForSingleMatch = function (match, str) {
+  const regexText = `'${match.substring(match.indexOf('/') + 1, match.lastIndexOf('/'))}'`;
+  const regexOptions = `'${match.substring(match.lastIndexOf('/') + 1, match.length - 1)}'`;
+
+  if (str.substring(str.indexOf(match) - 7, str.indexOf(match))
+    .indexOf('$regex') !== -1) {
+    if (regexOptions) {
+      str = str.replace(match.substring(1, match.length - 1), `${regexText},$options:${regexOptions}`);
+    } else {
+      str = str.replace(match.substring(1, match.length - 1), regexText);
+    }
+  } else {
+    str = str.replace(match.substring(1, match.length - 1), `{$regex:${regexText},$options:${regexOptions}}`);
+  }
+  return str;
+};
+
 const replaceShellStuff = function (str, regex, extendedJsonVersion) {
   const matches = str.match(regex);
   if (matches) {
@@ -28,18 +45,7 @@ const replaceRegex = function (str) {
   const matches = str.match(regex);
   if (matches) {
     for (let i = 0; i < matches.length; i += 1) {
-      const regexText = `'${matches[i].substring(matches[i].indexOf('/') + 1, matches[i].lastIndexOf('/'))}'`;
-      const regexOptions = `'${matches[i].substring(matches[i].lastIndexOf('/') + 1, matches[i].length - 1)}'`;
-
-      if (str.substring(str.indexOf(matches[i]) - 7, str.indexOf(matches[i])).indexOf('$regex') !== -1) {
-        if (regexOptions) {
-          str = str.replace(matches[i].substring(1, matches[i].length - 1), `${regexText},$options:${regexOptions}`);
-        } else {
-          str = str.replace(matches[i].substring(1, matches[i].length - 1), regexText);
-        }
-      } else {
-        str = str.replace(matches[i].substring(1, matches[i].length - 1), `{$regex:${regexText},$options:${regexOptions}}`);
-      }
+      str = fixStringForSingleMatch(matches, i, str);
     }
   }
 
