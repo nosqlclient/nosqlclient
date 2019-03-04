@@ -20,7 +20,7 @@ tr.selected {
     top: 0;
 }
 
-#btnManageRoles, #btnEditUser, #btnManageUsers, #btnExecuteAggregatePipeline, #btnExportQueryResult, #btnClearShell, #btnRefreshStoredFunctions, #btnShowShellHistories, #btnAggregateHistory {
+.fix-button {
     margin-bottom: 0 !important;
 }
 

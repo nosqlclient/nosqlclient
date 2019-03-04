@@ -46,6 +46,8 @@ Aggregate.prototype = {
   },
 
   createPipeline(stageListElements) {
+    if (!stageListElements || stageListElements.length === 0) return;
+
     const pipeline = [];
     stageListElements.each(function () {
       const stage = {};
@@ -173,6 +175,22 @@ Aggregate.prototype = {
         Notification.stop();
       }
     });
+  },
+
+  showFinalizedQuery() {
+    Notification.start('#btnCloseShowQuery');
+
+    const pipeline = this.createPipeline($('#stages').find('li'));
+    if (Object.prototype.toString.call(pipeline) !== '[object Array]' || !pipeline || pipeline.length === 0) {
+      Notification.error('no-query', null, null);
+      return;
+    }
+
+    const jsonEditor = UIComponents.Editor.initializeJSONEditor({ selector: 'jsonEditorOfFinalizedQuery' });
+    $('#showQueryModal').modal('show');
+    jsonEditor.set(pipeline);
+
+    Notification.stop();
   },
 
   addPipelineToHistory(collection, pipeline) {

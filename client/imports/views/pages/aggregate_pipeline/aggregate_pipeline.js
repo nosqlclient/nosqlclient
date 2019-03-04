@@ -54,4 +54,9 @@ Template.aggregatePipeline.events({
     const stageId = `#stage${$(event.target).data('number')}`;
     $(stageId).remove();
   },
+
+  'click #btnShowFinalizedQuery': function (event) {
+    event.preventDefault();
+    Aggregate.showFinalizedQuery();
+  },
 });
