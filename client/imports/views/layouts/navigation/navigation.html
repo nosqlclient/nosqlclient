@@ -146,7 +146,7 @@
                         <ul id="listCollectionNames" class="nav nav-second-level">
                             {{#each getCollectionNames}}
                                 <li>
-                                    <a class="navCollection" href="{{pathFor route='browseCollection'}}"><i
+                                    <a class="navCollection {{#if equals type 'view'}}navView{{/if}}" href="{{pathFor route='browseCollection'}}"><i
                                             class="fa fa-book"></i> <span
                                             class="nav-label">{{name}}</span>
                                         {{#if equals type 'view'}}
@@ -223,5 +223,6 @@
     {{> convertToCapped}}
     {{> renameCollection}}
     {{> validationRules}}
+    {{> updateViewPipeline}}
 
 </template>

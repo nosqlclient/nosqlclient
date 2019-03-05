@@ -86,7 +86,7 @@
   "builtin-roles-read-only":"Yerleşik roller sadece okunabilir !",
   "welcome-back":"Seni özledim :)",
   "not-allowed-for-ssl-connections":"Maalesef, bu özellik SSL bağlantılarında kullanılabillir değil",
-  "views-cant-have-storage-engine":"Viewler storage engine sahibi olamaz !",
+  "views-cant-have-storage-engines":"Viewler storage engine sahibi olamaz !",
   "views-cant-have-validator":"Viewler validator sahibi olamaz !",
   "disable-uri-to-use":"Bunu kullanabilmek için URI'i temizlemelisin",
   "ssl-set-via-x509":"SSL zaten Mongodb-X509 ile ayarlandı",
@@ -235,6 +235,7 @@
   "moderate":"Moderate",
   "convert_to_capped":"Sınırlandırılmışa Çevir",
   "filter_collections":"Koleksiyonları Filtrelere",
+  "update_view_pipeline": "View'ın pipeline'ını Güncelle",
   "regex":"Regex",
   "case-insensitive-by-default":"Varsayılan olarak büyük küçük harfe duyarsız",
   "collection_name":"Koleksiyon Adı",
@@ -649,5 +650,7 @@
   "next": "Bir sonraki",
   "previous": "Bir önceki",
   "sortAscending": ": yükselen şekilde sıralamayı aktive et",
-  "sortDescending": ": alçalan şekilde sıralamayı aktive et"
+  "sortDescending": ": alçalan şekilde sıralamayı aktive et",
+
+  "view_on": "Bağlı Collection"
 }

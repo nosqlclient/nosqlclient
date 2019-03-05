@@ -1,6 +1,6 @@
 import { Communicator, ReactivityProvider } from '/client/imports/facades';
 import { SessionManager, ErrorHandler, Notification, Enums, Querying } from '/client/imports/modules';
-import { CollectionAdd, CollectionValidationRules, CollectionRename, CollectionFilter, CollectionConversion, Connection } from '/client/imports/ui';
+import { CollectionAdd, CollectionValidationRules, CollectionRename, CollectionFilter, CollectionConversion, Connection, ViewPipelineUpdater } from '/client/imports/ui';
 import Helper from '/client/imports/helpers/helper';
 import $ from 'jquery';
 
@@ -180,7 +180,7 @@ CollectionUtil.prototype = {
     $('#cmbAdminQueries').val('').trigger('chosen:updated');
   },
 
-  prepareContextMenuItems(addCollectionModal, convertToCappedModal, renameModal, validationRulesModal, filterModal) {
+  prepareContextMenuItems({ addCollectionModal, convertToCappedModal, renameModal, validationRulesModal, filterModal, updateViewPipeline }) {
     const self = this;
     return {
       manage_collection: {
@@ -252,7 +252,17 @@ CollectionUtil.prototype = {
           }
         }
       },
-
+      update_view_pipeline: {
+        name: Helper.translate({ key: 'update_view_pipeline' }),
+        icon: 'fa-angle-double-up',
+        callback() {
+          const collectionName = getCollectionNameFromContextMenu($(this));
+          if (collectionName) {
+            updateViewPipeline.data('viewName', collectionName);
+            updateViewPipeline.modal('show');
+          }
+        },
+      },
       add_collection: {
         name: Helper.translate({ key: 'add_coll_view' }),
         icon: 'fa-plus',
@@ -379,7 +389,13 @@ CollectionUtil.prototype = {
       CollectionValidationRules.resetForm();
     });
 
-    return { filterModal, addCollectionModal, convertToCappedModal, renameModal, validationRulesModal };
+    const updateViewPipeline = $('#updateViewPipelineModal');
+    updateViewPipeline.on('shown.bs.modal', () => {
+      ViewPipelineUpdater.resetForm();
+      ViewPipelineUpdater.initialize();
+    });
+
+    return { filterModal, addCollectionModal, convertToCappedModal, renameModal, validationRulesModal, updateViewPipeline };
   },
 
   getCollectionNames(isSystem) {

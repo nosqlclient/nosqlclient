@@ -4,7 +4,8 @@ export {
   CollectionConversion,
   CollectionFilter,
   CollectionRename,
-  CollectionValidationRules
+  CollectionValidationRules,
+  ViewPipelineUpdater
 } from './collection';
 export { default as Connection } from './connection/index';
 export { default as MongoclientData } from './mongoclient_data/index';

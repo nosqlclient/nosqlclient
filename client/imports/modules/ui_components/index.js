@@ -64,9 +64,15 @@ UIComponents.prototype = {
         .attr('value', value.name)
         .text(value.name));
     });
-    cmb.chosen();
+    cmb.chosen({
+      create_option: true,
+      allow_single_deselect: true,
+      persistent_create_option: true,
+      skip_no_results: true,
+    });
 
     cmb.on('change', (evt, params) => {
+      if (!params) return;
       const selectedCollection = params.selected;
       if (selectedCollection) Querying.getDistinctKeysForAutoComplete(selectedCollection);
     });
@@ -171,7 +177,7 @@ UIComponents.prototype = {
     setGridEditorValue({ selector, value }) {
       if (!Array.isArray(value)) value = [value];
       // collect all keys
-      const allKeys = this._collectAllKeys(value);
+      const allKeys = this.collectAllKeys(value);
       // create HTML table
       let html = '<table class="table table-bordered">';
       // table headers
@@ -183,7 +189,7 @@ UIComponents.prototype = {
       // data rows
       html += '<tbody>';
       value.forEach((row) => {
-        html += this._objectToGridRow(row, allKeys);
+        html += this.convertObjectToGridRow(row, allKeys);
       });
       html += '</tbody></table>';
 
@@ -200,7 +206,7 @@ UIComponents.prototype = {
       });
     },
 
-    _collectAllKeys(value) {
+    collectAllKeys(value) {
       const allKeys = new Set();
       value.forEach((row) => {
         Object.keys(row).forEach(k => allKeys.add(k));
@@ -211,7 +217,7 @@ UIComponents.prototype = {
       return allKeys;
     },
 
-    _objectToGridRow(obj, allKeys) {
+    convertObjectToGridRow(obj, allKeys) {
       let html = '<tr>';
       allKeys.forEach((key) => {
         let val = obj[key];
@@ -226,7 +232,7 @@ UIComponents.prototype = {
         }
         val = `${val}`;
         if (val.length > 50) {
-          html += `<td title="${this._quoteAttr(val)}">${val.substr(0, 47)}...</td>`;
+          html += `<td title="${this.quoteAttr(val)}">${val.substr(0, 47)}...</td>`;
         } else {
           html += `<td>${val}</td>`;
         }
@@ -235,7 +241,7 @@ UIComponents.prototype = {
       return html;
     },
 
-    _quoteAttr(s) {
+    quoteAttr(s) {
       return `${s}` /* Forces the conversion to string. */
         .replace(/&/g, '&amp;') /* This MUST be the 1st replacement. */
         .replace(/'/g, '&apos;') /* The 4 other predefined entities, required. */

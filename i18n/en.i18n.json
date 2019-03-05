@@ -86,7 +86,7 @@
   "builtin-roles-read-only":"Builtin roles are read only !",
   "welcome-back":"Welcome back, we missed you !",
   "not-allowed-for-ssl-connections":"Unfortunately, this feature is not usable in SSL connections yet",
-  "views-cant-have-storage-engine":"Views can not have storage engine !",
+  "views-cant-have-storage-engines":"Views can not have storage engine !",
   "views-cant-have-validator":"Views can not have validator !",
   "disable-uri-to-use":"Disable URI connection to use this",
   "ssl-set-via-x509":"SSL already set via Mongodb-X509",
@@ -234,6 +234,7 @@
   "moderate":"Moderate",
   "convert_to_capped":"Convert to Capped",
   "filter_collections":"Filter Collections",
+  "update_view_pipeline": "Update View Pipeline",
   "regex":"Regex",
   "case-insensitive-by-default":"Case insensitive by default",
   "collection_name":"Collection Name",
@@ -648,5 +649,7 @@
   "next": "Next",
   "previous": "Previous",
   "sortAscending": ": activate to sort column ascending",
-  "sortDescending": ": activate to sort column descending"
+  "sortDescending": ": activate to sort column descending",
+
+  "view_on": "View On"
 }

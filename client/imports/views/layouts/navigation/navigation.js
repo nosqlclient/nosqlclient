@@ -9,6 +9,7 @@ import './convert_capped_collection/convert_to_capped';
 import './rename_collection/rename_collection';
 import './validation_rules/validation_rules';
 import './filter_collection/filter_collection';
+import './update_view_pipeline/update_view_pipeline';
 import './navigation.html';
 
 Template.navigation.events({
@@ -75,16 +76,20 @@ Template.navigation.events({
 });
 
 Template.navigation.onRendered(() => {
-  const { filterModal, addCollectionModal, convertToCappedModal, renameModal, validationRulesModal } = CollectionUtil.prepareContextMenuModals();
+  const modals = CollectionUtil.prepareContextMenuModals();
 
   $.contextMenu({
-    selector: '.navCollection, .navCollectionTop',
+    selector: '.navCollection, .navCollectionTop .navView',
     build(trigger) {
-      const items = CollectionUtil.prepareContextMenuItems(addCollectionModal, convertToCappedModal, renameModal, validationRulesModal, filterModal);
+      const items = CollectionUtil.prepareContextMenuItems(modals);
 
       if (trigger.hasClass('navCollectionTop')) {
         delete items.manage_collection;
         delete items.sep1;
+      }
+
+      if (!trigger.hasClass('navView')) {
+        delete items.update_view_pipeline;
       }
 
       if (!CollectionFilter.isFiltered()) delete items.clear_filter;

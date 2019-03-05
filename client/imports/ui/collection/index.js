@@ -4,3 +4,4 @@ export { default as CollectionConversion } from './conversion';
 export { default as CollectionFilter } from './filter';
 export { default as CollectionRename } from './rename';
 export { default as CollectionValidationRules } from './validation_rules';
+export { default as ViewPipelineUpdater } from './update_view_pipeline';
