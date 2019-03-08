@@ -4,13 +4,13 @@ import Helper from '/client/imports/helpers/helper';
 const toastr = require('toastr');
 const ladda = require('ladda');
 
-
 const Notification = function () {
 };
 
 Notification.prototype = {
-  notify({ type, message, translateOptions, options, noTranslate }) {
+  notify({ type = 'error', message = 'unexpected-error', translateOptions, options, noTranslate }) {
     const finalMessage = noTranslate ? message : Helper.translate({ key: message, options: translateOptions });
+    if (message === 'unexpected-error') type = 'error';
     toastr[type](finalMessage, options);
   },
 

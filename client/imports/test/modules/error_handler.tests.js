@@ -12,14 +12,17 @@ describe('ErrorHandler', () => {
   const reason = 'myReason';
   const detailsMessage = 'detailsMessage';
 
-  beforeEach(() => {
+  before(() => {
     sinon.stub(Helper, 'translate')
-      .withArgs(sinon.match({ key: reason })).returns(reason)
+      .withArgs(sinon.match({ key: 'unknown-error' }))
+      .returns('unknown error')
+      .withArgs(sinon.match({ key: reason }))
+      .returns(reason)
       .withArgs(sinon.match({ key: detailsMessage }))
       .returns(detailsMessage);
   });
 
-  afterEach(() => {
+  after(() => {
     Helper.translate.restore();
   });
 
@@ -122,6 +125,16 @@ describe('ErrorHandler', () => {
 
       // verify
       expect(errorMessage).to.equal(`[1009] ${detailsMessage}`);
+    });
+
+    it('result & error empty', () => {
+      // prepare
+
+      // execute
+      const errorMessage = ErrorHandler.getErrorMessage(null, null, null);
+
+      // verify
+      expect(errorMessage).to.equal('unknown error');
     });
   });
 });
