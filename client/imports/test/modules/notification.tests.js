@@ -345,18 +345,22 @@ describe('Notification', () => {
   describe('start notification tests', () => {
     const buttonExists = 'existsButton';
     const buttonNotExists = 'notExistsButton';
-    let laddaCreate;
+    let laddaStartStub;
 
     beforeEach(() => {
-      laddaCreate = { start: sinon.stub() };
-      sinon.stub(ladda.prototype, 'create').returns(laddaCreate);
+      laddaStartStub = sinon.stub();
+      sinon.stub(ladda, 'create').callsFake(() => ({
+        start: laddaStartStub
+      }));
 
-      sinon.stub(document, 'querySelector').withArgs(sinon.match(buttonExists)).returns({ something: true }); // not important we're not testing query selector or ladda
-      sinon.stub(document, 'querySelector').withArgs(sinon.match(buttonNotExists)).returns(undefined);
+      sinon.stub(document, 'querySelector') // not important we're not testing query selector or ladda
+        .withArgs(sinon.match(buttonExists)).returns({ something: true })
+        .withArgs(sinon.match(buttonNotExists))
+        .returns(undefined);
     });
 
     afterEach(() => {
-      ladda.prototype.create.restore();
+      ladda.create.restore();
       document.querySelector.restore();
     });
 
@@ -369,9 +373,34 @@ describe('Notification', () => {
       // verify
       expect(document.querySelector.callCount).to.equal(1);
       expect(document.querySelector.calledWithExactly(buttonExists)).to.equal(true);
-      expect(laddaCreate.start.calledAfter(ladda.prototype.create)).to.equal(true);
+      expect(laddaStartStub.calledAfter(ladda.create)).to.equal(true);
       expect(ladda.create.callCount).to.equal(1);
       expect(ladda.create.calledWithExactly({ something: true })).to.equal(true);
+    });
+
+    it('button does not exist', () => {
+      // prepare
+
+      // execute
+      Notification.start(buttonNotExists);
+
+      // verify
+      expect(document.querySelector.callCount).to.equal(1);
+      expect(document.querySelector.calledWithExactly(buttonNotExists)).to.equal(true);
+      expect(laddaStartStub.calledAfter(ladda.create)).to.equal(false);
+      expect(ladda.create.callCount).to.equal(0);
+    });
+  });
+
+  describe('stop notification tests', () => {
+    it('normal behaviour', () => {
+      // prepare
+
+      // execute
+      Notification.stop();
+
+      // verify
+      expect(ladda.stopAll.callCount).to.equal(1);
     });
   });
 });
