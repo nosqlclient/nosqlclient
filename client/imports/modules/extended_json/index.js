@@ -40,7 +40,7 @@ const replaceRegex = function (str) {
   const matches = str.match(regex);
   if (matches) {
     for (let i = 0; i < matches.length; i += 1) {
-      str = fixStringForSingleMatch(matches, i, str);
+      str = fixStringForSingleMatch(matches[i], str);
     }
   }
 

@@ -3,7 +3,6 @@
 import { ExtendedJSON } from '/client/imports/modules';
 import { expect } from 'meteor/practicalmeteor:chai';
 
-// FIXME known issue; quotes in json value disappear(regex or not)
 describe('ExtendedJSON', () => {
   describe('regex only tests', () => {
     it('simple regex without $regex & $options', () => {
