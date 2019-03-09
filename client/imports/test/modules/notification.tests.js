@@ -8,8 +8,10 @@ import sinon from 'sinon';
 const toastr = require('toastr');
 const ladda = require('ladda');
 
+// TODO modal tests (swal is not being spied :/ )
 describe('Notification', () => {
   const message = 'myMessage';
+  const message2 = 'myMessage2';
   const options = { timeout: 5000 };
   const invalidOptions = { ttttt: 33 };
 
@@ -17,6 +19,12 @@ describe('Notification', () => {
     sinon.stub(Helper, 'translate')
       .withArgs(sinon.match({ key: message }))
       .returns(`${message}-translated`)
+      .withArgs(sinon.match({ key: message2 }))
+      .returns(`${message2}-translated`)
+      .withArgs(sinon.match({ key: 'yes-please' }))
+      .returns('yes-please')
+      .withArgs(sinon.match({ key: 'cancel' }))
+      .returns('cancel')
       .withArgs(sinon.match({ key: 'unexpected-error' }))
       .returns('unexpected-error');
   });

@@ -1,8 +1,8 @@
-/* global swal */
 import Helper from '/client/imports/helpers/helper';
 
 const toastr = require('toastr');
 const ladda = require('ladda');
+const swal = require('sweetalert');
 
 const Notification = function () {
 };
@@ -61,6 +61,8 @@ Notification.prototype = {
       closeOnConfirm,
       cancelButtonText: Helper.translate({ key: cancelButtonText })
     }, callback);
+
+    swal.close();
   },
 
   closeModal() {

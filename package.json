@@ -44,7 +44,8 @@
     "toastr": "^2.1.4",
     "tunnel-ssh": "4.1.4",
     "url": "^0.11.0",
-    "winston": "^3.1.0"
+    "winston": "^3.1.0",
+    "sweetalert": "1.0.1"
   },
   "scripts": {
     "build": "meteor build /tmp/nosqlclient",
