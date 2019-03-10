@@ -16,9 +16,17 @@ const findKeysOfObject = function (resultArray) {
 
 Querying.prototype = {
   getDistinctKeysForAutoComplete(selectedCollection) {
+    if (!selectedCollection || selectedCollection.endsWith('.chunks')) {
+      Notification.stop();
+      SessionManager.set(SessionManager.strSessionDistinctFields, []);
+      // ignore chunks
+      return;
+    }
+
     const settings = ReactivityProvider.findOne(ReactivityProvider.types.Settings);
     const countToTake = Number.isNaN(parseInt(settings.autoCompleteSamplesCount, 10)) ? 50 : parseInt(settings.autoCompleteSamplesCount, 10);
-    if (selectedCollection.endsWith('.chunks') || countToTake <= 0) {
+    if (countToTake <= 0) {
+      Notification.stop();
       SessionManager.set(SessionManager.strSessionDistinctFields, []);
       // ignore chunks
       return;
@@ -38,11 +46,12 @@ Querying.prototype = {
               else {
                 const keys = findKeysOfObject(samples.result);
                 SessionManager.set(SessionManager.strSessionDistinctFields, keys);
-                Notification.stop();
               }
             }
           });
         }
+
+        Notification.stop();
       }
     });
   }
