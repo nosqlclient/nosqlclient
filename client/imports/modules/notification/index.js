@@ -61,8 +61,6 @@ Notification.prototype = {
       closeOnConfirm,
       cancelButtonText: Helper.translate({ key: cancelButtonText })
     }, callback);
-
-    swal.close();
   },
 
   closeModal() {
