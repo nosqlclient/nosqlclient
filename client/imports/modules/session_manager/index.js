@@ -6,14 +6,17 @@ const SessionManager = function () {
 
 SessionManager.prototype = {
   get(key) {
+    if (!key) return;
     return this.dictionary.get(key);
   },
 
   set(key, value) {
+    if (!key) return;
     this.dictionary.set(key, value);
   },
 
   remove(key) {
+    if (!key) return;
     this.dictionary.set(key, null);
   },
 

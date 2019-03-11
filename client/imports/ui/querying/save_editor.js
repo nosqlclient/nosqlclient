@@ -1,4 +1,4 @@
-/* global _ */
+import { _ } from 'meteor/underscore';
 import { Notification, ExtendedJSON, SessionManager, ErrorHandler } from '/client/imports/modules';
 import { Communicator } from '/client/imports/facades';
 import { QueryRender } from '/client/imports/ui';
