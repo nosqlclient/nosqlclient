@@ -20,6 +20,7 @@ before_script:
   - meteor npm install
 
 script:
-  - meteor npm test
   - meteor npm run lint
-  - sed .coverage/lcov.info | codacy-coverage
+  - meteor npm test
+  - sed -i 's/^SF:/SF:nosqlclient\//g' .coverage/lcov.info
+  - cat .coverage/lcov.info | codacy-coverage
