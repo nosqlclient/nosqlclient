@@ -49,8 +49,18 @@
   },
   "scripts": {
     "build": "meteor build /tmp/nosqlclient",
-    "test": "cross-env TEST_WATCH=1 TEST_BROWSER_DRIVER=chrome meteor test --once --driver-package meteortesting:mocha",
-    "test-server": "cross-env TEST_WATCH=1 TEST_CLIENT=0 meteor test --once --driver-package meteortesting:mocha",
-    "test-client": "cross-env TEST_WATCH=1 TEST_BROWSER_DRIVER=chrome TEST_SERVER=0 meteor test --once --driver-package meteortesting:mocha"
+    "test": "cross-env TEST_BROWSER_DRIVER=chrome meteor test --once --driver-package meteortesting:mocha",
+    "test-server": "cross-env TEST_CLIENT=0 meteor test --once --driver-package meteortesting:mocha",
+    "test-client": "cross-env TEST_BROWSER_DRIVER=chrome TEST_SERVER=0 meteor test --once --driver-package meteortesting:mocha",
+    "coverage": "TEST_WATCH=1 BABEL_ENV=coverage TEST_BROWSER_DRIVER=chrome COVERAGE=1 COVERAGE_OUT_HTML=1 COVERAGE_APP_FOLDER=$PWD/ meteor test --once --driver-package meteortesting:mocha"
+  },
+  "babel": {
+    "env": {
+      "coverage": {
+        "plugins": [
+          "istanbul"
+        ]
+      }
+    }
   }
 }
