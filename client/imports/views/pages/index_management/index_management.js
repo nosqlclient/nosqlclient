@@ -21,10 +21,8 @@ Template.indexManagement.onRendered(function () {
 
   this.autorun(() => {
     if (settings.ready() && connections.ready()) {
-      UIComponents.initializeCollectionsCombobox();
-      $('#divUnique, #divBackground').iCheck({
-        checkboxClass: 'icheckbox_square-green',
-      });
+      UIComponents.initializeCollectionsCombobox($('#cmbCollectionsIndexManagement'));
+      UIComponents.Checkbox.init($('#inputUnique, #inputBackground'));
     }
   });
 });
@@ -37,7 +35,7 @@ Template.indexManagement.helpers({
 
 Template.indexManagement.events({
   'click #btnAddIndex': function () {
-    if (!$('#cmbCollections').val()) {
+    if (!$('#cmbCollectionsIndexManagement').val()) {
       Notification.warning('select_collection');
       return;
     }
@@ -50,7 +48,7 @@ Template.indexManagement.events({
 
   'click .editor_raw': function (event) {
     const rawModal = $('#viewRawModal');
-    rawModal.data('collection', $('#cmbCollections').val());
+    rawModal.data('collection', $('#cmbCollectionsIndexManagement').val());
     rawModal.data('index', event.currentTarget.id);
     rawModal.modal('show');
   },
@@ -59,13 +57,13 @@ Template.indexManagement.events({
     IndexManagement.initIndexes();
   },
 
-  'change #cmbCollections': function () {
+  'change #cmbCollectionsIndexManagement': function () {
     IndexManagement.initIndexes();
   },
 
   'click .editor_view': function (event) {
     const addIndexModal = $('#addIndexModal');
-    addIndexModal.data('collection', $('#cmbCollections').val());
+    addIndexModal.data('collection', $('#cmbCollectionsIndexManagement').val());
     addIndexModal.data('index', event.currentTarget.id);
     addIndexModal.modal('show');
   },

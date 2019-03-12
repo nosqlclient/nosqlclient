@@ -1,8 +1,7 @@
 import { Template } from 'meteor/templating';
 import './return_original.html';
+import { UIComponents } from '../../../modules';
 
 Template.returnOriginal.onRendered(() => {
-  $('#divReturnOriginal').iCheck({
-    checkboxClass: 'icheckbox_square-green',
-  });
+  UIComponents.Checkbox.init($('#inputReturnOriginal'));
 });

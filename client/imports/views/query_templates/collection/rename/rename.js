@@ -1,7 +1,7 @@
 import { Template } from 'meteor/templating';
 import $ from 'jquery';
 import { Querying } from '/client/imports/ui';
-import { Enums } from '/client/imports/modules';
+import { Enums, UIComponents } from '/client/imports/modules';
 import './rename.html';
 
 Template.rename.onRendered(() => {
@@ -9,9 +9,7 @@ Template.rename.onRendered(() => {
 });
 
 Template.dropTarget.onRendered(() => {
-  $('.i-checks').iCheck({
-    checkboxClass: 'icheckbox_square-green',
-  });
+  UIComponents.Checkbox.init($('#inputDropTarget'));
 });
 
 

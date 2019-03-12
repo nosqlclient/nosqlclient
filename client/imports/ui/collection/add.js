@@ -29,8 +29,8 @@ CollectionAdd.prototype = {
   },
 
   getFlagValue() {
-    const twoSizesIndexes = $('#divTwoSizesIndexes').iCheck('update')[0].checked;
-    const noPadding = $('#divNoPadding').iCheck('update')[0].checked;
+    const twoSizesIndexes = UIComponents.Checkbox.getState($('#inputTwoSizesIndexes'));
+    const noPadding = UIComponents.Checkbox.getState($('#inputNoPadding'));
     if (!twoSizesIndexes && !noPadding) return 0;
     if (twoSizesIndexes && !noPadding) return 1;
     if (!twoSizesIndexes && noPadding) return 2;
@@ -88,7 +88,7 @@ CollectionAdd.prototype = {
       }
     }
     if ($('#cmbCollectionOrView').val() === 'view') {
-      options.viewOn = $('#cmbCollectionsAddCollection').val();
+      options.viewOn = $('#cmbCollectionsViewOn').val();
       if (!options.viewOn) {
         Notification.warning('select_collection');
         return;
@@ -144,21 +144,7 @@ CollectionAdd.prototype = {
     cmbOptions.prop('disabled', true);
     cmbOptions.find('option').prop('selected', false).trigger('chosen:updated');
     SessionManager.set(SessionManager.strSessionSelectedAddCollectionOptions, []);
-    const cmb = $('#cmbCollectionsAddCollection');
-    cmb.empty();
-    cmb.append($('<option></option>'));
-    $.each(SessionManager.get(SessionManager.strSessionCollectionNames), (index, value) => {
-      cmb.append($('<option></option>')
-        .attr('value', value.name)
-        .text(value.name));
-    });
-    cmb.chosen({
-      create_option: true,
-      allow_single_deselect: true,
-      persistent_create_option: true,
-      skip_no_results: true,
-    }).trigger('chosen:updated');
-
+    UIComponents.initializeCollectionsCombobox($('#cmbCollectionsViewOn'));
     UIComponents.Editor.initializeCodeMirror({ divSelector: $('#divViewPipeline'), txtAreaId: 'txtViewPipeline' });
   },
 
@@ -199,20 +185,20 @@ CollectionAdd.prototype = {
       setTimeout(() => {
         const twoSizesIndexes = $('#inputTwoSizesIndexes');
         const noPadding = $('#inputNoPadding');
+        let twoSizesState = 'uncheck';
+        let noPaddingState = 'uncheck';
 
-        if (col.options.flags === 0) {
-          twoSizesIndexes.iCheck('uncheck');
-          noPadding.iCheck('uncheck');
-        } else if (col.options.flags === 1) {
-          twoSizesIndexes.iCheck('check');
-          noPadding.iCheck('uncheck');
+        if (col.options.flags === 1) {
+          twoSizesState = 'check';
         } else if (col.options.flags === 2) {
-          twoSizesIndexes.iCheck('uncheck');
-          noPadding.iCheck('check');
+          noPaddingState = 'check';
         } else if (col.options.flags === 3) {
-          twoSizesIndexes.iCheck('check');
-          noPadding.iCheck('check');
+          twoSizesState = 'check';
+          noPaddingState = 'check';
         }
+
+        UIComponents.Checkbox.toggleState(twoSizesIndexes, twoSizesState);
+        UIComponents.Checkbox.toggleState(noPadding, noPaddingState);
       }, 100);
     }
     if (col.options.indexOptionDefaults) {
@@ -237,7 +223,7 @@ CollectionAdd.prototype = {
       this.prepareFormAsView();
       modalTitle.text(Helper.translate({ key: 'view_info' }));
       cmbCollectionOrView.val('view').trigger('chosen:updated');
-      $('#cmbCollectionsAddCollection').val(col.options.viewOn).trigger('chosen:updated');
+      $('#cmbCollectionsViewOn').val(col.options.viewOn).trigger('chosen:updated');
       if (col.options.pipeline) {
         UIComponents.Editor.setCodeMirrorValue($('#divViewPipeline'), JSON.stringify(col.options.pipeline), $('#txtViewPipeline'));
       }
@@ -268,8 +254,8 @@ CollectionAdd.prototype = {
     $('#inputCollectionViewName').val('');
     $('#inputCappedCollectionMaxDocs').val('');
     $('#inputCappedCollectionSize').val('');
-    $('#inputCapped, #inputNoPadding, #inputTwoSizesIndexes').iCheck('uncheck');
-    $('#cmbCollectionOrView, #cmbCollectionsAddCollection, #cmbAddCollectionViewOptions, #cmbValidationActionAddCollection, #cmbValidationLevelAddCollection')
+    UIComponents.Checkbox.toggleState($('#inputNoPadding, #inputTwoSizesIndexes'), 'uncheck');
+    $('#cmbCollectionOrView, #cmbCollectionsViewOn, #cmbAddCollectionViewOptions, #cmbValidationActionAddCollection, #cmbValidationLevelAddCollection')
       .find('option').prop('selected', false).trigger('chosen:updated');
     $('#collectionAddModalTitle').text(Helper.translate({ key: 'create_collection_view' }));
     $('#spanColName').text(ReactivityProvider.findOne(ReactivityProvider.types.Connections, { _id: SessionManager.get(SessionManager.strSessionConnection)._id }).connectionName);

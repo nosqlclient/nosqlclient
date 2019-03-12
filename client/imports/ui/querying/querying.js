@@ -87,7 +87,7 @@ const renderParams = function (queryParams) {
             str = str.substring(1, str.length - 1);
             UIComponents.Editor.setCodeMirrorValue(relatedJqueryDiv, str);
           } else UIComponents.Editor.setCodeMirrorValue(relatedJqueryDiv, JSON.stringify(queryParams[param], null, 1));
-        } else if (relatedJqueryDiv.find('input:checkbox').length !== 0) relatedJqueryDiv.iCheck(queryParams[param] ? 'check' : 'uncheck');
+        } else if (relatedJqueryDiv.find('input:checkbox').length !== 0) UIComponents.Checkbox.toggleState(relatedJqueryDiv, queryParams[param] ? 'check' : 'uncheck');
       } else if (relatedJqueryInput.length !== 0) relatedJqueryInput.val(queryParams[param]);
     }, 100);
   });
@@ -213,7 +213,7 @@ const getFindFinalObject = function (queryStr, cmbOptionsId) {
         const args = { selector, cursorOptions };
         const queryParams = { selector, cursorOptions };
         if (queryStr === 'find') {
-          const executeExplain = $('#inputExplain').iCheck('update')[0].checked;
+          const executeExplain = UIComponents.Checkbox.getState($('#inputExplain'));
           args.executeExplain = executeExplain;
           queryParams.executeExplain = executeExplain;
         }
@@ -310,7 +310,7 @@ Querying.prototype = {
       if (!checkStringInput(password, 'password')) return;
       if (!checkErrorField(options)) return;
 
-      const runOnAdminDB = $('#aRunOnAdminDB').iCheck('update')[0].checked;
+      const runOnAdminDB = UIComponents.Checkbox.getState($('#inputRunOnAdminDB'));
       proceedQueryExecution({
         methodName: 'addUser',
         args: { username, password, runOnAdminDB, options }
@@ -329,7 +329,7 @@ Querying.prototype = {
 
       if (!checkErrorField(command, 'command')) return;
 
-      const runOnAdminDB = $('#aRunOnAdminDB').iCheck('update')[0].checked;
+      const runOnAdminDB = UIComponents.Checkbox.getState($('#inputRunOnAdminDB'));
 
       proceedQueryExecution({
         methodName: 'command',
@@ -354,7 +354,7 @@ Querying.prototype = {
 
       if (!checkStringInput(username, 'username')) return;
 
-      const runOnAdminDB = $('#aRunOnAdminDB').iCheck('update')[0].checked;
+      const runOnAdminDB = UIComponents.Checkbox.getState($('#inputRunOnAdminDB'));
       proceedQueryExecution({
         methodName: 'removeUser',
         args: { username, runOnAdminDB }
@@ -643,7 +643,7 @@ Querying.prototype = {
         const initial = getFromHistoryOrEditor(historyParams, $('#divInitial'), 'initial');
         const reduce = getFromHistoryOrEditorString(historyParams, $('#divReduce'), 'reduce');
         const finalize = getFromHistoryOrEditorString(historyParams, $('#divFinalize'), 'finalize');
-        const command = $('#inputCommand').iCheck('update')[0].checked;
+        const command = UIComponents.Checkbox.getState($('#inputCommand'));
 
         if (!keys.startsWith('function')) {
           keys = ExtendedJSON.convertAndCheckJSON(keys);
@@ -671,7 +671,7 @@ Querying.prototype = {
 
     IndexInformation: {
       execute(historyParams) {
-        const fullVal = historyParams ? historyParams.fullInformation : $('#divFullInformation').iCheck('update')[0].checked;
+        const fullVal = historyParams ? historyParams.fullInformation : UIComponents.Checkbox.getState($('#inputFullInformation'));
 
         proceedQueryExecution({
           methodName: 'indexInformation',

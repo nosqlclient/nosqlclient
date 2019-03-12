@@ -4,9 +4,8 @@ import { IndexManagement } from '/client/imports/ui';
 import './add_index.html';
 
 Template.addIndex.onRendered(() => {
-  $('#divSparse, #divUnique, #divBackground').iCheck({
-    checkboxClass: 'icheckbox_square-green',
-  });
+  UIComponents.Checkbox.init($('#inputSparse, #inputUnique, #inputBackground'));
+
   $('#cmbTextIndexVersion, #cmbTextIndexDefaultLanguage').chosen({
     create_option: true,
     allow_single_deselect: true,

@@ -13,7 +13,7 @@ const Connection = function () {
 
 const setDivToggle = function (divUseSelector, divSelector, inputSelector) {
   divUseSelector.on('ifToggled', () => {
-    if (inputSelector.iCheck('update')[0].checked) divSelector.show();
+    if (UIComponents.Checkbox.getState(inputSelector)) divSelector.show();
     else divSelector.hide();
   });
 };
@@ -311,7 +311,7 @@ Connection.prototype = {
     if (obj.certificateKeyFileName) $('#inputCertificateKey').siblings('.bootstrap-filestyle').children('input').val(obj.certificateKeyFileName);
 
     $('#inputPassPhrase').val(obj.passPhrase);
-    $('#inputDisableHostnameVerification').iCheck(!obj.disableHostnameVerification ? 'uncheck' : 'check');
+    UIComponents.Checkbox.toggleState($('#inputDisableHostnameVerification'), !obj.disableHostnameVerification ? 'uncheck' : 'check');
   },
 
   fillFormBasicAuth(obj) {
@@ -386,7 +386,7 @@ Connection.prototype = {
     if (connection.authenticationType === 'mongodb_x509') sslTab.removeAttr('data-toggle');
     else sslTab.attr('data-toggle', 'tab');
 
-    if (connection.ssl) $('#inputUseSSL').iCheck(connection.ssl.enabled ? 'check' : 'uncheck');
+    if (connection.ssl) UIComponents.Checkbox.toggleState($('#inputUseSSL'), connection.ssl.enabled ? 'check' : 'uncheck');
     if (connection.options) this.fillFormOptionsExceptConnectWithNoPrimary(connection);
   },
 
@@ -406,16 +406,16 @@ Connection.prototype = {
     this.fillFormAuthentication(connection);
 
     if (connection.ssl) {
-      $('#inputUseSSL').iCheck(connection.ssl.enabled ? 'check' : 'uncheck');
+      UIComponents.Checkbox.toggleState($('#inputUseSSL'), connection.ssl.enabled ? 'check' : 'uncheck');
       this.fillFormSsl(connection.ssl);
     }
     if (connection.ssh) {
-      $('#inputUseSSH').iCheck(connection.ssh.enabled ? 'check' : 'uncheck');
+      UIComponents.Checkbox.toggleState($('#inputUseSSH'), connection.ssh.enabled ? 'check' : 'uncheck');
       this.fillFormSsh(connection);
     }
     if (connection.options) {
       this.fillFormOptionsExceptConnectWithNoPrimary(connection);
-      $('#inputConnectWithNoPrimary').iCheck(!connection.options.connectWithNoPrimary ? 'uncheck' : 'check');
+      UIComponents.Checkbox.toggleState($('#inputConnectWithNoPrimary'), !connection.options.connectWithNoPrimary ? 'uncheck' : 'check');
     }
     if (connection.url) this.disableFormsForUri();
   },
@@ -450,12 +450,12 @@ Connection.prototype = {
     connection.url = $('#inputUrl').val();
     connection.authenticationType = $('#cmbAuthenticationType').val();
     connection.databaseName = $('#inputDatabaseName').val();
-    if (connection.authenticationType !== 'mongodb_x509' && $('#inputUseSSL').iCheck('update')[0].checked) {
+    if (connection.authenticationType !== 'mongodb_x509' && UIComponents.Checkbox.getState($('#inputUseSSL'))) {
       connection.ssl = this.getSSLProps();
     }
     this.fillHostFields(connection);
     this.fillCorrectAuthenticationType(connection);
-    if ($('#inputUseSSH').iCheck('update')[0].checked) this.fillSsh(connection);
+    if (UIComponents.Checkbox.getState($('#inputUseSSH'))) this.fillSsh(connection);
     this.fillOptions(connection);
 
     if (connection.mongodb_x509) {
@@ -498,7 +498,7 @@ Connection.prototype = {
     const destinationPort = $('#inputSshDestinationPort').val();
 
     connection.ssh = {
-      enabled: $('#inputUseSSH').iCheck('update')[0].checked,
+      enabled: UIComponents.Checkbox.getState($('#inputUseSSH')),
       host: $('#inputSshHostname').val(),
       port: port ? parseInt(port, 10) : '',
       localPort: localPort ? parseInt(localPort, 10) : '',
@@ -517,7 +517,7 @@ Connection.prototype = {
       connectionTimeout: connectionTimeot ? parseInt(connectionTimeot, 10) : '',
       socketTimeout: socketTimeout ? parseInt(socketTimeout, 10) : '',
       readPreference: $('#cmbReadPreference').val(),
-      connectWithNoPrimary: $('#inputConnectWithNoPrimary').iCheck('update')[0].checked,
+      connectWithNoPrimary: UIComponents.Checkbox.getState($('#inputConnectWithNoPrimary')),
       replicaSetName: $('#inputReplicaSetName').val(),
     };
   },
@@ -535,12 +535,12 @@ Connection.prototype = {
 
   getSSLProps() {
     return {
-      enabled: $('#inputUseSSL').iCheck('update')[0].checked,
+      enabled: UIComponents.Checkbox.getState($('#inputUseSSL')),
       rootCAFileName: $('#inputRootCA').siblings('.bootstrap-filestyle').children('input').val(),
       certificateFileName: $('#inputCertificate').siblings('.bootstrap-filestyle').children('input').val(),
       passPhrase: $('#inputPassPhrase').val(),
       certificateKeyFileName: $('#inputCertificateKey').siblings('.bootstrap-filestyle').children('input').val(),
-      disableHostnameVerification: $('#inputDisableHostnameVerification').iCheck('update')[0].checked,
+      disableHostnameVerification: UIComponents.Checkbox.getState($('#inputDisableHostnameVerification'))
     };
   },
 
@@ -573,7 +573,7 @@ Connection.prototype = {
     $('.nav-tabs a[href="#tab-1-connection"]').tab('show');
     $(':file').filestyle('clear');
     $('#addEditModalSmall').html('');
-    $('#inputConnectWithNoPrimary, #inputDisableHostnameVerification, #inputUseSSL, #inputUseSSH').iCheck('uncheck');
+    UIComponents.Checkbox.toggleState($('#inputConnectWithNoPrimary, #inputDisableHostnameVerification, #inputUseSSL, #inputUseSSH'), 'uncheck');
     $('#spanUseSSL').hide();
     $('.divHostField:visible').remove();
     this.selectedAuthType.set('');
@@ -606,9 +606,8 @@ Connection.prototype = {
     $('#cmbAuthenticationType, #cmbSshAuthType, #cmbReadPreference').chosen({
       allow_single_deselect: true,
     });
-    $('#divConnectWithNoPrimary, #divUseSSL, #divUseSSH').iCheck({
-      checkboxClass: 'icheckbox_square-green',
-    });
+
+    UIComponents.Checkbox.init($('#inputConnectWithNoPrimary, #inputUseSSH, #inputUseSSL'));
 
     setDivToggle($('#divUseSSH'), $('#divSshTemplate'), $('#inputUseSSH'));
     setDivToggle($('#divUseSSL'), $('#divSslTemplate'), $('#inputUseSSL'));
@@ -621,7 +620,7 @@ Connection.prototype = {
       + '#inputUser, #inputPassword, #inputAuthenticationDB, #inputLdapUsername, #inputLdapPassword, #inputKerberosUsername, #inputKerberosPassword, #inputKerberosServiceName, #inputX509Username')
       .prop('disabled', true).trigger('chosen:updated').parent('div')
       .attr('data-original-title', 'Clear URL to activate here');
-    $('#inputUseSSL').iCheck('disable');
+    UIComponents.Checkbox.toggleState($('#inputUseSSL'), 'disable');
     $('#spanUseSSL').show();
 
     $('[data-toggle="tooltip"]').tooltip({ trigger: 'hover' });
@@ -635,16 +634,14 @@ Connection.prototype = {
     + '#inputUser, #inputPassword, #inputAuthenticationDB, #inputLdapUsername, #inputLdapPassword, #inputKerberosUsername, #inputKerberosPassword, #inputKerberosServiceName, #inputX509Username')
       .prop('disabled', false).trigger('chosen:updated').parent('div')
       .attr('data-original-title', '');
-    $('#inputUseSSL').iCheck('enable');
+    UIComponents.Checkbox.toggleState($('#inputUseSSL'), 'enable');
     $('#spanUseSSL').hide();
     this.selectedAuthType.set($('#cmbAuthenticationType').val());
   },
 
   initializeSSLTemplate() {
     $('.filestyle').filestyle({});
-    $('#inputDisableHostnameVerification').iCheck({
-      checkboxClass: 'icheckbox_square-green',
-    });
+    UIComponents.Checkbox.init($('#inputDisableHostnameVerification'));
 
     const promptUsernamePasswordModal = $('#promptUsernamePasswordModal');
     promptUsernamePasswordModal.on('shown.bs.modal', () => {

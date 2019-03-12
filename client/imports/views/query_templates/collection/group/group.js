@@ -10,9 +10,7 @@ Template.group.onRendered(() => {
   UIComponents.Editor.initializeCodeMirror({ divSelector: $('#divReduce'), txtAreaId: 'txtReduce' });
   UIComponents.Editor.initializeCodeMirror({ divSelector: $('#divFinalize'), txtAreaId: 'txtFinalize' });
 
-  $('#divCommand').iCheck({
-    checkboxClass: 'icheckbox_square-green',
-  });
+  UIComponents.Checkbox.init($('#inputCommand'));
 });
 
 Template.group.executeQuery = Querying.Collection.Group.execute.bind(Querying.Collection.Group);

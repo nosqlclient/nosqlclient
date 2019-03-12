@@ -1,5 +1,6 @@
 import { Communicator, ReactivityProvider } from '/client/imports/facades';
-import { ErrorHandler, Notification } from '/client/imports/modules';
+import { ErrorHandler, Notification, UIComponents } from '/client/imports/modules';
+import $ from 'jquery';
 
 const Settings = function () {};
 
@@ -8,7 +9,7 @@ Settings.prototype = {
     Notification.start('#btnSaveSettings');
 
     const settings = {};
-    settings.updates = $('#divToggleUpdates').iCheck('update')[0].checked;
+    settings.updates = UIComponents.Checkbox.getState($('#inputToggleUpdates'));
     settings.autoCompleteSamplesCount = $('#inputAutoCompleteSamplesCount').val();
     settings.autoCompleteShortcut = $('#inputAutocompleteShortcut').val();
     settings.scale = $('#cmbScale').val();
@@ -16,9 +17,9 @@ Settings.prototype = {
     settings.socketTimeoutInSeconds = $('#inputSocketTimeout').val();
     settings.connectionTimeoutInSeconds = $('#inputConnectionTimeout').val();
     settings.dbStatsScheduler = $('#inputDBStatsScheduler').val();
-    settings.showDBStats = $('#divShowDBStats').iCheck('update')[0].checked;
+    settings.showDBStats = UIComponents.Checkbox.getState($('#inputShowDBStats'));
     settings.mongoBinaryPath = $('#inputMongoExecutable').val() || '';
-    settings.singleTabResultSets = $('#divUseSingleTab').iCheck('update')[0].checked;
+    settings.singleTabResultSets = UIComponents.Checkbox.getState($('#inputUseSingleTab'));
     settings.maxLiveChartDataPoints = $('#inputMaxChartPoints').val();
     settings.language = $('#cmbMongoclientLanguage').val();
 
@@ -52,9 +53,9 @@ Settings.prototype = {
     $('#inputConnectionTimeout').val(settings.connectionTimeoutInSeconds || 0);
     $('#inputDBStatsScheduler').val(settings.dbStatsScheduler || 3000);
     $('#inputAutoCompleteSamplesCount').val(settings.autoCompleteSamplesCount || 50);
-    $('#inputUseSingleTab').iCheck(settings.singleTabResultSets ? 'check' : 'uncheck');
-    $('#inputShowDBStats').iCheck(settings.showDBStats ? 'check' : 'uncheck');
-    $('#inputToggleUpdates').iCheck((settings.updates === undefined || settings.updates === true) ? 'check' : 'uncheck');
+    UIComponents.Checkbox.toggleState($('#inputUseSingleTab'), settings.singleTabResultSets ? 'check' : 'uncheck');
+    UIComponents.Checkbox.toggleState($('#inputShowDBStats'), settings.showDBStats ? 'check' : 'uncheck');
+    UIComponents.Checkbox.toggleState($('#inputToggleUpdates'), (settings.updates === undefined || settings.updates === true) ? 'check' : 'uncheck');
     $('#inputMongoExecutable').val(settings.mongoBinaryPath || '');
     $('#inputMaxChartPoints').val(settings.maxLiveChartDataPoints || 15);
     $('#inputAutocompleteShortcut').val(settings.autoCompleteShortcut || 'Ctrl-Space');

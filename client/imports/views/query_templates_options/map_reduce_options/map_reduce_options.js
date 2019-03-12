@@ -20,19 +20,13 @@ Template.finalize.onRendered(() => {
 });
 
 Template.jsMode.onRendered(() => {
-  $('#divJsMode').iCheck({
-    checkboxClass: 'icheckbox_square-green',
-  });
+  UIComponents.Checkbox.init($('#inputJsMode'));
 });
 
 Template.keepTemp.onRendered(() => {
-  $('#divKeeptemp').iCheck({
-    checkboxClass: 'icheckbox_square-green',
-  });
+  UIComponents.Checkbox.init($('#inputKeeptemp'));
 });
 
 Template.verbose.onRendered(() => {
-  $('#divVerbose').iCheck({
-    checkboxClass: 'icheckbox_square-green',
-  });
+  UIComponents.Checkbox.init($('#inputVerbose'));
 });

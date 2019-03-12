@@ -1,4 +1,4 @@
-import { Notification, ErrorHandler } from '/client/imports/modules';
+import { Notification, ErrorHandler, UIComponents } from '/client/imports/modules';
 import { Communicator } from '/client/imports/facades';
 import { Connection } from '../index';
 
@@ -9,7 +9,7 @@ CollectionRename.prototype = {
   resetForm() {
     $('#spanCollectionNameRename').html($('#renameCollectionModal').data('collection'));
     $('#inputRenameName').val('');
-    $('#divDropTarget').iCheck('uncheck');
+    UIComponents.Checkbox.toggleState($('#inputDropTarget'), 'uncheck');
   },
 
   rename() {
@@ -17,7 +17,7 @@ CollectionRename.prototype = {
 
     const newName = $('#inputRenameName').val();
     const selectedCollection = $('#renameCollectionModal').data('collection');
-    const options = { dropTarget: $('#divDropTarget').iCheck('update')[0].checked };
+    const options = { dropTarget: UIComponents.Checkbox.getState($('#inputDropTarget')) };
 
     if (!newName) {
       Notification.warning('name-required');

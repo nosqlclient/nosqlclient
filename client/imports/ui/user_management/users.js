@@ -2,6 +2,7 @@ import { Communicator, ReactivityProvider } from '/client/imports/facades';
 import { Notification, ErrorHandler, SessionManager, UIComponents, ExtendedJSON } from '/client/imports/modules';
 import Helper from '/client/imports/helpers/helper';
 import UsermanagementHelper from './helper';
+import $ from 'jquery';
 
 const UserManagementUsers = function () {
 };
@@ -33,7 +34,7 @@ UserManagementUsers.prototype = {
       }
     });
 
-    const runOnAdminDB = $('#aRunOnAdminDBToFetchUsers').iCheck('update')[0].checked;
+    const runOnAdminDB = UIComponents.Checkbox.getState($('#inputRunOnAdminDBToFetchUsers'));
     Communicator.call({
       methodName: 'command',
       args: { command: { rolesInfo: 1, showBuiltinRoles: true }, runOnAdminDB },
@@ -116,7 +117,7 @@ UserManagementUsers.prototype = {
     if (passwordSelector.val()) command.pwd = passwordSelector.val();
 
     Notification.start('#btnApplyAddEditUser');
-    const runOnAdminDB = $('#aRunOnAdminDBToFetchUsers').iCheck('update')[0].checked;
+    const runOnAdminDB = UIComponents.Checkbox.getState($('#inputRunOnAdminDBToFetchUsers'));
 
     Communicator.call({
       methodName: 'command',
@@ -141,7 +142,7 @@ UserManagementUsers.prototype = {
     if (selectedUser) {
       const jsonEditor = UIComponents.Editor.initializeJSONEditor({ selector: 'jsonEditorOfCustomData' });
       const connection = ReactivityProvider.findOne(ReactivityProvider.types.Connections, { _id: SessionManager.get(SessionManager.strSessionConnection)._id });
-      const runOnAdminDB = $('#aRunOnAdminDBToFetchUsers').iCheck('update')[0].checked;
+      const runOnAdminDB = UIComponents.Checkbox.getState($('#inputRunOnAdminDBToFetchUsers'));
       const dbName = runOnAdminDB ? 'admin' : connection.databaseName;
 
       const userInfoCommand = {
@@ -235,7 +236,7 @@ UserManagementUsers.prototype = {
     Notification.start('#btnCloseUMDB');
 
     const connection = ReactivityProvider.findOne(ReactivityProvider.types.Connections, { _id: SessionManager.get(SessionManager.strSessionConnection)._id });
-    const runOnAdminDB = $('#aRunOnAdminDBToFetchUsers').iCheck('update')[0].checked;
+    const runOnAdminDB = UIComponents.Checkbox.getState($('#inputRunOnAdminDBToFetchUsers'));
     const dbName = runOnAdminDB ? 'admin' : connection.databaseName;
     const username = user || SessionManager.get(SessionManager.strSessionUsermanagementUser).user;
 
@@ -282,7 +283,7 @@ UserManagementUsers.prototype = {
       showCredentials: true,
     };
 
-    const runOnAdminDB = $('#aRunOnAdminDBToFetchUsers').iCheck('update')[0].checked;
+    const runOnAdminDB = UIComponents.Checkbox.getState($('#inputRunOnAdminDBToFetchUsers'));
 
     Communicator.call({
       methodName: 'command',

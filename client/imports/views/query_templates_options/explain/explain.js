@@ -1,10 +1,8 @@
 import { Template } from 'meteor/templating';
 
 import './explain.html';
+import { UIComponents } from '../../../modules';
 
 Template.explain.onRendered(() => {
-  $('#divExplain').iCheck({
-    checkboxClass: 'icheckbox_square-green',
-  });
-  $('#inputExplain').iCheck('uncheck');
+  UIComponents.Checkbox.init($('#inputExplain'), 'uncheck');
 });

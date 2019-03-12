@@ -1,4 +1,4 @@
-import { Querying, SessionManager } from '/client/imports/modules/';
+import { Querying, SessionManager } from '/client/imports/modules';
 import { ReactivityProvider } from '/client/imports/facades';
 import { AceEditor } from 'meteor/arch:ace-editor';
 import $ from 'jquery';
@@ -28,12 +28,6 @@ require('/node_modules/codemirror/addon/hint/show-hint.js');
 const UIComponents = function () {};
 
 UIComponents.prototype = {
-  initICheck(selector) {
-    selector.iCheck({
-      checkboxClass: 'icheckbox_square-green',
-    });
-  },
-
   initializeOptionsCombobox(cmb, enums, sessionKey) {
     $.each(Helper.sortObjectByKey(enums), (key, value) => {
       cmb.append($('<option></option>')
@@ -53,8 +47,7 @@ UIComponents.prototype = {
     });
   },
 
-  initializeCollectionsCombobox() {
-    const cmb = $('#cmbCollections');
+  initializeCollectionsCombobox(cmb) {
     cmb.append($("<optgroup id='optGroupCollections' label='Collections'></optgroup>"));
     const cmbOptGroupCollection = cmb.find('#optGroupCollections');
 
@@ -64,6 +57,7 @@ UIComponents.prototype = {
         .attr('value', value.name)
         .text(value.name));
     });
+
     cmb.chosen({
       create_option: true,
       allow_single_deselect: true,
@@ -72,9 +66,8 @@ UIComponents.prototype = {
     });
 
     cmb.on('change', (evt, params) => {
-      if (!params) return;
-      const selectedCollection = params.selected;
-      if (selectedCollection) Querying.getDistinctKeysForAutoComplete(selectedCollection);
+      if (!params || !params.selected) return;
+      Querying.getDistinctKeysForAutoComplete(params.selected);
     });
   },
 
@@ -377,6 +370,28 @@ UIComponents.prototype = {
         return divSelector.data('editor').getValue();
       }
       return '';
+    }
+  },
+
+  Checkbox: {
+    states: ['check', 'uncheck', 'enable', 'disable'],
+
+    init(selector, withState) {
+      selector.iCheck({
+        checkboxClass: 'icheckbox_square-green',
+      });
+      if (withState && this.states.indexOf(withState) !== -1) {
+        selector.iCheck(withState);
+      }
+    },
+
+    getState(selector) {
+      return selector.iCheck('update')[0].checked;
+    },
+
+    toggleState(selector, state) {
+      if (this.states.indexOf(state) === -1) return;
+      selector.iCheck(state);
     }
   }
 

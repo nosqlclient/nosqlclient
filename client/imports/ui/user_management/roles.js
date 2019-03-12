@@ -3,6 +3,7 @@ import { Notification, ErrorHandler, SessionManager, UIComponents } from '/clien
 import Helper from '/client/imports/helpers/helper';
 import UsermanagementHelper from './helper';
 import { _ } from 'meteor/underscore';
+import $ from 'jquery';
 
 const UserManagementRoles = function () {
 
@@ -156,7 +157,7 @@ UserManagementRoles.prototype = {
 
     Notification.start('#btnApplyAddEditRole');
 
-    const runOnAdminDB = $('#aRunOnAdminDBToFetchUsers').iCheck('update')[0].checked;
+    const runOnAdminDB = UIComponents.Checkbox.getState($('#inputRunOnAdminDBToFetchUsers'));
 
     Communicator.call({
       methodName: 'command',
@@ -226,7 +227,7 @@ UserManagementRoles.prototype = {
     Notification.start('#btnCloseUMRoles');
 
     const connection = ReactivityProvider.findOne(ReactivityProvider.types.Connections, { _id: SessionManager.get(SessionManager.strSessionConnection)._id });
-    const runOnAdminDB = $('#aRunOnAdminDBToFetchUsers').iCheck('update')[0].checked;
+    const runOnAdminDB = UIComponents.Checkbox.getState($('#inputRunOnAdminDBToFetchUsers'));
     const dbName = runOnAdminDB ? 'admin' : connection.databaseName;
     const roleName = role || SessionManager.get(SessionManager.strSessionUsermanagementRole).role;
 
@@ -468,7 +469,7 @@ UserManagementRoles.prototype = {
     cmb.empty();
     cmb.prepend("<option value=''></option>");
 
-    const runOnAdminDB = $('#aRunOnAdminDBToFetchUsers').iCheck('update')[0].checked;
+    const runOnAdminDB = UIComponents.Checkbox.getState($('#inputRunOnAdminDBToFetchUsers'));
     Communicator.call({
       methodName: 'command',
       args: { command: { rolesInfo: 1, showBuiltinRoles: true }, runOnAdminDB },
@@ -528,7 +529,7 @@ UserManagementRoles.prototype = {
       showBuiltinRoles: true,
     };
 
-    const runOnAdminDB = $('#aRunOnAdminDBToFetchUsers').iCheck('update')[0].checked;
+    const runOnAdminDB = UIComponents.Checkbox.getState($('#inputRunOnAdminDBToFetchUsers'));
 
     Communicator.call({
       methodName: 'command',

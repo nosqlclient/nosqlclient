@@ -14,7 +14,7 @@ Aggregate.prototype = {
 
     $('#stages').empty();
     this.stageNumbers = 0;
-    $('#cmbCollections').val(query.queryInfo).trigger('chosen:updated');
+    $('#cmbCollectionsAggregate').val(query.queryInfo).trigger('chosen:updated');
     query.queryParams.forEach((stage) => { this.addStageElement(Object.keys(stage)[0], stage[Object.keys(stage)[0]]); });
   },
 
@@ -24,7 +24,7 @@ Aggregate.prototype = {
     if (jsonEditor.css('display') === 'none') {
       // there's only one tab, set results
       jsonEditor.show('slow');
-      UIComponents.setResultToEditors(1, result, pipeline, selectedCollection);
+      QueryRender.setResultToEditors(1, result, pipeline, selectedCollection);
     } else {
       const resultTabs = $('#resultTabs');
 
@@ -145,7 +145,7 @@ Aggregate.prototype = {
   },
 
   execute() {
-    const selectedCollection = $('#cmbCollections').chosen().val();
+    const selectedCollection = $('#cmbCollectionsAggregate').chosen().val();
     const stages = $('#stages').find('li');
     if (!selectedCollection) {
       Notification.warning('select_collection');

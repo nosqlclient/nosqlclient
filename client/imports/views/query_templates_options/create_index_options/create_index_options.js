@@ -4,27 +4,20 @@ import '/client/imports/views/query_templates_options/min/min';
 import '/client/imports/views/query_templates_options/max/max';
 import '/client/imports/views/query_templates_options/collation/collation';
 import './create_index_options.html';
+import { UIComponents } from '../../../modules';
 
 Template.dropDups.onRendered(() => {
-  $('#divDropDups').iCheck({
-    checkboxClass: 'icheckbox_square-green',
-  });
+  UIComponents.Checkbox.init($('#inputDropDups'));
 });
 
 Template.unique.onRendered(() => {
-  $('#divUnique').iCheck({
-    checkboxClass: 'icheckbox_square-green',
-  });
+  UIComponents.Checkbox.init($('#inputUnique'));
 });
 
 Template.sparse.onRendered(() => {
-  $('#divSparse').iCheck({
-    checkboxClass: 'icheckbox_square-green',
-  });
+  UIComponents.Checkbox.init($('#inputSparse'));
 });
 
 Template.background.onRendered(() => {
-  $('#divBackground').iCheck({
-    checkboxClass: 'icheckbox_square-green',
-  });
+  UIComponents.Checkbox.init($('#inputBackground'));
 });

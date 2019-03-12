@@ -1,6 +1,7 @@
 import { Communicator, ReactivityProvider } from '/client/imports/facades';
-import { Notification, ErrorHandler, SessionManager } from '/client/imports/modules';
+import { Notification, ErrorHandler, SessionManager, UIComponents } from '/client/imports/modules';
 import Helper from '/client/imports/helpers/helper';
+import $ from 'jquery';
 
 const UserManagementTree = function () {
   this.loading = false;
@@ -100,12 +101,7 @@ UserManagementTree.prototype = {
   init() {
     Notification.start('#btnRefreshUsers');
 
-    const chckRunOnAdminDB = $('#aRunOnAdminDBToFetchUsers');
-    chckRunOnAdminDB.iCheck({
-      checkboxClass: 'icheckbox_square-green',
-    });
-
-    chckRunOnAdminDB.iCheck('uncheck');
+    UIComponents.Checkbox.init($('#inputRunOnAdminDBToFetchUsers'), 'uncheck');
     this.initUserTree();
   },
 
@@ -123,7 +119,7 @@ UserManagementTree.prototype = {
       showCredentials: true,
     };
 
-    const runOnAdminDB = $('#aRunOnAdminDBToFetchUsers').iCheck('update')[0].checked;
+    const runOnAdminDB = UIComponents.Checkbox.getState($('#inputRunOnAdminDBToFetchUsers'));
     const self = this;
     executeCommand.call(this, command, runOnAdminDB, (result) => {
       const dbName = runOnAdminDB ? 'admin' : connection.databaseName;

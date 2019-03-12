@@ -346,7 +346,7 @@
   "export_nosqlclient_data":"Export Nosqlclient Data",
   "about":"About",
   "disconnect":"Disconnect",
-  "about_text":"Open Source Edition - Version <span id=\"versionText\"></span><br/>Licensed with AGPLv3 © 2017 <br/>Contact with <a href=\"mailto:info@mongoclient.com\">info@mongoclient.com</a> for more",
+  "about_text":"Open Source Edition - Version <span id=\"versionText\"></span><br/>Licensed with AGPLv3 © 2019 <br/>Contact with <a href=\"mailto:info@mongoclient.com\">info@mongoclient.com</a> for more",
   "backup_file":"Backup File",
   "backup_file_info":"Example: <b>/home/user/nosqlclient/backup_17_10_2016_18_24_01.json</b>",
   "databases":"Databases",

@@ -2,11 +2,10 @@ import { Template } from 'meteor/templating';
 import { Settings } from '/client/imports/ui';
 import Helper from '/client/imports/helpers/helper';
 import './settings.html';
+import { UIComponents } from '../../../modules';
 
 Template.settings.onRendered(function () {
-  $('#divShowDBStats, #divUseSingleTab, #divToggleUpdates').iCheck({
-    checkboxClass: 'icheckbox_square-green',
-  });
+  UIComponents.Checkbox.init($('#inputShowDBStats, #inputUseSingleTab, #inputToggleUpdates'));
   $('#cmbScale, #cmbResultView').chosen();
 
   const settings = this.subscribe('settings');

@@ -6,9 +6,8 @@ import '/client/imports/views/query_templates_options/max_time_ms/max_time_ms.ht
 import '/client/imports/views/query_templates_options/explain/explain';
 import '/client/imports/views/query_templates_options/hint/hint';
 import './aggregate_options.html';
+import { UIComponents } from '../../../modules';
 
 Template.allowDiskUse.onRendered(() => {
-  $('#divAllowDiskUse').iCheck({
-    checkboxClass: 'icheckbox_square-green',
-  });
+  UIComponents.Checkbox.init($('#inputAllowDiskUse'));
 });

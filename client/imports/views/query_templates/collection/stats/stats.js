@@ -1,6 +1,6 @@
 import { Template } from 'meteor/templating';
 import { Querying } from '/client/imports/ui';
-import { Enums } from '/client/imports/modules';
+import { Enums, UIComponents } from '/client/imports/modules';
 import $ from 'jquery';
 
 import './stats.html';
@@ -10,9 +10,7 @@ Template.stats.onRendered(() => {
 });
 
 Template.scale.onRendered(() => {
-  $('#divScale').iCheck({
-    checkboxClass: 'icheckbox_square-green',
-  });
+  UIComponents.Checkbox.init($('#inputScale'));
 });
 
 Template.stats.executeQuery = Querying.Collection.Stats.execute.bind(Querying.Collection.Stats);

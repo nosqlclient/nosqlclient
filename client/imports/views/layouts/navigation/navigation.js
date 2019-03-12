@@ -79,7 +79,7 @@ Template.navigation.onRendered(() => {
   const modals = CollectionUtil.prepareContextMenuModals();
 
   $.contextMenu({
-    selector: '.navCollection, .navCollectionTop .navView',
+    selector: '.navCollection, .navCollectionTop, .navView',
     build(trigger) {
       const items = CollectionUtil.prepareContextMenuItems(modals);
 

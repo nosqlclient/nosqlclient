@@ -9,7 +9,7 @@ ViewPipelineUpdater.prototype = {
   initialize() {
     Notification.start('#btnSaveViewPipeline');
 
-    UIComponents.initializeCollectionsCombobox();
+    UIComponents.initializeCollectionsCombobox($('#cmbCollectionsUpdateViewPipeline'));
 
     const viewName = $('#updateViewPipelineModal').data('viewName');
     const connection = ReactivityProvider.findOne(ReactivityProvider.types.Connections, { _id: SessionManager.get(SessionManager.strSessionConnection)._id });
@@ -56,7 +56,7 @@ ViewPipelineUpdater.prototype = {
     const modal = $('#updateViewPipelineModal');
     const pipeline = $('#jsonEditorOfViewPipeline').data('jsoneditor').get();
     const viewName = modal.data('viewName');
-    const viewOn = $('#cmbCollections').val();
+    const viewOn = $('#cmbCollectionsUpdateViewPipeline').val();
     const command = { collMod: viewName, pipeline };
     if (viewOn) {
       command.viewOn = viewOn;

@@ -1,5 +1,6 @@
-import { ErrorHandler, Notification } from '/client/imports/modules';
+import { ErrorHandler, Notification, UIComponents } from '/client/imports/modules';
 import { Communicator } from '/client/imports/facades';
+import $ from 'jquery';
 
 const UsermanagemenetHelper = function () {
 };
@@ -14,7 +15,7 @@ UsermanagemenetHelper.prototype = {
         if (isConfirm) {
           Notification.start(notificationButton);
 
-          const runOnAdminDB = $('#aRunOnAdminDBToFetchUsers').iCheck('update')[0].checked;
+          const runOnAdminDB = UIComponents.Checkbox.getState($('#inputRunOnAdminDBToFetchUsers'));
 
           Communicator.call({
             methodName: 'command',

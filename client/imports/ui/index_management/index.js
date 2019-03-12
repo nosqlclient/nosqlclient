@@ -2,6 +2,7 @@ import { Communicator, ReactivityProvider } from '/client/imports/facades';
 import { UIComponents, ExtendedJSON, ErrorHandler, Notification } from '/client/imports/modules';
 import Helper from '/client/imports/helpers/helper';
 import moment from 'moment';
+import $ from 'jquery';
 
 const IndexManagement = function () {
 
@@ -66,9 +67,9 @@ IndexManagement.prototype = {
     $('#inputBucketSize').val(index.bucketSize);
     $('#inputTTL').val(index.expireAfterSeconds);
     $('#inputTextLanguageOverride').val(index.language_override);
-    $('#inputUnique').iCheck(index.unique ? 'check' : 'uncheck');
-    $('#inputBackground').iCheck(index.background ? 'check' : 'uncheck');
-    $('#inputSparse').iCheck(index.sparse ? 'check' : 'uncheck');
+    UIComponents.Checkbox.toggleState($('#inputUnique'), index.unique ? 'check' : 'uncheck');
+    UIComponents.Checkbox.toggleState($('#inputBackground'), index.background ? 'check' : 'uncheck');
+    UIComponents.Checkbox.toggleState($('#inputSparse'), index.sparse ? 'check' : 'uncheck');
     $('#cmbTextIndexVersion').val(index.textIndexVersion).trigger('chosen:updated');
     $('#cmbTextIndexDefaultLanguage').val(index.default_language).trigger('chosen:updated');
   },
@@ -78,19 +79,9 @@ IndexManagement.prototype = {
     UIComponents.Editor.setCodeMirrorValue($('#divCollationAddIndex'), '', $('#txtCollationAddIndex'));
     UIComponents.Editor.setCodeMirrorValue($('#divPartial'), '', $('#txtPartial'));
 
-    $('.divField:visible').remove();
-    $('.divFieldWeight:visible').remove();
-    $('#inputName').val('');
-    $('#input2DBit').val('');
-    $('#input2DMax').val('');
-    $('#input2DMin').val('');
-    $('#input2DSphereVersion').val('');
-    $('#inputBucketSize').val('');
-    $('#inputTTL').val('');
-    $('#inputTextLanguageOverride').val('');
-    $('#inputUnique').iCheck('uncheck');
-    $('#inputBackground').iCheck('uncheck');
-    $('#inputSparse').iCheck('uncheck');
+    $('.divField:visible, .divFieldWeight:visible').remove();
+    $('#inputName, #input2DBit, #input2DMax, #input2DMin, #input2DSphereVersion, #inputBucketSize, #inputTTL, #inputTextLanguageOverride').val('');
+    UIComponents.Checkbox.toggleState($('#inputUnique, #inputBackground, #inputSparse'), 'uncheck');
     $('#addIndexModalTitle').html(Helper.translate({ key: 'add_index' }));
     $('#btnSaveIndex').prop('disabled', false);
     $('#cmbTextIndexVersion, #cmbTextIndexDefaultLanguage').find('option').prop('selected', false).trigger('chosen:updated');
@@ -194,10 +185,10 @@ IndexManagement.prototype = {
   },
 
   setOtherOptionsForIndex(index, ttl, partialFilterExpression, indexName, collation) {
-    if ($('#divUnique').iCheck('update')[0].checked) index.unique = true;
-    if ($('#divBackground').iCheck('update')[0].checked) index.background = true;
+    if (UIComponents.Checkbox.getState($('#inputUnique'))) index.unique = true;
+    if (UIComponents.Checkbox.getState($('#inputBackground'))) index.background = true;
     if (ttl) index.expireAfterSeconds = ttl;
-    if ($('#divSparse').iCheck('update')[0].checked) index.sparse = true;
+    if (UIComponents.Checkbox.getState($('#inputSparse'))) index.sparse = true;
     if (partialFilterExpression) index.partialFilterExpression = partialFilterExpression;
     if (collation) index.collation = collation;
     if (indexName) index.name = indexName;
@@ -254,7 +245,7 @@ IndexManagement.prototype = {
 
   saveIndex() {
     Notification.start('#btnSaveIndex');
-    const selectedCollection = $('#cmbCollections').val();
+    const selectedCollection = $('#cmbCollectionsIndexManagement').val();
     const command = { createIndexes: selectedCollection, indexes: [] };
 
     const index = this.extractIndexOptions();
@@ -277,7 +268,7 @@ IndexManagement.prototype = {
   },
 
   initIndexes() {
-    const selectedCollection = $('#cmbCollections').val();
+    const selectedCollection = $('#cmbCollectionsIndexManagement').val();
     if (!selectedCollection) {
       return;
     }
@@ -453,7 +444,7 @@ IndexManagement.prototype = {
   },
 
   remove(indexName) {
-    const selectedCollection = $('#cmbCollections').val();
+    const selectedCollection = $('#cmbCollectionsIndexManagement').val();
 
     if (indexName && selectedCollection) {
       Notification.modal({

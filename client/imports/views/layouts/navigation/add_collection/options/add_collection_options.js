@@ -14,7 +14,5 @@ Template.indexOptionDefaults.onRendered(() => {
 });
 
 Template.flags.onRendered(() => {
-  UIComponents.initICheck($('#divNoPadding, #divTwoSizesIndexes'));
-  $('#inputNoPadding').iCheck('uncheck');
-  $('#inputTwoSizesIndexes').iCheck('uncheck');
+  UIComponents.Checkbox.init($('#inputNoPadding, #inputTwoSizesIndexes'), 'uncheck');
 });

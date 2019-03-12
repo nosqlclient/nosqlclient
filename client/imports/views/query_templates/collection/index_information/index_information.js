@@ -1,11 +1,10 @@
 import { Template } from 'meteor/templating';
 import { Querying } from '/client/imports/ui';
 import './index_information.html';
+import { UIComponents } from '../../../../modules';
 
 Template.indexInformation.onRendered(() => {
-  $('#divFullInformation').iCheck({
-    checkboxClass: 'icheckbox_square-green',
-  });
+  UIComponents.Checkbox.init($('#inputFullInformation'));
 });
 
 Template.indexInformation.executeQuery = Querying.Collection.IndexInformation.execute.bind(Querying.Collection.IndexInformation);

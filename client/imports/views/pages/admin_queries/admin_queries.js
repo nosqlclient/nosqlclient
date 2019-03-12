@@ -1,6 +1,6 @@
 import { Template } from 'meteor/templating';
 import { FlowRouter } from 'meteor/kadira:flow-router';
-import { Enums, SessionManager } from '/client/imports/modules';
+import { Enums, SessionManager, UIComponents } from '/client/imports/modules';
 import { QueryRender } from '/client/imports/ui';
 import Helper from '/client/imports/helpers/helper';
 import '/client/imports/views/query_templates/admin/add_user/add_user';
@@ -38,10 +38,7 @@ Template.adminQueries.onRendered(function () {
       });
       cmb.chosen();
 
-      $('#aRunOnAdminDB').iCheck({
-        checkboxClass: 'icheckbox_square-green',
-      });
-
+      UIComponents.Checkbox.init($('#inputRunOnAdminDB'));
       $('[data-toggle="tooltip"]').tooltip({ trigger: 'hover' });
     }
   });

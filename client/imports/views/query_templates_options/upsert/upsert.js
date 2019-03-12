@@ -1,8 +1,7 @@
 import { Template } from 'meteor/templating';
 import './upsert.html';
+import { UIComponents } from '../../../modules';
 
 Template.upsert.onRendered(() => {
-  $('#divUpsert').iCheck({
-    checkboxClass: 'icheckbox_square-green',
-  });
+  UIComponents.Checkbox.init($('#inputUpsert'));
 });

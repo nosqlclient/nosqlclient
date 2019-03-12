@@ -92,7 +92,7 @@ SchemaAnalyzer.prototype = {
   },
 
   init(sessionId) {
-    UIComponents.initializeCollectionsCombobox();
+    UIComponents.initializeCollectionsCombobox($('#cmbCollectionsSchemaAnalyzer'));
     const self = this;
     ReactivityProvider.observeChanges(
       ReactivityProvider.types.SchemaAnalyzeResult,
@@ -123,7 +123,7 @@ SchemaAnalyzer.prototype = {
   },
 
   analyze() {
-    const collection = $('#cmbCollections').val();
+    const collection = $('#cmbCollectionsSchemaAnalyzer').val();
     if (!collection) {
       Notification.info('select_collection');
       return;

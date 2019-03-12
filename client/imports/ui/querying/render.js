@@ -17,7 +17,7 @@ QueryRender.prototype = {
   executeQuery() {
     const queryTemplate = SessionManager.get(SessionManager.strSessionSelectedQuery);
     // Since user can call here by CTRL-ENTER combination, it's a must to check URL.
-    if (FlowRouter.current().route.path === '/browseCollection') {
+    if (FlowRouter.current().route.path === '/browseCollection' || FlowRouter.current().route.path === '/adminQueries') {
       if (queryTemplate) Template[queryTemplate].executeQuery();
       else Notification.warning('select-query');
     }

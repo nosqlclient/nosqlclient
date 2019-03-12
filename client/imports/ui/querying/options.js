@@ -16,7 +16,7 @@ const fillDivInputs = function (relatedJqueryDiv, key, result, relatedJqueryInpu
       if (val.ERROR) result.ERROR = Helper.translate({ key: `syntax-error-${key}`, options: { error: val.ERROR } });
       else result[key] = val;
     } else result[key] = val;
-  } else if (relatedJqueryDiv.find('input:checkbox').length !== 0) result[key] = relatedJqueryInput.iCheck('update')[0].checked;
+  } else if (relatedJqueryDiv.find('input:checkbox').length !== 0) result[key] = UIComponents.Checkbox.getState(relatedJqueryInput);
 };
 
 const fillInputs = function (relatedJqueryInput, result, key) {
