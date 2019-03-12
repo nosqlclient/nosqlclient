@@ -8,6 +8,9 @@ before_install:
   - curl https://install.meteor.com | /bin/sh
   - export PATH="$HOME/.meteor:$PATH"
 
+after_success:
+  - codecov --file .coverage/lcov.info --disable search
+
 script:
   - meteor build $HOME/build.tgz
 

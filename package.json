@@ -41,11 +41,11 @@
     "parse-mongo-url": "^1.1.1",
     "sinon": "^7.2.7",
     "spin.js": "^4.0.0",
+    "sweetalert": "1.0.1",
     "toastr": "^2.1.4",
     "tunnel-ssh": "4.1.4",
     "url": "^0.11.0",
-    "winston": "^3.1.0",
-    "sweetalert": "1.0.1"
+    "winston": "^3.1.0"
   },
   "scripts": {
     "build": "meteor build /tmp/nosqlclient",
