@@ -4,22 +4,19 @@ language: node_js
 node_js:
 - "8.11.3"
 
-before_install:
-  - curl https://install.meteor.com | /bin/sh
-  - export PATH="$HOME/.meteor:$PATH"
-
-after_success:
-  - codecov --file .coverage/lcov.info --disable search
-
-script:
-  - meteor build $HOME/build.tgz
-
 cache:
   directories:
     - node_modules
+
+before_install:
+  - curl https://install.meteor.com | /bin/sh
+  - export PATH="$HOME/.meteor:$PATH"
+  - npm install -g eslint codacy-coverage
 
 before_script:
   - meteor npm install
 
 script:
-  - meteor bundle mongoclient.tar.gz
+  - meteor npm test
+  - meteor npm run lint
+  - sed .coverage/lcov.info | codacy-coverage
