@@ -25,7 +25,8 @@ require('/node_modules/codemirror/addon/fold/xml-fold.js');
 require('/node_modules/codemirror/addon/hint/javascript-hint.js');
 require('/node_modules/codemirror/addon/hint/show-hint.js');
 
-const UIComponents = function () {};
+const UIComponents = function () {
+};
 
 UIComponents.prototype = {
   initializeOptionsCombobox(cmb, enums, sessionKey) {
@@ -41,14 +42,17 @@ UIComponents.prototype = {
   setOptionsComboboxChangeEvent(cmb, sessionKey) {
     cmb.on('change', (evt, params) => {
       let array = SessionManager.get(sessionKey) || [];
-      if (params.deselected) array = array.filter(item => params.deselected.indexOf(item) === -1);
-      else array.push(params.selected);
+      if (params.deselected) {
+        array = array.filter(item => params.deselected.indexOf(item) === -1);
+      } else {
+        array.push(params.selected);
+      }
       SessionManager.set(sessionKey, array);
     });
   },
 
   initializeCollectionsCombobox(cmb) {
-    cmb.append($("<optgroup id='optGroupCollections' label='Collections'></optgroup>"));
+    cmb.append($('<optgroup id="optGroupCollections" label="Collections"></optgroup>'));
     const cmbOptGroupCollection = cmb.find('#optGroupCollections');
 
     const collectionNames = SessionManager.get(SessionManager.strSessionCollectionNames);
@@ -73,16 +77,22 @@ UIComponents.prototype = {
 
   DataTable: {
     attachDeleteTableRowEvent(selector) {
-      selector.find('tbody').on('click', 'a.editor_delete', function () {
-        selector.DataTable().row($(this).parents('tr')).remove().draw();
-      });
+      selector.find('tbody')
+        .on('click', 'a.editor_delete', function () {
+          selector.DataTable()
+            .row($(this)
+              .parents('tr'))
+            .remove()
+            .draw();
+        });
     },
 
     doTableRowSelectable(table, row) {
       if (row.hasClass('selected')) {
         row.removeClass('selected');
       } else {
-        table.$('tr.selected').removeClass('selected');
+        table.$('tr.selected')
+          .removeClass('selected');
         row.addClass('selected');
       }
     },
@@ -118,22 +128,30 @@ UIComponents.prototype = {
       selector.DataTable({
         language: self.getDatatableLanguageOptions()
       });
-      selector.find('tbody').on('click', 'tr', function () {
-        const table = selector.DataTable();
-        self.doTableRowSelectable(table, $(this));
+      selector.find('tbody')
+        .on('click', 'tr', function () {
+          const table = selector.DataTable();
+          self.doTableRowSelectable(table, $(this));
 
-        if (table.row(this).data()) {
-          if (sessionKey) SessionManager.set(sessionKey, table.row(this).data());
-          if (clickCallback) clickCallback(table, table.row(this));
-        }
-      });
+          if (table.row(this)
+            .data()) {
+            if (sessionKey) {
+              SessionManager.set(sessionKey, table.row(this)
+                .data());
+            }
+            if (clickCallback) clickCallback(table, table.row(this));
+          }
+        });
 
       if (!noDeleteEvent) this.attachDeleteTableRowEvent(selector);
     },
 
     setupDatatable({ selectorString, columns, columnDefs = [], data, extraOptions = {}, autoWidth = true, lengthMenu = [5, 10, 20] }) {
       const selector = $(selectorString);
-      if ($.fn.dataTable.isDataTable(selectorString)) selector.DataTable().destroy();
+      if ($.fn.dataTable.isDataTable(selectorString)) {
+        selector.DataTable()
+          .destroy();
+      }
       selector.DataTable(Object.assign(extraOptions, {
         language: this.getDatatableLanguageOptions(),
         responsive: true,
@@ -144,13 +162,15 @@ UIComponents.prototype = {
         columns,
         columnDefs,
         lengthMenu
-      })).draw();
+      }))
+        .draw();
     }
   },
 
   Editor: {
     getAceEditorValue(selector) {
-      return AceEditor.instance(selector).getValue();
+      return AceEditor.instance(selector)
+        .getValue();
     },
 
     setAceEditorValue({ selector, value }) {
@@ -202,7 +222,8 @@ UIComponents.prototype = {
     collectAllKeys(value) {
       const allKeys = new Set();
       value.forEach((row) => {
-        Object.keys(row).forEach(k => allKeys.add(k));
+        Object.keys(row)
+          .forEach(k => allKeys.add(k));
       });
       if (allKeys.size === 0) {
         allKeys.add('(empty)');
@@ -259,7 +280,8 @@ UIComponents.prototype = {
           + '    </div>'
           + '  </div>'
           + '</div>');
-        $('body').append(modal);
+        $('body')
+          .append(modal);
 
         this.initializeJSONEditor({
           selector: 'json-editor-modal-data',
@@ -271,7 +293,9 @@ UIComponents.prototype = {
         });
       }
       modal.modal();
-      $('#json-editor-modal-data').data('jsoneditor').set(JSON.parse(sData));
+      $('#json-editor-modal-data')
+        .data('jsoneditor')
+        .set(JSON.parse(sData));
     },
 
     initializeJSONEditor({ selector, options = {}, setDivData = true }) {
@@ -291,11 +315,14 @@ UIComponents.prototype = {
     },
 
     doCodeMirrorResizable(codeMirror) {
-      $('.CodeMirror').resizable({
-        resize() {
-          codeMirror.setSize($(this).width(), $(this).height());
-        },
-      });
+      $('.CodeMirror')
+        .resizable({
+          resize() {
+            codeMirror.setSize($(this)
+              .width(), $(this)
+              .height());
+          },
+        });
     },
 
     initializeCodeMirror({ divSelector, txtAreaId, keepValue = false, height = 100, noResize = false, extraKeysToAppend = {}, autoCompleteListMethod }) {
@@ -350,7 +377,9 @@ UIComponents.prototype = {
         divSelector.data('editor', codeMirror);
 
         if (!noResize) this.doCodeMirrorResizable(codeMirror);
-      } else codeMirror = divSelector.data('editor');
+      } else {
+        codeMirror = divSelector.data('editor');
+      }
 
       if (keepValue && SessionManager.get(SessionManager.strSessionSelectorValue)) codeMirror.setValue(SessionManager.get(SessionManager.strSessionSelectorValue));
 
@@ -359,7 +388,8 @@ UIComponents.prototype = {
 
     setCodeMirrorValue(divSelector, val, txtSelector) {
       if (divSelector.data('editor')) {
-        divSelector.data('editor').setValue(val);
+        divSelector.data('editor')
+          .setValue(val);
       } else if (txtSelector) {
         txtSelector.val(val);
       }
@@ -367,7 +397,8 @@ UIComponents.prototype = {
 
     getCodeMirrorValue(divSelector) {
       if (divSelector.data('editor')) {
-        return divSelector.data('editor').getValue();
+        return divSelector.data('editor')
+          .getValue();
       }
       return '';
     }
@@ -393,8 +424,20 @@ UIComponents.prototype = {
       if (this.states.indexOf(state) === -1) return;
       selector.iCheck(state);
     }
-  }
+  },
 
+  Combobox: {
+    types: ['collection', 'options', 'util'],
+    init({
+      selector,
+      options = { create_option: true, allow_single_deselect: true, persistent_create_option: true, skip_no_results: true },
+      type,
+      optionEnum,
+      optionSessionKey,
+      groupLabel
+    }) {
+    }
+  }
 };
 
 export default new UIComponents();
