@@ -22,5 +22,4 @@ before_script:
 script:
   - meteor npm run lint
   - meteor npm test
-  - sed -i 's/^SF:/SF:nosqlclient\//g' .coverage/lcov.info
   - cat .coverage/lcov.info | codacy-coverage
