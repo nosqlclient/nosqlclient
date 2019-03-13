@@ -393,6 +393,9 @@ UIComponents.prototype = {
       sortDataByKey = true,
       comboGroupLabel
     }) {
+      selector.empty();
+      selector.prepend("<option value=''></option>");
+
       let optionsWrapper = selector;
       if (comboGroupLabel) {
         selector.append($(`<optgroup id="optGroup" label="${comboGroupLabel}"></optgroup>`));
@@ -406,6 +409,7 @@ UIComponents.prototype = {
       });
 
       selector.chosen(options);
+      selector.trigger('chosen:updated');
     },
 
     initializeOptionsCombobox(selector, optionEnum, sessionKey) {
