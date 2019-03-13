@@ -381,18 +381,7 @@ UIComponents.prototype = {
   },
 
   Combobox: {
-    init({
-      selector,
-      data,
-      options = {
-        create_option: true,
-        allow_single_deselect: true,
-        persistent_create_option: true,
-        skip_no_results: true,
-      },
-      sortDataByKey = true,
-      comboGroupLabel
-    }) {
+    init({ selector, data, options = { create_option: true, allow_single_deselect: true, persistent_create_option: true, skip_no_results: true }, sortDataByKey = true, comboGroupLabel }) {
       selector.empty();
       selector.prepend("<option value=''></option>");
 
