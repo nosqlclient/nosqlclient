@@ -25,7 +25,8 @@ CollectionAdd.prototype = {
     });
 
     $('#cmbCollectionOrView').chosen();
-    this.initializeOptions();
+
+    UIComponents.Combobox.initializeOptionsCombobox($('#cmbAddCollectionViewOptions'), Enums.ADD_COLLECTION_OPTIONS, SessionManager.strSessionSelectedAddCollectionOptions);
   },
 
   getFlagValue() {
@@ -67,10 +68,6 @@ CollectionAdd.prototype = {
     }
 
     return result;
-  },
-
-  initializeOptions() {
-    UIComponents.initializeOptionsCombobox($('#cmbAddCollectionViewOptions'), Enums.ADD_COLLECTION_OPTIONS, SessionManager.strSessionSelectedAddCollectionOptions);
   },
 
   gatherOptions() {
@@ -144,7 +141,7 @@ CollectionAdd.prototype = {
     cmbOptions.prop('disabled', true);
     cmbOptions.find('option').prop('selected', false).trigger('chosen:updated');
     SessionManager.set(SessionManager.strSessionSelectedAddCollectionOptions, []);
-    UIComponents.initializeCollectionsCombobox($('#cmbCollectionsViewOn'));
+    UIComponents.Combobox.initializeCollectionsCombobox($('#cmbCollectionsViewOn'));
     UIComponents.Editor.initializeCodeMirror({ divSelector: $('#divViewPipeline'), txtAreaId: 'txtViewPipeline' });
   },
 

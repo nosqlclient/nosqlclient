@@ -1,11 +1,15 @@
 import { Notification, ErrorHandler, UIComponents, ExtendedJSON, SessionManager } from '/client/imports/modules';
-import { QueryRender } from '/client/imports/ui/querying';
 import { Communicator, ReactivityProvider } from '/client/imports/facades';
 import $ from 'jquery';
 import Helper from '../../helpers/helper';
 
 const Backup = function () {
 
+};
+
+const fillComboboxes = function (cmb, err, result) {
+  Helper.fillComboboxForDatabasesOrCollections({ cmb, err, result, cmbOptions: { allow_single_deselect: true } });
+  Notification.stop();
 };
 
 const getArgs = function (operation) {
@@ -49,7 +53,7 @@ Backup.prototype = {
     Communicator.call({
       methodName: 'getDatabases',
       callback: (err, result) => {
-        Helper.fillComboboxForDatabasesOrCollections({ cmb, err, result, cmbOptions: { allow_single_deselect: true } });
+        fillComboboxes(cmb, err, result);
       }
     });
   },
@@ -80,7 +84,7 @@ Backup.prototype = {
       methodName: 'listCollectionNames',
       args: { dbName: db },
       callback: (err, result) => {
-        Helper.fillComboboxForDatabasesOrCollections({ cmb, err, result, cmbOptions: { allow_single_deselect: true } });
+        fillComboboxes(cmb, err, result);
       }
     });
   },
@@ -134,7 +138,7 @@ Backup.prototype = {
 
   initializeArgsCombo(cmb, sessionVar) {
     cmb.chosen();
-    QueryRender.setOptionsComboboxChangeEvent(cmb, sessionVar);
+    UIComponents.Combobox.setOptionsComboboxChangeEvent(cmb, sessionVar);
   },
 
   initializeLogsArea(div, txt) {

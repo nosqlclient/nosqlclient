@@ -2,9 +2,6 @@ import { TAPi18n } from 'meteor/tap:i18n';
 import { ErrorHandler } from '/client/imports/modules';
 import $ from 'jquery';
 
-// just to prevent cycle-dependency added explicitly instead of Notification
-const ladda = require('ladda');
-
 const Helper = function () {
 };
 
@@ -44,7 +41,7 @@ Helper.prototype = {
     return TAPi18n.__(key, options, language);
   },
 
-  fillComboboxForDatabasesOrCollections({ cmb, err, result, cmbOptions = {}, stopNotif = true }) {
+  fillComboboxForDatabasesOrCollections({ cmb, err, result, cmbOptions = {} }) {
     if (err || result.error) ErrorHandler.showMeteorFuncError(err, result);
     else {
       for (let i = 0; i < result.result.length; i += 1) {
@@ -56,7 +53,6 @@ Helper.prototype = {
 
     cmb.chosen(Object.assign({ create_option: true, persistent_create_option: true, skip_no_results: true }, cmbOptions));
     cmb.trigger('chosen:updated');
-    if (stopNotif) ladda.stopAll();
   },
 
   getScaleAndText(settingsScale, isMBOne) {

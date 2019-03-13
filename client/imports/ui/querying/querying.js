@@ -20,7 +20,7 @@ const initOptions = function (combobox, enumValue, showRunOnAdmin, ...excludedOp
   });
 
   combobox.chosen();
-  QueryRender.setOptionsComboboxChangeEvent(combobox);
+  UIComponents.Combobox.setOptionsComboboxChangeEvent(combobox);
 
   this.setVisibilityOfRunOnAdminCheckbox(showRunOnAdmin);
 };

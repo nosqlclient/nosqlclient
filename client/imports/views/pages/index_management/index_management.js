@@ -21,7 +21,7 @@ Template.indexManagement.onRendered(function () {
 
   this.autorun(() => {
     if (settings.ready() && connections.ready()) {
-      UIComponents.initializeCollectionsCombobox($('#cmbCollectionsIndexManagement'));
+      UIComponents.Combobox.initializeCollectionsCombobox($('#cmbCollectionsIndexManagement'));
       UIComponents.Checkbox.init($('#inputUnique, #inputBackground'));
     }
   });

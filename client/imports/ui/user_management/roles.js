@@ -458,7 +458,7 @@ UserManagementRoles.prototype = {
     Communicator.call({
       methodName: 'getDatabases',
       callback: (err, result) => {
-        Helper.fillComboboxForDatabasesOrCollections({ cmb, err, result, stopNotif: false });
+        Helper.fillComboboxForDatabasesOrCollections({ cmb, err, result });
         this.initRolesForDBForInheritRole();
       }
     });
