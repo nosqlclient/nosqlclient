@@ -401,17 +401,19 @@ QueryRender.prototype = {
   },
 
   updateQueryResultFooter() {
-    const activeTabText = $('#resultTabs .active').text();
-    const activeTabQueryInfo = activeTabText.substring(0, activeTabText.indexOf(' '));
+    setTimeout(() => {
+      const activeTabText = $('#resultTabs .active').text();
+      const activeTabQueryInfo = activeTabText.substring(0, activeTabText.indexOf(' '));
 
-    const readOnly = this.getWhichResultViewShowing() === 'gridEditor';
-    if (activeTabQueryInfo === 'findOne' && !readOnly) $('#divBrowseCollectionFooter').show();
-    else if (activeTabQueryInfo === 'find' && !readOnly) $('#divBrowseCollectionFindFooter').show();
-    else {
-      // if active tab is not findOne hide save/delete footer
-      $('#divBrowseCollectionFindFooter').hide();
-      $('#divBrowseCollectionFooter').hide();
-    }
+      const readOnly = this.getWhichResultViewShowing() === 'gridEditor';
+      if (activeTabQueryInfo === 'findOne' && !readOnly) $('#divBrowseCollectionFooter').show();
+      else if (activeTabQueryInfo === 'find' && !readOnly) $('#divBrowseCollectionFindFooter').show();
+      else {
+        // if active tab is not findOne hide save/delete footer
+        $('#divBrowseCollectionFindFooter').hide();
+        $('#divBrowseCollectionFooter').hide();
+      }
+    }, 150);
   },
 
   switchView() {
