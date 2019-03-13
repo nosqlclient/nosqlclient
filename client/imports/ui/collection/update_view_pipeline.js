@@ -9,7 +9,7 @@ ViewPipelineUpdater.prototype = {
   initialize() {
     Notification.start('#btnSaveViewPipeline');
 
-    UIComponents.initializeCollectionsCombobox($('#cmbCollectionsUpdateViewPipeline'));
+    UIComponents.Combobox.initializeCollectionsCombobox($('#cmbCollectionsUpdateViewPipeline'));
 
     const viewName = $('#updateViewPipelineModal').data('viewName');
     const connection = ReactivityProvider.findOne(ReactivityProvider.types.Connections, { _id: SessionManager.get(SessionManager.strSessionConnection)._id });

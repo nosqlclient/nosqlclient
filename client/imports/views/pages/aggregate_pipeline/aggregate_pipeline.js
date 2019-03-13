@@ -23,7 +23,7 @@ Template.aggregatePipeline.onRendered(function () {
       });
 
       $('#cmbStageQueries').chosen();
-      UIComponents.initializeCollectionsCombobox($('#cmbCollectionsAggregate'));
+      UIComponents.Combobox.initializeCollectionsCombobox($('#cmbCollectionsAggregate'));
       Aggregate.init();
     }
   });

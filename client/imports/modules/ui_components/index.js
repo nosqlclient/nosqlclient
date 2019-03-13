@@ -1,4 +1,4 @@
-import { Querying, SessionManager } from '/client/imports/modules';
+import { SessionManager } from '/client/imports/modules';
 import { ReactivityProvider } from '/client/imports/facades';
 import { AceEditor } from 'meteor/arch:ace-editor';
 import $ from 'jquery';
@@ -29,52 +29,6 @@ const UIComponents = function () {
 };
 
 UIComponents.prototype = {
-  initializeOptionsCombobox(cmb, enums, sessionKey) {
-    $.each(Helper.sortObjectByKey(enums), (key, value) => {
-      cmb.append($('<option></option>')
-        .attr('value', key)
-        .text(value));
-    });
-    cmb.chosen();
-    this.setOptionsComboboxChangeEvent(cmb, sessionKey);
-  },
-
-  setOptionsComboboxChangeEvent(cmb, sessionKey) {
-    cmb.on('change', (evt, params) => {
-      let array = SessionManager.get(sessionKey) || [];
-      if (params.deselected) {
-        array = array.filter(item => params.deselected.indexOf(item) === -1);
-      } else {
-        array.push(params.selected);
-      }
-      SessionManager.set(sessionKey, array);
-    });
-  },
-
-  initializeCollectionsCombobox(cmb) {
-    cmb.append($('<optgroup id="optGroupCollections" label="Collections"></optgroup>'));
-    const cmbOptGroupCollection = cmb.find('#optGroupCollections');
-
-    const collectionNames = SessionManager.get(SessionManager.strSessionCollectionNames);
-    $.each(collectionNames, (index, value) => {
-      cmbOptGroupCollection.append($('<option></option>')
-        .attr('value', value.name)
-        .text(value.name));
-    });
-
-    cmb.chosen({
-      create_option: true,
-      allow_single_deselect: true,
-      persistent_create_option: true,
-      skip_no_results: true,
-    });
-
-    cmb.on('change', (evt, params) => {
-      if (!params || !params.selected) return;
-      Querying.getDistinctKeysForAutoComplete(params.selected);
-    });
-  },
-
   DataTable: {
     attachDeleteTableRowEvent(selector) {
       selector.find('tbody')
@@ -427,15 +381,58 @@ UIComponents.prototype = {
   },
 
   Combobox: {
-    types: ['collection', 'options', 'util'],
     init({
       selector,
-      options = { create_option: true, allow_single_deselect: true, persistent_create_option: true, skip_no_results: true },
-      type,
-      optionEnum,
-      optionSessionKey,
-      groupLabel
+      data,
+      options = {
+        create_option: true,
+        allow_single_deselect: true,
+        persistent_create_option: true,
+        skip_no_results: true,
+      },
+      sortDataByKey = true,
+      comboGroupLabel
     }) {
+      let optionsWrapper = selector;
+      if (comboGroupLabel) {
+        selector.append($(`<optgroup id="optGroup" label="${comboGroupLabel}"></optgroup>`));
+        optionsWrapper = selector.find('#optGroup');
+      }
+
+      $.each((sortDataByKey ? Helper.sortObjectByKey(data) : data), (key, value) => {
+        optionsWrapper.append($('<option></option>')
+          .attr('value', key)
+          .text(value));
+      });
+
+      selector.chosen(options);
+    },
+
+    initializeOptionsCombobox(selector, optionEnum, sessionKey) {
+      this.init({ selector, data: optionEnum, options: {} });
+      this.setOptionsComboboxChangeEvent(selector, sessionKey);
+    },
+
+    setOptionsComboboxChangeEvent(cmb, sessionKey = SessionManager.strSessionSelectedOptions) {
+      cmb.on('change', (evt, params) => {
+        let array = SessionManager.get(sessionKey) || [];
+        if (params.deselected) {
+          array = array.filter(item => params.deselected.indexOf(item) === -1);
+        } else {
+          array.push(params.selected);
+        }
+        SessionManager.set(sessionKey, array);
+      });
+    },
+
+    initializeCollectionsCombobox(selector) {
+      const collectionNames = SessionManager.get(SessionManager.strSessionCollectionNames);
+      const data = {};
+      collectionNames.forEach((col) => {
+        data[col.name] = col.name;
+      });
+
+      this.init({ selector, data, sortDataByKey: false, comboGroupLabel: 'Collections' });
     }
   }
 };

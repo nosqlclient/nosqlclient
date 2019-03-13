@@ -23,10 +23,6 @@ QueryRender.prototype = {
     }
   },
 
-  setOptionsComboboxChangeEvent(cmb, sessionVar) {
-    UIComponents.setOptionsComboboxChangeEvent(cmb, sessionVar || SessionManager.strSessionSelectedOptions);
-  },
-
   renderAfterQueryExecution(err, result, isAdmin, queryInfo, queryParams, saveHistory) {
     if (err || result.error) ErrorHandler.showMeteorFuncError(err, result);
     else {

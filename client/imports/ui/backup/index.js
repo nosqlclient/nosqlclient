@@ -1,5 +1,4 @@
 import { Notification, ErrorHandler, UIComponents, ExtendedJSON, SessionManager } from '/client/imports/modules';
-import { QueryRender } from '/client/imports/ui/querying';
 import { Communicator, ReactivityProvider } from '/client/imports/facades';
 import $ from 'jquery';
 import Helper from '../../helpers/helper';
@@ -134,7 +133,7 @@ Backup.prototype = {
 
   initializeArgsCombo(cmb, sessionVar) {
     cmb.chosen();
-    QueryRender.setOptionsComboboxChangeEvent(cmb, sessionVar);
+    UIComponents.Combobox.setOptionsComboboxChangeEvent(cmb, sessionVar);
   },
 
   initializeLogsArea(div, txt) {
