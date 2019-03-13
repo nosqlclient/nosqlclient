@@ -49,6 +49,7 @@ Backup.prototype = {
       methodName: 'getDatabases',
       callback: (err, result) => {
         Helper.fillComboboxForDatabasesOrCollections({ cmb, err, result, cmbOptions: { allow_single_deselect: true } });
+        Notification.stop();
       }
     });
   },
@@ -80,6 +81,7 @@ Backup.prototype = {
       args: { dbName: db },
       callback: (err, result) => {
         Helper.fillComboboxForDatabasesOrCollections({ cmb, err, result, cmbOptions: { allow_single_deselect: true } });
+        Notification.stop();
       }
     });
   },
