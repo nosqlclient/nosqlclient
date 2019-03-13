@@ -7,6 +7,11 @@ const Backup = function () {
 
 };
 
+const fillComboboxes = function (cmb, err, result) {
+  Helper.fillComboboxForDatabasesOrCollections({ cmb, err, result, cmbOptions: { allow_single_deselect: true } });
+  Notification.stop();
+};
+
 const getArgs = function (operation) {
   let result = [];
 
@@ -48,8 +53,7 @@ Backup.prototype = {
     Communicator.call({
       methodName: 'getDatabases',
       callback: (err, result) => {
-        Helper.fillComboboxForDatabasesOrCollections({ cmb, err, result, cmbOptions: { allow_single_deselect: true } });
-        Notification.stop();
+        fillComboboxes(cmb, err, result);
       }
     });
   },
@@ -80,8 +84,7 @@ Backup.prototype = {
       methodName: 'listCollectionNames',
       args: { dbName: db },
       callback: (err, result) => {
-        Helper.fillComboboxForDatabasesOrCollections({ cmb, err, result, cmbOptions: { allow_single_deselect: true } });
-        Notification.stop();
+        fillComboboxes(cmb, err, result);
       }
     });
   },
