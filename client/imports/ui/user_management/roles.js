@@ -205,7 +205,8 @@ UserManagementRoles.prototype = {
     Notification.start('#btnApplyAddPrivilegeToRole');
 
     const selectedResource = SessionManager.get(SessionManager.strSessionUsermanagementPrivilege).resource;
-    let dbToSelect = ''; let collectionToSelect = '';
+    let dbToSelect = '';
+    let collectionToSelect = '';
     if (selectedResource && selectedResource !== 'anyResource' && selectedResource !== 'cluster') {
       if (selectedResource.indexOf('@') !== -1) {
         dbToSelect = selectedResource.substr(selectedResource.indexOf('@') + 1);
@@ -452,13 +453,19 @@ UserManagementRoles.prototype = {
   },
 
   initDatabasesForInheritRole() {
-    const cmb = $('#cmbDatabasesForInheritRole');
-    cmb.empty();
+    const selector = $('#cmbDatabasesForInheritRole');
 
     Communicator.call({
       methodName: 'getDatabases',
       callback: (err, result) => {
-        Helper.fillComboboxForDatabasesOrCollections({ cmb, err, result });
+        let data;
+        if (err || result.error) {
+          ErrorHandler.showMeteorFuncError(err, result);
+        } else {
+          data = Helper.populateComboboxData(result.result, 'name');
+        }
+
+        UIComponents.Combobox.init({ selector, data, options: { create_option: true, persistent_create_option: true, skip_no_results: true } });
         this.initRolesForDBForInheritRole();
       }
     });

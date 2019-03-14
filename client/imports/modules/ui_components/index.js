@@ -353,9 +353,14 @@ UIComponents.prototype = {
   },
 
   Combobox: {
-    init({ selector, data, options = { create_option: true, allow_single_deselect: true, persistent_create_option: true, skip_no_results: true }, sortDataByKey = true, comboGroupLabel }) {
-      selector.empty();
-      selector.prepend("<option value=''></option>");
+    init({
+      selector, data, empty = true,
+      options = { create_option: true, allow_single_deselect: true, persistent_create_option: true, skip_no_results: true },
+      sortDataByKey = true, comboGroupLabel }) {
+      if (empty) {
+        selector.empty();
+        selector.prepend("<option value=''></option>");
+      }
 
       let optionsWrapper = selector;
       if (comboGroupLabel) {
@@ -363,11 +368,13 @@ UIComponents.prototype = {
         optionsWrapper = selector.find('#optGroup');
       }
 
-      $.each((sortDataByKey ? Helper.sortObjectByKey(data) : data), (key, value) => {
-        optionsWrapper.append($('<option></option>')
-          .attr('value', key)
-          .text(value));
-      });
+      if (data) {
+        $.each((sortDataByKey ? Helper.sortObjectByKey(data) : data), (key, value) => {
+          optionsWrapper.append($('<option></option>')
+            .attr('value', key)
+            .text(value));
+        });
+      }
 
       selector.chosen(options);
       selector.trigger('chosen:updated');
@@ -392,11 +399,7 @@ UIComponents.prototype = {
 
     initializeCollectionsCombobox(selector) {
       const collectionNames = SessionManager.get(SessionManager.strSessionCollectionNames);
-      const data = {};
-      collectionNames.forEach((col) => {
-        data[col.name] = col.name;
-      });
-
+      const data = Helper.populateComboboxData(collectionNames, 'name');
       this.init({ selector, data, sortDataByKey: false, comboGroupLabel: 'Collections' });
     }
   }

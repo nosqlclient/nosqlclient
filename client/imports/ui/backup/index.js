@@ -7,11 +7,6 @@ const Backup = function () {
 
 };
 
-const fillComboboxes = function (cmb, err, result) {
-  Helper.fillComboboxForDatabasesOrCollections({ cmb, err, result, cmbOptions: { allow_single_deselect: true } });
-  Notification.stop();
-};
-
 const getArgs = function (operation) {
   let result = [];
 
@@ -39,11 +34,21 @@ const getArgs = function (operation) {
   return result;
 };
 
+const loadCombobox = function (err, result, selector) {
+  let data;
+  if (err || result.error) {
+    ErrorHandler.showMeteorFuncError(err, result);
+  } else {
+    data = Helper.populateComboboxData(result.result, 'name');
+  }
+
+  UIComponents.Combobox.init({ selector, data });
+  Notification.stop();
+};
+
 Backup.prototype = {
   loadDatabases(prefix) {
-    const cmb = $(`#${prefix}--db`);
-    cmb.empty();
-    cmb.prepend("<option value=''></option>");
+    const selector = $(`#${prefix}--db`);
 
     Notification.start('#btnExecuteMongodump');
     Notification.start('#btnExecuteMongorestore');
@@ -53,7 +58,7 @@ Backup.prototype = {
     Communicator.call({
       methodName: 'getDatabases',
       callback: (err, result) => {
-        fillComboboxes(cmb, err, result);
+        loadCombobox(err, result, selector);
       }
     });
   },
@@ -64,18 +69,10 @@ Backup.prototype = {
     Notification.start('#btnExecuteMongoexport');
     Notification.start('#btnExecuteMongoimport');
 
-    const cmb = $(`#${prefix}--collection`);
-    cmb.empty();
-    cmb.prepend("<option value=''></option>");
+    const selector = $(`#${prefix}--collection`);
     const db = $(`#${prefix}--db`).val();
     if (!db) {
-      cmb.chosen({
-        create_option: true,
-        allow_single_deselect: true,
-        persistent_create_option: true,
-        skip_no_results: true,
-      });
-      cmb.trigger('chosen:updated');
+      UIComponents.Combobox.init({ selector });
       Notification.stop();
       return;
     }
@@ -84,7 +81,7 @@ Backup.prototype = {
       methodName: 'listCollectionNames',
       args: { dbName: db },
       callback: (err, result) => {
-        fillComboboxes(cmb, err, result);
+        loadCombobox(err, result, selector);
       }
     });
   },

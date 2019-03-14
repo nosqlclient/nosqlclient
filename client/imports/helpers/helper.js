@@ -1,5 +1,4 @@
 import { TAPi18n } from 'meteor/tap:i18n';
-import { ErrorHandler } from '/client/imports/modules';
 import $ from 'jquery';
 
 const Helper = function () {
@@ -41,18 +40,13 @@ Helper.prototype = {
     return TAPi18n.__(key, options, language);
   },
 
-  fillComboboxForDatabasesOrCollections({ cmb, err, result, cmbOptions = {} }) {
-    if (err || result.error) ErrorHandler.showMeteorFuncError(err, result);
-    else {
-      for (let i = 0; i < result.result.length; i += 1) {
-        cmb.append($('<option></option>')
-          .attr('value', result.result[i].name)
-          .text(result.result[i].name));
-      }
-    }
+  populateComboboxData(result, key) {
+    const data = {};
+    result.forEach((col) => {
+      data[col[key]] = col[key];
+    });
 
-    cmb.chosen(Object.assign({ create_option: true, persistent_create_option: true, skip_no_results: true }, cmbOptions));
-    cmb.trigger('chosen:updated');
+    return data;
   },
 
   getScaleAndText(settingsScale, isMBOne) {
