@@ -321,50 +321,24 @@ UserManagementRoles.prototype = {
   },
 
   initResourcesForPrivileges(dbToSelect, collectionToSelect) {
-    const cmb = $('#cmbPrivilegeResource');
-    cmb.empty();
-    cmb.prepend("<option value=''></option>");
-    cmb.append($("<optgroup id='optCluster' label='Cluster'></optgroup>"));
-    cmb.find('#optCluster').append($('<option></option>')
-      .attr('value', 'cluster')
-      .text('cluster'));
-    cmb.append($("<optgroup id='optAnyResource' label='Any Resource'></optgroup>"));
-    cmb.find('#optAnyResource').append($('<option></option>')
-      .attr('value', 'anyResource')
-      .text('anyResource'));
-    cmb.append($("<optgroup id='optDB' label='Databases'></optgroup>"));
-
-    const cmbDBGroup = cmb.find('#optDB');
-
     Communicator.call({
       methodName: 'getDatabases',
       callback: (err, result) => {
+        let data;
         if (err || result.error) ErrorHandler.showMeteorFuncError(err, result);
-        else {
-          for (let i = 0; i < result.result.length; i += 1) {
-            cmbDBGroup.append($('<option></option>')
-              .attr('value', result.result[i].name)
-              .text(result.result[i].name));
-          }
-        }
+        else data = Helper.populateComboboxData(result.result, 'name');
 
-        cmb.chosen({
-          create_option: true,
-          allow_single_deselect: true,
-          persistent_create_option: true,
-          skip_no_results: true,
+        if (dbToSelect && dbToSelect !== 'anyResource' && dbToSelect !== 'cluster') data[dbToSelect] = dbToSelect;
+
+        const selector = $('#cmbPrivilegeResource');
+        UIComponents.Combobox.init({
+          selector,
+          data,
+          comboGroupLabel: 'Databases',
+          prependOptions: $("<optgroup id='optAnyResource' label='Any Resource'><option value='anyResource'>anyResource</option></optgroup>"
+            + "<optgroup id='optCluster' label='Cluster'><option value='cluster'>cluster</option></optgroup>")
         });
-
-        if (dbToSelect) {
-          if (dbToSelect !== 'anyResource' && dbToSelect !== 'cluster' && cmbDBGroup.find(`option[value = ${dbToSelect}]`).length === 0) {
-            cmbDBGroup.append($('<option></option>')
-              .attr('value', dbToSelect)
-              .text(dbToSelect));
-          }
-
-          cmb.val(dbToSelect);
-        }
-        cmb.trigger('chosen:updated');
+        if (dbToSelect) selector.val(dbToSelect).trigger('chosen:updated');
 
         this.initCollectionsForPrivilege(collectionToSelect, dbToSelect);
       }

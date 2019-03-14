@@ -356,11 +356,15 @@ UIComponents.prototype = {
     init({
       selector, data, empty = true,
       options = { create_option: true, allow_single_deselect: true, persistent_create_option: true, skip_no_results: true },
-      sortDataByKey = true, comboGroupLabel }) {
+      sortDataByKey = true,
+      prependOptions,
+      comboGroupLabel }) {
       if (empty) {
         selector.empty();
         selector.prepend("<option value=''></option>");
       }
+
+      if (prependOptions) selector.append(prependOptions);
 
       let optionsWrapper = selector;
       if (comboGroupLabel) {
