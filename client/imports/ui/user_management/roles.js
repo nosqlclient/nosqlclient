@@ -9,27 +9,6 @@ const UserManagementRoles = function () {
 
 };
 
-const proceedCreatingCollectionsCombobox = function (cmb, collectionToSelect, cmbGroup, stopLadda) {
-  cmb.chosen({
-    create_option: true,
-    allow_single_deselect: true,
-    persistent_create_option: true,
-    skip_no_results: true,
-  });
-
-  if (collectionToSelect) {
-    if (cmbGroup.find(`option[value = ${collectionToSelect}]`).length === 0) {
-      cmbGroup.append($('<option></option>')
-        .attr('value', collectionToSelect)
-        .text(collectionToSelect));
-    }
-    cmb.val(collectionToSelect);
-  }
-  cmb.trigger('chosen:updated');
-
-  if (stopLadda) Notification.stop();
-};
-
 const isBuiltinRole = function () {
   if (SessionManager.get(SessionManager.strSessionUsermanagementRole)
     && SessionManager.get(SessionManager.strSessionUsermanagementRole).isBuiltin && $('#addEditRoleModalTitle').text() === Helper.translate({ key: 'edit_role' })) {
@@ -52,6 +31,14 @@ const getActionColumn = function ({ isBuiltin = false, actionType = 'DELETE', ta
       return `<a href="" title="Edit" class="${editClass}"><i class="fa fa-edit text-navy"></i></a>`;
     }
   };
+};
+
+const initCollectionsCombobox = function (collectionToSelect, selector, stopLadda, data = {}) {
+  if (collectionToSelect) data[collectionToSelect] = collectionToSelect;
+  UIComponents.Combobox.init({ selector, data, comboGroupLabel: 'Collections' });
+
+  if (collectionToSelect) selector.val(collectionToSelect).trigger('chosen:updated');
+  if (stopLadda) Notification.stop();
 };
 
 UserManagementRoles.prototype = {
@@ -369,8 +356,7 @@ UserManagementRoles.prototype = {
         });
 
         if (dbToSelect) {
-          if (dbToSelect !== 'anyResource' && dbToSelect !== 'cluster'
-          && cmbDBGroup.find(`option[value = ${dbToSelect}]`).length === 0) {
+          if (dbToSelect !== 'anyResource' && dbToSelect !== 'cluster' && cmbDBGroup.find(`option[value = ${dbToSelect}]`).length === 0) {
             cmbDBGroup.append($('<option></option>')
               .attr('value', dbToSelect)
               .text(dbToSelect));
@@ -386,30 +372,20 @@ UserManagementRoles.prototype = {
   },
 
   initCollectionsForPrivilege(collectionToSelect, db, stopLadda) {
-    const cmb = $('#cmbPrivilegeCollection');
-    cmb.empty();
-    cmb.prepend("<option value=''></option>");
-
-    cmb.append($("<optgroup id='optCollections' label='Collections'></optgroup>"));
-    const cmbGroup = cmb.find('#optCollections');
-
+    const selector = $('#cmbPrivilegeCollection');
     if (db) {
       Communicator.call({
         methodName: 'listCollectionNames',
         args: { dbName: db },
         callback: (err, result) => {
+          let data;
           if (err || result.error) ErrorHandler.showMeteorFuncError(err, result);
-          else {
-            for (let i = 0; i < result.result.length; i += 1) {
-              cmbGroup.append($('<option></option>')
-                .attr('value', result.result[i].name)
-                .text(result.result[i].name));
-            }
-          }
-          proceedCreatingCollectionsCombobox(cmb, collectionToSelect, cmbGroup, stopLadda);
+          else data = Helper.populateComboboxData(result.result, 'name');
+
+          initCollectionsCombobox(collectionToSelect, selector, stopLadda, data);
         }
       });
-    } else proceedCreatingCollectionsCombobox(cmb, collectionToSelect, cmbGroup, stopLadda);
+    } else initCollectionsCombobox(collectionToSelect, selector, stopLadda);
   },
 
   initActionsForPrivilege(actions) {
