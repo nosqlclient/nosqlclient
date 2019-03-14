@@ -14,18 +14,12 @@ CollectionAdd.prototype = {
       const target = $(e.target).attr('href');
       if (target === '#tab-2-engine') UIComponents.Editor.initializeCodeMirror({ divSelector: $('#divStorageEngine'), txtAreaId: 'txtStorageEngine' });
       else if (target === '#tab-3-validator') {
-        $('#cmbValidationActionAddCollection').chosen({
-          allow_single_deselect: true,
-        });
-        $('#cmbValidationLevelAddCollection').chosen({
-          allow_single_deselect: true,
-        });
+        UIComponents.Combobox.init({ empty: false, selector: $('#cmbValidationActionAddCollection, #cmbValidationLevelAddCollection'), options: { allow_single_deselect: true } });
         UIComponents.Editor.initializeCodeMirror({ divSelector: $('#divValidatorAddCollection'), txtAreaId: 'txtValidatorAddCollection' });
       } else if (target === '#tab-4-collation') UIComponents.Editor.initializeCodeMirror({ divSelector: $('#divCollationAddCollection'), txtAreaId: 'txtCollationAddCollection' });
     });
 
-    $('#cmbCollectionOrView').chosen();
-
+    UIComponents.Combobox.init({ selector: $('#cmbCollectionOrView'), options: {}, empty: false });
     UIComponents.Combobox.initializeOptionsCombobox($('#cmbAddCollectionViewOptions'), Enums.ADD_COLLECTION_OPTIONS, SessionManager.strSessionSelectedAddCollectionOptions);
   },
 

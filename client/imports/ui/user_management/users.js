@@ -9,28 +9,16 @@ const UserManagementUsers = function () {
 
 UserManagementUsers.prototype = {
   applyNewRoleToUser() {
-    const cmb = $('#cmbDatabasesForAddRoleToUser');
-    cmb.append($("<optgroup id='optGroupDatabases' label='Databases'></optgroup>"));
-    const cmbOptGroupCollection = cmb.find('#optGroupDatabases');
-
     Communicator.call({
       methodName: 'getDatabases',
       callback: (err, result) => {
+        let data;
         if (err || result.error) ErrorHandler.showMeteorFuncError(err, result);
         else {
-          for (let i = 0; i < result.result.length; i += 1) {
-            cmbOptGroupCollection.append($('<option></option>')
-              .attr('value', result.result[i].name)
-              .text(result.result[i].name));
-          }
+          data = Helper.populateComboboxData(result.result, 'name');
         }
 
-        cmb.chosen({
-          create_option: true,
-          allow_single_deselect: true,
-          persistent_create_option: true,
-          skip_no_results: true,
-        });
+        UIComponents.Combobox.init({ selector: $('#cmbDatabasesForAddRoleToUser'), data, comboGroupLabel: 'Databases' });
       }
     });
 
@@ -56,7 +44,7 @@ UserManagementUsers.prototype = {
   },
 
   addRoleToUser() {
-    const db = $('#cmbDatabasesForAddRoleToUser').chosen().val();
+    const db = $('#cmbDatabasesForAddRoleToUser').val();
     const roleName = $('#inputAddRoleToUserRolename').val();
     if (!db) {
       Notification.error('db-required');

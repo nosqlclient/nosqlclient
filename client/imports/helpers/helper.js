@@ -43,7 +43,8 @@ Helper.prototype = {
   populateComboboxData(result, key) {
     const data = {};
     result.forEach((col) => {
-      data[col[key]] = col[key];
+      if (key) data[col[key]] = col[key];
+      else data[col] = col;
     });
 
     return data;

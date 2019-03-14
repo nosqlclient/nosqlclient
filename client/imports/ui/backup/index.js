@@ -133,9 +133,9 @@ Backup.prototype = {
     });
   },
 
-  initializeArgsCombo(cmb, sessionVar) {
-    cmb.chosen();
-    UIComponents.Combobox.setOptionsComboboxChangeEvent(cmb, sessionVar);
+  initializeArgsCombo(selector, sessionVar) {
+    UIComponents.Combobox.init({ selector, empty: false, options: {} });
+    UIComponents.Combobox.setOptionsComboboxChangeEvent(selector, sessionVar);
   },
 
   initializeLogsArea(div, txt) {

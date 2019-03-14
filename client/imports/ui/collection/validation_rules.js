@@ -7,14 +7,14 @@ const CollectionValidationRules = function () {};
 
 CollectionValidationRules.prototype = {
   resetForm() {
-    const combos = $('#cmbValidationAction, #cmbValidationLevel');
     const divValidator = $('#divValidator');
+    const comboBoxes = $('#cmbValidationAction, #cmbValidationLevel');
 
     UIComponents.Editor.initializeCodeMirror({ divSelector: divValidator, txtAreaId: 'txtValidator' });
     UIComponents.Editor.setCodeMirrorValue(divValidator, '', $('#txtValidator'));
     $('#spanCollectionNameValidationRules').html(`${Helper.translate({ key: 'mongodb_version_warning', options: { version: '3.2' } })}<br/>${$('#validationRulesModal').data('collection')}`);
-    combos.chosen();
-    combos.find('option').prop('selected', false).trigger('chosen:updated');
+    UIComponents.Combobox.init({ selector: comboBoxes, options: {}, empty: false });
+    UIComponents.Combobox.deselectAll(comboBoxes);
     this.initRules();
   },
 

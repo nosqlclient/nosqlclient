@@ -22,7 +22,7 @@ Template.aggregatePipeline.onRendered(function () {
         connectWith: '.connectList',
       });
 
-      $('#cmbStageQueries').chosen();
+      UIComponents.Combobox.init({ selector: $('#cmbStageQueries'), empty: false, options: {} });
       UIComponents.Combobox.initializeCollectionsCombobox($('#cmbCollectionsAggregate'));
       Aggregate.init();
     }

@@ -4,12 +4,7 @@ import { UIComponents } from '/client/imports/modules';
 import './options.html';
 
 Template.readPreferenceTemplate.onRendered(() => {
-  $(`#${Template.instance().data.id}`).chosen({
-    create_option: true,
-    allow_single_deselect: true,
-    persistent_create_option: true,
-    skip_no_results: true,
-  });
+  UIComponents.Combobox.init({ selector: $(`#${Template.instance().data.id}`), empty: false });
 });
 
 Template.databasesTemplate.onRendered(() => {
@@ -43,7 +38,7 @@ Template.collectionsTemplate.onRendered(() => {
 });
 
 Template.verboseLevels.onRendered(() => {
-  $(`#${Template.instance().data.id}`).chosen();
+  UIComponents.Combobox.init({ selector: $(`#${Template.instance().data.id}`), options: {}, empty: false });
 });
 
 Template.queryTemplate.onRendered(() => {

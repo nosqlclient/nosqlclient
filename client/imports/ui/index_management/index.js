@@ -94,7 +94,7 @@ IndexManagement.prototype = {
     $('.divField:last').after(cloned);
 
     cloned.show();
-    cloned.find('.cmbIndexTypes').chosen();
+    UIComponents.Combobox.init({ selector: cloned.find('.cmbIndexTypes'), options: { }, empty: false });
     if (fieldName) cloned.find('.txtFieldName').val(fieldName);
     if (fieldType) cloned.find('.cmbIndexTypes').val(fieldType).trigger('chosen:updated');
   },

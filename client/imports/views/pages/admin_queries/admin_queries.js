@@ -27,17 +27,7 @@ Template.adminQueries.onRendered(function () {
 
   this.autorun(() => {
     if (connections.ready() && settings.ready()) {
-      const cmb = $('#cmbAdminQueries');
-      cmb.append($("<optgroup id='optGroupAdminQueries' label='Admin Queries'></optgroup>"));
-      const cmbOptGroupCollection = cmb.find('#optGroupAdminQueries');
-
-      $.each(Helper.sortObjectByKey(Enums.ADMIN_QUERY_TYPES), (key, value) => {
-        cmbOptGroupCollection.append($('<option></option>')
-          .attr('value', key)
-          .text(value));
-      });
-      cmb.chosen();
-
+      UIComponents.Combobox.init({ selector: $('#cmbAdminQueries'), data: Enums.ADMIN_QUERY_TYPES, comboGroupLabel: 'Admin Queries', options: {} });
       UIComponents.Checkbox.init($('#inputRunOnAdminDB'));
       $('[data-toggle="tooltip"]').tooltip({ trigger: 'hover' });
     }

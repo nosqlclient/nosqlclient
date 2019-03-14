@@ -6,7 +6,7 @@ import { UIComponents } from '../../../modules';
 
 Template.settings.onRendered(function () {
   UIComponents.Checkbox.init($('#inputShowDBStats, #inputUseSingleTab, #inputToggleUpdates'));
-  $('#cmbScale, #cmbResultView').chosen();
+  UIComponents.Combobox.init({ selector: $('#cmbScale, #cmbResultView'), empty: false, options: {} });
 
   const settings = this.subscribe('settings');
   const connections = this.subscribe('connections');

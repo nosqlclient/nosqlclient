@@ -380,8 +380,7 @@ UserManagementRoles.prototype = {
         }
         cmb.trigger('chosen:updated');
 
-        // empty combobox first.
-        this.initCollectionsForPrivilege(collectionToSelect);
+        this.initCollectionsForPrivilege(collectionToSelect, dbToSelect);
       }
     });
   },
@@ -414,39 +413,18 @@ UserManagementRoles.prototype = {
   },
 
   initActionsForPrivilege(actions) {
-    const cmb = $('#cmbActionsOfPrivilege');
-    cmb.empty();
-
     Communicator.call({
       methodName: 'getAllActions',
       callback: (err, result) => {
+        let data;
         if (err || result.error) ErrorHandler.showMeteorFuncError(err, result);
-        else {
-          for (let i = 0; i < result.length; i += 1) {
-            cmb.append($('<option></option>')
-              .attr('value', result[i])
-              .text(result[i]));
-          }
-        }
+        else data = Helper.populateComboboxData(result);
+        if (actions) data = Object.assign(data, Helper.populateComboboxData(actions));
 
-        cmb.chosen({
-          create_option: true,
-          persistent_create_option: true,
-          skip_no_results: true,
-        });
+        const selector = $('#cmbActionsOfPrivilege');
+        UIComponents.Combobox.init({ selector, data, options: { create_option: true, persistent_create_option: true, skip_no_results: true } });
 
-        if (actions) {
-          for (let j = 0; j < actions.length; j += 1) {
-            if (cmb.find(`option[value = ${actions[j]}]`).length === 0) {
-              cmb.append($('<option></option>')
-                .attr('value', actions[j])
-                .text(actions[j]));
-            }
-          }
-          cmb.val(actions);
-        }
-
-        cmb.trigger('chosen:updated');
+        if (actions) selector.val(actions).trigger('chosen:updated');
         Notification.stop();
       }
     });
@@ -472,31 +450,16 @@ UserManagementRoles.prototype = {
   },
 
   initRolesForDBForInheritRole() {
-    const cmb = $('#cmbRolesForDBForInheritedRole');
-    cmb.empty();
-    cmb.prepend("<option value=''></option>");
-
     const runOnAdminDB = UIComponents.Checkbox.getState($('#inputRunOnAdminDBToFetchUsers'));
     Communicator.call({
       methodName: 'command',
       args: { command: { rolesInfo: 1, showBuiltinRoles: true }, runOnAdminDB },
       callback: (err, result) => {
+        let data = {};
         if (err || result.error) ErrorHandler.showMeteorFuncError(err, result);
-        else {
-          for (let i = 0; i < result.result.roles.length; i += 1) {
-            cmb.append($('<option></option>')
-              .attr('value', result.result.roles[i].role)
-              .text(result.result.roles[i].role));
-          }
-        }
+        else data = Helper.populateComboboxData(result.result.roles, 'role');
 
-        cmb.chosen({
-          create_option: true,
-          persistent_create_option: true,
-          skip_no_results: true,
-        });
-
-        cmb.trigger('chosen:updated');
+        UIComponents.Combobox.init({ selector: $('#cmbRolesForDBForInheritedRole'), data, options: { create_option: true, persistent_create_option: true, skip_no_results: true } });
         Notification.stop();
       }
     });

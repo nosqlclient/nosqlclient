@@ -4,24 +4,20 @@ import { Connection, QueryRender, QueryingOptions } from '/client/imports/ui';
 import { Communicator } from '/client/imports/facades';
 import { _ } from 'meteor/underscore';
 import $ from 'jquery';
-import Helper from '/client/imports/helpers/helper';
 import QueryingHelper from './helper';
 
 const Querying = function () {};
 
-const initOptions = function (combobox, enumValue, showRunOnAdmin, ...excludedOptions) {
-  if (!combobox) return;
-  $.each(Helper.sortObjectByKey(enumValue), (key, value) => {
+const initOptions = function (selector, enumValue, showRunOnAdmin, ...excludedOptions) {
+  if (!selector) return;
+  const data = {};
+  $.each(enumValue, (key, value) => {
     if (excludedOptions.indexOf(value) === -1) {
-      combobox.append($('<option></option>')
-        .attr('value', key)
-        .text(value));
+      data[key] = value;
     }
   });
 
-  combobox.chosen();
-  UIComponents.Combobox.setOptionsComboboxChangeEvent(combobox);
-
+  UIComponents.Combobox.initializeOptionsCombobox(selector, data);
   this.setVisibilityOfRunOnAdminCheckbox(showRunOnAdmin);
 };
 

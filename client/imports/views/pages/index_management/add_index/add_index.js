@@ -5,13 +5,7 @@ import './add_index.html';
 
 Template.addIndex.onRendered(() => {
   UIComponents.Checkbox.init($('#inputSparse, #inputUnique, #inputBackground'));
-
-  $('#cmbTextIndexVersion, #cmbTextIndexDefaultLanguage').chosen({
-    create_option: true,
-    allow_single_deselect: true,
-    persistent_create_option: true,
-    skip_no_results: true,
-  });
+  UIComponents.Combobox.init({ selector: $('#cmbTextIndexVersion, #cmbTextIndexDefaultLanguage'), empty: false });
 
   $('#accordion').on('show.bs.collapse', () => {
     setTimeout(() => {

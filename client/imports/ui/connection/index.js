@@ -603,10 +603,7 @@ Connection.prototype = {
 
   initializeUI() {
     $('.filestyle').filestyle({});
-    $('#cmbAuthenticationType, #cmbSshAuthType, #cmbReadPreference').chosen({
-      allow_single_deselect: true,
-    });
-
+    UIComponents.Combobox.init({ selector: $('#cmbAuthenticationType, #cmbSshAuthType, #cmbReadPreference'), options: { allow_single_deselect: true, }, empty: false });
     UIComponents.Checkbox.init($('#inputConnectWithNoPrimary, #inputUseSSH, #inputUseSSL'));
 
     setDivToggle($('#divUseSSH'), $('#divSshTemplate'), $('#inputUseSSH'));

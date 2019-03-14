@@ -362,18 +362,9 @@ QueryRender.prototype = {
       });
     }
 
-    const cmb = $('#cmbQueries');
-    cmb.append($("<optgroup id='optGroupCollectionQueries' label='Collection Queries'></optgroup>"));
-    const cmbOptGroupCollection = cmb.find('#optGroupCollectionQueries');
-
-    $.each(Helper.sortObjectByKey(Enums.QUERY_TYPES), (key, value) => {
-      const option = $('<option></option>')
-        .attr('value', key)
-        .text(value);
-      if (value === Enums.QUERY_TYPES.FIND) option.attr('selected', true);
-      cmbOptGroupCollection.append(option);
-    });
-    cmb.chosen();
+    const selector = $('#cmbQueries');
+    UIComponents.Combobox.init({ selector, data: Enums.QUERY_TYPES, options: {}, comboGroupLabel: 'Collection Queries' });
+    selector.val('FIND').trigger('chosen:updated');
 
     $('#queryHistoriesModal').on('show.bs.modal', () => {
       this.initQueryHistories();

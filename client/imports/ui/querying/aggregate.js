@@ -74,7 +74,7 @@ Aggregate.prototype = {
 
   addStageElement(query, val) {
     const cmb = $('#cmbStageQueries');
-    query = query || cmb.chosen().val();
+    query = query || cmb.val();
     if (query) {
       query = (query.indexOf('$') !== -1 ? query : `$${query}`);
       let liElement = `<li class="success-element ${query}" id="stage${this.stageNumbers}">${query}
@@ -145,7 +145,7 @@ Aggregate.prototype = {
   },
 
   execute() {
-    const selectedCollection = $('#cmbCollectionsAggregate').chosen().val();
+    const selectedCollection = $('#cmbCollectionsAggregate').val();
     const stages = $('#stages').find('li');
     if (!selectedCollection) {
       Notification.warning('select_collection');
