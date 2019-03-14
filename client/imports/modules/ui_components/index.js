@@ -30,6 +30,8 @@ const UIComponents = function () {};
 UIComponents.prototype = {
   DataTable: {
     attachDeleteTableRowEvent(selector) {
+      if (!selector || !(selector instanceof $) || selector.find('tbody').length === 0) return;
+
       selector.find('tbody').on('click', 'a.editor_delete', function () {
         selector.DataTable().row($(this).parents('tr')).remove().draw();
       });

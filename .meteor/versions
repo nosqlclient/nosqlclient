@@ -46,12 +46,17 @@ kadira:flow-router@2.12.1
 launch-screen@1.1.1
 less@2.8.0
 livedata@1.0.18
+lmieulet:meteor-coverage@1.1.4
 logging@1.1.20
 mdg:validation-error@0.5.1
 meteor@1.9.2
 meteor-base@1.4.0
 meteorhacks:async@1.0.0
+meteorhacks:picker@1.0.3
 meteorspark:util@0.2.0
+meteortesting:browser-tests@1.0.0
+meteortesting:mocha@1.1.2
+meteortesting:mocha-core@1.0.1
 minifier-css@1.4.1
 minifier-js@2.4.0
 minimongo@1.4.5
