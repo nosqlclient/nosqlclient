@@ -10,19 +10,23 @@ describe('UIComponents', () => {
     let jquerySelector;
 
     before(() => {
-      $(document.body).append('<table id="testTable"><thead><tr><th>testingHeader</th></tr></thead><tbody><tr><td>first_data</td></tr><tr><td>second_data</td></tr></tbody></table>');
-      jquerySelector = $('#testTable');
+      jquerySelector = $('<table id="testTable"><thead><tr><th>testingHeader</th><th>Delete</th></tr></thead><tbody><tr id="first_data"><td>first_data</td><td>'
+        + '<a href="" title="Delete">delete</a></td></tr></tbody></table>');
     });
 
     describe('attachDeleteTableRowEvent tests', () => {
       beforeEach(() => {
         sinon.spy($.prototype, 'find');
-        sinon.spy($.prototype, 'on');
+        sinon.spy($.prototype, 'DataTable');
+        sinon.stub($.prototype, 'on').withArgs('click', 'a.editor_delete').yields();
+        sinon.stub($.prototype, 'row').returns($('<tr id="first_data"><td>first_data</td><td><a href="" title="Delete">delete</a></td></tr>'));
       });
 
       afterEach(() => {
         $.prototype.find.restore();
+        $.prototype.DataTable.restore();
         $.prototype.on.restore();
+        $.prototype.row.restore();
       });
 
       it('attachDeleteTableRowEvent with correct selector', () => {
@@ -35,7 +39,28 @@ describe('UIComponents', () => {
         expect(jquerySelector.find.alwaysCalledWithExactly('tbody')).to.equal(true);
         expect(jquerySelector.find('tbody').on.callCount).to.equal(1);
         expect(jquerySelector.find('tbody').on.calledWithExactly('click', 'a.editor_delete', sinon.match.func)).to.equal(true);
-        // TODO test content of callback ?
+        expect(jquerySelector.DataTable.callCount).to.equal(1);
+      });
+
+      it('attachDeleteTableRowEvent with wrong param', () => {
+        // prepare
+        // execute
+        UIComponents.DataTable.attachDeleteTableRowEvent(123);
+
+        // verify
+        expect(jquerySelector.find.callCount).to.equal(0);
+        expect(jquerySelector.find('tbody').on.callCount).to.equal(0);
+      });
+
+      it('attachDeleteTableRowEvent with wrong selector', () => {
+        // prepare
+        // execute
+        UIComponents.DataTable.attachDeleteTableRowEvent($('#testttt'));
+
+        // verify
+        expect(jquerySelector.find.callCount).to.equal(1);
+        expect(jquerySelector.find.alwaysCalledWithExactly('tbody')).to.equal(true);
+        expect(jquerySelector.find('tbody').on.callCount).to.equal(0);
       });
     });
   });

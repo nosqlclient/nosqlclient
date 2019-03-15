@@ -38,9 +38,8 @@ UIComponents.prototype = {
     },
 
     doTableRowSelectable(table, row) {
-      if (row.hasClass('selected')) {
-        row.removeClass('selected');
-      } else {
+      if (row.hasClass('selected')) row.removeClass('selected');
+      else {
         table.$('tr.selected').removeClass('selected');
         row.addClass('selected');
       }
