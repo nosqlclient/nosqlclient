@@ -37,10 +37,11 @@ UIComponents.prototype = {
       });
     },
 
-    doTableRowSelectable(table, row) {
-      if (row.hasClass('selected')) {
-        row.removeClass('selected');
-      } else {
+    toggleDatatableRowSelection(table, row) {
+      if (!row || !(row instanceof $) || !$.fn.DataTable.isDataTable(table)) return;
+
+      if (row.hasClass('selected')) row.removeClass('selected');
+      else {
         table.$('tr.selected').removeClass('selected');
         row.addClass('selected');
       }
@@ -79,7 +80,7 @@ UIComponents.prototype = {
       });
       selector.find('tbody').on('click', 'tr', function () {
         const table = selector.DataTable();
-        self.doTableRowSelectable(table, $(this));
+        self.toggleDatatableRowSelection(table, $(this));
 
         if (table.row(this).data()) {
           if (sessionKey) SessionManager.set(sessionKey, table.row(this).data());

@@ -1,7 +1,7 @@
 /* eslint-env mocha */
 
 import { ExtendedJSON } from '/client/imports/modules';
-import { expect } from 'meteor/practicalmeteor:chai';
+import { expect } from 'chai';
 
 describe('ExtendedJSON', () => {
   describe('regex only tests', () => {
