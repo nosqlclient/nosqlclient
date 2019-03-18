@@ -14,8 +14,9 @@ describe('UIComponents', () => {
     let table;
 
     before(() => {
-      jquerySelector = $('<table id="testTable"><thead><tr><th>testingHeader</th><th>Delete</th></tr></thead><tbody><tr id="first_data"><td>first_data</td><td>'
-        + '<a href="" title="Delete">delete</a></td></tr></tbody></table>');
+      jquerySelector = $('<table id="testTable"><thead><tr><th>testingHeader</th><th>Delete</th></tr></thead><tbody>'
+        + '<tr id="first_data"><td>first_data</td><td><a href="" title="Delete">delete</a></td></tr>'
+        + '<tr id="second_data"><td>second_data</td><td><a href="" title="Delete">delete</a></td></tr></tbody></table>');
       table = jquerySelector.DataTable();
     });
 
@@ -102,6 +103,49 @@ describe('UIComponents', () => {
         expect($.prototype.addClass.callCount).to.equal(1);
         expect($.prototype.addClass.calledWithExactly('selected')).to.equal(true);
         expect($.prototype.addClass.getCall(0).thisValue).to.have.id('first_data');
+      });
+
+      it('toggleDatatableRowSelection with correct table & selected row', () => {
+        // prepare
+        const row = table.$('#second_data');
+        row.addClass('selected');
+
+        // execute
+        UIComponents.DataTable.toggleDatatableRowSelection(table, row);
+
+        // verify
+        expect($.prototype.hasClass.callCount).to.equal(1);
+        expect($.prototype.hasClass.calledWithExactly('selected')).to.equal(true);
+        expect($.prototype.hasClass.getCall(0).thisValue).to.have.id('second_data');
+        expect($.prototype.removeClass.callCount).to.equal(1);
+        expect($.prototype.removeClass.calledWithExactly('selected')).to.equal(true);
+        expect($.prototype.removeClass.getCall(0).thisValue).to.have.id('second_data');
+        expect($.prototype.addClass.callCount).to.equal(1); // we called it on prepare
+      });
+
+      it('toggleDatatableRowSelection with wrong table & correct row', () => {
+        // prepare
+        const row = table.$('#second_data');
+
+        // execute
+        UIComponents.DataTable.toggleDatatableRowSelection(jquerySelector.find('#first_data')[0], row);
+
+        // verify
+        expect($.prototype.hasClass.callCount).to.equal(0);
+        expect($.prototype.removeClass.callCount).to.equal(0);
+        expect($.prototype.addClass.callCount).to.equal(0);
+      });
+
+      it('toggleDatatableRowSelection with correct table & wrong row', () => {
+        // prepare
+
+        // execute
+        UIComponents.DataTable.toggleDatatableRowSelection(table, 'test');
+
+        // verify
+        expect($.prototype.hasClass.callCount).to.equal(0);
+        expect($.prototype.removeClass.callCount).to.equal(0);
+        expect($.prototype.addClass.callCount).to.equal(0);
       });
     });
   });
