@@ -1,9 +1,10 @@
 /* eslint-env mocha */
 
 import { ErrorHandler } from '/client/imports/modules';
-import { expect } from 'meteor/practicalmeteor:chai';
 import Helper from '/client/imports/helpers/helper';
 import sinon from 'sinon';
+import { expect } from 'chai';
+
 
 /**
  * showMeteorFuncError will be tested in Notification tests since it's only a proxy.

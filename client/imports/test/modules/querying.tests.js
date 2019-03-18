@@ -2,7 +2,7 @@
 
 import { ReactivityProvider, Communicator } from '/client/imports/facades';
 import { Querying, SessionManager, ErrorHandler, Notification } from '/client/imports/modules';
-import { expect } from 'meteor/practicalmeteor:chai';
+import { expect } from 'chai';
 import sinon from 'sinon';
 
 /**

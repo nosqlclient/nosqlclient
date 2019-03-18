@@ -2,7 +2,7 @@
 
 import { SessionManager } from '/client/imports/modules';
 import { ReactiveDict } from 'meteor/reactive-dict';
-import { expect } from 'meteor/practicalmeteor:chai';
+import { expect } from 'chai';
 
 describe('SessionManager', () => {
   afterEach(() => {
@@ -73,7 +73,7 @@ describe('SessionManager', () => {
 
       // verify
       expect(Object.keys(SessionManager.dictionary.keys).length).to.equal(1);
-      expect(SessionManager.dictionary.keys).to.have.property('testing', undefined);
+      expect(SessionManager.dictionary.keys).to.have.property('testing', 'undefined');
     });
   });
 

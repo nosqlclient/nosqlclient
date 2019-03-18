@@ -1,9 +1,9 @@
 /* eslint-env mocha */
 
 import { Notification } from '/client/imports/modules';
-import { expect } from 'meteor/practicalmeteor:chai';
 import Helper from '/client/imports/helpers/helper';
 import sinon from 'sinon';
+import { expect } from 'chai';
 
 const toastr = require('toastr');
 const ladda = require('ladda');

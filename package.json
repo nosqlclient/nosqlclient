@@ -20,6 +20,8 @@
     "basic-auth": "^2.0.1",
     "bootstrap-filestyle": "^1.2.1",
     "bson": "^3.0.2",
+    "chai": "^4.2.0",
+    "chai-dom": "^1.8.1",
     "cheerio": "0.22.0",
     "codemirror": "^5.42.0",
     "cross-spawn": "^6.0.5",
