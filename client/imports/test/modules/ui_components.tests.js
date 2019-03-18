@@ -6,7 +6,7 @@ import chai, { expect } from 'chai';
 
 import $ from 'jquery';
 
-chai.use(require('chai-dom'));
+chai.use(require('chai-jquery'));
 
 describe('UIComponents', () => {
   describe('datatable tests', () => {
@@ -14,7 +14,7 @@ describe('UIComponents', () => {
     let table;
 
     before(() => {
-      jquerySelector = $('<table id="testTable"><thead><tr id="selected_data"><th>testingHeader</th><th>Delete</th></tr></thead><tbody><tr id="first_data"><td>first_data</td><td>'
+      jquerySelector = $('<table id="testTable"><thead><tr><th>testingHeader</th><th>Delete</th></tr></thead><tbody><tr id="first_data"><td>first_data</td><td>'
         + '<a href="" title="Delete">delete</a></td></tr></tbody></table>');
       table = jquerySelector.DataTable();
     });
@@ -95,13 +95,13 @@ describe('UIComponents', () => {
         // verify
         expect($.prototype.hasClass.callCount).to.equal(1);
         expect($.prototype.hasClass.calledWithExactly('selected')).to.equal(true);
-        expect($.prototype.hasClass.getCall(0).thisValue).to.have.attribute('id', 'first_data');
+        expect($.prototype.hasClass.getCall(0).thisValue).to.have.id('first_data');
         expect($.prototype.removeClass.callCount).to.equal(1);
         expect($.prototype.removeClass.calledWithExactly('selected')).to.equal(true);
-        // expect($.prototype.removeClass.getCall(0).thisValue).to.have.property('length', 0);
+        expect($.prototype.removeClass.getCall(0).thisValue.length).to.equal(0);
         expect($.prototype.addClass.callCount).to.equal(1);
         expect($.prototype.addClass.calledWithExactly('selected')).to.equal(true);
-        expect($.prototype.addClass.getCall(0).thisValue).to.have.property(0, { _DT_RowIndex: 0 });
+        expect($.prototype.addClass.getCall(0).thisValue).to.have.id('first_data');
       });
     });
   });
