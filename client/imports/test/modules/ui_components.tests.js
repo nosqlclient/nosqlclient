@@ -15,10 +15,10 @@ describe('UIComponents', () => {
     let table;
 
     before(() => {
-      table = selector.DataTable();
       selector = $('<table id="testTable"><thead><tr><th>testingHeader</th><th>Delete</th></tr></thead><tbody>'
         + '<tr id="first_data"><td>first_data</td><td><a href="" title="Delete">delete</a></td></tr>'
         + '<tr id="second_data"><td>second_data</td><td><a href="" title="Delete">delete</a></td></tr></tbody></table>');
+      table = selector.DataTable();
     });
 
     after(() => {
@@ -171,12 +171,18 @@ describe('UIComponents', () => {
     describe('initiateDatatable tests', () => {
       beforeEach(() => {
         sinon.stub($.prototype, 'DataTable').returns(table);
+        sinon.stub(Helper, 'translate').returns('translated');
         sinon.spy(UIComponents.DataTable, 'getDatatableLanguageOptions');
+        sinon.spy($.prototype, 'find');
+        sinon.stub($.prototype, 'on').yields();
       });
 
       afterEach(() => {
         $.prototype.DataTable.restore();
+        Helper.translate.restore();
         UIComponents.DataTable.getDatatableLanguageOptions.restore();
+        $.prototype.find.restore();
+        $.prototype.on.restore();
       });
 
       it('initiateDatatable with correct selector & sessionKey, clickCallback, noDeleteEvent are empty', () => {
@@ -188,6 +194,10 @@ describe('UIComponents', () => {
         expect($.prototype.DataTable.callCount).to.equal(1);
         expect($.prototype.DataTable.calledWith(sinon.match({ language: {} }))).to.equal(true);
         expect($.prototype.DataTable.getCall(0).thisValue).to.have.id('testTable');
+
+        expect($.prototype.find.callCount).to.equal(1);
+        expect($.prototype.find.calledWith('tbody')).to.equal(true);
+        expect($.prototype.find.getCall(0).thisValue).to.equal(selector);
       });
     });
   });

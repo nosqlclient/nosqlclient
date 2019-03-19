@@ -78,14 +78,12 @@ UIComponents.prototype = {
       if (sessionKey && !(sessionKey in SessionManager)) return;
       if (clickCallback && typeof clickCallback !== 'function') return;
 
-      console.log('1');
       const self = this;
       selector.DataTable({
         language: self.getDatatableLanguageOptions()
       });
-      console.log('2');
       selector.find('tbody').on('click', 'tr', function () {
-        const table = selector.DataTable();
+        const table = selector.DataTable(); // FIXME already calling DataTable above?
         self.toggleDatatableRowSelection(table, $(this));
 
         if (table.row(this).data()) {
