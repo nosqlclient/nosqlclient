@@ -74,10 +74,16 @@ UIComponents.prototype = {
     },
 
     initiateDatatable({ selector, sessionKey, clickCallback, noDeleteEvent }) {
+      if (!selector || !(selector instanceof $)) return;
+      if (sessionKey && !(sessionKey in SessionManager)) return;
+      if (clickCallback && typeof clickCallback !== 'function') return;
+
+      console.log('1');
       const self = this;
       selector.DataTable({
         language: self.getDatatableLanguageOptions()
       });
+      console.log('2');
       selector.find('tbody').on('click', 'tr', function () {
         const table = selector.DataTable();
         self.toggleDatatableRowSelection(table, $(this));

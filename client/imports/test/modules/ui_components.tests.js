@@ -1,6 +1,7 @@
 /* eslint-env mocha */
 
 import { UIComponents } from '/client/imports/modules';
+import Helper from '/client/imports/helpers/helper';
 import sinon from 'sinon';
 import chai, { expect } from 'chai';
 
@@ -10,18 +11,18 @@ chai.use(require('chai-jquery'));
 
 describe('UIComponents', () => {
   describe('datatable tests', () => {
-    let jquerySelector;
+    let selector;
     let table;
 
     before(() => {
-      jquerySelector = $('<table id="testTable"><thead><tr><th>testingHeader</th><th>Delete</th></tr></thead><tbody>'
+      table = selector.DataTable();
+      selector = $('<table id="testTable"><thead><tr><th>testingHeader</th><th>Delete</th></tr></thead><tbody>'
         + '<tr id="first_data"><td>first_data</td><td><a href="" title="Delete">delete</a></td></tr>'
         + '<tr id="second_data"><td>second_data</td><td><a href="" title="Delete">delete</a></td></tr></tbody></table>');
-      table = jquerySelector.DataTable();
     });
 
     after(() => {
-      jquerySelector = null;
+      selector = null;
       table = null;
     });
 
@@ -29,20 +30,18 @@ describe('UIComponents', () => {
       beforeEach(() => {
         sinon.spy($.prototype, 'find');
         sinon.stub($.prototype, 'on').withArgs('click', 'a.editor_delete');
-        // FIXME can't make this work
-        // sinon.stub($.prototype, 'row').returns($('<tr id="first_data"><td>first_data</td><td><a href="" title="Delete">delete</a></td></tr>'));
+        // FIXME can't test it's actually removed, it's almost impossible to stub jquery's draw method.
       });
 
       afterEach(() => {
         $.prototype.find.restore();
         $.prototype.on.restore();
-        // $.prototype.row.restore();
       });
 
       it('attachDeleteTableRowEvent with correct selector', () => {
         // prepare
         // execute
-        UIComponents.DataTable.attachDeleteTableRowEvent(jquerySelector);
+        UIComponents.DataTable.attachDeleteTableRowEvent(selector);
 
         // verify
         expect($.prototype.find.callCount).to.equal(2);
@@ -128,7 +127,7 @@ describe('UIComponents', () => {
         const row = table.$('#second_data');
 
         // execute
-        UIComponents.DataTable.toggleDatatableRowSelection(jquerySelector.find('#first_data')[0], row);
+        UIComponents.DataTable.toggleDatatableRowSelection(selector.find('#first_data')[0], row);
 
         // verify
         expect($.prototype.hasClass.callCount).to.equal(0);
@@ -146,6 +145,49 @@ describe('UIComponents', () => {
         expect($.prototype.hasClass.callCount).to.equal(0);
         expect($.prototype.removeClass.callCount).to.equal(0);
         expect($.prototype.addClass.callCount).to.equal(0);
+      });
+    });
+
+    describe('getDatatableLanguageOptions tests', () => {
+      beforeEach(() => {
+        sinon.spy(Helper, 'translate');
+      });
+
+      afterEach(() => {
+        Helper.translate.restore();
+      });
+
+      it('getDatatableLanguageOptions should return all datatable language options', () => {
+        // prepare
+        // execute
+        const languageOptions = UIComponents.DataTable.getDatatableLanguageOptions();
+
+        // verify
+        expect(Object.keys(languageOptions).length).to.equal(13);
+        expect(Helper.translate.callCount).to.equal(17);
+      });
+    });
+
+    describe('initiateDatatable tests', () => {
+      beforeEach(() => {
+        sinon.stub($.prototype, 'DataTable').returns(table);
+        sinon.spy(UIComponents.DataTable, 'getDatatableLanguageOptions');
+      });
+
+      afterEach(() => {
+        $.prototype.DataTable.restore();
+        UIComponents.DataTable.getDatatableLanguageOptions.restore();
+      });
+
+      it('initiateDatatable with correct selector & sessionKey, clickCallback, noDeleteEvent are empty', () => {
+        // prepare
+        // execute
+        UIComponents.DataTable.initiateDatatable({ selector });
+
+        // verify
+        expect($.prototype.DataTable.callCount).to.equal(1);
+        expect($.prototype.DataTable.calledWith(sinon.match({ language: {} }))).to.equal(true);
+        expect($.prototype.DataTable.getCall(0).thisValue).to.have.id('testTable');
       });
     });
   });
