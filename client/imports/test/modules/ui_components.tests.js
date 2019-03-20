@@ -1,10 +1,9 @@
 /* eslint-env mocha */
 
-import { UIComponents } from '/client/imports/modules';
+import { UIComponents, SessionManager } from '/client/imports/modules';
 import Helper from '/client/imports/helpers/helper';
 import sinon from 'sinon';
 import chai, { expect } from 'chai';
-
 import $ from 'jquery';
 
 chai.use(require('chai-jquery'));
@@ -169,18 +168,29 @@ describe('UIComponents', () => {
     });
 
     describe('initiateDatatable tests', () => {
+      let tableStub;
       beforeEach(() => {
-        sinon.stub($.prototype, 'DataTable').returns(table);
+        tableStub = {
+          row: sinon.stub().returnsThis(),
+          data: sinon.stub().returns('data')
+        };
+
+        sinon.stub($.prototype, 'DataTable').returns(tableStub);
         sinon.stub(Helper, 'translate').returns('translated');
-        sinon.spy(UIComponents.DataTable, 'getDatatableLanguageOptions');
+        sinon.stub(UIComponents.DataTable, 'getDatatableLanguageOptions').returns({});
+        sinon.stub(UIComponents.DataTable, 'toggleDatatableRowSelection');
+        sinon.stub(UIComponents.DataTable, 'attachDeleteTableRowEvent');
+        sinon.stub(SessionManager, 'set');
         sinon.spy($.prototype, 'find');
-        sinon.stub($.prototype, 'on').yields();
+        sinon.stub($.prototype, 'on').yieldsOn(selector.find('#first_data'));
       });
 
       afterEach(() => {
         $.prototype.DataTable.restore();
         Helper.translate.restore();
         UIComponents.DataTable.getDatatableLanguageOptions.restore();
+        UIComponents.DataTable.toggleDatatableRowSelection.restore();
+        UIComponents.DataTable.attachDeleteTableRowEvent.restore();
         $.prototype.find.restore();
         $.prototype.on.restore();
       });
@@ -191,13 +201,33 @@ describe('UIComponents', () => {
         UIComponents.DataTable.initiateDatatable({ selector });
 
         // verify
-        expect($.prototype.DataTable.callCount).to.equal(1);
-        expect($.prototype.DataTable.calledWith(sinon.match({ language: {} }))).to.equal(true);
+        expect($.prototype.DataTable.callCount).to.equal(2);
+        expect($.prototype.DataTable.getCall(0).args[0]).to.have.property('language');
         expect($.prototype.DataTable.getCall(0).thisValue).to.have.id('testTable');
+        expect($.prototype.DataTable.getCall(1).args.length).to.equal(0);
+        expect($.prototype.DataTable.getCall(1).thisValue).to.have.id('testTable');
 
-        expect($.prototype.find.callCount).to.equal(1);
-        expect($.prototype.find.calledWith('tbody')).to.equal(true);
-        expect($.prototype.find.getCall(0).thisValue).to.equal(selector);
+        expect($.prototype.find.callCount).to.equal(2); // internally gets called; at first DataTable construction inside.
+        expect($.prototype.find.getCall(1).args[0]).to.equal('tbody');
+        expect($.prototype.find.getCall(1).thisValue).to.have.id('testTable');
+
+        expect($.prototype.on.callCount).to.equal(1);
+        expect($.prototype.on.calledWith('click', 'tr', sinon.match.func)).to.equal(true);
+
+        expect(UIComponents.DataTable.toggleDatatableRowSelection.callCount).to.equal(1);
+        expect(UIComponents.DataTable.toggleDatatableRowSelection.calledWithMatch(tableStub)).to.equal(true);
+        expect(UIComponents.DataTable.toggleDatatableRowSelection.getCall(0).args[1]).to.have.id('first_data');
+
+        expect(tableStub.row.callCount).to.equal(1);
+        expect(tableStub.row.calledWith(selector.find('#first_data'))).to.equal(true);
+        expect(tableStub.data.callCount).to.equal(1);
+        expect(tableStub.data.getCall(0).args.length).to.equal(0);
+        expect(tableStub.data.returned('data')).to.equal(true);
+
+        expect(SessionManager.set.callCount).to.equal(0);
+
+        expect(UIComponents.DataTable.attachDeleteTableRowEvent.callCount).to.equal(1);
+        expect(UIComponents.DataTable.attachDeleteTableRowEvent.calledWithMatch(selector)).to.equal(true);
       });
     });
   });

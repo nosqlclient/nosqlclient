@@ -75,20 +75,22 @@ UIComponents.prototype = {
 
     initiateDatatable({ selector, sessionKey, clickCallback, noDeleteEvent }) {
       if (!selector || !(selector instanceof $)) return;
-      if (sessionKey && !(sessionKey in SessionManager)) return;
       if (clickCallback && typeof clickCallback !== 'function') return;
 
       const self = this;
       selector.DataTable({
         language: self.getDatatableLanguageOptions()
       });
-      selector.find('tbody').on('click', 'tr', function () {
-        const table = selector.DataTable(); // FIXME already calling DataTable above?
-        self.toggleDatatableRowSelection(table, $(this));
 
-        if (table.row(this).data()) {
-          if (sessionKey) SessionManager.set(sessionKey, table.row(this).data());
-          if (clickCallback) clickCallback(table, table.row(this));
+      selector.find('tbody').on('click', 'tr', function () {
+        const table = selector.DataTable();
+
+        self.toggleDatatableRowSelection(table, $(this));
+        const rowData = table.row(this).data();
+
+        if (rowData) {
+          if (sessionKey) SessionManager.set(sessionKey, rowData);
+          if (clickCallback) clickCallback(table, rowData);
         }
       });
 
