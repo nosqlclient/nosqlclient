@@ -168,6 +168,41 @@ describe('UIComponents', () => {
     });
 
     describe('initiateDatatable tests', () => {
+      const assertInitiateDataTableNormalBehaviour = function (tableStub, tableSelector, withSession, withoutNoDelete = true) {
+        expect($.prototype.DataTable.callCount).to.equal(2);
+        expect($.prototype.DataTable.getCall(0).args[0]).to.have.property('language');
+        expect($.prototype.DataTable.getCall(0).thisValue).to.have.id('testTable');
+        expect($.prototype.DataTable.getCall(1).args.length).to.equal(0);
+        expect($.prototype.DataTable.getCall(1).thisValue).to.have.id('testTable');
+
+        expect($.prototype.find.callCount).to.equal(2); // once gets called on beforeEach
+        expect($.prototype.find.getCall(1).args[0]).to.equal('tbody');
+        expect($.prototype.find.getCall(1).thisValue).to.have.id('testTable');
+
+        expect($.prototype.on.callCount).to.equal(1);
+        expect($.prototype.on.calledWith('click', 'tr', sinon.match.func)).to.equal(true);
+
+        expect(UIComponents.DataTable.toggleDatatableRowSelection.callCount).to.equal(1);
+        expect(UIComponents.DataTable.toggleDatatableRowSelection.calledWithMatch(tableStub)).to.equal(true);
+        expect(UIComponents.DataTable.toggleDatatableRowSelection.getCall(0).args[1]).to.have.id('first_data');
+
+        expect(tableStub.row.callCount).to.equal(1);
+        expect(tableStub.row.calledWith(tableSelector.find('#first_data'))).to.equal(true);
+        expect(tableStub.data.callCount).to.equal(1);
+        expect(tableStub.data.getCall(0).args.length).to.equal(0);
+        expect(tableStub.data.returned('data')).to.equal(true);
+
+        if (withoutNoDelete) {
+          expect(UIComponents.DataTable.attachDeleteTableRowEvent.callCount).to.equal(1);
+          expect(UIComponents.DataTable.attachDeleteTableRowEvent.calledWithMatch(tableSelector)).to.equal(true);
+        }
+
+        if (withSession) {
+          expect(SessionManager.set.callCount).to.equal(1);
+          expect(SessionManager.set.calledWithExactly(SessionManager.strSessionConnection, 'data')).to.equal(true);
+        }
+      };
+
       let tableStub;
       beforeEach(() => {
         tableStub = {
@@ -202,33 +237,8 @@ describe('UIComponents', () => {
         UIComponents.DataTable.initiateDatatable({ selector });
 
         // verify
-        expect($.prototype.DataTable.callCount).to.equal(2);
-        expect($.prototype.DataTable.getCall(0).args[0]).to.have.property('language');
-        expect($.prototype.DataTable.getCall(0).thisValue).to.have.id('testTable');
-        expect($.prototype.DataTable.getCall(1).args.length).to.equal(0);
-        expect($.prototype.DataTable.getCall(1).thisValue).to.have.id('testTable');
-
-        expect($.prototype.find.callCount).to.equal(2); // once gets called on beforeEach
-        expect($.prototype.find.getCall(1).args[0]).to.equal('tbody');
-        expect($.prototype.find.getCall(1).thisValue).to.have.id('testTable');
-
-        expect($.prototype.on.callCount).to.equal(1);
-        expect($.prototype.on.calledWith('click', 'tr', sinon.match.func)).to.equal(true);
-
-        expect(UIComponents.DataTable.toggleDatatableRowSelection.callCount).to.equal(1);
-        expect(UIComponents.DataTable.toggleDatatableRowSelection.calledWithMatch(tableStub)).to.equal(true);
-        expect(UIComponents.DataTable.toggleDatatableRowSelection.getCall(0).args[1]).to.have.id('first_data');
-
-        expect(tableStub.row.callCount).to.equal(1);
-        expect(tableStub.row.calledWith(selector.find('#first_data'))).to.equal(true);
-        expect(tableStub.data.callCount).to.equal(1);
-        expect(tableStub.data.getCall(0).args.length).to.equal(0);
-        expect(tableStub.data.returned('data')).to.equal(true);
-
+        assertInitiateDataTableNormalBehaviour(tableStub, selector);
         expect(SessionManager.set.callCount).to.equal(0);
-
-        expect(UIComponents.DataTable.attachDeleteTableRowEvent.callCount).to.equal(1);
-        expect(UIComponents.DataTable.attachDeleteTableRowEvent.calledWithMatch(selector)).to.equal(true);
       });
 
       it('initiateDatatable with wrong selector & sessionKey, clickCallback, noDeleteEvent are empty', () => {
@@ -244,6 +254,40 @@ describe('UIComponents', () => {
         expect(tableStub.row.callCount).to.equal(0);
         expect(tableStub.data.callCount).to.equal(0);
         expect(SessionManager.set.callCount).to.equal(0);
+        expect(UIComponents.DataTable.attachDeleteTableRowEvent.callCount).to.equal(0);
+      });
+
+      it('initiateDatatable with correct selector, sessionKey is filled & clickCallback, noDeleteEvent are empty', () => {
+        // prepare
+        // execute
+        UIComponents.DataTable.initiateDatatable({ selector, sessionKey: SessionManager.strSessionConnection });
+
+        // verify
+        assertInitiateDataTableNormalBehaviour(tableStub, selector, true);
+      });
+
+      it('initiateDatatable with correct selector, sessionKey, clickCallback are filled & noDeleteEvent are empty', () => {
+        // prepare
+        const spy = sinon.spy();
+
+        // execute
+        UIComponents.DataTable.initiateDatatable({ selector, sessionKey: SessionManager.strSessionConnection, clickCallback: spy });
+
+        // verify
+        assertInitiateDataTableNormalBehaviour(tableStub, selector, true);
+        expect(spy.callCount).to.equal(1);
+      });
+
+      it('initiateDatatable with correct selector, sessionKey, clickCallback, noDeleteEvent are filled', () => {
+        // prepare
+        const spy = sinon.spy();
+
+        // execute
+        UIComponents.DataTable.initiateDatatable({ selector, sessionKey: SessionManager.strSessionConnection, clickCallback: spy, noDeleteEvent: true });
+
+        // verify
+        assertInitiateDataTableNormalBehaviour(tableStub, selector, true, false);
+        expect(spy.callCount).to.equal(1);
         expect(UIComponents.DataTable.attachDeleteTableRowEvent.callCount).to.equal(0);
       });
     });
