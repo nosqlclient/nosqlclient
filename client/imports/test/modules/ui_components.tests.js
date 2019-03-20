@@ -191,6 +191,7 @@ describe('UIComponents', () => {
         UIComponents.DataTable.getDatatableLanguageOptions.restore();
         UIComponents.DataTable.toggleDatatableRowSelection.restore();
         UIComponents.DataTable.attachDeleteTableRowEvent.restore();
+        SessionManager.set.restore();
         $.prototype.find.restore();
         $.prototype.on.restore();
       });
@@ -207,7 +208,7 @@ describe('UIComponents', () => {
         expect($.prototype.DataTable.getCall(1).args.length).to.equal(0);
         expect($.prototype.DataTable.getCall(1).thisValue).to.have.id('testTable');
 
-        expect($.prototype.find.callCount).to.equal(2); // internally gets called; at first DataTable construction inside.
+        expect($.prototype.find.callCount).to.equal(2); // once gets called on beforeEach
         expect($.prototype.find.getCall(1).args[0]).to.equal('tbody');
         expect($.prototype.find.getCall(1).thisValue).to.have.id('testTable');
 
@@ -228,6 +229,22 @@ describe('UIComponents', () => {
 
         expect(UIComponents.DataTable.attachDeleteTableRowEvent.callCount).to.equal(1);
         expect(UIComponents.DataTable.attachDeleteTableRowEvent.calledWithMatch(selector)).to.equal(true);
+      });
+
+      it('initiateDatatable with wrong selector & sessionKey, clickCallback, noDeleteEvent are empty', () => {
+        // prepare
+        // execute
+        UIComponents.DataTable.initiateDatatable({ selector: '' });
+
+        // verify
+        expect($.prototype.DataTable.callCount).to.equal(0);
+        expect($.prototype.find.callCount).to.equal(1); // gets called on beforeEach
+        expect($.prototype.on.callCount).to.equal(0);
+        expect(UIComponents.DataTable.toggleDatatableRowSelection.callCount).to.equal(0);
+        expect(tableStub.row.callCount).to.equal(0);
+        expect(tableStub.data.callCount).to.equal(0);
+        expect(SessionManager.set.callCount).to.equal(0);
+        expect(UIComponents.DataTable.attachDeleteTableRowEvent.callCount).to.equal(0);
       });
     });
   });
