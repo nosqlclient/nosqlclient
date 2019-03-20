@@ -63,14 +63,14 @@ describe('Querying', () => {
       expect(ReactivityProvider.findOne.callCount).to.equal(1);
       expect(ReactivityProvider.findOne.calledWithExactly(ReactivityProvider.types.Settings)).to.equal(true);
       expect(Communicator.call.callCount).to.equal(1);
-      expect(Communicator.call.calledWithMatch(sinon.match({
+      expect(Communicator.call.calledWithMatch({
         methodName: 'count',
         args: { selectedCollection: collectionCountError }
-      }))).to.equal(true);
+      })).to.equal(true);
       expect(SessionManager.set.callCount).to.equal(0);
       expect(Notification.stop.callCount).to.equal(1);
       expect(ErrorHandler.showMeteorFuncError.callCount).to.equal(1);
-      expect(ErrorHandler.showMeteorFuncError.calledWithMatch(sinon.match(error))).to.equal(true);
+      expect(ErrorHandler.showMeteorFuncError.calledWithMatch(error)).to.equal(true);
     });
 
     it('count method fails with error (second callback arg)', () => {
@@ -83,14 +83,14 @@ describe('Querying', () => {
       expect(ReactivityProvider.findOne.callCount).to.equal(1);
       expect(ReactivityProvider.findOne.calledWithExactly(ReactivityProvider.types.Settings)).to.equal(true);
       expect(Communicator.call.callCount).to.equal(1);
-      expect(Communicator.call.calledWithMatch(sinon.match({
+      expect(Communicator.call.calledWithMatch({
         methodName: 'count',
         args: { selectedCollection: collectionCountError2 }
-      }))).to.equal(true);
+      })).to.equal(true);
       expect(SessionManager.set.callCount).to.equal(0);
       expect(Notification.stop.callCount).to.equal(1);
       expect(ErrorHandler.showMeteorFuncError.callCount).to.equal(1);
-      expect(ErrorHandler.showMeteorFuncError.calledWithMatch(null, sinon.match(error))).to.equal(true);
+      expect(ErrorHandler.showMeteorFuncError.calledWithMatch(null, error)).to.equal(true);
     });
 
     it('find method fails with error (first callback arg)', () => {
@@ -103,18 +103,18 @@ describe('Querying', () => {
       expect(ReactivityProvider.findOne.callCount).to.equal(1);
       expect(ReactivityProvider.findOne.calledWithExactly(ReactivityProvider.types.Settings)).to.equal(true);
       expect(Communicator.call.callCount).to.equal(2);
-      expect(Communicator.call.getCall(0).calledWithMatch(sinon.match({
+      expect(Communicator.call.getCall(0).calledWithMatch({
         methodName: 'count',
         args: { selectedCollection: collectionFindError }
-      }))).to.equal(true);
-      expect(Communicator.call.getCall(1).calledWithMatch(sinon.match({
+      })).to.equal(true);
+      expect(Communicator.call.getCall(1).calledWithMatch({
         methodName: 'find',
         args: { selectedCollection: collectionFindError }
-      }))).to.equal(true);
+      })).to.equal(true);
       expect(SessionManager.set.callCount).to.equal(0);
       expect(Notification.stop.callCount).to.equal(1);
       expect(ErrorHandler.showMeteorFuncError.callCount).to.equal(1);
-      expect(ErrorHandler.showMeteorFuncError.calledWithMatch(sinon.match(error))).to.equal(true);
+      expect(ErrorHandler.showMeteorFuncError.calledWithMatch(error)).to.equal(true);
     });
 
     it('find method fails with error (second callback arg)', () => {
@@ -127,18 +127,18 @@ describe('Querying', () => {
       expect(ReactivityProvider.findOne.callCount).to.equal(1);
       expect(ReactivityProvider.findOne.calledWithExactly(ReactivityProvider.types.Settings)).to.equal(true);
       expect(Communicator.call.callCount).to.equal(2);
-      expect(Communicator.call.getCall(0).calledWithMatch(sinon.match({
+      expect(Communicator.call.getCall(0).calledWithMatch({
         methodName: 'count',
         args: { selectedCollection: collectionFindError2 }
-      }))).to.equal(true);
-      expect(Communicator.call.getCall(1).calledWithMatch(sinon.match({
+      })).to.equal(true);
+      expect(Communicator.call.getCall(1).calledWithMatch({
         methodName: 'find',
         args: { selectedCollection: collectionFindError2 }
-      }))).to.equal(true);
+      })).to.equal(true);
       expect(SessionManager.set.callCount).to.equal(0);
       expect(Notification.stop.callCount).to.equal(1);
       expect(ErrorHandler.showMeteorFuncError.callCount).to.equal(1);
-      expect(ErrorHandler.showMeteorFuncError.calledWithMatch(null, sinon.match(error))).to.equal(true);
+      expect(ErrorHandler.showMeteorFuncError.calledWithMatch(null, error)).to.equal(true);
     });
 
     it('normal behaviour', () => {

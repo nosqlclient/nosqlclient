@@ -97,7 +97,10 @@ UIComponents.prototype = {
       if (!noDeleteEvent) this.attachDeleteTableRowEvent(selector);
     },
 
+    // dynamically creates a datatable.
     setupDatatable({ selectorString, columns, columnDefs = [], data, extraOptions = {}, autoWidth = true, lengthMenu = [5, 10, 20] }) {
+      if (!selectorString || !Array.isArray(columns) || !Array.isArray(columnDefs) || !Array.isArray(data) || !Array.isArray(lengthMenu) || (typeof extraOptions !== 'object')) { return; }
+
       const selector = $(selectorString);
       if ($.fn.dataTable.isDataTable(selectorString)) selector.DataTable().destroy();
       selector.DataTable(Object.assign(extraOptions, {
