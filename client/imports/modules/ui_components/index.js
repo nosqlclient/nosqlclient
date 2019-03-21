@@ -1,29 +1,31 @@
 import { SessionManager } from '/client/imports/modules';
 import { ReactivityProvider } from '/client/imports/facades';
-import { AceEditor } from 'meteor/arch:ace-editor';
 import $ from 'jquery';
 import Helper from '/client/imports/helpers/helper';
 import { QueryRender } from '../../ui/querying';
 
 const CodeMirror = require('codemirror');
 const JSONEditor = require('jsoneditor');
+const Ace = require('ace-builds');
 
+require('ace-builds/src-noconflict/mode-json');
+require('ace-builds/src-noconflict/theme-github');
 require('datatables.net')(window, $);
 require('datatables.net-buttons')(window, $);
 require('datatables.net-responsive')(window, $);
 require('datatables.net-bs')(window, $);
 require('datatables.net-buttons-bs')(window, $);
 require('datatables.net-responsive-bs')(window, $);
-require('/node_modules/codemirror/mode/javascript/javascript.js');
-require('/node_modules/codemirror/addon/fold/brace-fold.js');
-require('/node_modules/codemirror/addon/fold/comment-fold.js');
-require('/node_modules/codemirror/addon/fold/foldcode.js');
-require('/node_modules/codemirror/addon/fold/foldgutter.js');
-require('/node_modules/codemirror/addon/fold/indent-fold.js');
-require('/node_modules/codemirror/addon/fold/markdown-fold.js');
-require('/node_modules/codemirror/addon/fold/xml-fold.js');
-require('/node_modules/codemirror/addon/hint/javascript-hint.js');
-require('/node_modules/codemirror/addon/hint/show-hint.js');
+require('codemirror/mode/javascript/javascript.js');
+require('codemirror/addon/fold/brace-fold.js');
+require('codemirror/addon/fold/comment-fold.js');
+require('codemirror/addon/fold/foldcode.js');
+require('codemirror/addon/fold/foldgutter.js');
+require('codemirror/addon/fold/indent-fold.js');
+require('codemirror/addon/fold/markdown-fold.js');
+require('codemirror/addon/fold/xml-fold.js');
+require('codemirror/addon/hint/javascript-hint.js');
+require('codemirror/addon/hint/show-hint.js');
 
 const UIComponents = function () {};
 
@@ -119,21 +121,19 @@ UIComponents.prototype = {
 
   Editor: {
     getAceEditorValue(selector) {
-      return AceEditor.instance(selector).getValue();
+      return Ace.edit(selector).getValue();
     },
 
     setAceEditorValue({ selector, value }) {
-      AceEditor.instance(selector, {
-        mode: 'javascript',
-        theme: 'dawn',
-      }, (editor) => {
-        editor.$blockScrolling = Infinity;
-        editor.setOptions({
-          fontSize: '12pt',
-          showPrintMargin: false,
-        });
-        editor.setValue(JSON.stringify(value, null, '\t'), -1);
+      const editor = Ace.edit(selector);
+      editor.setTheme('ace/theme/github');
+      editor.session.setMode('ace/mode/json');
+      editor.$blockScrolling = Infinity;
+      editor.setOptions({
+        fontSize: '14px',
+        showPrintMargin: false,
       });
+      editor.setValue(JSON.stringify(value, null, '\t'), -1);
     },
 
     setGridEditorValue({ selector, value }) {
