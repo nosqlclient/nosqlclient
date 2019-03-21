@@ -8,8 +8,6 @@ const CodeMirror = require('codemirror');
 const JSONEditor = require('jsoneditor');
 const Ace = require('ace-builds');
 
-require('ace-builds/src-noconflict/mode-json');
-require('ace-builds/src-noconflict/theme-github');
 require('datatables.net')(window, $);
 require('datatables.net-buttons')(window, $);
 require('datatables.net-responsive')(window, $);
@@ -130,8 +128,10 @@ UIComponents.prototype = {
       editor.session.setMode('ace/mode/json');
       editor.$blockScrolling = Infinity;
       editor.setOptions({
+        useWorker: true,
         fontSize: '14px',
-        showPrintMargin: false,
+        showLineNumbers: true,
+        showPrintMargin: false
       });
       editor.setValue(JSON.stringify(value, null, '\t'), -1);
     },

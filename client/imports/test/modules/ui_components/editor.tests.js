@@ -1,32 +1,42 @@
-/*
-/!* eslint-env mocha *!/
+/* eslint-env mocha */
 
 import { UIComponents } from '/client/imports/modules';
-import { AceEditor } from 'meteor/arch:ace-editor';
 import sinon from 'sinon';
-import chai, { expect } from 'chai';
+import { expect } from 'chai';
 import $ from 'jquery';
 
-chai.use(require('chai-jquery'));
+const Ace = require('ace-builds');
 
 describe('UIComponents Editor', () => {
   describe('getAceEditorValue tests', () => {
-    let aceeditorStub;
     const exist = $('<pre id="exist" style="height: 500px"></pre>');
     const notExist = $('<pre id="notExist" style="height: 500px"></pre>');
+    const editor = Ace.edit(exist);
 
     beforeEach(() => {
-      aceeditorStub = {
-        getValue: sinon.stub().returns('{}')
-      };
-      sinon.stub(AceEditor, 'instance').withArgs(exist).returnsThis().withArgs(notExist)
+      sinon.stub(Ace, 'edit').withArgs(exist).returnsThis(editor).withArgs(notExist)
         .returns(null);
+      sinon.stub(editor, 'getValue').returns('{ test:213 }');
     });
 
     afterEach(() => {
-      $.prototype.find.restore();
-      $.prototype.on.restore();
+      Ace.edit.restore();
+      Ace.Editor.getValue.restore();
+    });
+
+    it('getAceEditorValue with ace editor exist', () => {
+      // prepare
+
+      // execute
+      const result = UIComponents.Editor.getAceEditorValue(exist);
+
+      // verify
+      expect(Ace.edit.callCount).to.equal(1);
+      expect(Ace.edit.calledWithExactly(exist)).to.equal(true);
+      expect(editor.getValue.callCount).to.equal(1);
+      expect(editor.getValue.calledWithExactly()).to.equal(true);
+      expect(editor.getValue.returns('{ test:213 }')).to.equal(true);
+      expect(result).to.equal('{ test:213 }');
     });
   });
 });
-*/
