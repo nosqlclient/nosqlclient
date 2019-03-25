@@ -147,4 +147,79 @@ describe('UIComponents Editor', () => {
       });
     });
   });
+
+  describe('Grid tests', () => {
+    const assertNormalExecution = function (tableValue) {
+      expect($.prototype.find.callCount).to.equal(1);
+      expect($.prototype.find.calledWithExactly('table')).to.equal(true);
+      expect($.prototype.html.callCount).to.equal(1);
+      expect($.prototype.html.calledWithExactly(tableValue)).to.equal(true);
+      expect($.prototype.DataTable.callCount).to.equal(1);
+      expect($.prototype.DataTable.calledWithMatch({ paging: false })).to.equal(true);
+      expect($.prototype.on.callCount).to.equal(1);
+      expect($.prototype.on.calledWith('dblclick', 'td[title]')).to.equal(true);
+    };
+
+    beforeEach(() => {
+      sinon.spy($.prototype, 'find');
+      sinon.spy($.prototype, 'on');
+      sinon.spy($.prototype, 'DataTable');
+      sinon.spy($.prototype, 'html');
+    });
+
+    afterEach(() => {
+      $.prototype.find.restore();
+      $.prototype.DataTable.restore();
+      $.prototype.on.restore();
+      $.prototype.html.restore();
+    });
+
+    describe('setGridEditorValue tests', () => {
+      it('setGridEditorValue with valid selector & primitive value', () => {
+        // prepare
+
+        // execute
+        UIComponents.Editor.setGridEditorValue({ selector: 'editor', value: 'test' });
+
+        // verify
+        assertNormalExecution('<table class="table table-bordered"><thead><tr><th>0</th><th>1</th><th>2</th><th>3</th></tr></thead><tbody>'
+          + '<tr><td>t</td><td>e</td><td>s</td><td>t</td></tr></tbody></table>');
+      });
+
+      it('setGridEditorValue with valid selector & object value', () => {
+        // prepare
+
+        // execute
+        UIComponents.Editor.setGridEditorValue({ selector: 'editor', value: { first: 123, second: true, third: { a: 'sercan' } } });
+
+        // verify
+        assertNormalExecution('<table class="table table-bordered"><thead><tr><th>first</th><th>second</th><th>third</th></tr></thead><tbody>'
+          + '<tr><td>123</td><td>true</td><td>{"a":"sercan"}</td></tr></tbody></table>');
+      });
+
+      it('setGridEditorValue with valid selector & array value', () => {
+        // prepare
+
+        // execute
+        UIComponents.Editor.setGridEditorValue({ selector: 'editor', value: [{ first: 123 }, { second: 'test' }] });
+
+        // verify
+        assertNormalExecution('<table class="table table-bordered"><thead><tr><th>first</th><th>second</th></tr></thead><tbody>'
+          + '<tr><td>123</td><td></td></tr><tr><td></td><td>test</td></tr></tbody></table>');
+      });
+
+      it('setGridEditorValue with invalid selector & valid value', () => {
+        // prepare
+
+        // execute
+        UIComponents.Editor.setGridEditorValue({ selector: '', value: [{ first: 123 }, { second: 'test' }] });
+
+        // verify
+        expect($.prototype.find.callCount).to.equal(0);
+        expect($.prototype.html.callCount).to.equal(0);
+        expect($.prototype.DataTable.callCount).to.equal(0);
+        expect($.prototype.on.callCount).to.equal(0);
+      });
+    });
+  });
 });

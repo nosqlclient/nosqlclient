@@ -110,6 +110,18 @@ const doCodeMirrorResizable = function (codeMirror) {
   });
 };
 
+const getGridEditorHtml = function (value) {
+  const allKeys = collectAllKeys(value);
+
+  let html = '<table class="table table-bordered"><thead><tr>';
+  allKeys.forEach((key) => { html += `<th>${key}</th>`; });
+  html += '</tr></thead><tbody>';
+  value.forEach((row) => { html += convertObjectToGridRow(row, allKeys); });
+  html += '</tbody></table>';
+
+  return html;
+};
+
 const UIComponents = function () {};
 
 UIComponents.prototype = {
@@ -226,17 +238,11 @@ UIComponents.prototype = {
     },
 
     setGridEditorValue({ selector, value }) {
+      if (!selector) return;
       if (!Array.isArray(value)) value = [value];
-      const allKeys = collectAllKeys(value);
-
-      let html = '<table class="table table-bordered"><thead><tr>';
-      allKeys.forEach((key) => { html += `<th>${key}</th>`; });
-      html += '</tr></thead><tbody>';
-      value.forEach((row) => { html += convertObjectToGridRow(row, allKeys); });
-      html += '</tbody></table>';
 
       const container = $(`#${selector}`);
-      container.html(html);
+      container.html(getGridEditorHtml(value));
 
       const table = container.find('table');
       table.DataTable({
