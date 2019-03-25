@@ -8,6 +8,8 @@ const CodeMirror = require('codemirror');
 const JSONEditor = require('jsoneditor');
 const Ace = require('ace-builds');
 
+require('ace-builds/src-min-noconflict/mode-json');
+require('ace-builds/src-min-noconflict/theme-github');
 require('datatables.net')(window, $);
 require('datatables.net-buttons')(window, $);
 require('datatables.net-responsive')(window, $);
@@ -25,7 +27,8 @@ require('codemirror/addon/fold/xml-fold.js');
 require('codemirror/addon/hint/javascript-hint.js');
 require('codemirror/addon/hint/show-hint.js');
 
-const UIComponents = function () {};
+const UIComponents = function () {
+};
 
 UIComponents.prototype = {
   DataTable: {
@@ -119,16 +122,20 @@ UIComponents.prototype = {
 
   Editor: {
     getAceEditorValue(selector) {
-      return Ace.edit(selector).getValue();
+      const editor = Ace.edit(selector);
+      if (!editor) return '';
+
+      return editor.getValue();
     },
 
     setAceEditorValue({ selector, value }) {
       const editor = Ace.edit(selector);
+      if (!editor) return;
+
       editor.setTheme('ace/theme/github');
       editor.session.setMode('ace/mode/json');
       editor.$blockScrolling = Infinity;
       editor.setOptions({
-        useWorker: true,
         fontSize: '14px',
         showLineNumbers: true,
         showPrintMargin: false
