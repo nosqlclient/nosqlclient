@@ -27,8 +27,90 @@ require('codemirror/addon/fold/xml-fold.js');
 require('codemirror/addon/hint/javascript-hint.js');
 require('codemirror/addon/hint/show-hint.js');
 
-const UIComponents = function () {
+const collectAllKeys = function (value) {
+  const allKeys = new Set();
+  value.forEach((row) => {
+    Object.keys(row).forEach(k => allKeys.add(k));
+  });
+  if (allKeys.size === 0) {
+    allKeys.add('(empty)');
+  }
+  return allKeys;
 };
+
+const quoteAttr = function (s) {
+  return `${s}` /* Forces the conversion to string. */
+    .replace(/&/g, '&amp;') /* This MUST be the 1st replacement. */
+    .replace(/'/g, '&apos;') /* The 4 other predefined entities, required. */
+    .replace(/"/g, '&quot;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/\r\n/g, '&#13;') /* Must be before the next replacement. */
+    .replace(/[\r\n]/g, '&#13;');
+};
+
+const convertObjectToGridRow = function (obj, allKeys) {
+  let html = '<tr>';
+  allKeys.forEach((key) => {
+    let val = obj[key];
+    if (typeof val === 'undefined') val = '';
+    if (val !== null && typeof val === 'object') {
+      const valKeys = Object.keys(val);
+      if (valKeys.length === 1 && valKeys[0] === '$date') {
+        val = val.$date;
+      } else {
+        val = JSON.stringify(val);
+      }
+    }
+    val = `${val}`;
+    if (val.length > 50) {
+      html += `<td title="${quoteAttr(val)}">${val.substr(0, 47)}...</td>`;
+    } else {
+      html += `<td>${val}</td>`;
+    }
+  });
+  html += '</tr>';
+  return html;
+};
+
+const displayJsonEditorModal = function (sData) {
+  let modal = $('#json-editor-modal');
+  if (modal.length === 0) {
+    modal = $('<div class="modal fade" id="json-editor-modal" tabindex="-1" role="dialog">'
+      + '  <div class="modal-dialog" role="document">\n'
+      + '    <div class="modal-content">'
+      + '    <div class="modal-header">'
+      + '        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>'
+      + '        <h4 class="modal-title">Cell data</h4>'
+      + '    </div>'
+      + '      <div class="modal-body" id="json-editor-modal-data" style="height: calc(100vh - 100px)"></div>'
+      + '    </div>'
+      + '  </div>'
+      + '</div>');
+    $('body').append(modal);
+
+    this.initializeJSONEditor({
+      selector: 'json-editor-modal-data',
+      options: {
+        mode: 'code',
+        modes: ['code', 'view'],
+        readOnly: true
+      }
+    });
+  }
+  modal.modal();
+  $('#json-editor-modal-data').data('jsoneditor').set(JSON.parse(sData));
+};
+
+const doCodeMirrorResizable = function (codeMirror) {
+  $('.CodeMirror').resizable({
+    resize() {
+      codeMirror.setSize($(this).width(), $(this).height());
+    },
+  });
+};
+
+const UIComponents = function () {};
 
 UIComponents.prototype = {
   DataTable: {
@@ -145,21 +227,12 @@ UIComponents.prototype = {
 
     setGridEditorValue({ selector, value }) {
       if (!Array.isArray(value)) value = [value];
-      // collect all keys
-      const allKeys = this.collectAllKeys(value);
-      // create HTML table
-      let html = '<table class="table table-bordered">';
-      // table headers
-      html += '<thead><tr>';
-      allKeys.forEach((key) => {
-        html += `<th>${key}</th>`;
-      });
-      html += '</tr></thead>';
-      // data rows
-      html += '<tbody>';
-      value.forEach((row) => {
-        html += this.convertObjectToGridRow(row, allKeys);
-      });
+      const allKeys = collectAllKeys(value);
+
+      let html = '<table class="table table-bordered"><thead><tr>';
+      allKeys.forEach((key) => { html += `<th>${key}</th>`; });
+      html += '</tr></thead><tbody>';
+      value.forEach((row) => { html += convertObjectToGridRow(row, allKeys); });
       html += '</tbody></table>';
 
       const container = $(`#${selector}`);
@@ -171,83 +244,8 @@ UIComponents.prototype = {
       });
       const self = this;
       table.on('dblclick', 'td[title]', function () {
-        self.displayJsonEditorModal(this.getAttribute('title'));
+        displayJsonEditorModal.call(self, this.getAttribute('title'));
       });
-    },
-
-    collectAllKeys(value) {
-      const allKeys = new Set();
-      value.forEach((row) => {
-        Object.keys(row).forEach(k => allKeys.add(k));
-      });
-      if (allKeys.size === 0) {
-        allKeys.add('(empty)');
-      }
-      return allKeys;
-    },
-
-    convertObjectToGridRow(obj, allKeys) {
-      let html = '<tr>';
-      allKeys.forEach((key) => {
-        let val = obj[key];
-        if (typeof val === 'undefined') val = '';
-        if (val !== null && typeof val === 'object') {
-          const valKeys = Object.keys(val);
-          if (valKeys.length === 1 && valKeys[0] === '$date') {
-            val = val.$date;
-          } else {
-            val = JSON.stringify(val);
-          }
-        }
-        val = `${val}`;
-        if (val.length > 50) {
-          html += `<td title="${this.quoteAttr(val)}">${val.substr(0, 47)}...</td>`;
-        } else {
-          html += `<td>${val}</td>`;
-        }
-      });
-      html += '</tr>';
-      return html;
-    },
-
-    quoteAttr(s) {
-      return `${s}` /* Forces the conversion to string. */
-        .replace(/&/g, '&amp;') /* This MUST be the 1st replacement. */
-        .replace(/'/g, '&apos;') /* The 4 other predefined entities, required. */
-        .replace(/"/g, '&quot;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/\r\n/g, '&#13;') /* Must be before the next replacement. */
-        .replace(/[\r\n]/g, '&#13;');
-    },
-
-    displayJsonEditorModal(sData) {
-      let modal = $('#json-editor-modal');
-      if (modal.length === 0) {
-        modal = $('<div class="modal fade" id="json-editor-modal" tabindex="-1" role="dialog">'
-          + '  <div class="modal-dialog" role="document">\n'
-          + '    <div class="modal-content">'
-          + '    <div class="modal-header">'
-          + '        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>'
-          + '        <h4 class="modal-title">Cell data</h4>'
-          + '    </div>'
-          + '      <div class="modal-body" id="json-editor-modal-data" style="height: calc(100vh - 100px)"></div>'
-          + '    </div>'
-          + '  </div>'
-          + '</div>');
-        $('body').append(modal);
-
-        this.initializeJSONEditor({
-          selector: 'json-editor-modal-data',
-          options: {
-            mode: 'code',
-            modes: ['code', 'view'],
-            readOnly: true
-          }
-        });
-      }
-      modal.modal();
-      $('#json-editor-modal-data').data('jsoneditor').set(JSON.parse(sData));
     },
 
     initializeJSONEditor({ selector, options = {}, setDivData = true }) {
@@ -264,14 +262,6 @@ UIComponents.prototype = {
       }
 
       return jsonEditor;
-    },
-
-    doCodeMirrorResizable(codeMirror) {
-      $('.CodeMirror').resizable({
-        resize() {
-          codeMirror.setSize($(this).width(), $(this).height());
-        },
-      });
     },
 
     initializeCodeMirror({ divSelector, txtAreaId, keepValue = false, height = 100, noResize = false, extraKeysToAppend = {}, autoCompleteListMethod }) {
@@ -325,7 +315,7 @@ UIComponents.prototype = {
         };
         divSelector.data('editor', codeMirror);
 
-        if (!noResize) this.doCodeMirrorResizable(codeMirror);
+        if (!noResize) doCodeMirrorResizable(codeMirror);
       } else codeMirror = divSelector.data('editor');
 
       if (keepValue && SessionManager.get(SessionManager.strSessionSelectorValue)) codeMirror.setValue(SessionManager.get(SessionManager.strSessionSelectorValue));
