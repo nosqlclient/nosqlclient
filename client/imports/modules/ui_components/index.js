@@ -255,6 +255,8 @@ UIComponents.prototype = {
     },
 
     initializeJSONEditor({ selector, options = {}, setDivData = true }) {
+      if (!selector) return;
+
       const editorDiv = $(`#${selector}`);
       let jsonEditor = editorDiv.data('jsoneditor');
       if (!jsonEditor) {

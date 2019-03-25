@@ -6,6 +6,7 @@ import { expect } from 'chai';
 import $ from 'jquery';
 
 const Ace = require('ace-builds');
+const JSONEditor = require('jsoneditor');
 
 describe('UIComponents Editor', () => {
   describe('Ace tests', () => {
@@ -219,6 +220,27 @@ describe('UIComponents Editor', () => {
         expect($.prototype.html.callCount).to.equal(0);
         expect($.prototype.DataTable.callCount).to.equal(0);
         expect($.prototype.on.callCount).to.equal(0);
+      });
+    });
+  });
+
+  describe('JsonEditor tests', () => {
+    beforeEach(() => {
+      sinon.spy(global, JSONEditor);// FIXME
+    });
+
+    afterEach(() => {
+      global.JSONEditor.restore();
+    });
+
+    describe('initializeJSONEditor tests', () => {
+      it('initializeJSONEditor with valid params & no jsoneditor initialized', () => {
+        // prepare
+
+        // execute
+        UIComponents.Editor.initializeJSONEditor({ selector: 'jsonEditor', setDivData: false });
+
+        // verify
       });
     });
   });
