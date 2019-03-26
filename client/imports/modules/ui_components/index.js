@@ -122,6 +122,62 @@ const getGridEditorHtml = function (value) {
   return html;
 };
 
+const gatherExtraKeysForCodeMirror = function (extraKeysToAppend) {
+  const extraKeys = Object.assign(extraKeysToAppend, {
+    'Ctrl-Q': function (cm) {
+      cm.foldCode(cm.getCursor());
+    },
+    'Ctrl-Enter': function () {
+      QueryRender.executeQuery();
+    }
+  });
+
+  const autoCompleteShortcut = ReactivityProvider.findOne(ReactivityProvider.types.Settings).autoCompleteShortcut || 'Ctrl-Space';
+  extraKeys[autoCompleteShortcut] = 'autocomplete';
+
+  return extraKeys;
+};
+
+const initializeCodeMirrorFirstTime = function (txtAreaId, extraKeysToAppend, keepValue, height, autoCompleteListMethod, noResize) {
+  const codeMirror = CodeMirror.fromTextArea(document.getElementById(txtAreaId), {
+    mode: 'javascript',
+    theme: 'neat',
+    styleActiveLine: true,
+    lineNumbers: true,
+    lineWrapping: false,
+    extraKeys: gatherExtraKeysForCodeMirror(extraKeysToAppend),
+    foldGutter: true,
+    gutters: ['CodeMirror-linenumbers', 'CodeMirror-foldgutter'],
+  });
+
+  if (keepValue) {
+    codeMirror.on('change', () => {
+      SessionManager.set(SessionManager.strSessionSelectorValue, codeMirror.getValue());
+    });
+  }
+
+  codeMirror.setSize('%100', height);
+  CodeMirror.hint.javascript = (editor) => {
+    const cursor = editor.getCursor();
+    const currentLine = editor.getLine(cursor.line);
+    let start = cursor.ch;
+    let end = start;
+    while (end < currentLine.length && /[\w.$]+/.test(currentLine.charAt(end))) end += 1;
+    while (start && /[\w.$]+/.test(currentLine.charAt(start - 1))) start -= 1;
+    const curWord = (start !== end) && currentLine.slice(start, end);
+    const list = autoCompleteListMethod ? autoCompleteListMethod(editor.getValue(), curWord) : SessionManager.get(SessionManager.strSessionDistinctFields) || [];
+    const regex = new RegExp(`^${curWord}`, 'i');
+    return {
+      list: (!curWord ? list : list.filter(item => item.match(regex))).sort(),
+      from: CodeMirror.Pos(cursor.line, start),
+      to: CodeMirror.Pos(cursor.line, end),
+    };
+  };
+
+  if (!noResize) doCodeMirrorResizable(codeMirror);
+  return codeMirror;
+};
+
 const UIComponents = function () {};
 
 UIComponents.prototype = {
@@ -273,61 +329,15 @@ UIComponents.prototype = {
     },
 
     initializeCodeMirror({ divSelector, txtAreaId, keepValue = false, height = 100, noResize = false, extraKeysToAppend = {}, autoCompleteListMethod }) {
-      const autoCompleteShortcut = ReactivityProvider.findOne(ReactivityProvider.types.Settings).autoCompleteShortcut || 'Ctrl-Space';
       let codeMirror;
-
-      const extraKeys = Object.assign(extraKeysToAppend, {
-        'Ctrl-Q': function (cm) {
-          cm.foldCode(cm.getCursor());
-        },
-        'Ctrl-Enter': function () {
-          QueryRender.executeQuery();
-        }
-      });
-      extraKeys[autoCompleteShortcut] = 'autocomplete';
-
       if (!divSelector.data('editor')) {
-        codeMirror = CodeMirror.fromTextArea(document.getElementById(txtAreaId), {
-          mode: 'javascript',
-          theme: 'neat',
-          styleActiveLine: true,
-          lineNumbers: true,
-          lineWrapping: false,
-          extraKeys,
-          foldGutter: true,
-          gutters: ['CodeMirror-linenumbers', 'CodeMirror-foldgutter'],
-        });
-
-        if (keepValue) {
-          codeMirror.on('change', () => {
-            SessionManager.set(SessionManager.strSessionSelectorValue, codeMirror.getValue());
-          });
-        }
-
-        codeMirror.setSize('%100', height);
-        CodeMirror.hint.javascript = (editor) => {
-          const cursor = editor.getCursor();
-          const currentLine = editor.getLine(cursor.line);
-          let start = cursor.ch;
-          let end = start;
-          while (end < currentLine.length && /[\w.$]+/.test(currentLine.charAt(end))) end += 1;
-          while (start && /[\w.$]+/.test(currentLine.charAt(start - 1))) start -= 1;
-          const curWord = (start !== end) && currentLine.slice(start, end);
-          const list = autoCompleteListMethod ? autoCompleteListMethod(editor.getValue(), curWord) : SessionManager.get(SessionManager.strSessionDistinctFields) || [];
-          const regex = new RegExp(`^${curWord}`, 'i');
-          return {
-            list: (!curWord ? list : list.filter(item => item.match(regex))).sort(),
-            from: CodeMirror.Pos(cursor.line, start),
-            to: CodeMirror.Pos(cursor.line, end),
-          };
-        };
+        codeMirror = initializeCodeMirrorFirstTime(txtAreaId, extraKeysToAppend, keepValue, height, autoCompleteListMethod, noResize);
         divSelector.data('editor', codeMirror);
-
-        if (!noResize) doCodeMirrorResizable(codeMirror);
-      } else codeMirror = divSelector.data('editor');
+      } else {
+        codeMirror = divSelector.data('editor');
+      }
 
       if (keepValue && SessionManager.get(SessionManager.strSessionSelectorValue)) codeMirror.setValue(SessionManager.get(SessionManager.strSessionSelectorValue));
-
       codeMirror.refresh();
     },
 
