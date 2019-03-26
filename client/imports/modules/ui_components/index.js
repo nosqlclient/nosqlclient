@@ -329,6 +329,8 @@ UIComponents.prototype = {
     },
 
     initializeCodeMirror({ divSelector, txtAreaId, keepValue = false, height = 100, noResize = false, extraKeysToAppend = {}, autoCompleteListMethod }) {
+      if (!divSelector || !(divSelector instanceof $) || !txtAreaId) return;
+
       let codeMirror;
       if (!divSelector.data('editor')) {
         codeMirror = initializeCodeMirrorFirstTime(txtAreaId, extraKeysToAppend, keepValue, height, autoCompleteListMethod, noResize);
