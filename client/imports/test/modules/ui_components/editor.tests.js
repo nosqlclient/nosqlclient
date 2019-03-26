@@ -336,4 +336,8 @@ describe('UIComponents Editor', () => {
       });
     });
   });
+
+  describe('CodeMirror tests', () => {
+
+  });
 });
