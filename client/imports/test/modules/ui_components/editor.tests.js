@@ -2,8 +2,10 @@
 
 import { UIComponents } from '/client/imports/modules';
 import sinon from 'sinon';
-import { expect } from 'chai';
+import chai, { expect } from 'chai';
 import $ from 'jquery';
+
+chai.use(require('chai-jquery'));
 
 const Ace = require('ace-builds');
 const JSONEditor = require('jsoneditor');
@@ -225,22 +227,112 @@ describe('UIComponents Editor', () => {
   });
 
   describe('JsonEditor tests', () => {
+    const initializedId = 'jsonEditor';
+    const notExistId = 'noEditor';
+    const jsonEditorResult = 123;
+
     beforeEach(() => {
-      sinon.spy(global, JSONEditor);// FIXME
+      const jsonEditorDiv = document.createElement('div');
+      jsonEditorDiv.setAttribute('id', initializedId);
+      jsonEditorDiv.setAttribute('data-jsoneditor', jsonEditorResult);
+
+      const emptyDiv = document.createElement('div');
+      emptyDiv.setAttribute('id', notExistId);
+
+      document.body.append(jsonEditorDiv);
+      document.body.append(emptyDiv);
+
+      sinon.spy($.prototype, 'data');
+      sinon.spy($.prototype, 'find');
+      sinon.spy(JSONEditor.prototype, '_create');
     });
 
     afterEach(() => {
-      global.JSONEditor.restore();
+      while (document.body.firstChild) {
+        document.body.removeChild(document.body.firstChild);
+      }
+
+      $.prototype.data.restore();
+      $.prototype.find.restore();
+      JSONEditor.prototype._create.restore();
     });
 
     describe('initializeJSONEditor tests', () => {
-      it('initializeJSONEditor with valid params & no jsoneditor initialized', () => {
+      const assertNotExistExecution = function (result, options) {
+        expect($.prototype.data.callCount).to.equal(2);
+        expect($.prototype.data.getCall(0).args.length).to.equal(1);
+        expect($.prototype.data.getCall(0).args[0]).to.equal('jsoneditor');
+        expect($.prototype.data.getCall(0).thisValue.selector).to.equal(`#${notExistId}`);
+        expect($.prototype.data.getCall(1).args.length).to.equal(2);
+        expect($.prototype.data.getCall(1).args[0]).to.equal('jsoneditor');
+        expect($.prototype.data.getCall(1).args[1]).to.be.an.instanceof(JSONEditor);
+        expect($.prototype.data.getCall(1).thisValue.selector).to.equal(`#${notExistId}`);
+        expect(JSONEditor.prototype._create.callCount).to.equal(1);
+        expect(JSONEditor.prototype._create.calledWithMatch(document.getElementById(notExistId), options)).to.equal(true);
+        expect(result).to.be.an.instanceof(JSONEditor);
+      };
+
+      it('initializeJSONEditor with valid params & jsoneditor initialized', () => {
         // prepare
 
         // execute
-        UIComponents.Editor.initializeJSONEditor({ selector: 'jsonEditor', setDivData: false });
+        const result = UIComponents.Editor.initializeJSONEditor({ selector: initializedId });
 
         // verify
+        expect($.prototype.data.callCount).to.equal(1);
+        expect($.prototype.data.calledWithExactly('jsoneditor')).to.equal(true);
+        expect($.prototype.data.getCall(0).thisValue.selector).to.equal(`#${initializedId}`);
+        expect(JSONEditor.prototype._create.callCount).to.equal(0);
+        expect(result).to.equal(jsonEditorResult);
+      });
+
+      it('initializeJSONEditor with valid params & jsoneditor not initialized', () => {
+        // prepare
+
+        // execute
+        const result = UIComponents.Editor.initializeJSONEditor({ selector: notExistId });
+
+        // verify
+        assertNotExistExecution(result, { mode: 'tree', modes: ['code', 'form', 'text', 'tree', 'view'], search: true });
+      });
+
+      it('initializeJSONEditor with wrong selector', () => {
+        // prepare
+
+        // execute
+        const result = UIComponents.Editor.initializeJSONEditor({ selector: '' });
+
+        // verify
+        expect($.prototype.data.callCount).to.equal(0);
+        expect(JSONEditor.prototype._create.callCount).to.equal(0);
+        expect(result).to.equal(undefined);
+      });
+
+      it('initializeJSONEditor with valid selector and some options', () => {
+        // prepare
+
+        // execute
+        const result = UIComponents.Editor.initializeJSONEditor({ selector: notExistId, options: { test_wrong: '213', search: false } });
+
+        // verify
+        assertNotExistExecution(result, { mode: 'tree', modes: ['code', 'form', 'text', 'tree', 'view'], search: false, test_wrong: '213' });
+      });
+
+      it('initializeJSONEditor with valid selector & some options & setDivData false', () => {
+        // prepare
+
+        // execute
+        const result = UIComponents.Editor.initializeJSONEditor({ selector: notExistId, options: { test_wrong: '213', search: false }, setDivData: false });
+
+        // verify
+        expect($.prototype.data.callCount).to.equal(1);
+        expect($.prototype.data.getCall(0).args.length).to.equal(1);
+        expect($.prototype.data.getCall(0).args[0]).to.equal('jsoneditor');
+        expect($.prototype.data.getCall(0).thisValue.selector).to.equal(`#${notExistId}`);
+        expect(JSONEditor.prototype._create.callCount).to.equal(1);
+        expect(JSONEditor.prototype._create.calledWithMatch(document.getElementById(notExistId),
+          { mode: 'tree', modes: ['code', 'form', 'text', 'tree', 'view'], search: false, test_wrong: '213' })).to.equal(true);
+        expect(result).to.be.an.instanceof(JSONEditor);
       });
     });
   });
