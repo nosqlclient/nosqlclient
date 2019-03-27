@@ -275,6 +275,7 @@ describe('UIComponents DataTable', () => {
       // verify
       assertInitiateDataTableNormalBehaviour(tableStub, selector, true);
       expect(spy.callCount).to.equal(1);
+      expect(spy.calledWithExactly(tableStub, tableStub));
     });
 
     it('initiateDatatable with correct selector, sessionKey, clickCallback, noDeleteEvent are filled', () => {
@@ -287,6 +288,7 @@ describe('UIComponents DataTable', () => {
       // verify
       assertInitiateDataTableNormalBehaviour(tableStub, selector, true, false);
       expect(spy.callCount).to.equal(1);
+      expect(spy.calledWithExactly(tableStub, tableStub));
       expect(UIComponents.DataTable.attachDeleteTableRowEvent.callCount).to.equal(0);
     });
   });
