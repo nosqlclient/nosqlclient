@@ -6,10 +6,11 @@ import { QueryRender } from '../../ui/querying';
 
 const CodeMirror = require('codemirror');
 const JSONEditor = require('jsoneditor');
-const Ace = require('ace-builds');
+const Ace = require('brace');
 
-require('ace-builds/src-min-noconflict/mode-json');
-require('ace-builds/src-min-noconflict/theme-github');
+require('brace/mode/json');
+require('brace/theme/github');
+require('brace/worker/json');
 require('datatables.net')(window, $);
 require('datatables.net-buttons')(window, $);
 require('datatables.net-responsive')(window, $);
@@ -138,6 +139,25 @@ const gatherExtraKeysForCodeMirror = function (extraKeysToAppend) {
   return extraKeys;
 };
 
+const setAutoCompletionOfCodeMirror = function (autoCompleteListMethod) {
+  CodeMirror.hint.javascript = (editor) => {
+    const cursor = editor.getCursor();
+    const currentLine = editor.getLine(cursor.line);
+    let start = cursor.ch;
+    let end = start;
+    while (end < currentLine.length && /[\w.$]+/.test(currentLine.charAt(end))) end += 1;
+    while (start && /[\w.$]+/.test(currentLine.charAt(start - 1))) start -= 1;
+    const curWord = (start !== end) && currentLine.slice(start, end);
+    const list = autoCompleteListMethod ? autoCompleteListMethod(editor.getValue(), curWord) : SessionManager.get(SessionManager.strSessionDistinctFields) || [];
+    const regex = new RegExp(`^${curWord}`, 'i');
+    return {
+      list: (!curWord ? list : list.filter(item => item.match(regex))).sort(),
+      from: CodeMirror.Pos(cursor.line, start),
+      to: CodeMirror.Pos(cursor.line, end),
+    };
+  };
+};
+
 const initializeCodeMirrorFirstTime = function (txtAreaId, extraKeysToAppend, keepValue, height, autoCompleteListMethod, noResize) {
   const codeMirror = CodeMirror.fromTextArea(document.getElementById(txtAreaId), {
     mode: 'javascript',
@@ -157,22 +177,7 @@ const initializeCodeMirrorFirstTime = function (txtAreaId, extraKeysToAppend, ke
   }
 
   codeMirror.setSize('%100', height);
-  CodeMirror.hint.javascript = (editor) => {
-    const cursor = editor.getCursor();
-    const currentLine = editor.getLine(cursor.line);
-    let start = cursor.ch;
-    let end = start;
-    while (end < currentLine.length && /[\w.$]+/.test(currentLine.charAt(end))) end += 1;
-    while (start && /[\w.$]+/.test(currentLine.charAt(start - 1))) start -= 1;
-    const curWord = (start !== end) && currentLine.slice(start, end);
-    const list = autoCompleteListMethod ? autoCompleteListMethod(editor.getValue(), curWord) : SessionManager.get(SessionManager.strSessionDistinctFields) || [];
-    const regex = new RegExp(`^${curWord}`, 'i');
-    return {
-      list: (!curWord ? list : list.filter(item => item.match(regex))).sort(),
-      from: CodeMirror.Pos(cursor.line, start),
-      to: CodeMirror.Pos(cursor.line, end),
-    };
-  };
+  setAutoCompletionOfCodeMirror(autoCompleteListMethod);
 
   if (!noResize) doCodeMirrorResizable(codeMirror);
   return codeMirror;
@@ -333,12 +338,11 @@ UIComponents.prototype = {
       if (!divSelector || !(divSelector instanceof $) || !txtAreaId) return;
 
       let codeMirror;
-      if (!divSelector.data('editor')) {
+      const existingCodeMirror = divSelector.data('editor');
+      if (!existingCodeMirror) {
         codeMirror = initializeCodeMirrorFirstTime(txtAreaId, extraKeysToAppend, keepValue, height, autoCompleteListMethod, noResize);
         divSelector.data('editor', codeMirror);
-      } else {
-        codeMirror = divSelector.data('editor');
-      }
+      } else codeMirror = existingCodeMirror;
 
       if (keepValue && SessionManager.get(SessionManager.strSessionSelectorValue)) codeMirror.setValue(SessionManager.get(SessionManager.strSessionSelectorValue));
       codeMirror.refresh();

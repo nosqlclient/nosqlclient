@@ -7,8 +7,9 @@ import $ from 'jquery';
 
 chai.use(require('chai-jquery'));
 
-const Ace = require('ace-builds');
+const Ace = require('brace');
 const JSONEditor = require('jsoneditor');
+const CodeMirror = require('codemirror');
 
 describe('UIComponents Editor', () => {
   describe('Ace tests', () => {
@@ -338,6 +339,36 @@ describe('UIComponents Editor', () => {
   });
 
   describe('CodeMirror tests', () => {
+    const initializedId = 'editor';
+    const notExistId = 'noEditor';
+    const codeMirrorData = 123;
 
+    beforeEach(() => {
+      const editorDiv = document.createElement('div');
+      editorDiv.setAttribute('id', initializedId);
+      editorDiv.setAttribute('data-editor', codeMirrorData);
+
+      const emptyDiv = document.createElement('div');
+      emptyDiv.setAttribute('id', notExistId);
+
+      document.body.append(editorDiv);
+      document.body.append(emptyDiv);
+
+      sinon.spy($.prototype, 'data');
+      sinon.spy(CodeMirror, 'on');
+      sinon.spy(CodeMirror, 'fromTextArea');
+      sinon.spy(CodeMirror, 'setSize');
+    });
+
+    afterEach(() => {
+      while (document.body.firstChild) {
+        document.body.removeChild(document.body.firstChild);
+      }
+
+      $.prototype.data.restore();
+      CodeMirror.on.restore();
+      CodeMirror.fromTextArea.restore();
+      CodeMirror.setSize.restore();
+    });
   });
 });
