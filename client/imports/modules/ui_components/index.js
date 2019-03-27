@@ -240,9 +240,10 @@ UIComponents.prototype = {
 
         self.toggleDatatableRowSelection(table, $(this));
         const row = table.row(this);
+        const data = row.data();
 
-        if (row.data()) {
-          if (sessionKey) SessionManager.set(sessionKey, row.data());
+        if (data) {
+          if (sessionKey) SessionManager.set(sessionKey, data);
           if (clickCallback) clickCallback(table, row);
         }
       });
