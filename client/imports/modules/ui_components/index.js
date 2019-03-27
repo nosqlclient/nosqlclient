@@ -239,11 +239,11 @@ UIComponents.prototype = {
         const table = selector.DataTable();
 
         self.toggleDatatableRowSelection(table, $(this));
-        const rowData = table.row(this).data();
+        const row = table.row(this);
 
-        if (rowData) {
-          if (sessionKey) SessionManager.set(sessionKey, rowData);
-          if (clickCallback) clickCallback(table, rowData);
+        if (row.data()) {
+          if (sessionKey) SessionManager.set(sessionKey, row.data());
+          if (clickCallback) clickCallback(table, row);
         }
       });
 
