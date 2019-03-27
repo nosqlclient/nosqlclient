@@ -16,6 +16,7 @@
   },
   "dependencies": {
     "@babel/runtime": "^7.1.5",
+    "ace-builds": "^1.4.3",
     "babel-runtime": "^6.26.0",
     "basic-auth": "^2.0.1",
     "bootstrap-filestyle": "^1.2.1",

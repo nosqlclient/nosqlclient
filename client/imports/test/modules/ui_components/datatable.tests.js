@@ -27,7 +27,7 @@ describe('UIComponents DataTable', () => {
   describe('attachDeleteTableRowEvent tests', () => {
     beforeEach(() => {
       sinon.spy($.prototype, 'find');
-      sinon.stub($.prototype, 'on').withArgs('click', 'a.editor_delete');
+      sinon.stub($.prototype, 'on');
       // FIXME can't test it's actually removed, it's almost impossible to stub jquery's draw method.
     });
 
