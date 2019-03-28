@@ -402,6 +402,9 @@ UIComponents.prototype = {
       sortDataByKey = true,
       prependOptions,
       comboGroupLabel }) {
+      if (!selector || !(selector instanceof $)) return;
+      if (data && (typeof data !== 'object' || data.constructor !== Object)) return;
+
       if (empty) {
         selector.empty();
         selector.prepend("<option value=''></option>");
