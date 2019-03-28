@@ -123,7 +123,7 @@ const getGridEditorHtml = function (value) {
   return html;
 };
 
-const gatherExtraKeysForCodeMirror = function (extraKeysToAppend) {
+const gatherExtraKeysForCodeMirror = function (extraKeysToAppend = {}) {
   const extraKeys = Object.assign(extraKeysToAppend, {
     'Ctrl-Q': function (cm) {
       cm.foldCode(cm.getCursor());
@@ -336,15 +336,18 @@ UIComponents.prototype = {
 
     initializeCodeMirror({ divSelector, txtAreaId, keepValue = false, height = 100, noResize = false, extraKeysToAppend = {}, autoCompleteListMethod }) {
       if (!divSelector || !(divSelector instanceof $) || !txtAreaId) return;
+      if (autoCompleteListMethod && typeof autoCompleteListMethod !== 'function') return;
+      if (extraKeysToAppend && (typeof extraKeysToAppend !== 'object' || extraKeysToAppend.constructor !== Object)) return;
+      if (!height || typeof height !== 'number' || !Number.isFinite(height)) return;
 
-      let codeMirror;
-      const existingCodeMirror = divSelector.data('editor');
-      if (!existingCodeMirror) {
+      let codeMirror = divSelector.data('editor');
+      if (!codeMirror) {
         codeMirror = initializeCodeMirrorFirstTime(txtAreaId, extraKeysToAppend, keepValue, height, autoCompleteListMethod, noResize);
         divSelector.data('editor', codeMirror);
-      } else codeMirror = existingCodeMirror;
+      }
 
-      if (keepValue && SessionManager.get(SessionManager.strSessionSelectorValue)) codeMirror.setValue(SessionManager.get(SessionManager.strSessionSelectorValue));
+      const selectorValue = SessionManager.get(SessionManager.strSessionSelectorValue);
+      if (keepValue && selectorValue) codeMirror.setValue(selectorValue);
       codeMirror.refresh();
     },
 

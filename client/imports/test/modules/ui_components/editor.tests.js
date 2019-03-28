@@ -1,6 +1,7 @@
 /* eslint-env mocha */
 
-import { UIComponents } from '/client/imports/modules';
+import { SessionManager, UIComponents } from '/client/imports/modules';
+import { ReactivityProvider } from '/client/imports/facades';
 import sinon from 'sinon';
 import chai, { expect } from 'chai';
 import $ from 'jquery';
@@ -339,36 +340,283 @@ describe('UIComponents Editor', () => {
   });
 
   describe('CodeMirror tests', () => {
-    const initializedId = 'editor';
-    const notExistId = 'noEditor';
-    const codeMirrorData = 123;
+    let codeMirrorStub;
+    let resizableStub;
+    const value = 'testing';
+    const txtAreaDocument = 'testingg';
+
+    const assertNotInitializedExecution = function (keepValue, noResize) {
+      expect($.prototype.data.callCount).to.equal(2);
+      expect($.prototype.data.getCall(0).args.length).to.equal(1);
+      expect($.prototype.data.getCall(0).args[0]).to.equal('editor');
+      expect($.prototype.data.getCall(0).thisValue.selector).to.equal('#testing');
+      expect($.prototype.data.getCall(1).args.length).to.equal(2);
+      expect($.prototype.data.getCall(1).args[0]).to.equal('editor');
+      expect($.prototype.data.getCall(1).args[1]).to.equal(codeMirrorStub);
+      expect($.prototype.data.getCall(1).thisValue.selector).to.equal('#testing');
+      expect(CodeMirror.fromTextArea.callCount).to.equal(1);
+      expect(CodeMirror.fromTextArea.calledWithMatch(txtAreaDocument, {
+        mode: 'javascript',
+        theme: 'neat',
+        styleActiveLine: true,
+        lineNumbers: true,
+        lineWrapping: false,
+        extraKeys: sinon.match({ 'Ctrl-Q': sinon.match.func, 'Ctrl-Enter': sinon.match.func }),
+        foldGutter: true,
+        gutters: ['CodeMirror-linenumbers', 'CodeMirror-foldgutter']
+      })).to.equal(true);
+
+      if (keepValue) {
+        expect(codeMirrorStub.on.callCount).to.equal(1);
+        expect(codeMirrorStub.on.calledWithMatch('change', sinon.match.func)).to.equal(true);
+        expect(SessionManager.set.callCount).to.equal(1);
+        expect(SessionManager.set.calledWithExactly(SessionManager.strSessionSelectorValue, value)).to.equal(true);
+
+        expect(codeMirrorStub.setValue.callCount).to.equal(1);
+        expect(codeMirrorStub.setValue.calledWithExactly(value)).to.equal(true);
+      } else {
+        expect(codeMirrorStub.on.callCount).to.equal(0);
+        expect(SessionManager.set.callCount).to.equal(0);
+        expect(codeMirrorStub.setValue.callCount).to.equal(0);
+      }
+
+      expect(codeMirrorStub.setSize.callCount).to.equal(1);
+      expect(codeMirrorStub.setSize.calledWithExactly('%100', 100)).to.equal(true);
+
+      if (!noResize) {
+        expect(resizableStub.resizable.callCount).to.equal(1);
+        expect(resizableStub.resizable.calledWithMatch(sinon.match.object)).to.equal(true);
+      } else {
+        expect(resizableStub.resizable.callCount).to.equal(0);
+      }
+
+      expect(codeMirrorStub.refresh.callCount).to.equal(1);
+      expect(codeMirrorStub.refresh.calledWithExactly()).to.equal(true);
+
+      expect(SessionManager.get.callCount).to.equal(1);
+      expect(SessionManager.get.calledWithExactly(SessionManager.strSessionSelectorValue)).to.equal(true);
+    };
+
+    const assertInitializedExecution = function (keepValue) {
+      expect($.prototype.data.callCount).to.equal(1);
+      expect($.prototype.data.calledWithExactly('editor')).to.equal(true);
+      expect($.prototype.data.getCall(0).thisValue.selector).to.equal('#testing');
+      expect(codeMirrorStub.refresh.callCount).to.equal(1);
+      expect(codeMirrorStub.refresh.calledWithExactly()).to.equal(true);
+      expect(CodeMirror.fromTextArea.callCount).to.equal(0);
+      expect(codeMirrorStub.setSize.callCount).to.equal(0);
+      expect(codeMirrorStub.on.callCount).to.equal(0);
+      expect(resizableStub.resizable.callCount).to.equal(0);
+      expect(SessionManager.get.callCount).to.equal(1);
+      expect(SessionManager.get.calledWithExactly(SessionManager.strSessionSelectorValue)).to.equal(true);
+
+      if (keepValue) {
+        expect(codeMirrorStub.setValue.callCount).to.equal(1);
+        expect(codeMirrorStub.setValue.calledWithExactly(value)).to.equal(true);
+      } else {
+        expect(codeMirrorStub.setValue.callCount).to.equal(0);
+      }
+    };
+
+    const assertInvalidParamExecution = function () {
+      expect($.prototype.data.callCount).to.equal(0);
+      expect(codeMirrorStub.refresh.callCount).to.equal(0);
+      expect(SessionManager.get.callCount).to.equal(0);
+      expect(codeMirrorStub.setValue.callCount).to.equal(0);
+      expect(CodeMirror.fromTextArea.callCount).to.equal(0);
+      expect(codeMirrorStub.setSize.callCount).to.equal(0);
+      expect(codeMirrorStub.on.callCount).to.equal(0);
+      expect(resizableStub.resizable.callCount).to.equal(0);
+    };
 
     beforeEach(() => {
-      const editorDiv = document.createElement('div');
-      editorDiv.setAttribute('id', initializedId);
-      editorDiv.setAttribute('data-editor', codeMirrorData);
+      codeMirrorStub = { on: sinon.stub().yields(), setSize: sinon.stub(), refresh: sinon.stub(), setValue: sinon.stub(), getValue: sinon.stub().returns(value) };
+      resizableStub = { resizable: sinon.stub() };
 
-      const emptyDiv = document.createElement('div');
-      emptyDiv.setAttribute('id', notExistId);
-
-      document.body.append(editorDiv);
-      document.body.append(emptyDiv);
-
-      sinon.spy($.prototype, 'data');
-      sinon.spy(CodeMirror, 'on');
-      sinon.spy(CodeMirror, 'fromTextArea');
-      sinon.spy(CodeMirror, 'setSize');
+      sinon.stub(document, 'getElementById').returns(txtAreaDocument);
+      sinon.stub(SessionManager, 'get').returns(value);
+      sinon.spy(SessionManager, 'set');
+      sinon.stub($.prototype, 'find').withArgs('.CodeMirror').returns(resizableStub);
+      sinon.stub(CodeMirror, 'fromTextArea').returns(codeMirrorStub);
+      sinon.stub(ReactivityProvider, 'findOne').returns({ autoCompleteShortcut: 'Ctrl' });
     });
 
     afterEach(() => {
-      while (document.body.firstChild) {
-        document.body.removeChild(document.body.firstChild);
-      }
-
-      $.prototype.data.restore();
-      CodeMirror.on.restore();
+      document.getElementById.restore();
+      SessionManager.get.restore();
+      SessionManager.set.restore();
+      $.prototype.find.restore();
       CodeMirror.fromTextArea.restore();
-      CodeMirror.setSize.restore();
+      ReactivityProvider.findOne.restore();
+    });
+
+    it('initializeCodeMirror with valid params & codemirror initialized', () => {
+      // prepare
+      sinon.stub($.prototype, 'data').returns(codeMirrorStub);
+
+      // execute
+      UIComponents.Editor.initializeCodeMirror({ divSelector: $('#testing'), txtAreaId: 'txtTest' });
+
+      // verify
+      assertInitializedExecution();
+
+      // cleanup
+      $.prototype.data.restore();
+    });
+
+    it('initializeCodeMirror with valid params & codemirror initialized (1)', () => {
+      // prepare
+      sinon.stub($.prototype, 'data').returns(codeMirrorStub);
+
+      // execute
+      UIComponents.Editor.initializeCodeMirror({ divSelector: $('#testing'), txtAreaId: 'txtTest', keepValue: true, autoCompleteListMethod() {}, height: 333, noResize: true, extraKeysToAppend: {} });
+
+      // verify
+      assertInitializedExecution(true);
+
+      // cleanup
+      $.prototype.data.restore();
+    });
+
+    it('initializeCodeMirror with valid params & codemirror initialized (2)', () => {
+      // prepare
+      sinon.stub($.prototype, 'data').returns(codeMirrorStub);
+
+      // execute
+      UIComponents.Editor.initializeCodeMirror({ divSelector: $('#testing'), txtAreaId: 'txtTest', keepValue: true, height: 111, noResize: false, extraKeysToAppend: {} });
+
+      // verify
+      assertInitializedExecution(true);
+
+      // cleanup
+      $.prototype.data.restore(true);
+    });
+
+    it('initializeCodeMirror with valid params & codemirror not initialized', () => {
+      // prepare
+      sinon.stub($.prototype, 'data').returns();
+
+      // execute
+      UIComponents.Editor.initializeCodeMirror({ divSelector: $('#testing'), txtAreaId: 'txtTest', keepValue: true });
+
+      // verify
+      assertNotInitializedExecution(true);
+
+      // cleanup
+      $.prototype.data.restore();
+    });
+
+    it('initializeCodeMirror with valid params & codemirror not initialized (1)', () => {
+      // prepare
+      sinon.stub($.prototype, 'data').returns();
+
+      // execute
+      UIComponents.Editor.initializeCodeMirror({ divSelector: $('#testing'), txtAreaId: 'txtTest' });
+
+      // verify
+      assertNotInitializedExecution();
+
+      // cleanup
+      $.prototype.data.restore();
+    });
+
+
+    it('initializeCodeMirror with valid params & codemirror not initialized (2)', () => {
+      // prepare
+      sinon.stub($.prototype, 'data').returns();
+
+      // execute
+      UIComponents.Editor.initializeCodeMirror({ divSelector: $('#testing'), txtAreaId: 'txtTest', noResize: true });
+
+      // verify
+      assertNotInitializedExecution(false, true);
+
+      // cleanup
+      $.prototype.data.restore();
+    });
+
+    it('initializeCodeMirror with invalid params', () => {
+      // prepare
+      sinon.stub($.prototype, 'data').returns(codeMirrorStub);
+
+      // execute
+      UIComponents.Editor.initializeCodeMirror({ divSelector: 'asd', txtAreaId: 'txtTest', keepValue: true, height: 111, noResize: false, extraKeysToAppend: {} });
+
+      // verify
+      assertInvalidParamExecution();
+
+      // cleanup
+      $.prototype.data.restore(true);
+    });
+
+    it('initializeCodeMirror with invalid params (1)', () => {
+      // prepare
+      sinon.stub($.prototype, 'data').returns(codeMirrorStub);
+
+      // execute
+      UIComponents.Editor.initializeCodeMirror({ divSelector: $('#testing'), keepValue: true, height: 111, noResize: false, extraKeysToAppend: {} });
+
+      // verify
+      assertInvalidParamExecution();
+
+      // cleanup
+      $.prototype.data.restore(true);
+    });
+
+    it('initializeCodeMirror with invalid params (2)', () => {
+      // prepare
+      sinon.stub($.prototype, 'data').returns(codeMirrorStub);
+
+      // execute
+      UIComponents.Editor.initializeCodeMirror({ divSelector: $('#testing'), txtAreaId: 'txtTest', keepValue: true, height: 111, autoCompleteListMethod: {} });
+
+      // verify
+      assertInvalidParamExecution();
+
+      // cleanup
+      $.prototype.data.restore(true);
+    });
+
+    it('initializeCodeMirror with invalid params (3)', () => {
+      // prepare
+      sinon.stub($.prototype, 'data').returns(codeMirrorStub);
+
+      // execute
+      UIComponents.Editor.initializeCodeMirror({ txtAreaId: 'txtTest', keepValue: true, height: 111 });
+
+      // verify
+      assertInvalidParamExecution();
+
+      // cleanup
+      $.prototype.data.restore(true);
+    });
+
+    it('initializeCodeMirror with invalid params (4)', () => {
+      // prepare
+      sinon.stub($.prototype, 'data').returns(codeMirrorStub);
+
+      // execute
+      UIComponents.Editor.initializeCodeMirror({ divSelector: $('#testing'), txtAreaId: 'txtTest', keepValue: true, height: 111, extraKeysToAppend: 123 });
+
+      // verify
+      assertInvalidParamExecution();
+
+      // cleanup
+      $.prototype.data.restore(true);
+    });
+
+    it('initializeCodeMirror with invalid params (5)', () => {
+      // prepare
+      sinon.stub($.prototype, 'data').returns(codeMirrorStub);
+
+      // execute
+      UIComponents.Editor.initializeCodeMirror({ divSelector: $('#testing'), txtAreaId: 'txtTest', keepValue: true, height: 'test' });
+
+      // verify
+      assertInvalidParamExecution();
+
+      // cleanup
+      $.prototype.data.restore(true);
     });
   });
 });
