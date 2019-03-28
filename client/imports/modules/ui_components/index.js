@@ -373,6 +373,8 @@ UIComponents.prototype = {
     states: ['check', 'uncheck', 'enable', 'disable'],
 
     init(selector, withState) {
+      if (!selector || !(selector instanceof $)) return;
+
       selector.iCheck({
         checkboxClass: 'icheckbox_square-green',
       });
@@ -382,11 +384,13 @@ UIComponents.prototype = {
     },
 
     getState(selector) {
+      if (!selector || !(selector instanceof $) || !selector.iCheck('update')[0]) return false;
+
       return selector.iCheck('update')[0].checked;
     },
 
     toggleState(selector, state) {
-      if (this.states.indexOf(state) === -1) return;
+      if (!selector || !(selector instanceof $) || this.states.indexOf(state) === -1) return;
       selector.iCheck(state);
     }
   },
