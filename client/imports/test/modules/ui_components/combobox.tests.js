@@ -279,4 +279,175 @@ describe('UIComponents Combobox', () => {
       expect(UIComponents.Combobox.setOptionsComboboxChangeEvent.callCount).to.equal(0);
     });
   });
+
+  describe('setOptionsComboboxChangeEvent tests', () => {
+    beforeEach(() => {
+      sinon.stub(SessionManager, 'get').returns(['LIMIT', 'SKIP']);
+      sinon.stub(SessionManager, 'set');
+    });
+
+    afterEach(() => {
+      SessionManager.get.restore();
+      SessionManager.set.restore();
+    });
+
+    it('setOptionsComboboxChangeEvent valid params', () => {
+      // prepare
+      sinon.stub($.prototype, 'on').yields(null, { deselected: ['LIMIT'] });
+
+      // execute
+      UIComponents.Combobox.setOptionsComboboxChangeEvent($('#testing'));
+
+      // verify
+      expect($.prototype.on.callCount).to.equal(1);
+      expect($.prototype.on.calledWithMatch('change', sinon.match.func)).to.equal(true);
+      expect(SessionManager.set.callCount).to.equal(1);
+      expect(SessionManager.set.calledWithExactly(SessionManager.strSessionSelectedOptions, ['SKIP'])).to.equal(true);
+
+      // cleanup
+      $.prototype.on.restore();
+    });
+
+    it('setOptionsComboboxChangeEvent valid params (1)', () => {
+      // prepare
+      sinon.stub($.prototype, 'on').yields(null, { selected: 'SORT' });
+
+      // execute
+      UIComponents.Combobox.setOptionsComboboxChangeEvent($('#testing'));
+
+      // verify
+      expect($.prototype.on.callCount).to.equal(1);
+      expect($.prototype.on.calledWithMatch('change', sinon.match.func)).to.equal(true);
+      expect(SessionManager.set.callCount).to.equal(1);
+      expect(SessionManager.set.calledWithExactly(SessionManager.strSessionSelectedOptions, ['LIMIT', 'SKIP', 'SORT'])).to.equal(true);
+
+      // cleanup
+      $.prototype.on.restore();
+    });
+
+    it('setOptionsComboboxChangeEvent valid params (2)', () => {
+      // prepare
+      sinon.stub($.prototype, 'on').yields(null, { selected: 'SORT' });
+
+      // execute
+      UIComponents.Combobox.setOptionsComboboxChangeEvent($('#testing'), SessionManager.strSessionApplicationLanguage);
+
+      // verify
+      expect($.prototype.on.callCount).to.equal(1);
+      expect($.prototype.on.calledWithMatch('change', sinon.match.func)).to.equal(true);
+      expect(SessionManager.set.callCount).to.equal(1);
+      expect(SessionManager.set.calledWithExactly(SessionManager.strSessionApplicationLanguage, ['LIMIT', 'SKIP', 'SORT'])).to.equal(true);
+
+      // cleanup
+      $.prototype.on.restore();
+    });
+
+    it('setOptionsComboboxChangeEvent invalid params', () => {
+      // prepare
+      sinon.spy($.prototype, 'on');
+
+      // execute
+      UIComponents.Combobox.setOptionsComboboxChangeEvent('invalid');
+
+      // verify
+      expect($.prototype.on.callCount).to.equal(0);
+      expect(SessionManager.set.callCount).to.equal(0);
+
+      // cleanup
+      $.prototype.on.restore();
+    });
+
+    it('setOptionsComboboxChangeEvent invalid params', () => {
+      // prepare
+      sinon.spy($.prototype, 'on');
+
+      // execute
+      UIComponents.Combobox.setOptionsComboboxChangeEvent($('#testing'), '');
+
+      // verify
+      expect($.prototype.on.callCount).to.equal(0);
+      expect(SessionManager.set.callCount).to.equal(0);
+
+      // cleanup
+      $.prototype.on.restore();
+    });
+  });
+
+  describe('initializeCollectionsCombobox tests', () => {
+    beforeEach(() => {
+      sinon.stub(SessionManager, 'get').returns([{ name: 'sercan' }, { name: 'tugce' }]);
+      sinon.spy(UIComponents.Combobox, 'init');
+    });
+
+    afterEach(() => {
+      SessionManager.get.restore();
+      UIComponents.Combobox.init.restore();
+    });
+
+    it('initializeCollectionsCombobox valid params', () => {
+      // prepare
+      const selector = $('#testing');
+
+      // execute
+      UIComponents.Combobox.initializeCollectionsCombobox(selector);
+
+      // verify
+      expect(UIComponents.Combobox.init.callCount).to.equal(1);
+      expect(UIComponents.Combobox.init.calledWithMatch({ selector, data: { sercan: 'sercan', tugce: 'tugce' }, sortDataByKey: false, comboGroupLabel: 'Collections' })).to.equal(true);
+    });
+
+    it('initializeCollectionsCombobox invalid params', () => {
+      // prepare
+
+      // execute
+      UIComponents.Combobox.initializeCollectionsCombobox('invalid');
+
+      // verify
+      expect(UIComponents.Combobox.init.callCount).to.equal(0);
+    });
+  });
+
+  describe('deselectAll tests', () => {
+    let findStub;
+    beforeEach(() => {
+      findStub = {
+        prop: sinon.stub().returnsThis(),
+        trigger: sinon.stub()
+      };
+      sinon.stub($.prototype, 'find').returns(findStub);
+    });
+
+    afterEach(() => {
+      $.prototype.find.restore();
+    });
+
+    it('deselectAll valid params', () => {
+      // prepare
+      const selector = $('#testing');
+
+      // execute
+      UIComponents.Combobox.deselectAll(selector);
+
+      // verify
+      expect($.prototype.find.callCount).to.equal(1);
+      expect($.prototype.find.getCall(0).thisValue.selector).to.equal('#testing');
+      expect($.prototype.find.calledWithExactly('option')).to.equal(true);
+      expect(findStub.prop.callCount).to.equal(1);
+      expect(findStub.prop.calledWithExactly('selected', false)).to.equal(true);
+      expect(findStub.trigger.callCount).to.equal(1);
+      expect(findStub.trigger.calledWithExactly('chosen:updated')).to.equal(true);
+    });
+
+    it('deselectAll invalid params', () => {
+      // prepare
+
+      // execute
+      UIComponents.Combobox.deselectAll('invalid');
+
+      // verify
+      expect($.prototype.find.callCount).to.equal(0);
+      expect(findStub.prop.callCount).to.equal(0);
+      expect(findStub.trigger.callCount).to.equal(0);
+    });
+  });
 });

@@ -440,6 +440,9 @@ UIComponents.prototype = {
     },
 
     setOptionsComboboxChangeEvent(cmb, sessionKey = SessionManager.strSessionSelectedOptions) {
+      if (!cmb || !(cmb instanceof $)) return;
+      if (!sessionKey) return;
+
       cmb.on('change', (evt, params) => {
         let array = SessionManager.get(sessionKey) || [];
         if (params.deselected) array = array.filter(item => params.deselected.indexOf(item) === -1);
@@ -450,12 +453,16 @@ UIComponents.prototype = {
     },
 
     initializeCollectionsCombobox(selector) {
+      if (!selector || !(selector instanceof $)) return;
+
       const collectionNames = SessionManager.get(SessionManager.strSessionCollectionNames);
       const data = Helper.populateComboboxData(collectionNames, 'name');
       this.init({ selector, data, sortDataByKey: false, comboGroupLabel: 'Collections' });
     },
 
     deselectAll(selector) {
+      if (!selector || !(selector instanceof $)) return;
+
       selector.find('option').prop('selected', false).trigger('chosen:updated');
     }
   }
