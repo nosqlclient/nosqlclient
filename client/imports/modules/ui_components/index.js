@@ -432,6 +432,9 @@ UIComponents.prototype = {
     },
 
     initializeOptionsCombobox(selector, optionEnum, sessionKey) {
+      if (!selector || !(selector instanceof $)) return;
+      if (!optionEnum || typeof optionEnum !== 'object' || optionEnum.constructor !== Object) return;
+
       this.init({ selector, data: optionEnum, options: {} });
       this.setOptionsComboboxChangeEvent(selector, sessionKey);
     },

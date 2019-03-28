@@ -1,6 +1,6 @@
 /* eslint-env mocha */
 
-import { UIComponents } from '/client/imports/modules';
+import { SessionManager, UIComponents } from '/client/imports/modules';
 import sinon from 'sinon';
 import chai, { expect } from 'chai';
 import $ from 'jquery';
@@ -212,6 +212,71 @@ describe('UIComponents Combobox', () => {
 
       // verify
       assertNoExecution();
+    });
+  });
+
+  describe('initializeOptionsCombobox tests', () => {
+    beforeEach(() => {
+      sinon.stub(UIComponents.Combobox, 'init');
+      sinon.stub(UIComponents.Combobox, 'setOptionsComboboxChangeEvent');
+    });
+
+    afterEach(() => {
+      UIComponents.Combobox.init.restore();
+      UIComponents.Combobox.setOptionsComboboxChangeEvent.restore();
+    });
+
+    it('initializeOptionsCombobox valid params', () => {
+      // prepare
+      const data = { test: 'test' };
+      const selector = $('#testing');
+
+      // execute
+      UIComponents.Combobox.initializeOptionsCombobox(selector, data);
+
+      // verify
+      expect(UIComponents.Combobox.init.callCount).to.equal(1);
+      expect(UIComponents.Combobox.init.calledWithMatch({ selector, data, options: {} })).to.equal(true);
+      expect(UIComponents.Combobox.setOptionsComboboxChangeEvent.callCount).to.equal(1);
+      expect(UIComponents.Combobox.setOptionsComboboxChangeEvent.calledWithExactly(selector, undefined)).to.equal(true);
+    });
+
+    it('initializeOptionsCombobox valid params (1)', () => {
+      // prepare
+      const data = { test: 'test' };
+      const selector = $('#testing');
+      const sessionKey = SessionManager.strSessionSelectedOptions;
+
+      // execute
+      UIComponents.Combobox.initializeOptionsCombobox(selector, data, sessionKey);
+
+      // verify
+      expect(UIComponents.Combobox.init.callCount).to.equal(1);
+      expect(UIComponents.Combobox.init.calledWithMatch({ selector, data, options: {} })).to.equal(true);
+      expect(UIComponents.Combobox.setOptionsComboboxChangeEvent.callCount).to.equal(1);
+      expect(UIComponents.Combobox.setOptionsComboboxChangeEvent.calledWithExactly(selector, sessionKey)).to.equal(true);
+    });
+
+    it('initializeOptionsCombobox invalid params', () => {
+      // prepare
+
+      // execute
+      UIComponents.Combobox.initializeOptionsCombobox($('#testing'), [{ test: 123 }]);
+
+      // verify
+      expect(UIComponents.Combobox.init.callCount).to.equal(0);
+      expect(UIComponents.Combobox.setOptionsComboboxChangeEvent.callCount).to.equal(0);
+    });
+
+    it('initializeOptionsCombobox invalid params (1)', () => {
+      // prepare
+
+      // execute
+      UIComponents.Combobox.initializeOptionsCombobox('invalid', { test: 123 });
+
+      // verify
+      expect(UIComponents.Combobox.init.callCount).to.equal(0);
+      expect(UIComponents.Combobox.setOptionsComboboxChangeEvent.callCount).to.equal(0);
     });
   });
 });
