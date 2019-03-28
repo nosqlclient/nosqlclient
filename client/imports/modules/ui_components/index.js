@@ -352,17 +352,19 @@ UIComponents.prototype = {
     },
 
     setCodeMirrorValue(divSelector, val, txtSelector) {
-      if (divSelector.data('editor')) {
-        divSelector.data('editor').setValue(val);
-      } else if (txtSelector) {
-        txtSelector.val(val);
-      }
+      if (divSelector && !(divSelector instanceof $)) return;
+      if (txtSelector && !(txtSelector instanceof $)) return;
+
+      const codeMirror = divSelector ? divSelector.data('editor') : null;
+      if (codeMirror) codeMirror.setValue(val);
+      else if (txtSelector) txtSelector.val(val);
     },
 
     getCodeMirrorValue(divSelector) {
-      if (divSelector.data('editor')) {
-        return divSelector.data('editor').getValue();
-      }
+      if (!divSelector || !(divSelector instanceof $)) return '';
+
+      const codeMirror = divSelector.data('editor');
+      if (codeMirror) return codeMirror.getValue();
       return '';
     }
   },

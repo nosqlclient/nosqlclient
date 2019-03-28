@@ -439,6 +439,8 @@ describe('UIComponents Editor', () => {
       sinon.stub($.prototype, 'find').withArgs('.CodeMirror').returns(resizableStub);
       sinon.stub(CodeMirror, 'fromTextArea').returns(codeMirrorStub);
       sinon.stub(ReactivityProvider, 'findOne').returns({ autoCompleteShortcut: 'Ctrl' });
+
+      sinon.spy($.prototype, 'val');
     });
 
     afterEach(() => {
@@ -446,6 +448,7 @@ describe('UIComponents Editor', () => {
       SessionManager.get.restore();
       SessionManager.set.restore();
       $.prototype.find.restore();
+      $.prototype.val.restore();
       CodeMirror.fromTextArea.restore();
       ReactivityProvider.findOne.restore();
     });
@@ -519,7 +522,6 @@ describe('UIComponents Editor', () => {
       // cleanup
       $.prototype.data.restore();
     });
-
 
     it('initializeCodeMirror with valid params & codemirror not initialized (2)', () => {
       // prepare
@@ -614,6 +616,195 @@ describe('UIComponents Editor', () => {
 
       // verify
       assertInvalidParamExecution();
+
+      // cleanup
+      $.prototype.data.restore(true);
+    });
+
+    it('setCodeMirrorValue with valid divSelector without txtSelector & initialized', () => {
+      // prepare
+      sinon.stub($.prototype, 'data').returns(codeMirrorStub);
+
+      // execute
+      UIComponents.Editor.setCodeMirrorValue($('#testing'), value);
+
+      // verify
+      expect($.prototype.data.callCount).to.equal(1);
+      expect($.prototype.data.calledWithExactly('editor')).to.equal(true);
+      expect($.prototype.data.getCall(0).thisValue.selector).to.equal('#testing');
+      expect(codeMirrorStub.setValue.callCount).to.equal(1);
+      expect(codeMirrorStub.setValue.calledWithExactly(value)).to.equal(true);
+      expect($.prototype.val.callCount).to.equal(0);
+
+      // cleanup
+      $.prototype.data.restore(true);
+    });
+
+    it('setCodeMirrorValue with valid divSelector without txtSelector & not initialized', () => {
+      // prepare
+      sinon.stub($.prototype, 'data').returns(null);
+
+      // execute
+      UIComponents.Editor.setCodeMirrorValue($('#testing'), value);
+
+      // verify
+      expect($.prototype.data.callCount).to.equal(1);
+      expect($.prototype.data.calledWithExactly('editor')).to.equal(true);
+      expect($.prototype.data.getCall(0).thisValue.selector).to.equal('#testing');
+      expect(codeMirrorStub.setValue.callCount).to.equal(0);
+      expect($.prototype.val.callCount).to.equal(0);
+
+      // cleanup
+      $.prototype.data.restore(true);
+    });
+
+    it('setCodeMirrorValue with valid divSelector with txtSelector & not initialized', () => {
+      // prepare
+      sinon.stub($.prototype, 'data').returns(null);
+
+      // execute
+      UIComponents.Editor.setCodeMirrorValue($('#testing'), value, $('#testTXTSelector'));
+
+      // verify
+      expect($.prototype.data.callCount).to.equal(1);
+      expect($.prototype.data.calledWithExactly('editor')).to.equal(true);
+      expect($.prototype.data.getCall(0).thisValue.selector).to.equal('#testing');
+      expect(codeMirrorStub.setValue.callCount).to.equal(0);
+      expect($.prototype.val.callCount).to.equal(1);
+      expect($.prototype.val.calledWithExactly(value)).to.equal(true);
+
+      // cleanup
+      $.prototype.data.restore(true);
+    });
+
+    it('setCodeMirrorValue with invalid params', () => {
+      // prepare
+      sinon.stub($.prototype, 'data').returns(null);
+
+      // execute
+      UIComponents.Editor.setCodeMirrorValue('invalid', value, $('#testTXTSelector'));
+
+      // verify
+      expect($.prototype.data.callCount).to.equal(0);
+      expect(codeMirrorStub.setValue.callCount).to.equal(0);
+      expect($.prototype.val.callCount).to.equal(0);
+
+      // cleanup
+      $.prototype.data.restore(true);
+    });
+
+    it('setCodeMirrorValue with invalid params (1)', () => {
+      // prepare
+      sinon.stub($.prototype, 'data').returns(null);
+
+      // execute
+      UIComponents.Editor.setCodeMirrorValue(null, value);
+
+      // verify
+      expect($.prototype.data.callCount).to.equal(0);
+      expect(codeMirrorStub.setValue.callCount).to.equal(0);
+      expect($.prototype.val.callCount).to.equal(0);
+
+      // cleanup
+      $.prototype.data.restore(true);
+    });
+
+    it('setCodeMirrorValue with invalid params (2)', () => {
+      // prepare
+      sinon.stub($.prototype, 'data').returns(null);
+
+      // execute
+      UIComponents.Editor.setCodeMirrorValue(null, value, 'invalid');
+
+      // verify
+      expect($.prototype.data.callCount).to.equal(0);
+      expect(codeMirrorStub.setValue.callCount).to.equal(0);
+      expect($.prototype.val.callCount).to.equal(0);
+
+      // cleanup
+      $.prototype.data.restore(true);
+    });
+
+    it('setCodeMirrorValue with invalid params (3)', () => {
+      // prepare
+      sinon.stub($.prototype, 'data').returns(null);
+
+      // execute
+      UIComponents.Editor.setCodeMirrorValue();
+
+      // verify
+      expect($.prototype.data.callCount).to.equal(0);
+      expect(codeMirrorStub.setValue.callCount).to.equal(0);
+      expect($.prototype.val.callCount).to.equal(0);
+
+      // cleanup
+      $.prototype.data.restore(true);
+    });
+
+    it('getCodeMirrorValue with valid divSelector & initialized', () => {
+      // prepare
+      sinon.stub($.prototype, 'data').returns(codeMirrorStub);
+
+      // execute
+      const result = UIComponents.Editor.getCodeMirrorValue($('#testing'));
+
+      // verify
+      expect($.prototype.data.callCount).to.equal(1);
+      expect($.prototype.data.calledWithExactly('editor')).to.equal(true);
+      expect($.prototype.data.getCall(0).thisValue.selector).to.equal('#testing');
+      expect(codeMirrorStub.getValue.callCount).to.equal(1);
+      expect(codeMirrorStub.getValue.calledWithExactly()).to.equal(true);
+      expect(result).to.equal(value);
+
+      // cleanup
+      $.prototype.data.restore(true);
+    });
+
+    it('getCodeMirrorValue with valid divSelector & not initialized', () => {
+      // prepare
+      sinon.stub($.prototype, 'data').returns(null);
+
+      // execute
+      const result = UIComponents.Editor.getCodeMirrorValue($('#testing'));
+
+      // verify
+      expect($.prototype.data.callCount).to.equal(1);
+      expect($.prototype.data.calledWithExactly('editor')).to.equal(true);
+      expect($.prototype.data.getCall(0).thisValue.selector).to.equal('#testing');
+      expect(codeMirrorStub.getValue.callCount).to.equal(0);
+      expect(result).to.equal('');
+
+      // cleanup
+      $.prototype.data.restore(true);
+    });
+
+    it('getCodeMirrorValue with invalid params', () => {
+      // prepare
+      sinon.stub($.prototype, 'data').returns(codeMirrorStub);
+
+      // execute
+      const result = UIComponents.Editor.getCodeMirrorValue();
+
+      // verify
+      expect($.prototype.data.callCount).to.equal(0);
+      expect(codeMirrorStub.getValue.callCount).to.equal(0);
+      expect(result).to.equal('');
+
+      // cleanup
+      $.prototype.data.restore(true);
+    });
+
+    it('getCodeMirrorValue with invalid params (1)', () => {
+      // prepare
+      sinon.stub($.prototype, 'data').returns(codeMirrorStub);
+
+      // execute
+      const result = UIComponents.Editor.getCodeMirrorValue(123);
+
+      // verify
+      expect($.prototype.data.callCount).to.equal(0);
+      expect(codeMirrorStub.getValue.callCount).to.equal(0);
+      expect(result).to.equal('');
 
       // cleanup
       $.prototype.data.restore(true);
