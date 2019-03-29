@@ -255,7 +255,7 @@ IndexManagement.prototype = {
 
     Communicator.call({
       methodName: 'command',
-      args: { command, isFull: true },
+      args: { command },
       callback: (err, result) => {
         if (err || result.error) ErrorHandler.showMeteorFuncError(err, result);
         else {

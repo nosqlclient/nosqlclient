@@ -345,12 +345,12 @@ UserManagementRoles.prototype = {
     });
   },
 
-  initCollectionsForPrivilege(collectionToSelect, db, stopLadda) {
+  initCollectionsForPrivilege(collectionToSelect, dbName, stopLadda) {
     const selector = $('#cmbPrivilegeCollection');
-    if (db) {
+    if (dbName) {
       Communicator.call({
         methodName: 'listCollectionNames',
-        args: { dbName: db },
+        args: { dbName },
         callback: (err, result) => {
           let data;
           if (err || result.error) ErrorHandler.showMeteorFuncError(err, result);

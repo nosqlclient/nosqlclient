@@ -82,6 +82,15 @@ const Communicator = function () {
 
 Communicator.prototype = {
   call({ methodName, args = {}, callback }) {
+    if (!methodName) return;
+
+    // cleaning wrong type or non-exist properties
+    Object.keys(args).forEach((key) => {
+      if (Object.keys(this.methods[methodName]).indexOf(key) === -1 || Object.prototype.toString.call(args[key]) !== Object.prototype.toString.call(this.methods[methodName][key])) {
+        delete args[key];
+      }
+    });
+
     const finalArgs = Object.assign(Object.assign({ sessionId: Meteor.default_connection._lastSessionId }, this.methods[methodName]), args);
     return Meteor.call(methodName, finalArgs, callback);
   },
