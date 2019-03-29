@@ -165,10 +165,4 @@ const Enums = function () {
   };
 };
 
-Enums.prototype = {
-  get(key) {
-    return this[key];
-  }
-};
-
 export default new Enums();
