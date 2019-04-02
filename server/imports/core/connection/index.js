@@ -3,7 +3,7 @@ import ConnectionHelper from './helper';
 
 const fs = require('fs');
 const mongodbUrlParser = require('parse-mongo-url');
-const fbbkJson = require('fbbk-json');
+const jsonParser = require('json5');
 
 const Connection = function () {
 };
@@ -270,7 +270,7 @@ Connection.prototype = {
     Logger.info({ message: 'predefined-connections', metadataToLog: { connections: fileContent } });
 
     try {
-      const connections = fbbkJson.parse(fileContent);
+      const connections = jsonParser.parse(fileContent);
       if (Array.isArray(connections) && connections.length > 0) {
         // clear existing connections
         Database.remove({ type: Database.types.Connections, selector: {} });

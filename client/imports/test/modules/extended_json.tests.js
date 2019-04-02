@@ -253,7 +253,7 @@ describe('ExtendedJSON', () => {
 
     it('objectid & date & regex (2)', () => {
       // prepare
-      const str = '{a: true, b: objectid("5c7640bc8c4d42eef699390a"), c: new isoDate("asd"), d: /^,,}]^#%\\/^,\\/d\\/\\/\\/,/xm, e: {$regex: /asd^,/, $options:  "xms"}';
+      const str = '{a: true, b: objectid("5c7640bc8c4d42eef699390a"), c: new isoDate("asd"), d: /^,,}]^#%\\/^,\\/d\\/\\/\\/,/xm, e: {$regex: /asd^,/, $options:  "xms"}}';
 
       // execute
       const convertedJson = ExtendedJSON.convertAndCheckJSON(str);
@@ -312,6 +312,42 @@ describe('ExtendedJSON', () => {
 
       // verify
       expect(convertedJson).to.eql({ a: true, b: 'te "sting' });
+    });
+  });
+
+  describe('number tests #494', () => {
+    it('number with a small decimal', () => {
+      // prepare
+      const str = '{a: 0.00000001, b:2, c: true, d: "sercan", e: { f: [1,2,3] } }';
+
+      // execute
+      const convertedJson = ExtendedJSON.convertAndCheckJSON(str);
+
+      // verify
+      expect(convertedJson).to.eql({
+        a: 0.00000001,
+        b: 2,
+        c: true,
+        d: 'sercan',
+        e: { f: [1, 2, 3] }
+      });
+    });
+
+    it('number with a small decimal in different format', () => {
+      // prepare
+      const str = '{a: 1e-8, b:2, c: true, d: "sercan", e: { f: [1,2,1e-9] } }';
+
+      // execute
+      const convertedJson = ExtendedJSON.convertAndCheckJSON(str);
+
+      // verify
+      expect(convertedJson).to.eql({
+        a: 0.00000001,
+        b: 2,
+        c: true,
+        d: 'sercan',
+        e: { f: [1, 2, 0.000000001] }
+      });
     });
   });
 });

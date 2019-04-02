@@ -1,4 +1,4 @@
-const fbbkJson = require('fbbk-json');
+const jsonParser = require('json5');
 
 const ExtendedJSON = function () {
 };
@@ -83,7 +83,8 @@ ExtendedJSON.prototype = {
       }
 
       json = convertToExtendedJson(json);
-      result = fbbkJson.parse(json);
+
+      result = jsonParser.parse(json);
     } catch (err) {
       result.ERROR = err.message;
     }
