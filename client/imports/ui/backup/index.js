@@ -1,4 +1,4 @@
-import { Notification, ErrorHandler, UIComponents, ExtendedJSON, SessionManager } from '/client/imports/modules';
+import { ErrorHandler, ExtendedJSON, Notification, SessionManager, UIComponents } from '/client/imports/modules';
 import { Communicator, ReactivityProvider } from '/client/imports/facades';
 import $ from 'jquery';
 import Helper from '../../helpers/helper';
@@ -36,11 +36,8 @@ const getArgs = function (operation) {
 
 const loadCombobox = function (err, result, selector) {
   let data;
-  if (err || result.error) {
-    ErrorHandler.showMeteorFuncError(err, result);
-  } else {
-    data = Helper.populateComboboxData(result.result, 'name');
-  }
+  if (err || result.error) ErrorHandler.showMeteorFuncError(err, result);
+  else data = Helper.populateComboboxData(result.result, 'name');
 
   UIComponents.Combobox.init({ selector, data });
   Notification.stop();
@@ -49,6 +46,7 @@ const loadCombobox = function (err, result, selector) {
 Backup.prototype = {
   loadDatabases(prefix) {
     const selector = $(`#${prefix}--db`);
+    if (selector.length === 0) throw new Error(`invalid prefix to load combobox; ${prefix}`);
 
     Notification.start('#btnExecuteMongodump');
     Notification.start('#btnExecuteMongorestore');
