@@ -43,15 +43,19 @@ const loadCombobox = function (err, result, selector) {
   Notification.stop();
 };
 
+const startNotifications = function () {
+  Notification.start('#btnExecuteMongodump');
+  Notification.start('#btnExecuteMongorestore');
+  Notification.start('#btnExecuteMongoexport');
+  Notification.start('#btnExecuteMongoimport');
+};
+
 Backup.prototype = {
   loadDatabases(prefix) {
     const selector = $(`#${prefix}--db`);
-    if (selector.length === 0) throw new Error(`invalid prefix to load combobox; ${prefix}`);
+    if (selector.length === 0) return;
 
-    Notification.start('#btnExecuteMongodump');
-    Notification.start('#btnExecuteMongorestore');
-    Notification.start('#btnExecuteMongoexport');
-    Notification.start('#btnExecuteMongoimport');
+    startNotifications();
 
     Communicator.call({
       methodName: 'getDatabases',
@@ -62,14 +66,13 @@ Backup.prototype = {
   },
 
   loadCollectionsCombo(prefix) {
-    Notification.start('#btnExecuteMongodump');
-    Notification.start('#btnExecuteMongorestore');
-    Notification.start('#btnExecuteMongoexport');
-    Notification.start('#btnExecuteMongoimport');
-
     const selector = $(`#${prefix}--collection`);
-    const db = $(`#${prefix}--db`).val();
-    if (!db) {
+    if (selector.length === 0) return;
+
+    startNotifications();
+
+    const dbName = $(`#${prefix}--db`).val();
+    if (!dbName) {
       UIComponents.Combobox.init({ selector });
       Notification.stop();
       return;
@@ -77,7 +80,7 @@ Backup.prototype = {
 
     Communicator.call({
       methodName: 'listCollectionNames',
-      args: { dbName: db },
+      args: { dbName },
       callback: (err, result) => {
         loadCombobox(err, result, selector);
       }
