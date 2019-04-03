@@ -3,10 +3,6 @@ import { Communicator, ReactivityProvider } from '/client/imports/facades';
 import $ from 'jquery';
 import Helper from '../../helpers/helper';
 
-const Backup = function () {
-
-};
-
 const getArgs = function (operation) {
   let result = [];
 
@@ -50,6 +46,50 @@ const startNotifications = function () {
   Notification.start('#btnExecuteMongoimport');
 };
 
+const observeLogs = function (sessionId) {
+  ReactivityProvider.observeChanges(
+    ReactivityProvider.types.Dumps,
+    { sessionId },
+    { sort: { date: -1 } },
+    {
+      added(id, fields) {
+        const divLogs = $(`#${fields.binary}`);
+
+        if (fields.message === 'CLOSED') Notification.stop();
+        else {
+          const editorResult = divLogs.data('editor');
+          const previousValue = UIComponents.Editor.getCodeMirrorValue(divLogs);
+
+          UIComponents.Editor.setCodeMirrorValue(divLogs, previousValue + fields.message);
+          if (editorResult) {
+            editorResult.focus();
+            editorResult.setCursor(editorResult.lineCount() - 2, editorResult.getLine(editorResult.lineCount() - 2).length - 2);
+          }
+
+          if (divLogs.data('editor')) divLogs.data('editor').focus();
+        }
+      },
+    });
+};
+
+const initializeArgsCombo = function (selectorSessionPairs) {
+  selectorSessionPairs.forEach((pair) => {
+    UIComponents.Combobox.init({ selector: pair.selector, empty: false, options: {} });
+    UIComponents.Combobox.setOptionsComboboxChangeEvent(pair.selector, pair.sessionKey);
+  });
+};
+
+const initializeLogsArea = function (divTxtPairs) {
+  divTxtPairs.forEach((pair) => {
+    UIComponents.Editor.initializeCodeMirror({ divSelector: pair.div, txtAreaId: pair.txt, height: 150, noResize: true });
+    pair.div.data('editor').setOption('readOnly', true);
+  });
+};
+
+const Backup = function () {
+  this.binaries = ['mongoimport', 'mongoexport', 'mongodump', 'mongorestore'];
+};
+
 Backup.prototype = {
   loadDatabases(prefix) {
     const selector = $(`#${prefix}--db`);
@@ -87,35 +127,9 @@ Backup.prototype = {
     });
   },
 
-  observeLogs(sessionId) {
-    ReactivityProvider.observeChanges(
-      ReactivityProvider.types.Dumps,
-      { sessionId },
-      { sort: { date: -1 } },
-      {
-        added(id, fields) {
-          const divLogs = $(`#${fields.binary}`);
-
-          if (fields.message === 'CLOSED') Notification.stop();
-          else {
-            const editorResult = divLogs.data('editor');
-            const previousValue = UIComponents.Editor.getCodeMirrorValue(divLogs);
-
-            UIComponents.Editor.setCodeMirrorValue(divLogs, previousValue + fields.message);
-            if (editorResult) {
-              editorResult.focus();
-              editorResult.setCursor(editorResult.lineCount() - 2, editorResult.getLine(editorResult.lineCount() - 2).length - 2);
-            }
-
-            if (divLogs.data('editor')) {
-              divLogs.data('editor').focus();
-            }
-          }
-        },
-      });
-  },
-
   clearLogs(binary) {
+    if (this.binaries.indexOf(binary) === -1) return;
+
     Communicator.call({ methodName: 'removeDumpLogs', args: { binary } });
     UIComponents.Editor.setCodeMirrorValue($(`#${binary}`), '');
   },
@@ -134,25 +148,19 @@ Backup.prototype = {
     });
   },
 
-  initializeArgsCombo(selector, sessionVar) {
-    UIComponents.Combobox.init({ selector, empty: false, options: {} });
-    UIComponents.Combobox.setOptionsComboboxChangeEvent(selector, sessionVar);
-  },
-
-  initializeLogsArea(div, txt) {
-    UIComponents.Editor.initializeCodeMirror({ divSelector: div, txtAreaId: txt, height: 150, noResize: true });
-    div.data('editor').setOption('readOnly', true);
-  },
-
   initializeUI() {
-    this.initializeArgsCombo($('#cmbMongodumpArgs'), SessionManager.strSessionMongodumpArgs);
-    this.initializeArgsCombo($('#cmbMongorestoreArgs'), SessionManager.strSessionMongorestoreArgs);
-    this.initializeArgsCombo($('#cmbMongoexportArgs'), SessionManager.strSessionMongoexportArgs);
-    this.initializeArgsCombo($('#cmbMongoimportArgs'), SessionManager.strSessionMongoimportArgs);
-    this.initializeLogsArea($('#mongodump'), 'txtMongodumpLogs');
-    this.initializeLogsArea($('#mongorestore'), 'txtMongorestoreLogs');
-    this.initializeLogsArea($('#mongoexport'), 'txtMongoexportLogs');
-    this.initializeLogsArea($('#mongoimport'), 'txtMongoimportLogs');
+    initializeArgsCombo([
+      { selector: $('#cmbMongodumpArgs'), sessionKey: SessionManager.strSessionMongodumpArgs },
+      { selector: $('#cmbMongorestoreArgs'), sessionKey: SessionManager.strSessionMongorestoreArgs },
+      { selector: $('#cmbMongoexportArgs'), sessionKey: SessionManager.strSessionMongoexportArgs },
+      { selector: $('#cmbMongoimportArgs'), sessionKey: SessionManager.strSessionMongoimportArgs },
+    ]);
+    initializeLogsArea([
+      { div: $('#mongodump'), txt: 'txtMongodumpLogs' },
+      { div: $('#mongorestore'), txt: 'txtMongorestoreLogs' },
+      { div: $('#mongoexport'), txt: 'txtMongoexportLogs' },
+      { div: $('#mongoimport'), txt: 'txtMongoimportLogs' }
+    ]);
 
     SessionManager.set(SessionManager.strSessionMongodumpArgs, ['--host', '--out']);
     SessionManager.set(SessionManager.strSessionMongorestoreArgs, ['--host', '--dir']);
@@ -199,7 +207,7 @@ Backup.prototype = {
       $('#mongoimport--host').val(hostStr);
     }, 100);
 
-    this.observeLogs(sessionId);
+    observeLogs(sessionId);
   }
 };
 
