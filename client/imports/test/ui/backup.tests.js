@@ -5,6 +5,7 @@ import { expect } from 'chai';
 import { Backup } from '/client/imports/ui';
 import { ErrorHandler, Notification, UIComponents } from '/client/imports/modules';
 import { Communicator } from '/client/imports/facades';
+import $ from 'jquery';
 import Helper from '../../helpers/helper';
 
 describe('Backup', () => {
@@ -216,6 +217,67 @@ describe('Backup', () => {
         Communicator.call.restore();
         $.prototype.val.restore();
       });
+    });
+  });
+
+  describe('clearLogs tests', () => {
+    beforeEach(() => {
+      sinon.stub(Communicator, 'call');
+      sinon.stub(UIComponents.Editor, 'setCodeMirrorValue');
+    });
+
+    afterEach(() => {
+      Communicator.call.restore();
+      UIComponents.Editor.setCodeMirrorValue.restore();
+    });
+
+    it('clearLogs invalid param', () => {
+      // prepare
+      // execute
+      Backup.clearLogs('invalid');
+
+      // verify
+      expect(Communicator.call.callCount).to.equal(0);
+      expect(UIComponents.Editor.setCodeMirrorValue.callCount).to.equal(0);
+    });
+
+    it('clearLogs invalid param (1)', () => {
+      // prepare
+      // execute
+      Backup.clearLogs();
+
+      // verify
+      expect(Communicator.call.callCount).to.equal(0);
+      expect(UIComponents.Editor.setCodeMirrorValue.callCount).to.equal(0);
+    });
+
+    it('clearLogs valid param', () => {
+      // prepare
+      const binary = 'mongodump';
+
+      // execute
+      Backup.clearLogs(binary);
+
+      // verify
+      expect(Communicator.call.callCount).to.equal(1);
+      expect(Communicator.call.calledWithMatch({ methodName: 'removeDumpLogs', args: { binary } })).to.equal(true);
+      expect(UIComponents.Editor.setCodeMirrorValue.callCount).to.equal(1);
+      expect(UIComponents.Editor.setCodeMirrorValue.calledWithExactly($(`#${binary}`), '')).to.equal(true);
+    });
+
+
+    it('clearLogs valid param (1)', () => {
+      // prepare
+      const binary = 'mongorestore';
+
+      // execute
+      Backup.clearLogs(binary);
+
+      // verify
+      expect(Communicator.call.callCount).to.equal(1);
+      expect(Communicator.call.calledWithMatch({ methodName: 'removeDumpLogs', args: { binary } })).to.equal(true);
+      expect(UIComponents.Editor.setCodeMirrorValue.callCount).to.equal(1);
+      expect(UIComponents.Editor.setCodeMirrorValue.calledWithExactly($(`#${binary}`), '')).to.equal(true);
     });
   });
 });
