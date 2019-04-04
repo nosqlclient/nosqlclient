@@ -3,8 +3,8 @@
 import sinon from 'sinon';
 import { expect } from 'chai';
 import { Backup } from '/client/imports/ui';
-import { ErrorHandler, Notification, UIComponents } from '/client/imports/modules';
-import { Communicator } from '/client/imports/facades';
+import { ErrorHandler, Notification, SessionManager, UIComponents } from '/client/imports/modules';
+import { Communicator, ReactivityProvider } from '/client/imports/facades';
 import $ from 'jquery';
 import Helper from '../../helpers/helper';
 
@@ -434,6 +434,216 @@ describe('Backup', () => {
       // cleanup
       Backup.getMongodumpArgs.restore();
       Communicator.call.restore();
+    });
+  });
+
+  describe('initializeUI tests', () => {
+    const dataStub = { setOption: sinon.stub() };
+
+    beforeEach(() => {
+      sinon.stub(UIComponents.Combobox, 'init');
+      sinon.stub(UIComponents.Combobox, 'setOptionsComboboxChangeEvent');
+      sinon.stub(UIComponents.Editor, 'initializeCodeMirror');
+      sinon.stub(SessionManager, 'set');
+      sinon.stub($.prototype, 'data').returns(dataStub);
+    });
+
+    afterEach(() => {
+      UIComponents.Combobox.init.restore();
+      UIComponents.Combobox.setOptionsComboboxChangeEvent.restore();
+      UIComponents.Editor.initializeCodeMirror.restore();
+      SessionManager.set.restore();
+      $.prototype.data.restore();
+    });
+
+    it('initializeUI', () => {
+      // prepare
+      const selector1 = $('#cmbMongodumpArgs');
+      const selector2 = $('#cmbMongorestoreArgs');
+      const selector3 = $('#cmbMongoexportArgs');
+      const selector4 = $('#cmbMongoimportArgs');
+
+      const divSelector1 = $('#mongodump');
+      const divSelector2 = $('#mongorestore');
+      const divSelector3 = $('#mongoexport');
+      const divSelector4 = $('#mongoimport');
+
+      // execute
+      Backup.initializeUI();
+
+      // verify
+      expect(UIComponents.Combobox.init.callCount).to.equal(4);
+      expect(UIComponents.Combobox.init.calledWithMatch({ selector: selector1, empty: false, options: {} })).to.equal(true);
+      expect(UIComponents.Combobox.init.calledWithMatch({ selector: selector2, empty: false, options: {} })).to.equal(true);
+      expect(UIComponents.Combobox.init.calledWithMatch({ selector: selector3, empty: false, options: {} })).to.equal(true);
+      expect(UIComponents.Combobox.init.calledWithMatch({ selector: selector4, empty: false, options: {} })).to.equal(true);
+
+      expect(UIComponents.Combobox.setOptionsComboboxChangeEvent.callCount).to.equal(4);
+      expect(UIComponents.Combobox.setOptionsComboboxChangeEvent.calledWithExactly(selector1, SessionManager.strSessionMongodumpArgs)).to.equal(true);
+      expect(UIComponents.Combobox.setOptionsComboboxChangeEvent.calledWithExactly(selector2, SessionManager.strSessionMongorestoreArgs)).to.equal(true);
+      expect(UIComponents.Combobox.setOptionsComboboxChangeEvent.calledWithExactly(selector3, SessionManager.strSessionMongoexportArgs)).to.equal(true);
+      expect(UIComponents.Combobox.setOptionsComboboxChangeEvent.calledWithExactly(selector4, SessionManager.strSessionMongoimportArgs)).to.equal(true);
+
+      expect(UIComponents.Editor.initializeCodeMirror.callCount).to.equal(4);
+      expect(UIComponents.Editor.initializeCodeMirror.calledWithMatch({ divSelector: divSelector1, txtAreaId: 'txtMongodumpLogs', height: 150, noResize: true })).to.equal(true);
+      expect(UIComponents.Editor.initializeCodeMirror.calledWithMatch({ divSelector: divSelector2, txtAreaId: 'txtMongorestoreLogs', height: 150, noResize: true })).to.equal(true);
+      expect(UIComponents.Editor.initializeCodeMirror.calledWithMatch({ divSelector: divSelector3, txtAreaId: 'txtMongoexportLogs', height: 150, noResize: true })).to.equal(true);
+      expect(UIComponents.Editor.initializeCodeMirror.calledWithMatch({ divSelector: divSelector4, txtAreaId: 'txtMongoimportLogs', height: 150, noResize: true })).to.equal(true);
+
+      expect(SessionManager.set.callCount).to.equal(4);
+      expect(SessionManager.set.calledWithExactly(SessionManager.strSessionMongodumpArgs, ['--host', '--out'])).to.equal(true);
+      expect(SessionManager.set.calledWithExactly(SessionManager.strSessionMongorestoreArgs, ['--host', '--dir'])).to.equal(true);
+      expect(SessionManager.set.calledWithExactly(SessionManager.strSessionMongoexportArgs, ['--host', '--out'])).to.equal(true);
+      expect(SessionManager.set.calledWithExactly(SessionManager.strSessionMongoimportArgs, ['--host', '--file'])).to.equal(true);
+
+      expect(dataStub.setOption.callCount).to.equal(4);
+      expect(dataStub.setOption.alwaysCalledWithExactly('readOnly', true)).to.equal(true);
+    });
+  });
+
+  describe('removeDumpLogs tests', () => {
+    beforeEach(() => {
+      sinon.stub(Communicator, 'call');
+    });
+
+    afterEach(() => {
+      Communicator.call.restore();
+    });
+
+    it('removeDumpLogs', () => {
+      // prepare
+
+      // execute
+      Backup.removeDumpLogs();
+
+      // verify
+      expect(Communicator.call.callCount).to.equal(1);
+      expect(Communicator.call.calledWithMatch({ methodName: 'removeDumpLogs' })).to.equal(true);
+    });
+  });
+
+  describe('init tests', () => {
+    let clock;
+    let valStub;
+    let dataStub;
+    const previousValue = 'testing';
+    const testingId = 'testingID';
+    const findOneResponse = { servers: [{ host: 'server1', port: 222 }, { host: 'server2', port: 555 }] };
+
+    beforeEach(() => {
+      valStub = { trigger: sinon.stub() };
+      dataStub = { focus: sinon.stub(), setCursor: sinon.stub(), lineCount: sinon.stub().returns(5), getLine: sinon.stub().returns({ length: 3 }) };
+      clock = sinon.useFakeTimers();
+      sinon.stub(ReactivityProvider, 'findOne').returns(findOneResponse);
+      sinon.stub(Notification, 'stop');
+      sinon.stub($.prototype, 'val').returns(valStub);
+      sinon.stub($.prototype, 'data').returns(dataStub);
+      sinon.stub(UIComponents.Editor, 'getCodeMirrorValue').returns(previousValue);
+      sinon.stub(UIComponents.Editor, 'setCodeMirrorValue');
+      sinon.stub(SessionManager, 'get').returns({ _id: testingId });
+    });
+
+    afterEach(() => {
+      clock.restore();
+      ReactivityProvider.findOne.restore();
+      Notification.stop.restore();
+      $.prototype.val.restore();
+      $.prototype.data.restore();
+      UIComponents.Editor.getCodeMirrorValue.restore();
+      UIComponents.Editor.setCodeMirrorValue.restore();
+      SessionManager.get.restore();
+    });
+
+    it('init without clock tick & with sessionId & observeChanges yieldsto CLOSED', () => {
+      // prepare
+      const sessionId = Meteor.default_connection._lastSessionId;
+      sinon.stub(ReactivityProvider, 'observeChanges').yieldsTo('added', null, { message: 'CLOSED' });
+
+      // execute
+      Backup.init(sessionId);
+
+      // verify
+      expect($.prototype.val.callCount).to.equal(4);
+      expect(valStub.trigger.callCount).to.equal(4);
+      expect(ReactivityProvider.findOne.callCount).to.equal(0);
+      expect(ReactivityProvider.observeChanges.callCount).to.equal(1);
+      expect(ReactivityProvider.observeChanges.calledWith(ReactivityProvider.types.Dumps, { sessionId }, { sort: { date: -1 } }, { added: sinon.match.func })).to.equal(true);
+      expect(Notification.stop.callCount).to.equal(1);
+      expect(UIComponents.Editor.getCodeMirrorValue.callCount).to.equal(0);
+      expect(UIComponents.Editor.setCodeMirrorValue.callCount).to.equal(0);
+      expect(dataStub.focus.callCount).to.equal(0);
+      expect(dataStub.setCursor.callCount).to.equal(0);
+
+      // cleanup
+      ReactivityProvider.observeChanges.restore();
+    });
+
+    it('init without clock tick & with sessionId & observeChanges yieldsto still working', () => {
+      // prepare
+      const div = $('#mongodump');
+      const message = 'dumping, please wait';
+      const sessionId = Meteor.default_connection._lastSessionId;
+      sinon.stub(ReactivityProvider, 'observeChanges').yieldsTo('added', null, { message, binary: 'mongodump' });
+
+      // execute
+      Backup.init(sessionId);
+
+      // verify
+      expect($.prototype.val.callCount).to.equal(4);
+      expect(valStub.trigger.callCount).to.equal(4);
+      expect(ReactivityProvider.findOne.callCount).to.equal(0);
+      expect(ReactivityProvider.observeChanges.callCount).to.equal(1);
+      expect(ReactivityProvider.observeChanges.calledWith(ReactivityProvider.types.Dumps, { sessionId }, { sort: { date: -1 } }, { added: sinon.match.func })).to.equal(true);
+      expect(Notification.stop.callCount).to.equal(0);
+      expect($.prototype.data.callCount).to.equal(1);
+      expect($.prototype.data.getCall(0).thisValue.selector).to.equal('#mongodump');
+      expect($.prototype.data.calledWithExactly('editor')).to.equal(true);
+
+      expect(UIComponents.Editor.getCodeMirrorValue.callCount).to.equal(1);
+      expect(UIComponents.Editor.getCodeMirrorValue.calledWithExactly(div));
+
+      expect(UIComponents.Editor.setCodeMirrorValue.callCount).to.equal(1);
+      expect(UIComponents.Editor.setCodeMirrorValue.calledWithExactly(div, previousValue + message)).to.equal(true);
+
+      expect(dataStub.focus.callCount).to.equal(1);
+      expect(dataStub.setCursor.callCount).to.equal(1);
+      expect(dataStub.setCursor.calledWithExactly(3, 1)).to.equal(true);
+
+      // cleanup
+      ReactivityProvider.observeChanges.restore();
+    });
+
+    it('init with clock tick & with sessionId & observeChanges yieldsto CLOSED', () => {
+      // prepare
+      const sessionId = Meteor.default_connection._lastSessionId;
+      sinon.stub(ReactivityProvider, 'observeChanges').yieldsTo('added', null, { message: 'CLOSED' });
+
+      // execute
+      Backup.init(sessionId);
+
+      // verify
+      expect($.prototype.val.callCount).to.equal(4);
+      expect(valStub.trigger.callCount).to.equal(4);
+      expect(ReactivityProvider.findOne.callCount).to.equal(0);
+      expect(ReactivityProvider.observeChanges.callCount).to.equal(1);
+      expect(ReactivityProvider.observeChanges.calledWith(ReactivityProvider.types.Dumps, { sessionId }, { sort: { date: -1 } }, { added: sinon.match.func })).to.equal(true);
+      expect(Notification.stop.callCount).to.equal(1);
+      expect(UIComponents.Editor.getCodeMirrorValue.callCount).to.equal(0);
+      expect(UIComponents.Editor.setCodeMirrorValue.callCount).to.equal(0);
+      expect(dataStub.focus.callCount).to.equal(0);
+      expect(dataStub.setCursor.callCount).to.equal(0);
+
+      clock.tick(100);
+
+      expect(ReactivityProvider.findOne.callCount).to.equal(1);
+      expect(ReactivityProvider.findOne.calledWithExactly(ReactivityProvider.types.Connections, { _id: testingId })).to.equal(true);
+      expect($.prototype.val.callCount).to.equal(8);
+      expect($.prototype.val.calledWith(
+        `${findOneResponse.servers[0].host}:${findOneResponse.servers[0].port},${findOneResponse.servers[1].host}:${findOneResponse.servers[1].port}`))
+        .to.equal(true);
+
+      // cleanup
+      ReactivityProvider.observeChanges.restore();
     });
   });
 });

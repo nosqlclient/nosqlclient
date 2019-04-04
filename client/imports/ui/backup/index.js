@@ -57,16 +57,15 @@ const observeLogs = function (sessionId) {
 
         if (fields.message === 'CLOSED') Notification.stop();
         else {
-          const editorResult = divLogs.data('editor');
+          const editor = divLogs.data('editor');
           const previousValue = UIComponents.Editor.getCodeMirrorValue(divLogs);
 
           UIComponents.Editor.setCodeMirrorValue(divLogs, previousValue + fields.message);
-          if (editorResult) {
-            editorResult.focus();
-            editorResult.setCursor(editorResult.lineCount() - 2, editorResult.getLine(editorResult.lineCount() - 2).length - 2);
+          if (editor) {
+            editor.focus();
+            const currentLineCount = editor.lineCount();
+            editor.setCursor(currentLineCount - 2, editor.getLine(currentLineCount - 2).length - 2);
           }
-
-          if (divLogs.data('editor')) divLogs.data('editor').focus();
         }
       },
     });
@@ -213,7 +212,7 @@ Backup.prototype = {
       $('#mongoimport--host').val(hostStr);
     }, 100);
 
-    observeLogs(sessionId);
+    if (sessionId) observeLogs(sessionId);
   }
 };
 
