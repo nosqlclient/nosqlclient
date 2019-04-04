@@ -135,16 +135,22 @@ Backup.prototype = {
   },
 
   callBinaryMethod(button, binary, argsMethod) {
+    if (!button || this.binaries.indexOf(binary) === -1 || !argsMethod || typeof argsMethod !== 'function') return;
+
     Notification.start(button);
     const args = argsMethod();
     if (args === null) {
       Notification.stop();
       return;
     }
+
     Communicator.call({
       methodName: binary,
       args: { args },
-      callback: (err) => { if (err) ErrorHandler.showMeteorFuncError(err, null); }
+      callback: (err) => {
+        if (err) ErrorHandler.showMeteorFuncError(err, null);
+        Notification.stop();
+      }
     });
   },
 

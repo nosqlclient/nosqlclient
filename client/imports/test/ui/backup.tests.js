@@ -280,4 +280,160 @@ describe('Backup', () => {
       expect(UIComponents.Editor.setCodeMirrorValue.calledWithExactly($(`#${binary}`), '')).to.equal(true);
     });
   });
+
+  describe('callBinaryMethod tests', () => {
+    const args = { myTest: 123, name: 'sercan' };
+
+    beforeEach(() => {
+      sinon.stub(Notification, 'start');
+      sinon.stub(Notification, 'stop');
+      sinon.stub(ErrorHandler, 'showMeteorFuncError');
+    });
+
+    afterEach(() => {
+      Notification.start.restore();
+      Notification.stop.restore();
+      ErrorHandler.showMeteorFuncError.restore();
+    });
+
+    it('callBinaryMethod invalid param', () => {
+      // prepare
+      sinon.spy(Communicator, 'call');
+
+      // execute
+      Backup.callBinaryMethod('#someButton');
+
+      // verify
+      expect(Communicator.call.callCount).to.equal(0);
+      expect(Notification.start.callCount).to.equal(0);
+      expect(ErrorHandler.showMeteorFuncError.callCount).to.equal(0);
+
+      // cleanup
+      Communicator.call.restore();
+    });
+
+    it('callBinaryMethod invalid param (1)', () => {
+      // prepare
+      sinon.spy(Communicator, 'call');
+
+      // execute
+      Backup.callBinaryMethod('', 'mongodump', () => {});
+
+      // verify
+      expect(Communicator.call.callCount).to.equal(0);
+      expect(Notification.start.callCount).to.equal(0);
+      expect(ErrorHandler.showMeteorFuncError.callCount).to.equal(0);
+
+      // cleanup
+      Communicator.call.restore();
+    });
+
+    it('callBinaryMethod invalid param (2)', () => {
+      // prepare
+      sinon.spy(Communicator, 'call');
+
+      // execute
+      Backup.callBinaryMethod('#testButton', 'invalid', () => {});
+
+      // verify
+      expect(Communicator.call.callCount).to.equal(0);
+      expect(Notification.start.callCount).to.equal(0);
+      expect(ErrorHandler.showMeteorFuncError.callCount).to.equal(0);
+
+      // cleanup
+      Communicator.call.restore();
+    });
+
+    it('callBinaryMethod invalid param (3)', () => {
+      // prepare
+      sinon.spy(Communicator, 'call');
+
+      // execute
+      Backup.callBinaryMethod('#testButton', 'mongoexport', 'invalid');
+
+      // verify
+      expect(Communicator.call.callCount).to.equal(0);
+      expect(Notification.start.callCount).to.equal(0);
+      expect(ErrorHandler.showMeteorFuncError.callCount).to.equal(0);
+
+      // cleanup
+      Communicator.call.restore();
+    });
+
+    it('callBinaryMethod valid param', () => {
+      // prepare
+      const binary = 'mongodump';
+      sinon.stub(Backup, 'getMongodumpArgs').returns(args);
+      sinon.stub(Communicator, 'call').yieldsTo('callback');
+
+      // execute
+      Backup.callBinaryMethod('#testButton', binary, Backup.getMongodumpArgs);
+
+      // verify
+      expect(Notification.start.callCount).to.equal(1);
+      expect(Notification.start.calledWithExactly('#testButton')).to.equal(true);
+      expect(Communicator.call.callCount).to.equal(1);
+      expect(Communicator.call.calledWithMatch({ methodName: binary, args: { args }, callback: sinon.match.func })).to.equal(true);
+      expect(Backup.getMongodumpArgs.callCount).to.equal(1);
+      expect(Backup.getMongodumpArgs.calledWithExactly()).to.equal(true);
+      expect(Notification.stop.callCount).to.equal(1);
+      expect(Notification.stop.calledWithExactly()).to.equal(true);
+      expect(ErrorHandler.showMeteorFuncError.callCount).to.equal(0);
+
+      // cleanup
+      Backup.getMongodumpArgs.restore();
+      Communicator.call.restore();
+    });
+
+    it('callBinaryMethod valid param & communicator yields error', () => {
+      // prepare
+      const binary = 'mongodump';
+      const error = { error: 'test' };
+      sinon.stub(Backup, 'getMongodumpArgs').returns(args);
+      sinon.stub(Communicator, 'call').yieldsTo('callback', error);
+
+      // execute
+      Backup.callBinaryMethod('#testButton', binary, Backup.getMongodumpArgs);
+
+      // verify
+      expect(Notification.start.callCount).to.equal(1);
+      expect(Notification.start.calledWithExactly('#testButton')).to.equal(true);
+      expect(Communicator.call.callCount).to.equal(1);
+      expect(Communicator.call.calledWithMatch({ methodName: binary, args: { args }, callback: sinon.match.func })).to.equal(true);
+      expect(Backup.getMongodumpArgs.callCount).to.equal(1);
+      expect(Backup.getMongodumpArgs.calledWithExactly()).to.equal(true);
+      expect(Notification.stop.callCount).to.equal(1);
+      expect(Notification.stop.calledWithExactly()).to.equal(true);
+      expect(ErrorHandler.showMeteorFuncError.callCount).to.equal(1);
+      expect(ErrorHandler.showMeteorFuncError.calledWithExactly(error, null)).to.equal(true);
+
+      // cleanup
+      Backup.getMongodumpArgs.restore();
+      Communicator.call.restore();
+    });
+
+    it('callBinaryMethod valid param & argsMethod returns null', () => {
+      // prepare
+      const binary = 'mongodump';
+      sinon.stub(Backup, 'getMongodumpArgs').returns(null);
+      sinon.spy(Communicator, 'call');
+
+      // execute
+      Backup.callBinaryMethod('#testButton', binary, Backup.getMongodumpArgs);
+
+      // verify
+      expect(Notification.start.callCount).to.equal(1);
+      expect(Notification.start.calledWithExactly('#testButton')).to.equal(true);
+      expect(Backup.getMongodumpArgs.callCount).to.equal(1);
+      expect(Backup.getMongodumpArgs.calledWithExactly()).to.equal(true);
+      expect(Communicator.call.callCount).to.equal(0);
+      expect(Notification.stop.callCount).to.equal(1);
+      expect(Notification.stop.calledWithExactly()).to.equal(true);
+      expect(ErrorHandler.showMeteorFuncError.callCount).to.equal(0);
+
+      // cleanup
+      Backup.getMongodumpArgs.restore();
+      Communicator.call.restore();
+    });
+  });
 });
