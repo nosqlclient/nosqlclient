@@ -3,7 +3,7 @@
 import sinon from 'sinon';
 import { expect } from 'chai';
 import { CollectionAdd } from '/client/imports/ui';
-import { Enums, ExtendedJSON, SessionManager, UIComponents } from '/client/imports/modules';
+import { Enums, ExtendedJSON, Notification, SessionManager, UIComponents } from '/client/imports/modules';
 import $ from 'jquery';
 import Helper from '../../../helpers/helper';
 
@@ -264,6 +264,196 @@ describe('CollectionAdd', () => {
       ExtendedJSON.convertAndCheckJSON.restore();
       UIComponents.Editor.getCodeMirrorValue.restore();
       Helper.translate.restore();
+    });
+  });
+
+  describe('gatherOptions tests', () => {
+    const collationVal = 'collation';
+    const pipelineVal = 'pipeline';
+    const storageEngineVal = 'storageEngine';
+    const validatorVal = 'validator';
+
+    beforeEach(() => {
+      sinon.stub(UIComponents.Editor, 'getCodeMirrorValue').withArgs($('#divCollationAddCollection')).returns(collationVal).withArgs($('#divViewPipeline'))
+        .returns(pipelineVal)
+        .withArgs($('#divStorageEngine'))
+        .returns(storageEngineVal)
+        .withArgs($('#divValidatorAddCollection'))
+        .returns(validatorVal);
+      sinon.stub(Notification, 'error');
+    });
+
+    afterEach(() => {
+      UIComponents.Editor.getCodeMirrorValue.restore();
+      Notification.error.restore();
+    });
+
+    it('gatherOptions getOptions error', () => {
+      // prepare
+      sinon.stub(CollectionAdd, 'getOptions').returns({ ERROR: 'errorTEST' });
+
+      // execute
+      const result = CollectionAdd.gatherOptions();
+
+      // verify
+      expect(result).to.equal(undefined);
+      expect(Notification.error.callCount).to.equal(1);
+      expect(Notification.error.calledWithExactly('errorTEST')).to.equal(true);
+      expect(UIComponents.Editor.getCodeMirrorValue.callCount).to.equal(0);
+
+      // cleanup
+      CollectionAdd.getOptions.restore();
+    });
+
+    it('gatherOptions getOptions without error & collation error', () => {
+      // prepare
+      sinon.stub(CollectionAdd, 'getOptions').returns({ a: 'x', b: 123, c: true });
+      sinon.stub(ExtendedJSON, 'convertAndCheckJSON').withArgs(collationVal).returns({ ERROR: 'errorErrorERROR' });
+
+      // execute
+      const result = CollectionAdd.gatherOptions();
+
+      // verify
+      expect(result).to.equal(undefined);
+      expect(Notification.error.callCount).to.equal(1);
+      expect(Notification.error.calledWithExactly('syntax-error-collation', null, { error: 'errorErrorERROR' })).to.equal(true);
+
+      // cleanup
+      CollectionAdd.getOptions.restore();
+      ExtendedJSON.convertAndCheckJSON.restore();
+    });
+
+    it('gatherOptions getOptions without error & collation error', () => {
+      // prepare
+      sinon.stub(CollectionAdd, 'getOptions').returns({ a: 'x', b: 123, c: true });
+      sinon.stub(ExtendedJSON, 'convertAndCheckJSON').withArgs(collationVal).returns({ ERROR: 'errorErrorERROR' });
+
+      // execute
+      const result = CollectionAdd.gatherOptions();
+
+      // verify
+      expect(result).to.equal(undefined);
+      expect(Notification.error.callCount).to.equal(1);
+      expect(Notification.error.calledWithExactly('syntax-error-collation', null, { error: 'errorErrorERROR' })).to.equal(true);
+
+      // cleanup
+      CollectionAdd.getOptions.restore();
+      ExtendedJSON.convertAndCheckJSON.restore();
+    });
+
+    it('gatherOptions getOptions without error & pipeline error & view', () => {
+      // prepare
+      sinon.stub(CollectionAdd, 'getOptions').returns({ a: 'x', b: 123, c: true });
+      sinon.stub(ExtendedJSON, 'convertAndCheckJSON').withArgs(collationVal).returns({ a: 1 }).withArgs(pipelineVal)
+        .returns({ ERROR: 'ERRORPIPE' });
+      sinon.stub($.prototype, 'val').returns('view');
+
+      // execute
+      const result = CollectionAdd.gatherOptions();
+
+      // verify
+      expect(result).to.equal(undefined);
+      expect(Notification.error.callCount).to.equal(1);
+      expect(Notification.error.calledWithExactly('syntax-error-pipeline', null, { error: 'ERRORPIPE' })).to.equal(true);
+
+      // cleanup
+      CollectionAdd.getOptions.restore();
+      ExtendedJSON.convertAndCheckJSON.restore();
+      $.prototype.val.restore();
+    });
+
+    it('gatherOptions getOptions without error & view', () => {
+      // prepare
+      sinon.stub(CollectionAdd, 'getOptions').returns({ a: 'x', b: 123, c: true });
+      sinon.stub(ExtendedJSON, 'convertAndCheckJSON').withArgs(collationVal).returns({ d: 1 }).withArgs(pipelineVal)
+        .returns({ e: 2 });
+      sinon.stub($.prototype, 'val').returns('view');
+
+      // execute
+      const result = CollectionAdd.gatherOptions();
+
+      // verify
+      expect(result).to.eql({ a: 'x', b: 123, c: true, collation: { d: 1 }, pipeline: { e: 2 }, viewOn: 'view' });
+      expect(Notification.error.callCount).to.equal(0);
+
+      // cleanup
+      CollectionAdd.getOptions.restore();
+      ExtendedJSON.convertAndCheckJSON.restore();
+      $.prototype.val.restore();
+    });
+
+    it('gatherOptions getOptions without error & collection', () => {
+      // prepare
+      sinon.stub(CollectionAdd, 'getOptions').returns({ a: 'x', b: 123, c: true });
+      sinon.stub(ExtendedJSON, 'convertAndCheckJSON').withArgs(collationVal).returns({ d: 1 }).withArgs(pipelineVal)
+        .returns({ e: 2 })
+        .withArgs(storageEngineVal)
+        .returns({ f: 3 })
+        .withArgs(validatorVal)
+        .returns({ g: 4 });
+      sinon.stub($.prototype, 'val').returns('VAL'); // this works for all val valls :/
+
+      // execute
+      const result = CollectionAdd.gatherOptions();
+
+      // verify
+      expect(result).to.eql({ a: 'x', b: 123, c: true, storageEngine: { f: 3 }, collation: { d: 1 }, validator: { g: 4 }, validationAction: 'VAL', validationLevel: 'VAL' });
+      expect(Notification.error.callCount).to.equal(0);
+
+      // cleanup
+      CollectionAdd.getOptions.restore();
+      ExtendedJSON.convertAndCheckJSON.restore();
+      $.prototype.val.restore();
+    });
+
+    it('gatherOptions getOptions without error & storageEngine error & collection', () => {
+      // prepare
+      sinon.stub(CollectionAdd, 'getOptions').returns({ a: 'x', b: 123, c: true });
+      sinon.stub(ExtendedJSON, 'convertAndCheckJSON').withArgs(collationVal).returns({ d: 1 }).withArgs(pipelineVal)
+        .returns({ e: 2 })
+        .withArgs(storageEngineVal)
+        .returns({ ERROR: 3 })
+        .withArgs(validatorVal)
+        .returns({ g: 4 });
+      sinon.stub($.prototype, 'val').returns('VAL'); // this works for all val valls :/
+
+      // execute
+      const result = CollectionAdd.gatherOptions();
+
+      // verify
+      expect(result).to.equal(undefined);
+      expect(Notification.error.callCount).to.equal(1);
+      expect(Notification.error.calledWithExactly('syntax-error-storage-engine', null, { error: 3 })).to.equal(true);
+
+      // cleanup
+      CollectionAdd.getOptions.restore();
+      ExtendedJSON.convertAndCheckJSON.restore();
+      $.prototype.val.restore();
+    });
+
+    it('gatherOptions getOptions without error & validator error & collection', () => {
+      // prepare
+      sinon.stub(CollectionAdd, 'getOptions').returns({ a: 'x', b: 123, c: true });
+      sinon.stub(ExtendedJSON, 'convertAndCheckJSON').withArgs(collationVal).returns({ d: 1 }).withArgs(pipelineVal)
+        .returns({ e: 2 })
+        .withArgs(storageEngineVal)
+        .returns({ f: 3 })
+        .withArgs(validatorVal)
+        .returns({ ERROR: 4 });
+      sinon.stub($.prototype, 'val').returns('VAL'); // this works for all val valls :/
+
+      // execute
+      const result = CollectionAdd.gatherOptions();
+
+      // verify
+      expect(result).to.equal(undefined);
+      expect(Notification.error.callCount).to.equal(1);
+      expect(Notification.error.calledWithExactly('syntax-error-validator', null, { error: 4 })).to.equal(true);
+
+      // cleanup
+      CollectionAdd.getOptions.restore();
+      ExtendedJSON.convertAndCheckJSON.restore();
+      $.prototype.val.restore();
     });
   });
 });
