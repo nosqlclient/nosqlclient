@@ -34,8 +34,9 @@ CollectionAdd.prototype = {
 
   getOptions() {
     const result = {};
+    const collectionAddOptions = SessionManager.get(SessionManager.strSessionSelectedAddCollectionOptions);
 
-    if ($.inArray('CAPPED', SessionManager.get(SessionManager.strSessionSelectedAddCollectionOptions)) !== -1) {
+    if ($.inArray('CAPPED', collectionAddOptions) !== -1) {
       result[Enums.ADD_COLLECTION_OPTIONS.CAPPED] = true;
       const maxDocs = $('#inputCappedCollectionMaxDocs').val();
       const size = $('#inputCappedCollectionSize').val();
@@ -43,11 +44,11 @@ CollectionAdd.prototype = {
       if (size) result.size = parseInt(size, 10);
     }
 
-    if ($.inArray('FLAGS', SessionManager.get(SessionManager.strSessionSelectedAddCollectionOptions)) !== -1) {
+    if ($.inArray('FLAGS', collectionAddOptions) !== -1) {
       result[Enums.ADD_COLLECTION_OPTIONS.FLAGS] = this.getFlagValue();
     }
 
-    if ($.inArray('INDEX_OPTION_DEFAULTS', SessionManager.get(SessionManager.strSessionSelectedAddCollectionOptions)) !== -1) {
+    if ($.inArray('INDEX_OPTION_DEFAULTS', collectionAddOptions) !== -1) {
       let val = UIComponents.Editor.getCodeMirrorValue($('#divIndexOptionDefaults'));
       if (!val) result[Enums.ADD_COLLECTION_OPTIONS.INDEX_OPTION_DEFAULTS] = {};
       else {

@@ -3,8 +3,9 @@
 import sinon from 'sinon';
 import { expect } from 'chai';
 import { CollectionAdd } from '/client/imports/ui';
-import { Enums, SessionManager, UIComponents } from '/client/imports/modules';
+import { Enums, ExtendedJSON, SessionManager, UIComponents } from '/client/imports/modules';
 import $ from 'jquery';
+import Helper from '../../../helpers/helper';
 
 describe('CollectionAdd', () => {
   describe('init tests', () => {
@@ -169,5 +170,100 @@ describe('CollectionAdd', () => {
   });
 
   describe('getOptions tests', () => {
+    it('getOptions with no options', () => {
+      // prepare
+      sinon.stub(SessionManager, 'get').returns([]);
+
+      // execute
+      const options = CollectionAdd.getOptions();
+
+      // verify
+      expect(options).to.eql({});
+
+      // clean up
+      SessionManager.get.restore();
+    });
+
+    it('getOptions with options', () => {
+      // prepare
+      sinon.stub(SessionManager, 'get').returns(['CAPPED']);
+      sinon.stub($.prototype, 'val').returns('5');
+
+      // execute
+      const options = CollectionAdd.getOptions();
+
+      // verify
+      expect(options).to.eql({ max: 5, size: 5, capped: true });
+
+      // clean up
+      SessionManager.get.restore();
+      $.prototype.val.restore();
+    });
+
+    it('getOptions with options (1)', () => {
+      // prepare
+      sinon.stub(SessionManager, 'get').returns(['CAPPED', 'FLAGS']);
+      sinon.stub($.prototype, 'val').returns('5');
+      sinon.stub(CollectionAdd, 'getFlagValue').returns(-1);
+
+      // execute
+      const options = CollectionAdd.getOptions();
+
+      // verify
+      expect(options).to.eql({ max: 5, size: 5, capped: true, flags: -1 });
+
+      // clean up
+      SessionManager.get.restore();
+      $.prototype.val.restore();
+      CollectionAdd.getFlagValue.restore();
+    });
+
+    it('getOptions with options (2)', () => {
+      // prepare
+      sinon.stub(SessionManager, 'get').returns(['CAPPED', 'FLAGS', 'INDEX_OPTION_DEFAULTS']);
+      sinon.stub($.prototype, 'val').returns('5');
+      sinon.stub(CollectionAdd, 'getFlagValue').returns(-1);
+      sinon.stub(ExtendedJSON, 'convertAndCheckJSON').returns({ test: 'sercan' });
+      sinon.stub(UIComponents.Editor, 'getCodeMirrorValue').returns('NOT_IMPORTANT');
+
+      // execute
+      const options = CollectionAdd.getOptions();
+
+      // verify
+      expect(options).to.eql({ max: 5, size: 5, capped: true, flags: -1, indexOptionDefaults: { test: 'sercan' } });
+
+      // clean up
+      SessionManager.get.restore();
+      $.prototype.val.restore();
+      CollectionAdd.getFlagValue.restore();
+      ExtendedJSON.convertAndCheckJSON.restore();
+      UIComponents.Editor.getCodeMirrorValue.restore();
+    });
+
+    it('getOptions with options (3)', () => {
+      // prepare
+      const error = 'errorTEST';
+
+      sinon.stub(SessionManager, 'get').returns(['FLAGS', 'INDEX_OPTION_DEFAULTS']);
+      sinon.stub(CollectionAdd, 'getFlagValue').returns(-1);
+      sinon.stub(ExtendedJSON, 'convertAndCheckJSON').returns({ ERROR: error, test: 'sercan' });
+      sinon.stub(UIComponents.Editor, 'getCodeMirrorValue').returns('NOT_IMPORTANT');
+      sinon.stub(Helper, 'translate').returns(`${error}translated`);
+
+      // execute
+      const options = CollectionAdd.getOptions();
+
+      // verify
+      expect(options).to.eql({ flags: -1, ERROR: `${error}translated` });
+      expect(Helper.translate.callCount).to.equal(1);
+      expect(Helper.translate.calledWithMatch(({ key: 'syntax-error-index-option-defaults', options: { error } })));
+
+      // clean up
+      SessionManager.get.restore();
+      CollectionAdd.getFlagValue.restore();
+      ExtendedJSON.convertAndCheckJSON.restore();
+      UIComponents.Editor.getCodeMirrorValue.restore();
+      Helper.translate.restore();
+    });
   });
 });
