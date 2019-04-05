@@ -116,19 +116,15 @@ CollectionAdd.prototype = {
   },
 
   prepareFormAsCollection() {
-    $('#divViewCollections').hide();
-    $('#divViewPipelineFormGroup').hide();
-    $('#anchorStorageEngine').attr('data-toggle', 'tab');
-    $('#anchorValidator').attr('data-toggle', 'tab');
+    $('#divViewCollections, #divViewPipelineFormGroup').hide();
+    $('#anchorStorageEngine, #anchorValidator').attr('data-toggle', 'tab');
     $('#cmbAddCollectionViewOptions').prop('disabled', false).trigger('chosen:updated');
   },
 
   prepareFormAsView() {
     const cmbOptions = $('#cmbAddCollectionViewOptions');
-    $('#anchorValidator').removeAttr('data-toggle');
-    $('#anchorStorageEngine').removeAttr('data-toggle');
-    $('#divViewCollections').show();
-    $('#divViewPipelineFormGroup').show();
+    $('#anchorValidator, #anchorStorageEngine').removeAttr('data-toggle');
+    $('#divViewCollections, #divViewPipelineFormGroup').show();
     cmbOptions.prop('disabled', true);
     cmbOptions.find('option').prop('selected', false).trigger('chosen:updated');
     SessionManager.set(SessionManager.strSessionSelectedAddCollectionOptions, []);

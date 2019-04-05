@@ -1,0 +1,36 @@
+{
+  "include": [
+  ],
+  "exclude": {
+    "general": [],
+    "server": [
+      "**/node_modules/**/*.json",
+      "**/.!(meteor)*/**",
+      "**/packages/!(local-test_?*.js)",
+      "**/+([^:]):+([^:])/**",
+      "**/@(test|tests|spec|specs)/**",
+      "**/?(*.)test?(s).?*",
+      "**/?(*.)spec?(s).?*",
+      "**/?(*.)app-test?(s).?*",
+      "**/?(*.)app-spec?(s).?*"
+    ],
+    "client": [
+      "**/*.json",
+      "**/client/stylesheets/**",
+      "**/client/plugins/**",
+      "**/client/imports/views/**",
+      "**/.npm/package/node_modules/**",
+      "**/web.browser/packages/**",
+      "**/.?*/**",
+      "**/packages/!(local-test_?*.js)",
+      "**/+([^:]):+([^:])/**",
+      "**/@(test|tests|spec|specs)/**",
+      "**/?(*.)test?(s).?*",
+      "**/?(*.)spec?(s).?*",
+      "**/?(*.)app-test?(s).?*",
+      "**/?(*.)app-spec?(s).?*"
+    ]
+  },
+  "remapFormat": ["html", "cobertura", "clover", "json", "json-summary", "lcovonly", "teamcity", "text", "text-summary"],
+  "output": "./.coverage"
+}

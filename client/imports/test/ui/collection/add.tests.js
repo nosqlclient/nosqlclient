@@ -456,4 +456,42 @@ describe('CollectionAdd', () => {
       $.prototype.val.restore();
     });
   });
+
+  describe('prepareFormAsCollection tests', () => {
+    let propStub;
+    beforeEach(() => {
+      propStub = {
+        trigger: sinon.stub()
+      };
+      sinon.stub($.prototype, 'hide');
+      sinon.stub($.prototype, 'attr');
+      sinon.stub($.prototype, 'prop').returns(propStub);
+    });
+
+    afterEach(() => {
+      $.prototype.hide.restore();
+      $.prototype.attr.restore();
+      $.prototype.prop.restore();
+    });
+
+    it('prepareFormAsCollection', () => {
+      // prepare
+
+      // execute
+      CollectionAdd.prepareFormAsCollection();
+
+      // verify
+      expect($.prototype.hide.callCount).to.equal(1);
+      expect($.prototype.hide.getCall(0).thisValue.selector).to.equal('#divViewCollections, #divViewPipelineFormGroup');
+      expect($.prototype.hide.calledWithExactly()).to.equal(true);
+      expect($.prototype.attr.callCount).to.equal(1);
+      expect($.prototype.attr.getCall(0).thisValue.selector).to.equal('#anchorStorageEngine, #anchorValidator');
+      expect($.prototype.attr.calledWithExactly('data-toggle', 'tab')).to.equal(true);
+      expect($.prototype.prop.callCount).to.equal(1);
+      expect($.prototype.prop.getCall(0).thisValue.selector).to.equal('#cmbAddCollectionViewOptions');
+      expect($.prototype.prop.calledWithExactly('disabled', false)).to.equal(true);
+      expect(propStub.trigger.callCount).to.equal(1);
+      expect(propStub.trigger.calledWithExactly('chosen:updated')).to.equal(true);
+    });
+  });
 });
