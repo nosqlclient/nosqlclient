@@ -39,12 +39,8 @@ CollectionAdd.prototype = {
       result[Enums.ADD_COLLECTION_OPTIONS.CAPPED] = true;
       const maxDocs = $('#inputCappedCollectionMaxDocs').val();
       const size = $('#inputCappedCollectionSize').val();
-      if (maxDocs) {
-        result.max = parseInt(maxDocs, 10);
-      }
-      if (size) {
-        result.size = parseInt(size, 10);
-      }
+      if (maxDocs) result.max = parseInt(maxDocs, 10);
+      if (size) result.size = parseInt(size, 10);
     }
 
     if ($.inArray('FLAGS', SessionManager.get(SessionManager.strSessionSelectedAddCollectionOptions)) !== -1) {
