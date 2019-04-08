@@ -643,4 +643,280 @@ describe('CollectionAdd', () => {
       expect(valStub.trigger.alwaysCalledWithExactly('chosen:updated')).to.equal(true);
     });
   });
+
+  describe('setOptionsForCollection tests', () => {
+    let clock;
+    let valStub;
+
+    beforeEach(() => {
+      valStub = {
+        trigger: sinon.stub()
+      };
+      clock = sinon.useFakeTimers();
+      sinon.stub($.prototype, 'val').returns(valStub);
+      sinon.stub(UIComponents.Editor, 'setCodeMirrorValue');
+      sinon.stub(UIComponents.Checkbox, 'toggleState');
+    });
+
+    afterEach(() => {
+      clock.restore();
+      $.prototype.val.restore();
+      UIComponents.Editor.setCodeMirrorValue.restore();
+      UIComponents.Checkbox.toggleState.restore();
+    });
+
+    it('setOptionsForCollection with invalid param', () => {
+      // prepare
+
+      // execute
+      CollectionAdd.setOptionsForCollection();
+
+      // verify
+      expect($.prototype.val.callCount).to.equal(0);
+      expect(UIComponents.Checkbox.toggleState.callCount).to.equal(0);
+      expect(UIComponents.Editor.setCodeMirrorValue.callCount).to.equal(0);
+    });
+
+    it('setOptionsForCollection with invalid param (1)', () => {
+      // prepare
+
+      // execute
+      CollectionAdd.setOptionsForCollection('invalid');
+
+      // verify
+      expect($.prototype.val.callCount).to.equal(0);
+      expect(UIComponents.Checkbox.toggleState.callCount).to.equal(0);
+      expect(UIComponents.Editor.setCodeMirrorValue.callCount).to.equal(0);
+    });
+
+    it('setOptionsForCollection with valid param without tick', () => {
+      // prepare
+
+      // execute
+      CollectionAdd.setOptionsForCollection({ options: { capped: true, max: 30, size: 1, flags: 1, indexOptionDefaults: { x: 1, y: 2 } } });
+
+      // verify
+      expect(UIComponents.Editor.setCodeMirrorValue.callCount).to.equal(0);
+      expect(UIComponents.Checkbox.toggleState.callCount).to.equal(0);
+      expect($.prototype.val.callCount).to.equal(1);
+      expect($.prototype.val.calledWithExactly(['CAPPED', 'FLAGS', 'INDEX_OPTION_DEFAULTS'])).to.equal(true);
+      expect(valStub.trigger.callCount).to.equal(1);
+      expect(valStub.trigger.calledWithExactly('chosen:updated')).to.equal(true);
+    });
+
+    it('setOptionsForCollection with valid param with tick', () => {
+      // prepare
+      const indexOptionDefaults = { x: 1, y: 2 };
+      const max = 30;
+      const size = 1;
+
+      // execute
+      CollectionAdd.setOptionsForCollection({ options: { capped: true, max, size, flags: 1, indexOptionDefaults } });
+
+      // verify
+      clock.tick(150);
+
+      expect(UIComponents.Editor.setCodeMirrorValue.callCount).to.equal(1);
+      expect(UIComponents.Editor.setCodeMirrorValue.calledWithExactly($('#divIndexOptionDefaults'), JSON.stringify(indexOptionDefaults), $('#txtIndexOptionDefaults'))).to.equal(true);
+      expect(UIComponents.Checkbox.toggleState.callCount).to.equal(2);
+      expect(UIComponents.Checkbox.toggleState.calledWithExactly($('#inputTwoSizesIndexes'), 'check')).to.equal(true);
+      expect(UIComponents.Checkbox.toggleState.calledWithExactly($('#inputNoPadding'), 'uncheck')).to.equal(true);
+      expect($.prototype.val.callCount).to.equal(3);
+      expect($.prototype.val.calledWithExactly(max)).to.equal(true);
+      expect($.prototype.val.calledWithExactly(size)).to.equal(true);
+      expect($.prototype.val.calledWithExactly(['CAPPED', 'FLAGS', 'INDEX_OPTION_DEFAULTS'])).to.equal(true);
+      expect(valStub.trigger.callCount).to.equal(1);
+      expect(valStub.trigger.calledWithExactly('chosen:updated')).to.equal(true);
+    });
+  });
+
+  describe('prepareShowForm tests', () => {
+    let valStub;
+    const viewInfoTranslated = 'View';
+    const collectionInfoTranslated = 'Collection';
+
+    const assertView = function (name, pipeline, collation, viewOn) {
+      expect($.prototype.tab.callCount).to.equal(1);
+      expect($.prototype.tab.calledWithExactly('show')).to.equal(true);
+      expect($.prototype.tab.getCall(0).thisValue.selector).to.equal('.nav-tabs a[href="#tab-1-options"]');
+      expect($.prototype.text.callCount).to.equal(2);
+      expect($.prototype.text.calledWithExactly(viewInfoTranslated)).to.equal(true);
+      expect($.prototype.text.getCall(0).thisValue.selector).to.equal('#collectionAddModalTitle');
+      expect($.prototype.text.calledWithExactly(name)).to.equal(true);
+      expect($.prototype.text.getCall(1).thisValue.selector).to.equal('#spanColName');
+
+      expect($.prototype.val.callCount).to.equal(viewOn ? 3 : 2);
+      if (viewOn)expect($.prototype.val.calledWithExactly(viewOn)).to.equal(true);
+
+      expect($.prototype.val.calledWithExactly('view')).to.equal(true);
+      expect($.prototype.val.calledWithExactly(name)).to.equal(true);
+      expect(valStub.trigger.callCount).to.equal(viewOn ? 2 : 1);
+      expect(valStub.trigger.alwaysCalledWithExactly('chosen:updated')).to.equal(true);
+      expect($.prototype.prop.callCount).to.equal(1);
+      expect($.prototype.prop.calledWithExactly('disabled', true)).to.equal(true);
+      expect($.prototype.prop.getCall(0).thisValue.selector).to.equal('#btnCreateCollection');
+
+      expect(UIComponents.Editor.setCodeMirrorValue.callCount).to.equal(pipeline ? 2 : 0);
+      if (pipeline)expect(UIComponents.Editor.setCodeMirrorValue.calledWithExactly($('#divViewPipeline'), JSON.stringify(pipeline), $('#txtViewPipeline'))).to.equal(true);
+      if (collation)expect(UIComponents.Editor.setCodeMirrorValue.calledWithExactly($('#divCollationAddCollection'), JSON.stringify(collation), $('#txtCollationAddCollection'))).to.equal(true);
+
+      expect(CollectionAdd.prepareFormAsView.callCount).to.equal(1);
+      expect(CollectionAdd.prepareFormAsView.calledWithExactly()).to.equal(true);
+      expect(CollectionAdd.setStorageEngineAndValidator.callCount).to.equal(0);
+      expect(CollectionAdd.prepareFormAsCollection.callCount).to.equal(0);
+      expect(CollectionAdd.setOptionsForCollection.callCount).to.equal(0);
+    };
+
+    const assertCollection = function (collection) {
+      expect($.prototype.tab.callCount).to.equal(1);
+      expect($.prototype.tab.calledWithExactly('show')).to.equal(true);
+      expect($.prototype.tab.getCall(0).thisValue.selector).to.equal('.nav-tabs a[href="#tab-1-options"]');
+      expect($.prototype.text.callCount).to.equal(2);
+      expect($.prototype.text.calledWithExactly(collectionInfoTranslated)).to.equal(true);
+      expect($.prototype.text.getCall(0).thisValue.selector).to.equal('#collectionAddModalTitle');
+      expect($.prototype.text.calledWithExactly(collection.name)).to.equal(true);
+      expect($.prototype.text.getCall(1).thisValue.selector).to.equal('#spanColName');
+      expect($.prototype.val.callCount).to.equal(2);
+      expect($.prototype.val.calledWithExactly('collection')).to.equal(true);
+      expect($.prototype.val.calledWithExactly(collection.name)).to.equal(true);
+      expect(valStub.trigger.callCount).to.equal(1);
+      expect(valStub.trigger.alwaysCalledWithExactly('chosen:updated')).to.equal(true);
+      expect($.prototype.prop.callCount).to.equal(1);
+      expect($.prototype.prop.calledWithExactly('disabled', true)).to.equal(true);
+      expect($.prototype.prop.getCall(0).thisValue.selector).to.equal('#btnCreateCollection');
+      expect(UIComponents.Editor.setCodeMirrorValue.callCount).to.equal((collection.options && collection.options.collation) ? 1 : 0);
+      if (collection.options && collection.options.collation) {
+        expect(UIComponents.Editor.setCodeMirrorValue.calledWithExactly($('#divCollationAddCollection'), JSON.stringify(collection.options.collation), $('#txtCollationAddCollection'))).to.equal(true);
+      }
+      expect(CollectionAdd.prepareFormAsView.callCount).to.equal(0);
+      expect(CollectionAdd.prepareFormAsCollection.callCount).to.equal(1);
+      expect(CollectionAdd.prepareFormAsCollection.calledWithExactly()).to.equal(true);
+      expect(CollectionAdd.setStorageEngineAndValidator.callCount).to.equal(1);
+      expect(CollectionAdd.setStorageEngineAndValidator.calledWithExactly(collection)).to.equal(true);
+      expect(CollectionAdd.setOptionsForCollection.callCount).to.equal(1);
+      expect(CollectionAdd.setOptionsForCollection.calledWithExactly(collection)).to.equal(true);
+    };
+
+    beforeEach(() => {
+      valStub = {
+        trigger: sinon.stub()
+      };
+      sinon.stub($.prototype, 'val').returns(valStub);
+      sinon.stub($.prototype, 'text');
+      sinon.stub($.prototype, 'prop');
+      sinon.stub($.prototype, 'tab');
+      sinon.stub(UIComponents.Editor, 'setCodeMirrorValue');
+      sinon.stub(CollectionAdd, 'prepareFormAsView');
+      sinon.stub(CollectionAdd, 'prepareFormAsCollection');
+      sinon.stub(CollectionAdd, 'setStorageEngineAndValidator');
+      sinon.stub(CollectionAdd, 'setOptionsForCollection');
+      sinon.stub(Helper, 'translate').withArgs({ key: 'view_info' }).returns(viewInfoTranslated).withArgs({ key: 'collection_info' })
+        .returns(collectionInfoTranslated);
+    });
+
+    afterEach(() => {
+      $.prototype.val.restore();
+      $.prototype.text.restore();
+      $.prototype.prop.restore();
+      $.prototype.tab.restore();
+      UIComponents.Editor.setCodeMirrorValue.restore();
+      CollectionAdd.prepareFormAsView.restore();
+      CollectionAdd.prepareFormAsCollection.restore();
+      CollectionAdd.setStorageEngineAndValidator.restore();
+      CollectionAdd.setOptionsForCollection.restore();
+      Helper.translate.restore();
+    });
+
+    it('prepareShowForm with invalid param', () => {
+      // prepare
+
+      // execute
+      CollectionAdd.prepareShowForm();
+
+      // verify
+      expect($.prototype.val.callCount).to.equal(0);
+      expect($.prototype.text.callCount).to.equal(0);
+      expect($.prototype.prop.callCount).to.equal(0);
+      expect($.prototype.tab.callCount).to.equal(0);
+      expect(UIComponents.Editor.setCodeMirrorValue.callCount).to.equal(0);
+      expect(CollectionAdd.prepareFormAsView.callCount).to.equal(0);
+      expect(CollectionAdd.setStorageEngineAndValidator.callCount).to.equal(0);
+      expect(CollectionAdd.prepareFormAsCollection.callCount).to.equal(0);
+      expect(CollectionAdd.setOptionsForCollection.callCount).to.equal(0);
+    });
+
+    it('prepareShowForm with valid param view', () => {
+      // prepare
+      const pipeline = [{ $limit: 1 }];
+      const collation = { x: 1, y: true, z: 'sercan' };
+      const viewOn = 'me';
+      const name = 'VIEW_NAME';
+
+      // execute
+      CollectionAdd.prepareShowForm({ type: 'view', name, options: { pipeline, viewOn, collation } });
+
+      // verify
+      assertView(name, pipeline, collation, viewOn);
+    });
+
+    it('prepareShowForm with valid param view (1)', () => {
+      // prepare
+      const pipeline = [{ $limit: 1 }];
+      const collation = { x: 1, y: true, z: 'sercan' };
+      const name = 'VIEW_NAME';
+
+      // execute
+      CollectionAdd.prepareShowForm({ type: 'view', name, options: { pipeline, collation } });
+
+      // verify
+      assertView(name, pipeline, collation);
+    });
+
+    it('prepareShowForm with valid param view (2)', () => {
+      // prepare
+      const name = 'VIEW_NAME';
+
+      // execute
+      CollectionAdd.prepareShowForm({ type: 'view', name });
+
+      // verify
+      assertView(name);
+    });
+
+    it('prepareShowForm with valid param view (3)', () => {
+      // prepare
+
+      // execute
+      CollectionAdd.prepareShowForm({ type: 'view' });
+
+      // verify
+      assertView();
+    });
+
+    it('prepareShowForm with valid param collection', () => {
+      // prepare
+      const pipeline = [{ $limit: 1 }];
+      const collation = { x: 1, y: true, z: 'sercan' };
+      const viewOn = 'me';
+      const name = 'COL_NAME';
+      const collection = { type: 'collection', name, options: { pipeline, viewOn, collation } };
+
+      // execute
+      CollectionAdd.prepareShowForm(collection);
+
+      // verify
+      assertCollection(collection);
+    });
+
+    it('prepareShowForm with valid param collection (1)', () => {
+      // prepare
+      const collection = { type: 'collection' };
+
+      // execute
+      CollectionAdd.prepareShowForm(collection);
+
+      // verify
+      assertCollection(collection);
+    });
+  });
 });

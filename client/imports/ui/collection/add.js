@@ -148,23 +148,21 @@ CollectionAdd.prototype = {
   },
 
   setOptionsForCollection(col) {
-    const optionsToSelect = [];
-    if (col.options.capped) {
-      optionsToSelect.push('CAPPED');
-      SessionManager.set(SessionManager.strSessionSelectedAddCollectionOptions, optionsToSelect);
+    if (!col || !col.options) return;
 
-      // let view initialize
-      setTimeout(() => {
+    const optionsToSelect = [];
+    if (col.options.capped) optionsToSelect.push('CAPPED');
+    if (col.options.flags) optionsToSelect.push('FLAGS');
+    if (col.options.indexOptionDefaults) optionsToSelect.push('INDEX_OPTION_DEFAULTS');
+
+    SessionManager.set(SessionManager.strSessionSelectedAddCollectionOptions, optionsToSelect);
+
+    setTimeout(() => {
+      if (optionsToSelect.indexOf('CAPPED') !== -1) {
         $('#inputCappedCollectionMaxDocs').val(col.options.max);
         $('#inputCappedCollectionSize').val(col.options.size);
-      }, 100);
-    }
-    if (col.options.flags) {
-      optionsToSelect.push('FLAGS');
-      SessionManager.set(SessionManager.strSessionSelectedAddCollectionOptions, optionsToSelect);
-
-      // let view initialize
-      setTimeout(() => {
+      }
+      if (optionsToSelect.indexOf('FLAGS') !== -1) {
         const twoSizesIndexes = $('#inputTwoSizesIndexes');
         const noPadding = $('#inputNoPadding');
         let twoSizesState = 'uncheck';
@@ -181,22 +179,18 @@ CollectionAdd.prototype = {
 
         UIComponents.Checkbox.toggleState(twoSizesIndexes, twoSizesState);
         UIComponents.Checkbox.toggleState(noPadding, noPaddingState);
-      }, 100);
-    }
-    if (col.options.indexOptionDefaults) {
-      SessionManager.set(SessionManager.strSessionSelectedAddCollectionOptions, optionsToSelect);
-      optionsToSelect.push('INDEX_OPTION_DEFAULTS');
-
-      // let view initialize
-      setTimeout(() => {
+      }
+      if (optionsToSelect.indexOf('INDEX_OPTION_DEFAULTS') !== -1) {
         UIComponents.Editor.setCodeMirrorValue($('#divIndexOptionDefaults'), JSON.stringify(col.options.indexOptionDefaults), $('#txtIndexOptionDefaults'));
-      }, 100);
-    }
+      }
+    }, 150);
 
     $('#cmbAddCollectionViewOptions').val(optionsToSelect).trigger('chosen:updated');
   },
 
   prepareShowForm(col) {
+    if (!col) return;
+
     const cmbCollectionOrView = $('#cmbCollectionOrView');
     const modalTitle = $('#collectionAddModalTitle');
     $('.nav-tabs a[href="#tab-1-options"]').tab('show');
@@ -205,9 +199,9 @@ CollectionAdd.prototype = {
       this.prepareFormAsView();
       modalTitle.text(Helper.translate({ key: 'view_info' }));
       cmbCollectionOrView.val('view').trigger('chosen:updated');
-      $('#cmbCollectionsViewOn').val(col.options.viewOn).trigger('chosen:updated');
-      if (col.options.pipeline) {
-        UIComponents.Editor.setCodeMirrorValue($('#divViewPipeline'), JSON.stringify(col.options.pipeline), $('#txtViewPipeline'));
+      if (col.options) {
+        if (col.options.viewOn) $('#cmbCollectionsViewOn').val(col.options.viewOn).trigger('chosen:updated');
+        if (col.options.pipeline) UIComponents.Editor.setCodeMirrorValue($('#divViewPipeline'), JSON.stringify(col.options.pipeline), $('#txtViewPipeline'));
       }
     } else {
       this.prepareFormAsCollection();
@@ -221,7 +215,7 @@ CollectionAdd.prototype = {
     $('#spanColName').text(col.name);
     $('#btnCreateCollection').prop('disabled', true);
 
-    if (col.options.collation) UIComponents.Editor.setCodeMirrorValue($('#divCollationAddCollection'), JSON.stringify(col.options.collation), $('#txtCollationAddCollection'));
+    if (col.options && col.options.collation) UIComponents.Editor.setCodeMirrorValue($('#divCollationAddCollection'), JSON.stringify(col.options.collation), $('#txtCollationAddCollection'));
   },
 
   resetForm() {
