@@ -14,10 +14,14 @@ CollectionConversion.prototype = {
     Notification.start('#btnConvertToCapped');
 
     const size = $('#inputConvertToCappedSize').val();
-    const collection = $('#convertToCappedModal').data('collection');
-
     if (!size) {
       Notification.warning('size-required');
+      return;
+    }
+
+    const collection = $('#convertToCappedModal').data('collection');
+    if (!collection) {
+      Notification.warning('collection-not-found');
       return;
     }
 
