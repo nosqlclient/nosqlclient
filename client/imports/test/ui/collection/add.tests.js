@@ -2,11 +2,11 @@
 
 import sinon from 'sinon';
 import { expect } from 'chai';
-import { CollectionAdd } from '/client/imports/ui';
-import { Enums, ExtendedJSON, Notification, SessionManager, UIComponents } from '/client/imports/modules';
+import { CollectionAdd, Connection } from '/client/imports/ui';
+import { Enums, ErrorHandler, ExtendedJSON, Notification, SessionManager, UIComponents } from '/client/imports/modules';
 import $ from 'jquery';
 import Helper from '/client/imports/helpers/helper';
-import { ReactivityProvider } from '/client/imports/facades';
+import { Communicator, ReactivityProvider } from '/client/imports/facades';
 
 // FIXME selector check when stubbing whole object for jquery
 describe('CollectionAdd', () => {
@@ -994,6 +994,147 @@ describe('CollectionAdd', () => {
       expect(ReactivityProvider.findOne.calledWithExactly(ReactivityProvider.types.Connections, { _id: connectionId })).to.equal(true);
       expect(SessionManager.set.callCount).to.equal(1);
       expect(SessionManager.set.calledWithExactly(SessionManager.strSessionSelectedAddCollectionOptions, [])).to.equal(true);
+    });
+  });
+
+  describe('addCollection tests', () => {
+    const assertNoExecution = function (isNameError) {
+      if (isNameError) {
+        expect(Notification.warning.callCount).to.equal(1);
+        expect(Notification.warning.calledWithExactly('name-required')).to.equal(true);
+      } else {
+        expect(Notification.warning.callCount).to.equal(0);
+      }
+      expect(Notification.start.callCount).to.equal(0);
+      expect(Communicator.call.callCount).to.equal(0);
+      expect(ErrorHandler.showMeteorFuncError.callCount).to.equal(0);
+      expect(Connection.connect.callCount).to.equal(0);
+      expect($.prototype.modal.callCount).to.equal(0);
+      expect(Notification.success.callCount).to.equal(0);
+    };
+
+    beforeEach(() => {
+      sinon.stub($.prototype, 'modal');
+      sinon.stub(Notification, 'warning');
+      sinon.stub(Notification, 'start');
+      sinon.stub(Notification, 'success');
+      sinon.stub(ErrorHandler, 'showMeteorFuncError');
+      sinon.stub(Connection, 'connect');
+    });
+
+    afterEach(() => {
+      $.prototype.modal.restore();
+      Notification.warning.restore();
+      Notification.start.restore();
+      Notification.success.restore();
+      ErrorHandler.showMeteorFuncError.restore();
+      Connection.connect.restore();
+    });
+
+    it('addCollection name filled & options correct & communicator yields error', () => {
+      // prepare
+      const name = 'sercan';
+      const options = { x: 1, y: 2, z: true };
+      const error = { error: 'sercan' };
+      sinon.stub(Communicator, 'call').yieldsTo('callback', error);
+      sinon.stub($.prototype, 'val').returns(name);
+      sinon.stub(CollectionAdd, 'gatherOptions').returns(options);
+
+      // execute
+      CollectionAdd.addCollection();
+
+      // verify
+      expect(Notification.warning.callCount).to.equal(0);
+      expect(Notification.start.callCount).to.equal(1);
+      expect(Notification.start.calledWithExactly('#btnCreateCollection')).to.equal(true);
+      expect(Communicator.call.callCount).to.equal(1);
+      expect(Communicator.call.calledWithMatch({ methodName: 'createCollection', args: { collectionName: name, options }, callback: sinon.match.func })).to.equal(true);
+      expect(ErrorHandler.showMeteorFuncError.callCount).to.equal(1);
+      expect(ErrorHandler.showMeteorFuncError.calledWithMatch(error, undefined)).to.equal(true);
+      expect(Connection.connect.callCount).to.equal(0);
+      expect($.prototype.modal.callCount).to.equal(0);
+      expect(Notification.success.callCount).to.equal(0);
+
+      // cleanup
+      Communicator.call.restore();
+      $.prototype.val.restore();
+      CollectionAdd.gatherOptions.restore();
+    });
+
+    it('addCollection name empty', () => {
+      // prepare
+      const name = '';
+      const options = { x: 1, y: 2, z: true };
+      const error = { error: 'sercan' };
+      sinon.stub(Communicator, 'call').yieldsTo('callback', error);
+      sinon.stub($.prototype, 'val').returns(name);
+      sinon.stub(CollectionAdd, 'gatherOptions').returns(options);
+
+      // execute
+      CollectionAdd.addCollection();
+
+      // verify
+      assertNoExecution(true);
+
+      // cleanup
+      Communicator.call.restore();
+      $.prototype.val.restore();
+      CollectionAdd.gatherOptions.restore();
+    });
+
+
+    it('addCollection name filled & options wrong & communicator yields error', () => {
+      // prepare
+      const name = 'sercan';
+      const options = null;
+      const error = { error: 'sercan' };
+      sinon.stub(Communicator, 'call').yieldsTo('callback', error);
+      sinon.stub($.prototype, 'val').returns(name);
+      sinon.stub(CollectionAdd, 'gatherOptions').returns(options);
+
+      // execute
+      CollectionAdd.addCollection();
+
+      // verify
+      assertNoExecution();
+
+      // cleanup
+      Communicator.call.restore();
+      $.prototype.val.restore();
+      CollectionAdd.gatherOptions.restore();
+    });
+
+    it('addCollection name filled & options correct & communicator yields success', () => {
+      // prepare
+      const name = 'sercan';
+      const options = { x: 1, y: 2, z: true };
+      const success = { success: 'sercan' };
+      sinon.stub(Communicator, 'call').yieldsTo('callback', null, success);
+      sinon.stub($.prototype, 'val').returns(name);
+      sinon.stub(CollectionAdd, 'gatherOptions').returns(options);
+
+      // execute
+      CollectionAdd.addCollection();
+
+      // verify
+      expect(Notification.warning.callCount).to.equal(0);
+      expect(Notification.start.callCount).to.equal(1);
+      expect(Notification.start.calledWithExactly('#btnCreateCollection')).to.equal(true);
+      expect(Communicator.call.callCount).to.equal(1);
+      expect(Communicator.call.calledWithMatch({ methodName: 'createCollection', args: { collectionName: name, options }, callback: sinon.match.func })).to.equal(true);
+      expect(ErrorHandler.showMeteorFuncError.callCount).to.equal(0);
+      expect(Connection.connect.callCount).to.equal(1);
+      expect(Connection.connect.calledWithExactly()).to.equal(true);
+      expect($.prototype.modal.callCount).to.equal(1);
+      expect($.prototype.modal.calledWithExactly('hide')).to.equal(true);
+      expect($.prototype.modal.getCall(0).thisValue.selector).to.equal('#collectionAddModal');
+      expect(Notification.success.callCount).to.equal(1);
+      expect(Notification.success.calledWithExactly('collection-created-successfully', null, { name })).to.equal(true);
+
+      // cleanup
+      Communicator.call.restore();
+      $.prototype.val.restore();
+      CollectionAdd.gatherOptions.restore();
     });
   });
 });
