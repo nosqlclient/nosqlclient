@@ -494,4 +494,153 @@ describe('CollectionAdd', () => {
       expect(propStub.trigger.calledWithExactly('chosen:updated')).to.equal(true);
     });
   });
+
+  describe('prepareFormAsView tests', () => {
+    let findStub;
+    beforeEach(() => {
+      findStub = {
+        removeAttr: sinon.stub(),
+        prop: sinon.stub().returnsThis(),
+        trigger: sinon.stub(),
+        show: sinon.stub()
+      };
+      sinon.stub($.prototype, 'prop');
+      sinon.stub($.prototype, 'find').returns(findStub);
+      sinon.stub(SessionManager, 'set');
+      sinon.stub(UIComponents.Combobox, 'initializeCollectionsCombobox');
+      sinon.stub(UIComponents.Editor, 'initializeCodeMirror');
+    });
+
+    afterEach(() => {
+      $.prototype.prop.restore();
+      $.prototype.find.restore();
+      SessionManager.set.restore();
+      UIComponents.Combobox.initializeCollectionsCombobox.restore();
+      UIComponents.Editor.initializeCodeMirror.restore();
+    });
+
+    it('prepareFormAsView', () => {
+      // prepare
+
+      // execute
+      CollectionAdd.prepareFormAsView();
+
+      // verify
+      expect($.prototype.prop.callCount).to.equal(1);
+      expect($.prototype.prop.getCall(0).thisValue.selector).to.equal('#cmbAddCollectionViewOptions');
+      expect($.prototype.prop.calledWithExactly('disabled', true)).to.equal(true);
+      expect(findStub.removeAttr.callCount).to.equal(1);
+      expect(findStub.removeAttr.calledWithExactly('data-toggle')).to.equal(true);
+      expect(findStub.prop.callCount).to.equal(1);
+      expect(findStub.prop.calledWithExactly('selected', false)).to.equal(true);
+      expect(findStub.trigger.callCount).to.equal(1);
+      expect(findStub.trigger.calledWithExactly('chosen:updated')).to.equal(true);
+      expect(findStub.show.callCount).to.equal(1);
+      expect(findStub.show.calledWithExactly()).to.equal(true);
+      expect(SessionManager.set.callCount).to.equal(1);
+      expect(SessionManager.set.calledWithExactly(SessionManager.strSessionSelectedAddCollectionOptions, [])).to.equal(true);
+      expect(UIComponents.Combobox.initializeCollectionsCombobox.callCount).to.equal(1);
+      expect(UIComponents.Combobox.initializeCollectionsCombobox.calledWithExactly($('#cmbCollectionsViewOn'))).to.equal(true);
+      expect(UIComponents.Editor.initializeCodeMirror.callCount).to.equal(1);
+      expect(UIComponents.Editor.initializeCodeMirror.calledWithMatch({ divSelector: $('#divViewPipeline'), txtAreaId: 'txtViewPipeline' })).to.equal(true);
+    });
+  });
+
+  describe('setStorageEngineAndValidator tests', () => {
+    let valStub;
+    beforeEach(() => {
+      valStub = {
+        trigger: sinon.stub()
+      };
+
+      sinon.stub($.prototype, 'val').returns(valStub);
+      sinon.stub(UIComponents.Editor, 'setCodeMirrorValue');
+    });
+
+    afterEach(() => {
+      $.prototype.val.restore();
+      UIComponents.Editor.setCodeMirrorValue.restore();
+    });
+
+    it('setStorageEngineAndValidator with invalid param', () => {
+      // prepare
+
+      // execute
+      CollectionAdd.setStorageEngineAndValidator();
+
+      // verify
+      expect(valStub.trigger.callCount).to.equal(0);
+      expect($.prototype.val.callCount).to.equal(0);
+      expect(UIComponents.Editor.setCodeMirrorValue.callCount).to.equal(0);
+    });
+
+    it('setStorageEngineAndValidator with invalid param (1)', () => {
+      // prepare
+
+      // execute
+      CollectionAdd.setStorageEngineAndValidator('invalid');
+
+      // verify
+      expect(valStub.trigger.callCount).to.equal(0);
+      expect($.prototype.val.callCount).to.equal(0);
+      expect(UIComponents.Editor.setCodeMirrorValue.callCount).to.equal(0);
+    });
+
+    it('setStorageEngineAndValidator with valid param', () => {
+      // prepare
+      const storageEngine = { x: 1, y: true };
+
+      // execute
+      CollectionAdd.setStorageEngineAndValidator({ options: { storageEngine } });
+
+      // verify
+      expect(UIComponents.Editor.setCodeMirrorValue.callCount).to.equal(1);
+      expect(UIComponents.Editor.setCodeMirrorValue.calledWithExactly($('#divStorageEngine'), JSON.stringify(storageEngine), $('#txtStorageEngine'))).to.equal(true);
+      expect(valStub.trigger.callCount).to.equal(0);
+      expect($.prototype.val.callCount).to.equal(0);
+    });
+
+    it('setStorageEngineAndValidator with valid param (1)', () => {
+      // prepare
+      const storageEngine = { x: 1, y: true };
+      const validator = { z: 'sercan' };
+      const validationAction = 'ERROR';
+
+      // execute
+      CollectionAdd.setStorageEngineAndValidator({ options: { storageEngine, validator, validationAction } });
+
+      // verify
+      expect(UIComponents.Editor.setCodeMirrorValue.callCount).to.equal(2);
+      expect(UIComponents.Editor.setCodeMirrorValue.calledWithExactly($('#divStorageEngine'), JSON.stringify(storageEngine), $('#txtStorageEngine'))).to.equal(true);
+      expect(UIComponents.Editor.setCodeMirrorValue.calledWithExactly($('#divValidatorAddCollection'), JSON.stringify(validator), $('#txtValidatorAddCollection'))).to.equal(true);
+      expect($.prototype.val.callCount).to.equal(1);
+      expect($.prototype.val.calledWithExactly(validationAction)).to.equal(true);
+      expect(valStub.trigger.callCount).to.equal(1);
+      expect(valStub.trigger.calledWithExactly('chosen:updated')).to.equal(true);
+    });
+
+
+    it('setStorageEngineAndValidator with valid param (2)', () => {
+      // prepare
+      const storageEngine = { x: 1, y: true };
+      const validator = { z: 'sercan' };
+      const validationAction = 'ERROR';
+      const validationLevel = 'OFF';
+
+      // execute
+      CollectionAdd.setStorageEngineAndValidator({ options: { storageEngine, validator, validationAction, validationLevel } });
+
+      // verify
+      expect(UIComponents.Editor.setCodeMirrorValue.callCount).to.equal(2);
+      expect(UIComponents.Editor.setCodeMirrorValue.calledWithExactly($('#divStorageEngine'), JSON.stringify(storageEngine), $('#txtStorageEngine'))).to.equal(true);
+      expect(UIComponents.Editor.setCodeMirrorValue.calledWithExactly($('#divValidatorAddCollection'), JSON.stringify(validator), $('#txtValidatorAddCollection'))).to.equal(true);
+      expect($.prototype.val.callCount).to.equal(2);
+      expect($.prototype.val.calledWithExactly(validationAction)).to.equal(true);
+      expect($.prototype.val.getCall(0).thisValue.selector).to.equal('#cmbValidationActionAddCollection');
+      expect($.prototype.val.calledWithExactly(validationLevel)).to.equal(true);
+      expect($.prototype.val.getCall(1).thisValue.selector).to.equal('#cmbValidationLevelAddCollection');
+      expect(valStub.trigger.callCount).to.equal(2);
+      expect(valStub.trigger.alwaysCalledWithExactly('chosen:updated')).to.equal(true);
+    });
+  });
 });

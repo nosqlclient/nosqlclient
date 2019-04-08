@@ -133,6 +133,8 @@ CollectionAdd.prototype = {
   },
 
   setStorageEngineAndValidator(col) {
+    if (!col || !col.options) return;
+
     if (col.options.storageEngine) {
       UIComponents.Editor.setCodeMirrorValue($('#divStorageEngine'), JSON.stringify(col.options.storageEngine), $('#txtStorageEngine'));
     }
@@ -140,12 +142,8 @@ CollectionAdd.prototype = {
       if (col.options.validator) {
         UIComponents.Editor.setCodeMirrorValue($('#divValidatorAddCollection'), JSON.stringify(col.options.validator), $('#txtValidatorAddCollection'));
       }
-      if (col.options.validationAction) {
-        $('#cmbValidationActionAddCollection').val(col.options.validationAction).trigger('chosen:updated');
-      }
-      if (col.options.validationLevel) {
-        $('#cmbValidationLevelAddCollection').val(col.options.validationLevel).trigger('chosen:updated');
-      }
+      if (col.options.validationAction) $('#cmbValidationActionAddCollection').val(col.options.validationAction).trigger('chosen:updated');
+      if (col.options.validationLevel) $('#cmbValidationLevelAddCollection').val(col.options.validationLevel).trigger('chosen:updated');
     }
   },
 
