@@ -227,9 +227,7 @@ CollectionAdd.prototype = {
     UIComponents.Editor.setCodeMirrorValue($('#divIndexOptionDefaults'), '', $('#txtIndexOptionDefaults'));
     UIComponents.Editor.setCodeMirrorValue($('#divViewPipeline'), '', $('#txtViewPipeline'));
 
-    $('#inputCollectionViewName').val('');
-    $('#inputCappedCollectionMaxDocs').val('');
-    $('#inputCappedCollectionSize').val('');
+    $('#inputCollectionViewName, #inputCappedCollectionMaxDocs, #inputCappedCollectionSize').val('');
     UIComponents.Checkbox.toggleState($('#inputNoPadding, #inputTwoSizesIndexes'), 'uncheck');
     $('#cmbCollectionOrView, #cmbCollectionsViewOn, #cmbAddCollectionViewOptions, #cmbValidationActionAddCollection, #cmbValidationLevelAddCollection')
       .find('option').prop('selected', false).trigger('chosen:updated');

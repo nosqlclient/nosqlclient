@@ -5,8 +5,10 @@ import { expect } from 'chai';
 import { CollectionAdd } from '/client/imports/ui';
 import { Enums, ExtendedJSON, Notification, SessionManager, UIComponents } from '/client/imports/modules';
 import $ from 'jquery';
-import Helper from '../../../helpers/helper';
+import Helper from '/client/imports/helpers/helper';
+import { ReactivityProvider } from '/client/imports/facades';
 
+// FIXME selector check when stubbing whole object for jquery
 describe('CollectionAdd', () => {
   describe('init tests', () => {
     const assertDefaultExecution = function (validatorTab) {
@@ -917,6 +919,81 @@ describe('CollectionAdd', () => {
 
       // verify
       assertCollection(collection);
+    });
+  });
+
+  describe('resetForm tests', () => {
+    let findStub;
+    const createCollectionInfo = 'CREATE COLLECTION';
+    const connection = { connectionName: 'TEST_CONNECTION' };
+    const connectionId = 123;
+
+    beforeEach(() => {
+      findStub = {
+        val: sinon.stub(),
+        find: sinon.stub().returnsThis(),
+        tab: sinon.stub(),
+        prop: sinon.stub().returnsThis(),
+        trigger: sinon.stub()
+      };
+      sinon.stub($.prototype, 'find').returns(findStub);
+      sinon.stub($.prototype, 'text');
+      sinon.stub($.prototype, 'prop');
+      sinon.stub(UIComponents.Editor, 'setCodeMirrorValue');
+      sinon.stub(UIComponents.Checkbox, 'toggleState');
+      sinon.stub(CollectionAdd, 'prepareFormAsCollection');
+      sinon.stub(Helper, 'translate').withArgs({ key: 'create_collection_view' }).returns(createCollectionInfo);
+      sinon.stub(ReactivityProvider, 'findOne').returns(connection);
+      sinon.stub(SessionManager, 'get').withArgs(SessionManager.strSessionConnection).returns({ _id: connectionId });
+      sinon.stub(SessionManager, 'set');
+    });
+
+    afterEach(() => {
+      $.prototype.find.restore();
+      $.prototype.prop.restore();
+      $.prototype.text.restore();
+      UIComponents.Editor.setCodeMirrorValue.restore();
+      UIComponents.Checkbox.toggleState.restore();
+      CollectionAdd.prepareFormAsCollection.restore();
+      Helper.translate.restore();
+      ReactivityProvider.findOne.restore();
+      SessionManager.get.restore();
+      SessionManager.set.restore();
+    });
+
+    it('resetForm', () => {
+      // prepare
+
+      // execute
+      CollectionAdd.resetForm();
+
+      // verify
+      expect(CollectionAdd.prepareFormAsCollection.callCount).to.equal(1);
+      expect(CollectionAdd.prepareFormAsCollection.calledWithExactly()).to.equal(true);
+      expect(findStub.tab.callCount).to.equal(1);
+      expect(findStub.tab.calledWithExactly('show')).to.equal(true);
+      expect(UIComponents.Editor.setCodeMirrorValue.callCount).to.equal(5);
+      expect(UIComponents.Editor.setCodeMirrorValue.calledWithExactly($('#divValidatorAddCollection'), '', $('#txtValidatorAddCollection'))).to.equal(true);
+      expect(UIComponents.Editor.setCodeMirrorValue.calledWithExactly($('#divStorageEngine'), '', $('#txtStorageEngine'))).to.equal(true);
+      expect(UIComponents.Editor.setCodeMirrorValue.calledWithExactly($('#divCollationAddCollection'), '', $('#txtCollationAddCollection'))).to.equal(true);
+      expect(UIComponents.Editor.setCodeMirrorValue.calledWithExactly($('#divIndexOptionDefaults'), '', $('#txtIndexOptionDefaults'))).to.equal(true);
+      expect(UIComponents.Editor.setCodeMirrorValue.calledWithExactly($('#divViewPipeline'), '', $('#txtViewPipeline'))).to.equal(true);
+      expect(findStub.val.callCount).to.equal(1);
+      expect(findStub.val.calledWithExactly('')).to.equal(true);
+      expect(UIComponents.Checkbox.toggleState.callCount).to.equal(1);
+      expect(UIComponents.Checkbox.toggleState.calledWithExactly($('#inputNoPadding, #inputTwoSizesIndexes'), 'uncheck')).to.equal(true);
+      expect(findStub.prop.callCount).to.equal(1);
+      expect(findStub.prop.calledWithExactly('selected', false)).to.equal(true);
+      expect($.prototype.prop.calledWithExactly('disabled', false)).to.equal(true);
+      expect(findStub.trigger.callCount).to.equal(1);
+      expect(findStub.trigger.calledWithExactly('chosen:updated')).to.equal(true);
+      expect($.prototype.text.callCount).to.equal(2);
+      expect($.prototype.text.calledWithExactly(createCollectionInfo)).to.equal(true);
+      expect($.prototype.text.calledWithExactly(connection.connectionName)).to.equal(true);
+      expect(ReactivityProvider.findOne.callCount).to.equal(1);
+      expect(ReactivityProvider.findOne.calledWithExactly(ReactivityProvider.types.Connections, { _id: connectionId })).to.equal(true);
+      expect(SessionManager.set.callCount).to.equal(1);
+      expect(SessionManager.set.calledWithExactly(SessionManager.strSessionSelectedAddCollectionOptions, [])).to.equal(true);
     });
   });
 });
