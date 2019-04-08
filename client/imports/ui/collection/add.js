@@ -266,6 +266,12 @@ CollectionAdd.prototype = {
   },
 
   initializeForm(collection) {
+    if (!collection) {
+      Notification.warning('collection-not-found', null, { name: collection });
+      $('#collectionAddModal').modal('hide');
+      return;
+    }
+
     Notification.start('#btnCreateCollection');
 
     const connection = ReactivityProvider.findOne(ReactivityProvider.types.Connections, { _id: SessionManager.get(SessionManager.strSessionConnection)._id });

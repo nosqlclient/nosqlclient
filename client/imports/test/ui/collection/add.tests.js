@@ -1137,4 +1137,159 @@ describe('CollectionAdd', () => {
       CollectionAdd.gatherOptions.restore();
     });
   });
+
+  describe('initializeForm tests', () => {
+    const databaseName = 'DB';
+    const connectionId = 'sercanConnection';
+
+    beforeEach(() => {
+      sinon.stub($.prototype, 'modal');
+      sinon.stub(Notification, 'warning');
+      sinon.stub(Notification, 'start');
+      sinon.stub(Notification, 'stop');
+      sinon.stub(ReactivityProvider, 'findOne').returns({ databaseName });
+      sinon.stub(ErrorHandler, 'showMeteorFuncError');
+      sinon.stub(CollectionAdd, 'prepareShowForm');
+      sinon.stub(SessionManager, 'get').withArgs(SessionManager.strSessionConnection).returns({ _id: connectionId });
+    });
+
+    afterEach(() => {
+      $.prototype.modal.restore();
+      Notification.warning.restore();
+      Notification.start.restore();
+      Notification.stop.restore();
+      ReactivityProvider.findOne.restore();
+      ErrorHandler.showMeteorFuncError.restore();
+      CollectionAdd.prepareShowForm.restore();
+      SessionManager.get.restore();
+    });
+
+    it('initializeForm invalid param', () => {
+      // prepare
+      const collection = '';
+
+      // execute
+      CollectionAdd.initializeForm(collection);
+
+      // verify
+      expect(Notification.warning.callCount).to.equal(1);
+      expect(Notification.warning.calledWithExactly('collection-not-found', null, { name: collection })).to.equal(true);
+      expect($.prototype.modal.callCount).to.equal(1);
+      expect($.prototype.modal.calledWithExactly('hide')).to.equal(true);
+      expect($.prototype.modal.getCall(0).thisValue.selector).to.equal('#collectionAddModal');
+      expect(Notification.start.callCount).to.equal(0);
+      expect(Notification.stop.callCount).to.equal(0);
+      expect(ReactivityProvider.findOne.callCount).to.equal(0);
+      expect(ErrorHandler.showMeteorFuncError.callCount).to.equal(0);
+      expect(CollectionAdd.prepareShowForm.callCount).to.equal(0);
+    });
+
+    it('initializeForm valid param & communicator yields error', () => {
+      // prepare
+      const collection = 'tugce';
+      const error = { error: 'sercan' };
+      sinon.stub(Communicator, 'call').yieldsTo('callback', error);
+
+      // execute
+      CollectionAdd.initializeForm(collection);
+
+      // verify
+      expect(Notification.warning.callCount).to.equal(0);
+      expect($.prototype.modal.callCount).to.equal(1);
+      expect($.prototype.modal.calledWithExactly('hide')).to.equal(true);
+      expect($.prototype.modal.getCall(0).thisValue.selector).to.equal('#collectionAddModal');
+      expect(Notification.start.callCount).to.equal(1);
+      expect(Notification.start.calledWithExactly('#btnCreateCollection')).to.equal(true);
+      expect(Notification.stop.callCount).to.equal(0);
+      expect(ReactivityProvider.findOne.callCount).to.equal(1);
+      expect(ReactivityProvider.findOne.calledWithExactly(ReactivityProvider.types.Connections, { _id: connectionId })).to.equal(true);
+      expect(ErrorHandler.showMeteorFuncError.callCount).to.equal(1);
+      expect(ErrorHandler.showMeteorFuncError.calledWithExactly(error, undefined)).to.equal(true);
+      expect(CollectionAdd.prepareShowForm.callCount).to.equal(0);
+
+      // cleanup
+      Communicator.call.restore();
+    });
+
+    it('initializeForm valid param & communicator yields error (1)', () => {
+      // prepare
+      const collection = 'tugce';
+      const error = { error: 'sercan' };
+      sinon.stub(Communicator, 'call').yieldsTo('callback', null, error);
+
+      // execute
+      CollectionAdd.initializeForm(collection);
+
+      // verify
+      expect(Notification.warning.callCount).to.equal(0);
+      expect($.prototype.modal.callCount).to.equal(1);
+      expect($.prototype.modal.calledWithExactly('hide')).to.equal(true);
+      expect($.prototype.modal.getCall(0).thisValue.selector).to.equal('#collectionAddModal');
+      expect(Notification.start.callCount).to.equal(1);
+      expect(Notification.start.calledWithExactly('#btnCreateCollection')).to.equal(true);
+      expect(Notification.stop.callCount).to.equal(0);
+      expect(ReactivityProvider.findOne.callCount).to.equal(1);
+      expect(ReactivityProvider.findOne.calledWithExactly(ReactivityProvider.types.Connections, { _id: connectionId })).to.equal(true);
+      expect(ErrorHandler.showMeteorFuncError.callCount).to.equal(1);
+      expect(ErrorHandler.showMeteorFuncError.calledWithExactly(null, error)).to.equal(true);
+      expect(CollectionAdd.prepareShowForm.callCount).to.equal(0);
+
+      // cleanup
+      Communicator.call.restore();
+    });
+
+    it('initializeForm valid param & communicator yields success & collection not found', () => {
+      // prepare
+      const collection = 'tugce';
+      const result = [{ name: 'sercan' }];
+      sinon.stub(Communicator, 'call').yieldsTo('callback', null, { result });
+
+      // execute
+      CollectionAdd.initializeForm(collection);
+
+      // verify
+      expect(Notification.warning.callCount).to.equal(1);
+      expect(Notification.warning.calledWithExactly('collection-not-found', null, { name: collection })).to.equal(true);
+      expect($.prototype.modal.callCount).to.equal(1);
+      expect($.prototype.modal.calledWithExactly('hide')).to.equal(true);
+      expect($.prototype.modal.getCall(0).thisValue.selector).to.equal('#collectionAddModal');
+      expect(Notification.start.callCount).to.equal(1);
+      expect(Notification.start.calledWithExactly('#btnCreateCollection')).to.equal(true);
+      expect(Notification.stop.callCount).to.equal(1);
+      expect(Notification.stop.calledWithExactly()).to.equal(true);
+      expect(ReactivityProvider.findOne.callCount).to.equal(1);
+      expect(ReactivityProvider.findOne.calledWithExactly(ReactivityProvider.types.Connections, { _id: connectionId })).to.equal(true);
+      expect(ErrorHandler.showMeteorFuncError.callCount).to.equal(0);
+      expect(CollectionAdd.prepareShowForm.callCount).to.equal(0);
+
+      // cleanup
+      Communicator.call.restore();
+    });
+
+    it('initializeForm valid param & communicator yields success & collection found', () => {
+      // prepare
+      const collection = 'tugce';
+      const result = [{ name: 'tugce', x: 1, y: true }];
+      sinon.stub(Communicator, 'call').yieldsTo('callback', null, { result });
+
+      // execute
+      CollectionAdd.initializeForm(collection);
+
+      // verify
+      expect(Notification.warning.callCount).to.equal(0);
+      expect($.prototype.modal.callCount).to.equal(0);
+      expect(Notification.start.callCount).to.equal(1);
+      expect(Notification.start.calledWithExactly('#btnCreateCollection')).to.equal(true);
+      expect(Notification.stop.callCount).to.equal(1);
+      expect(Notification.stop.calledWithExactly()).to.equal(true);
+      expect(ReactivityProvider.findOne.callCount).to.equal(1);
+      expect(ReactivityProvider.findOne.calledWithExactly(ReactivityProvider.types.Connections, { _id: connectionId })).to.equal(true);
+      expect(ErrorHandler.showMeteorFuncError.callCount).to.equal(0);
+      expect(CollectionAdd.prepareShowForm.callCount).to.equal(1);
+      expect(CollectionAdd.prepareShowForm.calledWithExactly(result[0])).to.equal(true);
+
+      // cleanup
+      Communicator.call.restore();
+    });
+  });
 });
