@@ -164,7 +164,16 @@ MongoDB.prototype = {
   disconnect({ sessionId }) {
     Logger.info({ message: 'disconnect', metadataToLog: sessionId });
 
-    if (this.dbObjectsBySessionId[sessionId] && this.dbObjectsBySessionId[sessionId].client) this.dbObjectsBySessionId[sessionId].client.close();
+    if (this.dbObjectsBySessionId[sessionId] && this.dbObjectsBySessionId[sessionId].client) {
+      this.dbObjectsBySessionId[sessionId].client.close().then(
+        () => {
+          delete this.dbObjectsBySessionId[sessionId];
+        },
+        (error) => {
+          Logger.error({ message: 'disconnect-error', metadataToLog: { sessionId, error } });
+        }
+      );
+    }
 
     if (MongoDBShell.spawnedShellsBySessionId[sessionId]) {
       MongoDBShell.spawnedShellsBySessionId[sessionId].stdin.end();

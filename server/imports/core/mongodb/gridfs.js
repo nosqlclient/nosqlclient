@@ -27,7 +27,7 @@ const tryDownloadingFile = function (sessionId, bucketName, fileId, res, metadat
       }
     });
   } catch (exception) {
-    Logger.error({ message: 'download-file', metadataToLog, exception });
+    Logger.error({ message: 'download-file', metadataToLog: Object.assign({ exception }, metadataToLog) });
     res.writeHead(500);
     res.end(`Unexpected error: ${exception.message}`);
   }

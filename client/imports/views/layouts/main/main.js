@@ -5,6 +5,7 @@ import '/client/imports/views/layouts/footer/footer.html';
 import { TAPi18n } from 'meteor/tap:i18n';
 import { Enums, Notification, SessionManager } from '/client/imports/modules';
 import { ReactivityProvider } from '/client/imports/facades';
+import { Connection } from '/client/imports/ui';
 import './main.html';
 
 const fixHeight = function () {
@@ -79,11 +80,13 @@ Template.mainLayout.onRendered(function () {
   $(document).on('active.idleTimer', () => {
     Notification.success('welcome-back');
   });
+  $(window).bind('beforeunload', () => {
+    Connection.disconnect();
+  });
 
   doUIStuff();
 
   const settings = this.subscribe('settings');
-
   this.autorun(() => {
     if (settings.ready()) {
       const foundSettings = ReactivityProvider.findOne(ReactivityProvider.types.Settings);

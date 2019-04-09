@@ -286,7 +286,7 @@ Connection.prototype = {
         });
       }
     } catch (exception) {
-      Logger.error({ message: 'predefined-connections', exception });
+      Logger.error({ message: 'predefined-connections', metadataToLog: { exception } });
     }
   },
 

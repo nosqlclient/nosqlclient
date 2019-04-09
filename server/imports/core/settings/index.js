@@ -102,7 +102,7 @@ Settings.prototype = {
       if (response && response.data && response.data.name && response.data.name !== packageJson.version) return { version: response.data.name, message: 'new-version-available' };
       return '';
     } catch (exception) {
-      Logger.error({ message: 'check-version', exception });
+      Logger.error({ message: 'check-version', metadataToLog: { exception } });
       return null;
     }
   },
