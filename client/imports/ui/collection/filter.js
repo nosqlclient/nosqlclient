@@ -9,7 +9,7 @@ const CollectionFilter = function () {
 
 CollectionFilter.prototype = {
   isFiltered() {
-    return this.filterRegex.get() || this.excludedCollectionsByFilter.get().length !== 0;
+    return !!this.filterRegex.get() || this.excludedCollectionsByFilter.get().length !== 0;
   },
 
   applyFilter() {
