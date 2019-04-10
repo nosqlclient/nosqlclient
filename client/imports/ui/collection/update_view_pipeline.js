@@ -56,13 +56,9 @@ ViewPipelineUpdater.prototype = {
     Notification.start('#btnSaveViewPipeline');
 
     const modal = $('#updateViewPipelineModal');
-    const pipeline = $('#jsonEditorOfViewPipeline').data('jsoneditor').get();
-    const viewName = modal.data('viewName');
     const viewOn = $('#cmbCollectionsUpdateViewPipeline').val();
-    const command = { collMod: viewName, pipeline };
-    if (viewOn) {
-      command.viewOn = viewOn;
-    }
+    const command = { collMod: modal.data('viewName'), pipeline: $('#jsonEditorOfViewPipeline').data('jsoneditor').get() };
+    if (viewOn) command.viewOn = viewOn;
 
     Communicator.call({
       methodName: 'command',

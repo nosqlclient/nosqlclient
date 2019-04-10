@@ -197,4 +197,104 @@ describe('CollectionRename', () => {
       expect($.prototype.data.getCall(0).thisValue.selector).to.equal('#updateViewPipelineModal');
     });
   });
+
+  describe('updateViewPipeline tests', () => {
+    const viewOn = 'collection_name';
+    const collMod = 'view_name';
+    const pipeline = 123;
+    let jsonEditorStub;
+
+    beforeEach(() => {
+      jsonEditorStub = {
+        get: sinon.stub().returns(pipeline)
+      };
+      sinon.stub($.prototype, 'val').returns(viewOn);
+      sinon.stub($.prototype, 'modal');
+      sinon.stub($.prototype, 'data').withArgs('viewName').returns(collMod).withArgs('jsoneditor')
+        .returns(jsonEditorStub);
+      sinon.stub(Notification, 'start');
+      sinon.stub(Notification, 'success');
+      sinon.stub(ErrorHandler, 'showMeteorFuncError');
+    });
+
+    afterEach(() => {
+      $.prototype.val.restore();
+      $.prototype.modal.restore();
+      $.prototype.data.restore();
+      Notification.start.restore();
+      Notification.success.restore();
+      ErrorHandler.showMeteorFuncError.restore();
+      Communicator.call.restore();
+    });
+
+    it('updateViewPipeline & communicator yieldsTo error', () => {
+      // prepare
+      const error = { error: '123' };
+      sinon.stub(Communicator, 'call').yieldsTo('callback', error, null);
+
+      // execute
+      ViewPipelineUpdater.updateViewPipeline();
+
+      // verify
+      expect(Notification.start.callCount).to.equal(1);
+      expect(Notification.start.calledWithExactly('#btnSaveViewPipeline')).to.equal(true);
+      expect(Communicator.call.callCount).to.equal(1);
+      expect(Communicator.call.calledWithMatch({
+        methodName: 'command',
+        args: { command: { collMod, pipeline, viewOn } },
+        callback: sinon.match.func
+      })).to.equal(true);
+      expect(Notification.success.callCount).to.equal(0);
+      expect(ErrorHandler.showMeteorFuncError.callCount).to.equal(1);
+      expect(ErrorHandler.showMeteorFuncError.calledWithExactly(error, null)).to.equal(true);
+      expect($.prototype.modal.callCount).to.equal(0);
+    });
+
+    it('updateViewPipeline & communicator yieldsTo error (1)', () => {
+      // prepare
+      const error = { error: '123' };
+      sinon.stub(Communicator, 'call').yieldsTo('callback', null, error);
+
+      // execute
+      ViewPipelineUpdater.updateViewPipeline();
+
+      // verify
+      expect(Notification.start.callCount).to.equal(1);
+      expect(Notification.start.calledWithExactly('#btnSaveViewPipeline')).to.equal(true);
+      expect(Communicator.call.callCount).to.equal(1);
+      expect(Communicator.call.calledWithMatch({
+        methodName: 'command',
+        args: { command: { collMod, pipeline, viewOn } },
+        callback: sinon.match.func
+      })).to.equal(true);
+      expect(Notification.success.callCount).to.equal(0);
+      expect(ErrorHandler.showMeteorFuncError.callCount).to.equal(1);
+      expect(ErrorHandler.showMeteorFuncError.calledWithExactly(null, error)).to.equal(true);
+      expect($.prototype.modal.callCount).to.equal(0);
+    });
+
+    it('updateViewPipeline & communicator yieldsTo success', () => {
+      // prepare
+      sinon.stub(Communicator, 'call').yieldsTo('callback', null, {});
+
+      // execute
+      ViewPipelineUpdater.updateViewPipeline();
+
+      // verify
+      expect(Notification.start.callCount).to.equal(1);
+      expect(Notification.start.calledWithExactly('#btnSaveViewPipeline')).to.equal(true);
+      expect(Communicator.call.callCount).to.equal(1);
+      expect(Communicator.call.calledWithMatch({
+        methodName: 'command',
+        args: { command: { collMod, pipeline, viewOn } },
+        callback: sinon.match.func
+      })).to.equal(true);
+      expect(Notification.success.callCount).to.equal(1);
+      expect(Notification.success.calledWithExactly('saved-successfully')).to.equal(true);
+      expect(ErrorHandler.showMeteorFuncError.callCount).to.equal(0);
+      expect($.prototype.modal.callCount).to.equal(1);
+      expect($.prototype.modal.calledWithExactly('hide')).to.equal(true);
+      expect($.prototype.modal.getCall(0).thisValue.selector).to.equal('#updateViewPipelineModal');
+    });
+  });
 });
