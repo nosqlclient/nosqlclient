@@ -158,4 +158,43 @@ describe('CollectionRename', () => {
       expect(Notification.warning.callCount).to.equal(0);
     });
   });
+
+  describe('resetForm tests', () => {
+    const viewName = 'view_name';
+    let jsonEditorStub;
+
+    beforeEach(() => {
+      jsonEditorStub = {
+        set: sinon.stub()
+      };
+      sinon.stub(UIComponents.Editor, 'initializeJSONEditor').returns(jsonEditorStub);
+      sinon.stub($.prototype, 'html');
+      sinon.stub($.prototype, 'data').returns(viewName);
+    });
+
+    afterEach(() => {
+      UIComponents.Editor.initializeJSONEditor.restore();
+      $.prototype.html.restore();
+      $.prototype.data.restore();
+    });
+
+    it('resetForm', () => {
+      // prepare
+
+      // execute
+      ViewPipelineUpdater.resetForm();
+
+      // verify
+      expect(jsonEditorStub.set.callCount).to.equal(1);
+      expect(jsonEditorStub.set.calledWithMatch([])).to.equal(true);
+      expect(UIComponents.Editor.initializeJSONEditor.callCount).to.equal(1);
+      expect(UIComponents.Editor.initializeJSONEditor.calledWithMatch({ selector: 'jsonEditorOfViewPipeline' })).to.equal(true);
+      expect($.prototype.html.callCount).to.equal(1);
+      expect($.prototype.html.calledWithExactly(viewName)).to.equal(true);
+      expect($.prototype.html.getCall(0).thisValue.selector).to.equal('#viewName');
+      expect($.prototype.data.callCount).to.equal(1);
+      expect($.prototype.data.calledWithExactly('viewName')).to.equal(true);
+      expect($.prototype.data.getCall(0).thisValue.selector).to.equal('#updateViewPipelineModal');
+    });
+  });
 });
