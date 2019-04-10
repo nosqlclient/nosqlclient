@@ -4,7 +4,7 @@ import sinon from 'sinon';
 import { expect } from 'chai';
 import $ from 'jquery';
 import { SessionManager, UIComponents } from '/client/imports/modules';
-import CollectionFilter from '/client/imports/ui/collection/filter';
+import { CollectionFilter } from '/client/imports/ui/collection';
 
 describe('CollectionFilter', () => {
   afterEach(() => {
