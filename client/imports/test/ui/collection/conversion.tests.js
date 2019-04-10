@@ -5,7 +5,7 @@ import { expect } from 'chai';
 import $ from 'jquery';
 import { Notification } from '/client/imports/modules';
 import CollectionHelper from '/client/imports/ui/collection/helper';
-import CollectionConversion from '/client/imports/ui/collection/conversion';
+import { CollectionConversion } from '/client/imports/ui/collection';
 
 describe('CollectionConversion', () => {
   describe('resetForm tests', () => {

@@ -9,7 +9,7 @@ const CollectionFilter = function () {
 
 CollectionFilter.prototype = {
   isFiltered() {
-    return this.filterRegex.get() || this.excludedCollectionsByFilter.get().length !== 0;
+    return !!this.filterRegex.get() || this.excludedCollectionsByFilter.get().length !== 0;
   },
 
   applyFilter() {
@@ -26,7 +26,7 @@ CollectionFilter.prototype = {
 
   initializeFilterTable() {
     const self = this;
-    const collectionNames = SessionManager.get(SessionManager.strSessionCollectionNames);
+    const collectionNames = SessionManager.get(SessionManager.strSessionCollectionNames) || [];
     collectionNames.forEach((obj) => {
       if (!obj.type) obj.type = 'collection';
     });

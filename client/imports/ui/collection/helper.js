@@ -7,6 +7,8 @@ const CollectionHelper = function () {
 
 CollectionHelper.prototype = {
   executeCommand(command, modalToHideSelector) {
+    if (!command) return;
+
     Communicator.call({
       methodName: 'command',
       args: { command },
@@ -14,7 +16,7 @@ CollectionHelper.prototype = {
         if (err || result.error) ErrorHandler.showMeteorFuncError(err, result);
         else {
           Notification.success('saved-successfully');
-          $(`#${modalToHideSelector}`).modal('hide');
+          if (modalToHideSelector) $(`#${modalToHideSelector}`).modal('hide');
         }
       }
     });
