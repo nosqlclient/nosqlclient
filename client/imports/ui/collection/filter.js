@@ -26,7 +26,7 @@ CollectionFilter.prototype = {
 
   initializeFilterTable() {
     const self = this;
-    const collectionNames = SessionManager.get(SessionManager.strSessionCollectionNames);
+    const collectionNames = SessionManager.get(SessionManager.strSessionCollectionNames) || [];
     collectionNames.forEach((obj) => {
       if (!obj.type) obj.type = 'collection';
     });
