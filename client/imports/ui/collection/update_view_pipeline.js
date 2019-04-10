@@ -2,6 +2,27 @@ import { ErrorHandler, Notification, SessionManager, UIComponents } from '/clien
 import { Communicator, ReactivityProvider } from '../../facades';
 import $ from 'jquery';
 
+const setPipelineJsonIfExist = function (result, viewName) {
+  Notification.stop();
+
+  let found = false;
+  if (result.result) {
+    result.result.forEach((col) => {
+      if (col.name === viewName) {
+        found = true;
+        if (col.options && col.options.pipeline) {
+          $('#jsonEditorOfViewPipeline').data('jsoneditor').set(col.options.pipeline);
+        }
+      }
+    });
+  }
+
+  if (!found) {
+    Notification.warning('collection-not-found', null, { name: viewName });
+    $('#updateViewPipelineModal').modal('hide');
+  }
+};
+
 const ViewPipelineUpdater = function () {
 };
 
@@ -20,26 +41,7 @@ ViewPipelineUpdater.prototype = {
         if (err || result.error) {
           ErrorHandler.showMeteorFuncError(err, result);
           $('#updateViewPipelineModal').modal('hide');
-        } else {
-          Notification.stop();
-
-          let found = false;
-          if (result.result) {
-            result.result.forEach((col) => {
-              if (col.name === viewName) {
-                found = true;
-                if (col.options && col.options.pipeline) {
-                  $('#jsonEditorOfViewPipeline').data('jsoneditor').set(col.options.pipeline);
-                }
-              }
-            });
-          }
-
-          if (!found) {
-            Notification.warning('collection-not-found', null, { name: viewName });
-            $('#updateViewPipelineModal').modal('hide');
-          }
-        }
+        } else setPipelineJsonIfExist(result, viewName);
       }
     });
   },
