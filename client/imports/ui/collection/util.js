@@ -5,7 +5,6 @@ import Helper from '/client/imports/helpers/helper';
 import $ from 'jquery';
 
 const CollectionUtil = function () {
-
 };
 
 const specifyActiveClass = function (selector, name) {
