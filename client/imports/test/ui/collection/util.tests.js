@@ -980,9 +980,21 @@ describe('CollectionUtil', () => {
   });
 
   describe('prepareContextMenuItems tests', () => {
-    // FIXME test every condition
+    const collectionName = 'sercanCol';
 
-    it('prepareContextMenuItems should return 8 items', () => {
+    beforeEach(() => {
+      sinon.stub($.prototype, 'find').returns({
+        context: {
+          innerText: collectionName
+        }
+      });
+    });
+
+    afterEach(() => {
+      $.prototype.find.restore();
+    });
+
+    it('prepareContextMenuItems item existance', () => {
       // prepare
 
       // execute
@@ -997,6 +1009,32 @@ describe('CollectionUtil', () => {
       expect(items).to.have.property('refresh_collections');
       expect(items).to.have.property('drop_collection');
       expect(items).to.have.property('drop_collections');
+      expect(items.manage_collection.items).to.have.property('view_collection');
+      expect(items.manage_collection.items).to.have.property('convert_to_capped');
+      expect(items.manage_collection.items).to.have.property('rename_collection');
+      expect(items.manage_collection.items).to.have.property('clone_collection');
+      expect(items.manage_collection.items).to.have.property('validation_rules');
+      expect(items.manage_collection.items).to.have.property('clear_collection');
+    });
+
+    it('prepareContextMenuItems manage_collection.view_collection callback', () => {
+      // prepare
+      const addCollectionModal = {
+        data: sinon.stub(),
+        modal: sinon.stub()
+      };
+
+      $(`<a class="navCollection">${collectionName}</a>`);
+
+      // execute
+      const items = CollectionUtil.prepareContextMenuItems({ addCollectionModal });
+      items.manage_collection.items.view_collection.callback.call();
+
+      // verify
+      expect(addCollectionModal.data.callCount).to.equal(1);
+      expect(addCollectionModal.data.calledWithExactly('is-view', collectionName)).to.equal(true);
+      expect(addCollectionModal.modal.callCount).to.equal(1);
+      expect(addCollectionModal.modal.calledWithMatch({ backdrop: 'static', keyboard: false, })).to.equal(true);
     });
   });
 });
