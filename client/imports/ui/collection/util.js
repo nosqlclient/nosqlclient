@@ -104,6 +104,8 @@ CollectionUtil.prototype = {
   },
 
   cloneCollection(selectedCollection) {
+    if (!selectedCollection) return;
+
     Notification.modal({
       title: 'collection_name',
       text: 'collection_name',

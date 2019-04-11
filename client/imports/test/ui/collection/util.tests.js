@@ -559,4 +559,168 @@ describe('CollectionUtil', () => {
       expect(Connection.connect.calledWithExactly(false)).to.equal(true);
     });
   });
+
+  describe('cloneCollection tests', () => {
+    beforeEach(() => {
+      sinon.stub(ErrorHandler, 'showMeteorFuncError');
+      sinon.stub(Connection, 'connect');
+      sinon.stub(Notification, 'closeModal');
+      sinon.stub(Notification, 'showModalInputError');
+    });
+
+    afterEach(() => {
+      Notification.modal.restore();
+      Communicator.call.restore();
+      ErrorHandler.showMeteorFuncError.restore();
+      Connection.connect.restore();
+      Notification.closeModal.restore();
+      Notification.showModalInputError.restore();
+    });
+
+    it('cloneCollection & invalid param', () => {
+      // prepare
+      sinon.spy(Communicator, 'call');
+      sinon.stub(Notification, 'modal');
+
+      // execute
+      CollectionUtil.cloneCollection();
+
+      // verify
+      expect(Notification.modal.callCount).to.equal(0);
+      expect(Communicator.call.callCount).to.equal(0);
+    });
+
+    it('cloneCollection & no input', () => {
+      // prepare
+      const selectedCollection = 'sercan';
+      sinon.spy(Communicator, 'call');
+      sinon.stub(Notification, 'modal').yieldsTo('callback');
+
+      // execute
+      CollectionUtil.cloneCollection(selectedCollection);
+
+      // verify
+      expect(Notification.modal.callCount).to.equal(1);
+      expect(Notification.modal.calledWithMatch({
+        title: 'collection_name',
+        text: 'collection_name',
+        type: 'input',
+        closeOnConfirm: false,
+        inputPlaceholder: 'collection_name',
+        inputValue: selectedCollection,
+        callback: sinon.match.func
+      })).to.equal(true);
+      expect(Communicator.call.callCount).to.equal(0);
+      expect(Notification.showModalInputError.callCount).to.equal(1);
+      expect(Notification.showModalInputError.calledWithExactly('name-required')).to.equal(true);
+    });
+
+    it('cloneCollection & input & communicator yields to error', () => {
+      // prepare
+      const selectedCollection = 'sercan';
+      const input = 'tugce';
+      const error = { error: '1233' };
+      sinon.stub(Communicator, 'call').yieldsTo('callback', error, null);
+      sinon.stub(Notification, 'modal').onCall(0).yieldsTo('callback', input);
+
+      // execute
+      CollectionUtil.cloneCollection(selectedCollection);
+
+      // verify
+      expect(Notification.modal.callCount).to.equal(2);
+      expect(Notification.modal.calledWithMatch({
+        title: 'collection_name',
+        text: 'collection_name',
+        type: 'input',
+        closeOnConfirm: false,
+        inputPlaceholder: 'collection_name',
+        inputValue: selectedCollection,
+        callback: sinon.match.func
+      })).to.equal(true);
+      expect(Notification.modal.calledWithMatch({ title: 'creating', text: 'please-wait', type: 'info' })).to.equal(true);
+      expect(Communicator.call.callCount).to.equal(1);
+      expect(Communicator.call.calledWithMatch({
+        methodName: 'aggregate',
+        args: { selectedCollection, pipeline: [{ $match: {} }, { $out: input }] },
+        callback: sinon.match.func
+      })).to.equal(true);
+      expect(ErrorHandler.showMeteorFuncError.callCount).to.equal(1);
+      expect(ErrorHandler.showMeteorFuncError.calledWithExactly(error, null)).to.equal(true);
+      expect(Notification.closeModal.callCount).to.equal(0);
+      expect(Connection.connect.callCount).to.equal(0);
+      expect(Notification.showModalInputError.callCount).to.equal(0);
+    });
+
+    it('cloneCollection & input & communicator yields to error (1)', () => {
+      // prepare
+      const selectedCollection = 'sercan';
+      const input = 'tugce';
+      const error = { error: '1233' };
+      sinon.stub(Communicator, 'call').yieldsTo('callback', null, error);
+      sinon.stub(Notification, 'modal').onCall(0).yieldsTo('callback', input);
+
+      // execute
+      CollectionUtil.cloneCollection(selectedCollection);
+
+      // verify
+      expect(Notification.modal.callCount).to.equal(2);
+      expect(Notification.modal.calledWithMatch({
+        title: 'collection_name',
+        text: 'collection_name',
+        type: 'input',
+        closeOnConfirm: false,
+        inputPlaceholder: 'collection_name',
+        inputValue: selectedCollection,
+        callback: sinon.match.func
+      })).to.equal(true);
+      expect(Notification.modal.calledWithMatch({ title: 'creating', text: 'please-wait', type: 'info' })).to.equal(true);
+      expect(Communicator.call.callCount).to.equal(1);
+      expect(Communicator.call.calledWithMatch({
+        methodName: 'aggregate',
+        args: { selectedCollection, pipeline: [{ $match: {} }, { $out: input }] },
+        callback: sinon.match.func
+      })).to.equal(true);
+      expect(ErrorHandler.showMeteorFuncError.callCount).to.equal(1);
+      expect(ErrorHandler.showMeteorFuncError.calledWithExactly(null, error)).to.equal(true);
+      expect(Notification.closeModal.callCount).to.equal(0);
+      expect(Connection.connect.callCount).to.equal(0);
+      expect(Notification.showModalInputError.callCount).to.equal(0);
+    });
+
+    it('cloneCollection & input & communicator yields to success', () => {
+      // prepare
+      const selectedCollection = 'sercan';
+      const input = 'tugce';
+      sinon.stub(Communicator, 'call').yieldsTo('callback', null, {});
+      sinon.stub(Notification, 'modal').onCall(0).yieldsTo('callback', input);
+
+      // execute
+      CollectionUtil.cloneCollection(selectedCollection);
+
+      // verify
+      expect(Notification.modal.callCount).to.equal(2);
+      expect(Notification.modal.calledWithMatch({
+        title: 'collection_name',
+        text: 'collection_name',
+        type: 'input',
+        closeOnConfirm: false,
+        inputPlaceholder: 'collection_name',
+        inputValue: selectedCollection,
+        callback: sinon.match.func
+      })).to.equal(true);
+      expect(Notification.modal.calledWithMatch({ title: 'creating', text: 'please-wait', type: 'info' })).to.equal(true);
+      expect(Communicator.call.callCount).to.equal(1);
+      expect(Communicator.call.calledWithMatch({
+        methodName: 'aggregate',
+        args: { selectedCollection, pipeline: [{ $match: {} }, { $out: input }] },
+        callback: sinon.match.func
+      })).to.equal(true);
+      expect(ErrorHandler.showMeteorFuncError.callCount).to.equal(0);
+      expect(Notification.closeModal.callCount).to.equal(1);
+      expect(Notification.closeModal.calledWithExactly()).to.equal(true);
+      expect(Connection.connect.callCount).to.equal(1);
+      expect(Connection.connect.calledWithExactly(true, 'collection-cloned-successfully', { selectedCollection, name: input })).to.equal(true);
+      expect(Notification.showModalInputError.callCount).to.equal(0);
+    });
+  });
 });
