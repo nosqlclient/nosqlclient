@@ -3,7 +3,7 @@
 import sinon from 'sinon';
 import { expect } from 'chai';
 import { CollectionUtil, Connection } from '/client/imports/ui';
-import { ErrorHandler, Notification, SessionManager } from '/client/imports/modules';
+import { Enums, ErrorHandler, Notification, SessionManager } from '/client/imports/modules';
 import { Communicator } from '/client/imports/facades';
 import $ from 'jquery';
 
@@ -721,6 +721,72 @@ describe('CollectionUtil', () => {
       expect(Connection.connect.callCount).to.equal(1);
       expect(Connection.connect.calledWithExactly(true, 'collection-cloned-successfully', { selectedCollection, name: input })).to.equal(true);
       expect(Notification.showModalInputError.callCount).to.equal(0);
+    });
+  });
+
+  describe('showMongoBinaryInfo tests', () => {
+    beforeEach(() => {
+      sinon.stub(localStorage, 'setItem');
+    });
+
+    afterEach(() => {
+      Notification.modal.restore();
+      localStorage.setItem.restore();
+      localStorage.getItem.restore();
+    });
+
+    it('showMongoBinaryInfo & localstorage item exist', () => {
+      // prepare
+      sinon.spy(Notification, 'modal');
+      sinon.stub(localStorage, 'getItem').returns(true);
+
+      // execute
+      CollectionUtil.showMongoBinaryInfo();
+
+      // verify
+      expect(Notification.modal.callCount).to.equal(0);
+      expect(localStorage.setItem.callCount).to.equal(0);
+    });
+
+    it('showMongoBinaryInfo & localstorage item does not exist & no confirmation', () => {
+      // prepare
+      sinon.stub(Notification, 'modal').yieldsTo('callback', false);
+      sinon.stub(localStorage, 'getItem').returns();
+
+      // execute
+      CollectionUtil.showMongoBinaryInfo();
+
+      // verify
+      expect(Notification.modal.callCount).to.equal(1);
+      expect(Notification.modal.calledWithMatch({
+        title: 'mongo-tools',
+        text: 'mongo-tools-info',
+        type: 'info',
+        confirmButtonText: 'dont_show_again',
+        callback: sinon.match.func
+      })).to.equal(true);
+      expect(localStorage.setItem.callCount).to.equal(0);
+    });
+
+    it('showMongoBinaryInfo & localstorage item does not exist & confirmation', () => {
+      // prepare
+      sinon.stub(Notification, 'modal').yieldsTo('callback', true);
+      sinon.stub(localStorage, 'getItem').returns();
+
+      // execute
+      CollectionUtil.showMongoBinaryInfo();
+
+      // verify
+      expect(Notification.modal.callCount).to.equal(1);
+      expect(Notification.modal.calledWithMatch({
+        title: 'mongo-tools',
+        text: 'mongo-tools-info',
+        type: 'info',
+        confirmButtonText: 'dont_show_again',
+        callback: sinon.match.func
+      })).to.equal(true);
+      expect(localStorage.setItem.callCount).to.equal(1);
+      expect(localStorage.setItem.calledWithExactly(Enums.LOCAL_STORAGE_KEYS.MONGO_BINARY_INFO, 'true')).to.equal(true);
     });
   });
 });
