@@ -789,4 +789,214 @@ describe('CollectionUtil', () => {
       expect(localStorage.setItem.calledWithExactly(Enums.LOCAL_STORAGE_KEYS.MONGO_BINARY_INFO, 'true')).to.equal(true);
     });
   });
+
+  describe('clearCollection tests', () => {
+    beforeEach(() => {
+      sinon.stub(ErrorHandler, 'showMeteorFuncError');
+      sinon.stub(Notification, 'success');
+    });
+
+    afterEach(() => {
+      Notification.modal.restore();
+      Communicator.call.restore();
+      ErrorHandler.showMeteorFuncError.restore();
+      Notification.success.restore();
+    });
+
+    it('clearCollection & invalid param', () => {
+      // prepare
+      sinon.spy(Communicator, 'call');
+      sinon.stub(Notification, 'modal');
+
+      // execute
+      CollectionUtil.clearCollection();
+
+      // verify
+      expect(Notification.modal.callCount).to.equal(0);
+      expect(Communicator.call.callCount).to.equal(0);
+    });
+
+    it('clearCollection & no confirmation', () => {
+      // prepare
+      const selectedCollection = 'sercan';
+      sinon.spy(Communicator, 'call');
+      sinon.stub(Notification, 'modal');
+
+      // execute
+      CollectionUtil.clearCollection(selectedCollection);
+
+      // verify
+      expect(Notification.modal.callCount).to.equal(1);
+      expect(Notification.modal.calledWithMatch({
+        title: 'are-you-sure',
+        text: 'collection-will-be-wiped',
+        textTranslateOptions: { selectedCollection },
+        type: 'warning',
+        callback: sinon.match.func
+      })).to.equal(true);
+      expect(Communicator.call.callCount).to.equal(0);
+    });
+
+    it('clearCollection & confirmation & communicator yields to error', () => {
+      // prepare
+      const selectedCollection = 'sercan';
+      const error = { error: '1233' };
+      sinon.stub(Communicator, 'call').yieldsTo('callback', error, null);
+      sinon.stub(Notification, 'modal').yieldsTo('callback', true);
+
+      // execute
+      CollectionUtil.clearCollection(selectedCollection);
+
+      // verify
+      expect(Notification.modal.callCount).to.equal(1);
+      expect(Notification.modal.calledWithMatch({
+        title: 'are-you-sure',
+        text: 'collection-will-be-wiped',
+        textTranslateOptions: { selectedCollection },
+        type: 'warning',
+        callback: sinon.match.func
+      })).to.equal(true);
+      expect(Communicator.call.callCount).to.equal(1);
+      expect(Communicator.call.calledWithMatch({
+        methodName: 'delete',
+        args: { selectedCollection },
+        callback: sinon.match.func
+      })).to.equal(true);
+      expect(ErrorHandler.showMeteorFuncError.callCount).to.equal(1);
+      expect(ErrorHandler.showMeteorFuncError.calledWithExactly(error, null)).to.equal(true);
+      expect(Notification.success.callCount).to.equal(0);
+    });
+
+    it('clearCollection & confirmation & communicator yields to error (1)', () => {
+      // prepare
+      const selectedCollection = 'sercan';
+      const error = { error: '1233' };
+      sinon.stub(Communicator, 'call').yieldsTo('callback', null, error);
+      sinon.stub(Notification, 'modal').yieldsTo('callback', true);
+
+      // execute
+      CollectionUtil.clearCollection(selectedCollection);
+
+      // verify
+      expect(Notification.modal.callCount).to.equal(1);
+      expect(Notification.modal.calledWithMatch({
+        title: 'are-you-sure',
+        text: 'collection-will-be-wiped',
+        textTranslateOptions: { selectedCollection },
+        type: 'warning',
+        callback: sinon.match.func
+      })).to.equal(true);
+      expect(Communicator.call.callCount).to.equal(1);
+      expect(Communicator.call.calledWithMatch({
+        methodName: 'delete',
+        args: { selectedCollection },
+        callback: sinon.match.func
+      })).to.equal(true);
+      expect(ErrorHandler.showMeteorFuncError.callCount).to.equal(1);
+      expect(ErrorHandler.showMeteorFuncError.calledWithExactly(null, error)).to.equal(true);
+      expect(Notification.success.callCount).to.equal(0);
+    });
+
+    it('clearCollection & confirmation & communicator yields to success', () => {
+      // prepare
+      const selectedCollection = 'sercan';
+      sinon.stub(Communicator, 'call').yieldsTo('callback', null, {});
+      sinon.stub(Notification, 'modal').yieldsTo('callback', true);
+
+      // execute
+      CollectionUtil.clearCollection(selectedCollection);
+
+      // verify
+      expect(Notification.modal.callCount).to.equal(1);
+      expect(Notification.modal.calledWithMatch({
+        title: 'are-you-sure',
+        text: 'collection-will-be-wiped',
+        textTranslateOptions: { selectedCollection },
+        type: 'warning',
+        callback: sinon.match.func
+      })).to.equal(true);
+      expect(Communicator.call.callCount).to.equal(1);
+      expect(Communicator.call.calledWithMatch({
+        methodName: 'delete',
+        args: { selectedCollection },
+        callback: sinon.match.func
+      })).to.equal(true);
+      expect(ErrorHandler.showMeteorFuncError.callCount).to.equal(0);
+      expect(Notification.success.callCount).to.equal(1);
+      expect(Notification.success.calledWithExactly('collection-cleared-successfully', null, { selectedCollection })).to.equal(true);
+    });
+  });
+
+  describe('handleNavigationAndSessions tests', () => {
+    let valStub;
+    beforeEach(() => {
+      valStub = {
+        trigger: sinon.stub()
+      };
+      sinon.stub(SessionManager, 'set');
+      sinon.stub($.prototype, 'val').returns(valStub);
+    });
+
+    afterEach(() => {
+      SessionManager.set.restore();
+      $.prototype.val.restore();
+
+      while (document.body.firstChild) {
+        document.body.removeChild(document.body.firstChild);
+      }
+    });
+
+    it('handleNavigationAndSessions', () => {
+      // prepare
+      const ulCollectionNames = $('<ul id="listCollectionNames" class="nav nav-second-level">'
+        + '<li id="sercan">Sercan</li>'
+        + '<li class="active" id="tugce">Tugce</li>'
+        + '</ul>'
+        + '<ul id="listSystemCollections" class="nav nav-second-level">'
+        + '<li class="active" id="1">1</li>'
+        + '<li class="active" id="2">2</li>'
+        + '</ul>');
+      $('body').append(ulCollectionNames);
+
+      // execute
+      CollectionUtil.handleNavigationAndSessions();
+
+      // verify
+      expect(SessionManager.set.callCount).to.equal(3);
+      expect(SessionManager.set.calledWithExactly(SessionManager.strSessionSelectedCollection, null)).to.equal(true);
+      expect(SessionManager.set.calledWithExactly(SessionManager.strSessionSelectedQuery, null)).to.equal(true);
+      expect(SessionManager.set.calledWithExactly(SessionManager.strSessionSelectedOptions, null)).to.equal(true);
+      expect($('#sercan').hasClass('active')).to.equal(false);
+      expect($('#1').hasClass('active')).to.equal(false);
+      expect($('#2').hasClass('active')).to.equal(false);
+      expect($('#tugce').hasClass('active')).to.equal(false);
+      expect($.prototype.val.callCount).to.equal(2);
+      expect($.prototype.val.getCall(0).thisValue.selector).to.equal('#cmbQueries');
+      expect($.prototype.val.getCall(1).thisValue.selector).to.equal('#cmbAdminQueries');
+      expect($.prototype.val.alwaysCalledWithExactly('')).to.equal(true);
+      expect(valStub.trigger.callCount).to.equal(2);
+      expect(valStub.trigger.alwaysCalledWithExactly('chosen:updated')).to.equal(true);
+    });
+  });
+
+  describe('prepareContextMenuItems tests', () => {
+    // FIXME test every condition
+
+    it('prepareContextMenuItems should return 8 items', () => {
+      // prepare
+
+      // execute
+      const items = CollectionUtil.prepareContextMenuItems({});
+
+      // verify
+      expect(items).to.have.property('manage_collection');
+      expect(items).to.have.property('update_view_pipeline');
+      expect(items).to.have.property('add_collection');
+      expect(items).to.have.property('filter_collections');
+      expect(items).to.have.property('clear_filter');
+      expect(items).to.have.property('refresh_collections');
+      expect(items).to.have.property('drop_collection');
+      expect(items).to.have.property('drop_collections');
+    });
+  });
 });
