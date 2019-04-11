@@ -78,6 +78,8 @@ CollectionUtil.prototype = {
   },
 
   dropCollection(selectedCollection) {
+    if (!selectedCollection) return;
+
     Notification.modal({
       title: 'are-you-sure',
       text: 'collection-will-be-dropped',
