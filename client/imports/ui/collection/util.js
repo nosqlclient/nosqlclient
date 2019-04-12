@@ -196,7 +196,6 @@ CollectionUtil.prototype = {
             name: Helper.translate({ key: 'show_coll_view_info' }),
             icon: 'fa-book',
             callback() {
-              console.log('TEST', this, $(this));
               const collectionName = getCollectionNameFromContextMenu($(this));
               if (collectionName) {
                 addCollectionModal.data('is-view', collectionName);
