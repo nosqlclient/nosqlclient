@@ -2,7 +2,7 @@
 
 import sinon from 'sinon';
 import { expect } from 'chai';
-import { CollectionUtil, Connection } from '/client/imports/ui';
+import { CollectionFilter, CollectionUtil, Connection } from '/client/imports/ui';
 import { Enums, ErrorHandler, Notification, SessionManager } from '/client/imports/modules';
 import { Communicator } from '/client/imports/facades';
 import $ from 'jquery';
@@ -980,9 +980,24 @@ describe('CollectionUtil', () => {
   });
 
   describe('prepareContextMenuItems tests', () => {
-    // FIXME test every condition
+    const collectionName = 'sercanCol';
+    const hrefId = 'TESTTTT';
 
-    it('prepareContextMenuItems should return 8 items', () => {
+    beforeEach(() => {
+      const href = document.createElement('a');
+      href.setAttribute('id', hrefId);
+      href.innerText = collectionName;
+
+      document.body.append(href);
+    });
+
+    afterEach(() => {
+      while (document.body.firstChild) {
+        document.body.removeChild(document.body.firstChild);
+      }
+    });
+
+    it('prepareContextMenuItems item existance', () => {
       // prepare
 
       // execute
@@ -997,6 +1012,264 @@ describe('CollectionUtil', () => {
       expect(items).to.have.property('refresh_collections');
       expect(items).to.have.property('drop_collection');
       expect(items).to.have.property('drop_collections');
+      expect(items.manage_collection.items).to.have.property('view_collection');
+      expect(items.manage_collection.items).to.have.property('convert_to_capped');
+      expect(items.manage_collection.items).to.have.property('rename_collection');
+      expect(items.manage_collection.items).to.have.property('clone_collection');
+      expect(items.manage_collection.items).to.have.property('validation_rules');
+      expect(items.manage_collection.items).to.have.property('clear_collection');
+    });
+
+    it('prepareContextMenuItems manage_collection.view_collection callback', () => {
+      // prepare
+      const addCollectionModal = {
+        data: sinon.stub(),
+        modal: sinon.stub()
+      };
+
+      // execute
+      const items = CollectionUtil.prepareContextMenuItems({ addCollectionModal });
+      items.manage_collection.items.view_collection.callback.call(document.getElementById(hrefId));
+
+      // verify
+      expect(addCollectionModal.data.callCount).to.equal(1);
+      expect(addCollectionModal.data.calledWithExactly('is-view', collectionName)).to.equal(true);
+      expect(addCollectionModal.modal.callCount).to.equal(1);
+      expect(addCollectionModal.modal.calledWithMatch({ backdrop: 'static', keyboard: false, })).to.equal(true);
+    });
+
+    it('prepareContextMenuItems manage_collection.convert_to_capped callback', () => {
+      // prepare
+      const convertToCappedModal = {
+        data: sinon.stub(),
+        modal: sinon.stub()
+      };
+
+      // execute
+      const items = CollectionUtil.prepareContextMenuItems({ convertToCappedModal });
+      items.manage_collection.items.convert_to_capped.callback.call(document.getElementById(hrefId));
+
+      // verify
+      expect(convertToCappedModal.data.callCount).to.equal(1);
+      expect(convertToCappedModal.data.calledWithExactly('collection', collectionName)).to.equal(true);
+      expect(convertToCappedModal.modal.callCount).to.equal(1);
+      expect(convertToCappedModal.modal.calledWithMatch('show')).to.equal(true);
+    });
+
+    it('prepareContextMenuItems manage_collection.rename_collection callback', () => {
+      // prepare
+      const renameModal = {
+        data: sinon.stub(),
+        modal: sinon.stub()
+      };
+
+      // execute
+      const items = CollectionUtil.prepareContextMenuItems({ renameModal });
+      items.manage_collection.items.rename_collection.callback.call(document.getElementById(hrefId));
+
+      // verify
+      expect(renameModal.data.callCount).to.equal(1);
+      expect(renameModal.data.calledWithExactly('collection', collectionName)).to.equal(true);
+      expect(renameModal.modal.callCount).to.equal(1);
+      expect(renameModal.modal.calledWithMatch('show')).to.equal(true);
+    });
+
+    it('prepareContextMenuItems manage_collection.clone_collection callback', () => {
+      // prepare
+      sinon.stub(CollectionUtil, 'cloneCollection');
+
+      // execute
+      const items = CollectionUtil.prepareContextMenuItems({ });
+      items.manage_collection.items.clone_collection.callback.call(document.getElementById(hrefId));
+
+      // verify
+      expect(CollectionUtil.cloneCollection.callCount).to.equal(1);
+      expect(CollectionUtil.cloneCollection.calledWithExactly(collectionName)).to.equal(true);
+
+      // cleanup
+      CollectionUtil.cloneCollection.restore();
+    });
+
+    it('prepareContextMenuItems manage_collection.validation_rules callback', () => {
+      // prepare
+      const validationRulesModal = {
+        data: sinon.stub(),
+        modal: sinon.stub()
+      };
+
+      // execute
+      const items = CollectionUtil.prepareContextMenuItems({ validationRulesModal });
+      items.manage_collection.items.validation_rules.callback.call(document.getElementById(hrefId));
+
+      // verify
+      expect(validationRulesModal.data.callCount).to.equal(1);
+      expect(validationRulesModal.data.calledWithExactly('collection', collectionName)).to.equal(true);
+      expect(validationRulesModal.modal.callCount).to.equal(1);
+      expect(validationRulesModal.modal.calledWithMatch('show')).to.equal(true);
+    });
+
+    it('prepareContextMenuItems manage_collection.clear_collection callback with selected', () => {
+      // prepare
+      sinon.stub(CollectionUtil, 'clearCollection');
+      sinon.stub(Notification, 'warning');
+
+      // execute
+      const items = CollectionUtil.prepareContextMenuItems({ });
+      items.manage_collection.items.clear_collection.callback.call(document.getElementById(hrefId));
+
+      // verify
+      expect(CollectionUtil.clearCollection.callCount).to.equal(1);
+      expect(CollectionUtil.clearCollection.calledWithExactly(collectionName)).to.equal(true);
+      expect(Notification.warning.callCount).to.equal(0);
+
+      // cleanup
+      CollectionUtil.clearCollection.restore();
+      Notification.warning.restore();
+    });
+
+    it('prepareContextMenuItems manage_collection.clear_collection callback with no selected', () => {
+      // prepare
+      sinon.stub(CollectionUtil, 'clearCollection');
+      sinon.stub(Notification, 'warning');
+
+      // execute
+      const items = CollectionUtil.prepareContextMenuItems({ });
+      items.manage_collection.items.clear_collection.callback.call();
+
+      // verify
+      expect(CollectionUtil.clearCollection.callCount).to.equal(0);
+      expect(Notification.warning.callCount).to.equal(1);
+      expect(Notification.warning.calledWithExactly('select_collection')).to.equal(true);
+
+      // cleanup
+      CollectionUtil.clearCollection.restore();
+      Notification.warning.restore();
+    });
+
+    it('prepareContextMenuItems update_view_pipeline callback', () => {
+      // prepare
+      const updateViewPipeline = {
+        data: sinon.stub(),
+        modal: sinon.stub()
+      };
+
+      // execute
+      const items = CollectionUtil.prepareContextMenuItems({ updateViewPipeline });
+      items.update_view_pipeline.callback.call(document.getElementById(hrefId));
+
+      // verify
+      expect(updateViewPipeline.data.callCount).to.equal(1);
+      expect(updateViewPipeline.data.calledWithExactly('viewName', collectionName)).to.equal(true);
+      expect(updateViewPipeline.modal.callCount).to.equal(1);
+      expect(updateViewPipeline.modal.calledWithMatch('show')).to.equal(true);
+    });
+
+    it('prepareContextMenuItems add_collection callback', () => {
+      // prepare
+      const addCollectionModal = {
+        data: sinon.stub(),
+        modal: sinon.stub()
+      };
+
+      // execute
+      const items = CollectionUtil.prepareContextMenuItems({ addCollectionModal });
+      items.add_collection.callback();
+
+      // verify
+      expect(addCollectionModal.data.callCount).to.equal(1);
+      expect(addCollectionModal.data.calledWithExactly('is-view', '')).to.equal(true);
+      expect(addCollectionModal.modal.callCount).to.equal(1);
+      expect(addCollectionModal.modal.calledWithMatch({ backdrop: 'static', keyboard: false })).to.equal(true);
+    });
+
+    it('prepareContextMenuItems clear_filter callback', () => {
+      // prepare
+      sinon.stub(CollectionFilter.excludedCollectionsByFilter, 'set');
+      sinon.stub(CollectionFilter.filterRegex, 'set');
+
+      // execute
+      const items = CollectionUtil.prepareContextMenuItems({ });
+      items.clear_filter.callback();
+
+      // verify
+      expect(CollectionFilter.excludedCollectionsByFilter.set.callCount).to.equal(1);
+      expect(CollectionFilter.excludedCollectionsByFilter.set.calledWithExactly([])).to.equal(true);
+      expect(CollectionFilter.filterRegex.set.callCount).to.equal(1);
+      expect(CollectionFilter.filterRegex.set.calledWithExactly('')).to.equal(true);
+
+      // cleanup
+      CollectionFilter.excludedCollectionsByFilter.set.restore();
+      CollectionFilter.filterRegex.set.restore();
+    });
+
+    it('prepareContextMenuItems refresh_collections callback', () => {
+      // prepare
+      sinon.stub(Connection, 'connect');
+
+      // execute
+      const items = CollectionUtil.prepareContextMenuItems({ });
+      items.refresh_collections.callback();
+
+      // verify
+      expect(Connection.connect.callCount).to.equal(1);
+      expect(Connection.connect.calledWithExactly(true)).to.equal(true);
+
+      // cleanup
+      Connection.connect.restore();
+    });
+
+    it('prepareContextMenuItems drop_collection callback with selected', () => {
+      // prepare
+      sinon.stub(CollectionUtil, 'dropCollection');
+      sinon.stub(Notification, 'warning');
+
+      // execute
+      const items = CollectionUtil.prepareContextMenuItems({ });
+      items.drop_collection.callback.call(document.getElementById(hrefId));
+
+      // verify
+      expect(CollectionUtil.dropCollection.callCount).to.equal(1);
+      expect(CollectionUtil.dropCollection.calledWithExactly(collectionName)).to.equal(true);
+      expect(Notification.warning.callCount).to.equal(0);
+
+      // cleanup
+      CollectionUtil.dropCollection.restore();
+      Notification.warning.restore();
+    });
+
+    it('prepareContextMenuItems drop_collection callback with no selected', () => {
+      // prepare
+      sinon.stub(CollectionUtil, 'dropCollection');
+      sinon.stub(Notification, 'warning');
+
+      // execute
+      const items = CollectionUtil.prepareContextMenuItems({ });
+      items.drop_collection.callback.call();
+
+      // verify
+      expect(CollectionUtil.dropCollection.callCount).to.equal(0);
+      expect(Notification.warning.callCount).to.equal(1);
+      expect(Notification.warning.calledWithExactly('select_collection')).to.equal(true);
+
+      // cleanup
+      CollectionUtil.dropCollection.restore();
+      Notification.warning.restore();
+    });
+
+    it('prepareContextMenuItems drop_collections callback', () => {
+      // prepare
+      sinon.stub(CollectionUtil, 'dropAllCollections');
+
+      // execute
+      const items = CollectionUtil.prepareContextMenuItems({ });
+      items.drop_collections.callback();
+
+      // verify
+      expect(CollectionUtil.dropAllCollections.callCount).to.equal(1);
+      expect(CollectionUtil.dropAllCollections.calledWithExactly()).to.equal(true);
+
+      // cleanup
+      CollectionUtil.dropAllCollections.restore();
     });
   });
 });
