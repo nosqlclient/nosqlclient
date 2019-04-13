@@ -188,14 +188,31 @@ describe('Communicator', () => {
       const methodName = 'command';
 
       // execute
-      Communicator.call({ methodName, args: { command: 'test', runOnAdminDB: true, options: { xxx: 123 } }, callback() {} });
+      Communicator.call({ methodName, args: { command: { blabla: true }, runOnAdminDB: true, options: { xxx: 123 } }, callback() {} });
 
       // verify
       assertExecution(methodName);
       expect(Meteor.call.getCall(0).args[1]).to.eql({
         sessionId: Meteor.default_connection._lastSessionId,
-        command: 'test',
         runOnAdminDB: true,
+        command: { blabla: true },
+        options: { xxx: 123 }
+      });
+    });
+
+    it('command (1)', () => {
+      // prepare
+      const methodName = 'command';
+
+      // execute
+      Communicator.call({ methodName, args: { command: 'testing', runOnAdminDB: true, options: { xxx: 123 } }, callback() {} });
+
+      // verify
+      assertExecution(methodName);
+      expect(Meteor.call.getCall(0).args[1]).to.eql({
+        sessionId: Meteor.default_connection._lastSessionId,
+        runOnAdminDB: true,
+        command: { },
         options: { xxx: 123 }
       });
     });
