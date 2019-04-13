@@ -2,7 +2,7 @@
 
 import sinon from 'sinon';
 import { expect } from 'chai';
-import { CollectionFilter, CollectionUtil, Connection } from '/client/imports/ui';
+import { CollectionAdd, CollectionConversion, CollectionFilter, CollectionRename, CollectionUtil, CollectionValidationRules, Connection, ViewPipelineUpdater } from '/client/imports/ui';
 import { Enums, ErrorHandler, Notification, Querying, SessionManager } from '/client/imports/modules';
 import { Communicator, ReactivityProvider } from '/client/imports/facades';
 import Helper from '/client/imports/helpers/helper';
@@ -1279,6 +1279,20 @@ describe('CollectionUtil', () => {
     const errorMessage = 'error !!!';
     const errorDetails = 'error details !!';
 
+    const assertNoExecution = function (sessionManagerCall) {
+      expect(ReactivityProvider.findOne.callCount).to.equal(1);
+      expect(ReactivityProvider.findOne.calledWithExactly(ReactivityProvider.types.Settings)).to.equal(true);
+      expect(SessionManager.get.callCount).to.equal(sessionManagerCall ? 1 : 0);
+      if (sessionManagerCall) expect(SessionManager.get.calledWithExactly(SessionManager.strSessionSelectedCollection)).to.equal(true);
+      expect(Querying.getDistinctKeysForAutoComplete.callCount).to.equal(0);
+      expect(Communicator.call.callCount).to.equal(0);
+      expect($.prototype.html.callCount).to.equal(0);
+      expect(CollectionUtil.populateCollectionInfo.callCount).to.equal(0);
+      expect(Notification.start.callCount).to.equal(0);
+      expect(Notification.stop.callCount).to.equal(0);
+      expect(ErrorHandler.getErrorMessage.callCount).to.equal(0);
+    };
+
     beforeEach(() => {
       clock = sinon.useFakeTimers();
       sinon.stub($.prototype, 'html');
@@ -1316,16 +1330,325 @@ describe('CollectionUtil', () => {
       CollectionUtil.getCollectionInformation();
 
       // verify
+      assertNoExecution();
+    });
+
+    it('getCollectionInformation with tick & no settings', () => {
+      // prepare
+      sinon.stub(document, 'querySelector');
+      sinon.stub(ReactivityProvider, 'findOne');
+      sinon.stub(SessionManager, 'get');
+      sinon.stub(Communicator, 'call');
+
+      // execute
+      CollectionUtil.getCollectionInformation();
+      clock.tick(150);
+
+      // verify
+      assertNoExecution();
+    });
+
+    it('getCollectionInformation with tick & no btnExecuteQuery', () => {
+      // prepare
+      const settings = { a: 1, b: 2, c: true };
+      sinon.stub(document, 'querySelector');
+      sinon.stub(ReactivityProvider, 'findOne').returns(settings);
+      sinon.stub(SessionManager, 'get');
+      sinon.stub(Communicator, 'call');
+
+      // execute
+      CollectionUtil.getCollectionInformation();
+      clock.tick(150);
+
+      // verify
+      assertNoExecution();
+    });
+
+    it('getCollectionInformation with tick & no selectedCollection', () => {
+      // prepare
+      const settings = { a: 1, b: 2, c: true };
+      sinon.stub(document, 'querySelector').returns('something');
+      sinon.stub(ReactivityProvider, 'findOne').returns(settings);
+      sinon.stub(SessionManager, 'get');
+      sinon.stub(Communicator, 'call');
+
+      // execute
+      CollectionUtil.getCollectionInformation();
+      clock.tick(150);
+
+      // verify
+      assertNoExecution(true);
+    });
+
+    it('getCollectionInformation with tick & communicator yields error', () => {
+      // prepare
+      const settings = { a: 1, b: 2, c: true };
+      const selectedCollection = 'sercanCollection';
+      const error = { error: '123' };
+      sinon.stub(document, 'querySelector').returns('something');
+      sinon.stub(ReactivityProvider, 'findOne').returns(settings);
+      sinon.stub(SessionManager, 'get').returns(selectedCollection);
+      sinon.stub(Communicator, 'call').yieldsTo('callback', error, null);
+
+      // execute
+      CollectionUtil.getCollectionInformation();
+      clock.tick(150);
+
+      // verify
       expect(ReactivityProvider.findOne.callCount).to.equal(1);
       expect(ReactivityProvider.findOne.calledWithExactly(ReactivityProvider.types.Settings)).to.equal(true);
-      expect(SessionManager.get.callCount).to.equal(0);
-      expect(Querying.getDistinctKeysForAutoComplete.callCount).to.equal(0);
-      expect(Communicator.call.callCount).to.equal(0);
-      expect($.prototype.html.callCount).to.equal(0);
+      expect(SessionManager.get.callCount).to.equal(1);
+      expect(SessionManager.get.calledWithExactly(SessionManager.strSessionSelectedCollection)).to.equal(true);
+      expect(Querying.getDistinctKeysForAutoComplete.callCount).to.equal(1);
+      expect(Querying.getDistinctKeysForAutoComplete.calledWithExactly(selectedCollection)).to.equal(true);
+      expect(Communicator.call.callCount).to.equal(1);
+      expect(Communicator.call.calledWithMatch({ methodName: 'stats', args: { selectedCollection }, callback: sinon.match.func })).to.equal(true);
+      expect($.prototype.html.callCount).to.equal(1);
+      expect($.prototype.html.calledWithExactly(`<div class="row"><div class="col-lg-7"><b>${errorMessage}</b></div><div class="col-lg-5">${errorDetails}</div></div>`)).to.equal(true);
       expect(CollectionUtil.populateCollectionInfo.callCount).to.equal(0);
-      expect(Notification.start.callCount).to.equal(0);
-      expect(Notification.stop.callCount).to.equal(0);
+      expect(Notification.start.callCount).to.equal(1);
+      expect(Notification.start.calledWithExactly('#btnExecuteQuery')).to.equal(true);
+      expect(Notification.stop.callCount).to.equal(1);
+      expect(Notification.stop.calledWithExactly()).to.equal(true);
+      expect(ErrorHandler.getErrorMessage.callCount).to.equal(1);
+      expect(ErrorHandler.getErrorMessage.calledWithExactly(error, null)).to.equal(true);
+    });
+
+    it('getCollectionInformation with tick & communicator yields success', () => {
+      // prepare
+      const settings = { a: 1, b: 2, c: true };
+      const selectedCollection = 'sercanCollection';
+      const result = { result: '123' };
+      sinon.stub(document, 'querySelector').returns('something');
+      sinon.stub(ReactivityProvider, 'findOne').returns(settings);
+      sinon.stub(SessionManager, 'get').returns(selectedCollection);
+      sinon.stub(Communicator, 'call').yieldsTo('callback', null, result);
+
+      // execute
+      CollectionUtil.getCollectionInformation();
+      clock.tick(150);
+
+      // verify
+      expect(ReactivityProvider.findOne.callCount).to.equal(1);
+      expect(ReactivityProvider.findOne.calledWithExactly(ReactivityProvider.types.Settings)).to.equal(true);
+      expect(SessionManager.get.callCount).to.equal(1);
+      expect(SessionManager.get.calledWithExactly(SessionManager.strSessionSelectedCollection)).to.equal(true);
+      expect(Querying.getDistinctKeysForAutoComplete.callCount).to.equal(1);
+      expect(Querying.getDistinctKeysForAutoComplete.calledWithExactly(selectedCollection)).to.equal(true);
+      expect(Communicator.call.callCount).to.equal(1);
+      expect(Communicator.call.calledWithMatch({ methodName: 'stats', args: { selectedCollection }, callback: sinon.match.func })).to.equal(true);
+      expect($.prototype.html.callCount).to.equal(0);
+      expect(CollectionUtil.populateCollectionInfo.callCount).to.equal(1);
+      expect(CollectionUtil.populateCollectionInfo.calledWithExactly(result.result, settings)).to.equal(true);
+      expect(Notification.start.callCount).to.equal(1);
+      expect(Notification.start.calledWithExactly('#btnExecuteQuery')).to.equal(true);
+      expect(Notification.stop.callCount).to.equal(1);
+      expect(Notification.stop.calledWithExactly()).to.equal(true);
       expect(ErrorHandler.getErrorMessage.callCount).to.equal(0);
+    });
+  });
+
+  describe('populateCollectionInfo tests', () => {
+    const count = 'count_translated';
+    const indexCount = 'index_count_translated';
+    const size = 'size_translated';
+    const totalIndexSize = 'total_index_size_translated';
+    const averageObjectSize = 'avg_obj_size_translated';
+    const isCapped = 'is_capped_translate';
+    const scaleTextResult = { scale: 0.5, text: 'MB' };
+
+    beforeEach(() => {
+      sinon.stub(Helper, 'translate').withArgs({ key: 'count' }).returns(count).withArgs({ key: 'index_count' })
+        .returns(indexCount)
+        .withArgs({ key: 'size' })
+        .returns(size)
+        .withArgs({ key: 'total_index_size' })
+        .returns(totalIndexSize)
+        .withArgs({ key: 'avg_obj_size' })
+        .returns(averageObjectSize)
+        .withArgs({ key: 'is_capped' })
+        .returns(isCapped);
+      sinon.stub(Helper, 'getScaleAndText').returns(scaleTextResult);
+      sinon.stub($.prototype, 'html');
+    });
+
+    afterEach(() => {
+      Helper.translate.restore();
+      Helper.getScaleAndText.restore();
+      $.prototype.html.restore();
+    });
+
+    it('populateCollectionInfo invalid param', () => {
+      // prepare
+
+      // execute
+      CollectionUtil.populateCollectionInfo();
+
+      // verify
+      expect($.prototype.html.callCount).to.equal(0);
+      expect(Helper.translate.callCount).to.equal(0);
+      expect(Helper.getScaleAndText.callCount).to.equal(0);
+    });
+
+    it('populateCollectionInfo invalid param (1)', () => {
+      // prepare
+
+      // execute
+      CollectionUtil.populateCollectionInfo({ x: 1 });
+
+      // verify
+      expect($.prototype.html.callCount).to.equal(0);
+      expect(Helper.translate.callCount).to.equal(0);
+      expect(Helper.getScaleAndText.callCount).to.equal(0);
+    });
+
+    it('populateCollectionInfo valid param', () => {
+      // prepare
+      const statsResult = { count: 1, nindexes: 33, size: 12355, totalIndexSize: 3333, avgObjSize: 1641, capped: false };
+
+      // execute
+      CollectionUtil.populateCollectionInfo(statsResult, { something: 123 });
+
+      // verify
+      const sizeNum = (statsResult.size / scaleTextResult.scale).toFixed(2);
+      const totalIndexNum = (statsResult.totalIndexSize / scaleTextResult.scale).toFixed(2);
+      const avgObjNum = (statsResult.avgObjSize / scaleTextResult.scale).toFixed(2);
+
+      expect($.prototype.html.callCount).to.equal(1);
+      expect($.prototype.html.getCall(0).args[0]).to.have.string(`<div class="row"><div class="col-lg-7"><b>${count}:</b></div><div class="col-lg-5">${statsResult.count}</div></div>`);
+      expect($.prototype.html.getCall(0).args[0]).to.have.string(`<div class="row"><div class="col-lg-7"><b>${indexCount}:</b></div><div class="col-lg-5">${statsResult.nindexes}</div></div>`);
+      expect($.prototype.html.getCall(0).args[0]).to.have.string(`<div class="row"><div class="col-lg-7"><b>${size}:</b></div><div class="col-lg-5">${sizeNum} ${scaleTextResult.text}</div></div>`);
+      expect($.prototype.html.getCall(0).args[0]).to.have
+        .string(`<div class="row"><div class="col-lg-7"><b>${totalIndexSize}:</b></div><div class="col-lg-5">${totalIndexNum} ${scaleTextResult.text}</div></div>`);
+      expect($.prototype.html.getCall(0).args[0]).to.have
+        .string(`<div class="row"><div class="col-lg-7"><b>${averageObjectSize}:</b></div><div class="col-lg-5">${avgObjNum} ${scaleTextResult.text}</div></div>`);
+      expect($.prototype.html.getCall(0).args[0]).to.have.string(`<div class="row"><div class="col-lg-7"><b>${isCapped}:</b></div><div class="col-lg-5">${statsResult.capped}</div></div>`);
+      expect(Helper.translate.callCount).to.equal(6);
+    });
+  });
+
+  describe('prepareContextMenuModals tests', () => {
+    const assertExecution = function (collection) {
+      expect($.prototype.on.callCount).to.equal(6);
+      expect($.prototype.on.alwaysCalledWithMatch('shown.bs.modal', sinon.match.func)).to.equal(true);
+      expect(CollectionFilter.initializeFilterTable.callCount).to.equal(1);
+      expect(CollectionFilter.initializeFilterTable.calledWithExactly()).to.equal(true);
+      expect(CollectionAdd.resetForm.callCount).to.equal(1);
+      expect(CollectionAdd.resetForm.calledWithExactly()).to.equal(true);
+      expect(CollectionAdd.initializeForm.callCount).to.equal(collection ? 1 : 0);
+      if (collection) expect(CollectionAdd.initializeForm.calledWithExactly(collection)).to.equal(true);
+      expect(CollectionConversion.resetForm.callCount).to.equal(1);
+      expect(CollectionConversion.resetForm.calledWithExactly()).to.equal(true);
+      expect(CollectionRename.resetForm.callCount).to.equal(1);
+      expect(CollectionRename.resetForm.calledWithExactly()).to.equal(true);
+      expect(CollectionValidationRules.resetForm.callCount).to.equal(1);
+      expect(CollectionValidationRules.resetForm.calledWithExactly()).to.equal(true);
+      expect(ViewPipelineUpdater.resetForm.callCount).to.equal(1);
+      expect(ViewPipelineUpdater.resetForm.calledWithExactly()).to.equal(true);
+      expect(ViewPipelineUpdater.initialize.callCount).to.equal(1);
+      expect(ViewPipelineUpdater.initialize.calledWithExactly()).to.equal(true);
+    };
+
+    beforeEach(() => {
+      sinon.stub($.prototype, 'on').yields(null);
+      sinon.stub(CollectionFilter, 'initializeFilterTable');
+      sinon.stub(CollectionAdd, 'resetForm');
+      sinon.stub(CollectionAdd, 'initializeForm');
+      sinon.stub(CollectionConversion, 'resetForm');
+      sinon.stub(CollectionRename, 'resetForm');
+      sinon.stub(CollectionValidationRules, 'resetForm');
+      sinon.stub(ViewPipelineUpdater, 'resetForm');
+      sinon.stub(ViewPipelineUpdater, 'initialize');
+    });
+
+    afterEach(() => {
+      $.prototype.on.restore();
+      CollectionFilter.initializeFilterTable.restore();
+      CollectionAdd.resetForm.restore();
+      CollectionAdd.initializeForm.restore();
+      CollectionConversion.resetForm.restore();
+      CollectionRename.resetForm.restore();
+      CollectionValidationRules.resetForm.restore();
+      ViewPipelineUpdater.resetForm.restore();
+      ViewPipelineUpdater.initialize.restore();
+      $.prototype.data.restore();
+    });
+
+    it('prepareContextMenuModals view', () => {
+      // prepare
+      const collection = 'sercanCollection';
+      sinon.stub($.prototype, 'data').withArgs('is-view').returns(collection); // then it's a view window not edit.
+
+      // execute
+      CollectionUtil.prepareContextMenuModals();
+
+      // verify
+      assertExecution(collection);
+    });
+
+    it('prepareContextMenuModals edit', () => {
+      // prepare
+      sinon.stub($.prototype, 'data').withArgs('is-view').returns();
+
+      // execute
+      CollectionUtil.prepareContextMenuModals();
+
+      // verify
+      assertExecution();
+    });
+  });
+
+  describe('getCollectionNames tests', () => {
+    afterEach(() => {
+      SessionManager.get.restore();
+    });
+
+    it('getCollectionNames non-system & no filter', () => {
+      // prepare
+      const allCollections = [{ name: 'sercan' }, { name: 'system.users' }, { name: 'test' }, { name: 'tugce' }];
+      sinon.stub(SessionManager, 'get').withArgs(SessionManager.strSessionCollectionNames).returns(allCollections);
+
+      // execute
+      const names = CollectionUtil.getCollectionNames();
+
+      // verify
+      expect(names).to.eql([{ name: 'sercan' }, { name: 'test' }, { name: 'tugce' }]);
+    });
+
+    it('getCollectionNames non-system & filter', () => {
+      // prepare
+      const allCollections = [{ name: 'sercan' }, { name: 'system.users' }, { name: 'test' }, { name: 'tugce' }, { name: 'aaaabbbb' }];
+      sinon.stub(SessionManager, 'get').withArgs(SessionManager.strSessionCollectionNames).returns(allCollections);
+      sinon.stub(CollectionFilter.filterRegex, 'get').returns('.*e.*');
+      sinon.stub(CollectionFilter.excludedCollectionsByFilter, 'get').returns(['test', 'tugce']);
+
+      // execute
+      const names = CollectionUtil.getCollectionNames();
+
+      // verify
+      expect(names).to.eql([{ name: 'sercan' }]);
+
+      // cleanup
+      CollectionFilter.filterRegex.get.restore();
+      CollectionFilter.excludedCollectionsByFilter.get.restore();
+    });
+
+    it('getCollectionNames system & filter', () => {
+      // prepare
+      const allCollections = [{ name: 'sercan' }, { name: 'system.users' }, { name: 'system.test' }, { name: 'tugce' }, { name: 'system.aaaabbbb' }];
+      sinon.stub(SessionManager, 'get').withArgs(SessionManager.strSessionCollectionNames).returns(allCollections);
+      sinon.stub(CollectionFilter.filterRegex, 'get').returns('.*a.*');
+      sinon.stub(CollectionFilter.excludedCollectionsByFilter, 'get').returns(['tugce', 'system.test']);
+
+      // execute
+      const names = CollectionUtil.getCollectionNames(true);
+
+      // verify
+      expect(names).to.eql([{ name: 'system.aaaabbbb' }]);
+
+      // cleanup
+      CollectionFilter.filterRegex.get.restore();
+      CollectionFilter.excludedCollectionsByFilter.get.restore();
     });
   });
 });

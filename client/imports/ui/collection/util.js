@@ -326,10 +326,10 @@ CollectionUtil.prototype = {
     setTimeout(() => {
       if (!settings || !document.querySelector('#btnExecuteQuery')) return;
 
-      Notification.start('#btnExecuteQuery');
       const selectedCollection = SessionManager.get(SessionManager.strSessionSelectedCollection);
       if (!selectedCollection) return;
 
+      Notification.start('#btnExecuteQuery');
       // get distinct field keys for auto complete on every collection change.
       Querying.getDistinctKeysForAutoComplete(selectedCollection);
 
@@ -348,6 +348,8 @@ CollectionUtil.prototype = {
   },
 
   populateCollectionInfo(statsResult, settings) {
+    if (!statsResult || !settings) return;
+
     const { scale, text } = Helper.getScaleAndText(settings.scale);
 
     // we are manually doing the scale to prevent showing 0 MB for sizes 0.7, 0.8, 0.9 etc. MBs as mongodb does.
@@ -368,8 +370,7 @@ CollectionUtil.prototype = {
   },
 
   prepareContextMenuModals() {
-    const filterModal = $('#collectionFilterModal');
-    filterModal.on('shown.bs.modal', () => {
+    $('#collectionFilterModal').on('shown.bs.modal', () => {
       CollectionFilter.initializeFilterTable();
     });
 
@@ -400,7 +401,7 @@ CollectionUtil.prototype = {
       ViewPipelineUpdater.initialize();
     });
 
-    return { filterModal, addCollectionModal, convertToCappedModal, renameModal, validationRulesModal, updateViewPipeline };
+    return { addCollectionModal, convertToCappedModal, renameModal, validationRulesModal, updateViewPipeline };
   },
 
   getCollectionNames(isSystem) {
