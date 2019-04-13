@@ -22,12 +22,14 @@ CollectionValidationRules.prototype = {
     const selectedCollection = $('#validationRulesModal').data('collection');
     if (!selectedCollection) return;
 
+    const connection = ReactivityProvider.findOne(ReactivityProvider.types.Connections, { _id: SessionManager.get(SessionManager.strSessionConnection)._id });
+    if (!connection) return;
+
     Notification.start('#btnSaveValidationRules');
 
     const cmbValidationAction = $('#cmbValidationAction');
     const cmbValidationLevel = $('#cmbValidationLevel');
 
-    const connection = ReactivityProvider.findOne(ReactivityProvider.types.Connections, { _id: SessionManager.get(SessionManager.strSessionConnection)._id });
     Communicator.call({
       methodName: 'listCollectionNames',
       args: { dbName: connection.databaseName },
@@ -53,10 +55,6 @@ CollectionValidationRules.prototype = {
   save() {
     Notification.start('#btnSaveValidationRules');
 
-    const validationAction = $('#cmbValidationAction').val();
-    const validationLevel = $('#cmbValidationLevel').val();
-    const selectedCollection = $('#validationRulesModal').data('collection');
-
     let validator = UIComponents.Editor.getCodeMirrorValue($('#divValidator'));
     validator = ExtendedJSON.convertAndCheckJSON(validator);
     if (validator.ERROR) {
@@ -64,6 +62,9 @@ CollectionValidationRules.prototype = {
       return;
     }
 
+    const validationAction = $('#cmbValidationAction').val();
+    const validationLevel = $('#cmbValidationLevel').val();
+    const selectedCollection = $('#validationRulesModal').data('collection');
 
     const command = {};
     command.collMod = selectedCollection;
