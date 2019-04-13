@@ -12,7 +12,7 @@ const Communicator = function () {
     aggregate: { selectedCollection: '', pipeline: [], options: {} },
     listCollectionNames: { dbName: '' },
     createCollection: { collectionName: '', options: {} },
-    command: { command: '', runOnAdminDB: false, options: {} },
+    command: { command: {}, runOnAdminDB: false, options: {} },
     rename: { selectedCollection: '', newName: '', options: {} },
     stats: { selectedCollection: '', options: {} },
     importMongoclient: { file: {} },
@@ -90,7 +90,6 @@ Communicator.prototype = {
         delete args[key];
       }
     });
-
     const finalArgs = Object.assign(Object.assign({ sessionId: Meteor.default_connection._lastSessionId }, this.methods[methodName]), args);
     return Meteor.call(methodName, finalArgs, callback);
   },

@@ -3,8 +3,9 @@
 import sinon from 'sinon';
 import { expect } from 'chai';
 import { CollectionFilter, CollectionUtil, Connection } from '/client/imports/ui';
-import { Enums, ErrorHandler, Notification, SessionManager } from '/client/imports/modules';
-import { Communicator } from '/client/imports/facades';
+import { Enums, ErrorHandler, Notification, Querying, SessionManager } from '/client/imports/modules';
+import { Communicator, ReactivityProvider } from '/client/imports/facades';
+import Helper from '/client/imports/helpers/helper';
 import $ from 'jquery';
 
 describe('CollectionUtil', () => {
@@ -1270,6 +1271,61 @@ describe('CollectionUtil', () => {
 
       // cleanup
       CollectionUtil.dropAllCollections.restore();
+    });
+  });
+
+  describe('getCollectionInformation tests', () => {
+    let clock;
+    const errorMessage = 'error !!!';
+    const errorDetails = 'error details !!';
+
+    beforeEach(() => {
+      clock = sinon.useFakeTimers();
+      sinon.stub($.prototype, 'html');
+      sinon.stub(Notification, 'start');
+      sinon.stub(Notification, 'stop');
+      sinon.stub(Querying, 'getDistinctKeysForAutoComplete');
+      sinon.stub(CollectionUtil, 'populateCollectionInfo');
+      sinon.stub(Helper, 'translate').withArgs({ key: 'fetch_stats_error' }).returns(errorMessage);
+      sinon.stub(ErrorHandler, 'getErrorMessage').returns(errorDetails);
+    });
+
+    afterEach(() => {
+      clock.restore();
+      $.prototype.html.restore();
+      document.querySelector.restore();
+      ReactivityProvider.findOne.restore();
+      Notification.start.restore();
+      Notification.stop.restore();
+      SessionManager.get.restore();
+      Querying.getDistinctKeysForAutoComplete.restore();
+      Communicator.call.restore();
+      CollectionUtil.populateCollectionInfo.restore();
+      Helper.translate.restore();
+      ErrorHandler.getErrorMessage.restore();
+    });
+
+    it('getCollectionInformation with no tick', () => {
+      // prepare
+      sinon.stub(document, 'querySelector');
+      sinon.stub(ReactivityProvider, 'findOne');
+      sinon.stub(SessionManager, 'get');
+      sinon.stub(Communicator, 'call');
+
+      // execute
+      CollectionUtil.getCollectionInformation();
+
+      // verify
+      expect(ReactivityProvider.findOne.callCount).to.equal(1);
+      expect(ReactivityProvider.findOne.calledWithExactly(ReactivityProvider.types.Settings)).to.equal(true);
+      expect(SessionManager.get.callCount).to.equal(0);
+      expect(Querying.getDistinctKeysForAutoComplete.callCount).to.equal(0);
+      expect(Communicator.call.callCount).to.equal(0);
+      expect($.prototype.html.callCount).to.equal(0);
+      expect(CollectionUtil.populateCollectionInfo.callCount).to.equal(0);
+      expect(Notification.start.callCount).to.equal(0);
+      expect(Notification.stop.callCount).to.equal(0);
+      expect(ErrorHandler.getErrorMessage.callCount).to.equal(0);
     });
   });
 });

@@ -324,11 +324,11 @@ CollectionUtil.prototype = {
     const settings = ReactivityProvider.findOne(ReactivityProvider.types.Settings);
 
     setTimeout(() => {
-      const btnExecuteQuery = document.querySelector('#btnExecuteQuery');
-      if (!settings || !btnExecuteQuery) return;
+      if (!settings || !document.querySelector('#btnExecuteQuery')) return;
 
       Notification.start('#btnExecuteQuery');
       const selectedCollection = SessionManager.get(SessionManager.strSessionSelectedCollection);
+      if (!selectedCollection) return;
 
       // get distinct field keys for auto complete on every collection change.
       Querying.getDistinctKeysForAutoComplete(selectedCollection);

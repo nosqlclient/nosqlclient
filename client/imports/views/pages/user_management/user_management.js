@@ -18,7 +18,7 @@ Template.userManagement.onRendered(function () {
   const actions = this.subscribe('actions');
 
   this.autorun(() => {
-    if (settings.ready() && connections.ready() && actions.ready())UserManagementTree.init();
+    if (settings.ready() && connections.ready() && actions.ready()) UserManagementTree.init();
   });
 });
 
