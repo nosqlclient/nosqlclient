@@ -91,12 +91,12 @@ describe('Connection', () => {
       Connection.disconnect();
 
       // verify
-      expect(Communicator.call.callCount).to.equals(1);
-      expect(Communicator.call.calledWithMatch({ methodName: 'disconnect' })).to.equals(true);
-      expect(SessionManager.clear.callCount).to.equals(1);
-      expect(SessionManager.clear.calledWithExactly()).to.equals(true);
-      expect(FlowRouter.go.callCount).to.equals(1);
-      expect(FlowRouter.go.calledWithExactly('/databaseStats')).to.equals(true);
+      expect(Communicator.call.callCount).to.equal(1);
+      expect(Communicator.call.calledWithMatch({ methodName: 'disconnect' })).to.equal(true);
+      expect(SessionManager.clear.callCount).to.equal(1);
+      expect(SessionManager.clear.calledWithExactly()).to.equal(true);
+      expect(FlowRouter.go.callCount).to.equal(1);
+      expect(FlowRouter.go.calledWithExactly('/databaseStats')).to.equal(true);
     });
   });
 
@@ -222,11 +222,145 @@ describe('Connection', () => {
       Connection.prepareColorizeModal();
 
       // verify
-      expect($.prototype.colorpicker.callCount).to.equals(2);
-      expect($.prototype.colorpicker.calledWithMatch({ align: 'left', format: 'hex' })).to.equals(true);
-      expect($.prototype.colorpicker.calledWithMatch('setValue', color)).to.equals(true);
-      expect($.prototype.on.callCount).to.equals(1);
-      expect($.prototype.on.calledWithMatch('shown.bs.modal', sinon.match.func)).to.equals(true);
+      expect($.prototype.colorpicker.callCount).to.equal(2);
+      expect($.prototype.colorpicker.calledWithMatch({ align: 'left', format: 'hex' })).to.equal(true);
+      expect($.prototype.colorpicker.calledWithMatch('setValue', color)).to.equal(true);
+      expect($.prototype.on.callCount).to.equal(1);
+      expect($.prototype.on.calledWithMatch('shown.bs.modal', sinon.match.func)).to.equal(true);
+    });
+  });
+
+  describe('colorize tests', () => {
+    const connectionId = '1231235612';
+    const color = '#111111';
+    const connection = { x: 1, y: true, color: 'test' };
+
+    beforeEach(() => {
+      sinon.stub(ReactivityProvider, 'findOne').withArgs(ReactivityProvider.types.Connections, { _id: connectionId }).returns(connection);
+      sinon.stub(Notification, 'error');
+      sinon.stub(Notification, 'success');
+      sinon.stub(ErrorHandler, 'showMeteorFuncError');
+      sinon.stub(Connection, 'populateConnectionsTable');
+    });
+
+    afterEach(() => {
+      $.prototype.val.restore();
+      $.prototype.data.restore();
+      ReactivityProvider.findOne.restore();
+      Communicator.call.restore();
+      Notification.error.restore();
+      ErrorHandler.showMeteorFuncError.restore();
+      Notification.success.restore();
+      Connection.populateConnectionsTable.restore();
+    });
+
+    it('colorize no color', () => {
+      // prepare
+      sinon.stub($.prototype, 'val');
+      sinon.stub($.prototype, 'data');
+      sinon.stub(Communicator, 'call');
+
+      // execute
+      Connection.colorize();
+
+      // verify
+      expect($.prototype.data.callCount).to.equal(0);
+      expect(Communicator.call.callCount).to.equal(0);
+      expect(ReactivityProvider.findOne.callCount).to.equal(0);
+      expect(Notification.error.callCount).to.equal(1);
+      expect(Notification.error.calledWithExactly('color-required')).to.equal(true);
+      expect(Connection.populateConnectionsTable.callCount).to.equal(0);
+    });
+
+    it('colorize no connectionId', () => {
+      // prepare
+      sinon.stub($.prototype, 'val').returns(color);
+      sinon.stub($.prototype, 'data');
+      sinon.stub(Communicator, 'call');
+
+      // execute
+      Connection.colorize();
+
+      // verify
+      expect($.prototype.val.callCount).to.equal(1);
+      expect($.prototype.val.calledWithExactly()).to.equal(true);
+      expect($.prototype.val.getCall(0).thisValue.selector).to.equal('#inputColor');
+      expect($.prototype.data.callCount).to.equal(1);
+      expect($.prototype.data.calledWithExactly('connection')).to.equal(true);
+      expect($.prototype.data.getCall(0).thisValue.selector).to.equal('#colorizeModal');
+      expect(Communicator.call.callCount).to.equal(0);
+      expect(ReactivityProvider.findOne.callCount).to.equal(0);
+      expect(Notification.error.callCount).to.equal(1);
+      expect(Notification.error.calledWithExactly('select-connection')).to.equal(true);
+      expect(Connection.populateConnectionsTable.callCount).to.equal(0);
+    });
+
+    it('colorize communicator yields to erorr', () => {
+      // prepare
+      const error = { error: '1233' };
+
+      sinon.stub($.prototype, 'val').returns(color);
+      sinon.stub($.prototype, 'data').returns(connectionId);
+      sinon.stub(Communicator, 'call').yieldsTo('callback', error, null);
+
+      // execute
+      Connection.colorize();
+
+      // verify
+      const newConnection = { ...connection };
+      newConnection.color = color;
+      expect($.prototype.val.callCount).to.equal(1);
+      expect($.prototype.val.calledWithExactly()).to.equal(true);
+      expect($.prototype.val.getCall(0).thisValue.selector).to.equal('#inputColor');
+      expect($.prototype.data.callCount).to.equal(1);
+      expect($.prototype.data.calledWithExactly('connection')).to.equal(true);
+      expect($.prototype.data.getCall(0).thisValue.selector).to.equal('#colorizeModal');
+      expect(Notification.error.callCount).to.equal(0);
+      expect(ReactivityProvider.findOne.callCount).to.equal(1);
+      expect(ReactivityProvider.findOne.calledWithExactly(ReactivityProvider.types.Connections, { _id: connectionId })).to.equal(true);
+      expect(Communicator.call.callCount).to.equal(1);
+      expect(Communicator.call.calledWithMatch({
+        methodName: 'saveConnection',
+        args: { connection: newConnection },
+        callback: sinon.match.func
+      })).to.equal(true);
+      expect(ErrorHandler.showMeteorFuncError.callCount).to.equal(1);
+      expect(ErrorHandler.showMeteorFuncError.calledWithExactly(error, null)).to.equal(true);
+      expect(Connection.populateConnectionsTable.callCount).to.equal(0);
+    });
+
+    it('colorize communicator yields to success', () => {
+      // prepare
+      sinon.stub($.prototype, 'val').returns(color);
+      sinon.stub($.prototype, 'data').returns(connectionId);
+      sinon.stub(Communicator, 'call').yieldsTo('callback', null, {});
+
+      // execute
+      Connection.colorize();
+
+      // verify
+      const newConnection = { ...connection };
+      newConnection.color = color;
+      expect($.prototype.val.callCount).to.equal(1);
+      expect($.prototype.val.calledWithExactly()).to.equal(true);
+      expect($.prototype.val.getCall(0).thisValue.selector).to.equal('#inputColor');
+      expect($.prototype.data.callCount).to.equal(1);
+      expect($.prototype.data.calledWithExactly('connection')).to.equal(true);
+      expect($.prototype.data.getCall(0).thisValue.selector).to.equal('#colorizeModal');
+      expect(Notification.error.callCount).to.equal(0);
+      expect(ReactivityProvider.findOne.callCount).to.equal(1);
+      expect(ReactivityProvider.findOne.calledWithExactly(ReactivityProvider.types.Connections, { _id: connectionId })).to.equal(true);
+      expect(Communicator.call.callCount).to.equal(1);
+      expect(Communicator.call.calledWithMatch({
+        methodName: 'saveConnection',
+        args: { connection: newConnection },
+        callback: sinon.match.func
+      })).to.equal(true);
+      expect(ErrorHandler.showMeteorFuncError.callCount).to.equal(0);
+      expect(Connection.populateConnectionsTable.callCount).to.equal(1);
+      expect(Connection.populateConnectionsTable.calledWithExactly()).to.equal(true);
+      expect(Notification.success.callCount).to.equal(1);
+      expect(Notification.success.calledWithExactly('saved-successfully')).to.equal(true);
     });
   });
 });

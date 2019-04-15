@@ -89,20 +89,20 @@ Connection.prototype = {
   },
 
   colorize() {
-    const color = $('#inputColor');
-    const connectionId = $('#colorizeModal').data('connection');
-    if (!color.val()) {
+    const color = $('#inputColor').val();
+    if (!color) {
       Notification.error('color-required');
       return;
     }
 
+    const connectionId = $('#colorizeModal').data('connection');
     if (!connectionId) {
       Notification.error('select-connection');
       return;
     }
 
     const connection = ReactivityProvider.findOne(ReactivityProvider.types.Connections, { _id: connectionId });
-    connection.color = color.val();
+    connection.color = color;
 
     Communicator.call({
       methodName: 'saveConnection',
