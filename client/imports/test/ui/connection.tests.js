@@ -1,7 +1,7 @@
 /* eslint-env mocha */
 
 import sinon from 'sinon';
-import { expect } from 'chai';
+import chai, { expect } from 'chai';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Connection } from '/client/imports/ui';
 import { ErrorHandler, SessionManager, Notification, UIComponents } from '/client/imports/modules';
@@ -10,6 +10,7 @@ import $ from 'jquery';
 import Helper from '/client/imports/helpers/helper';
 import ConnectionHelper from '/client/imports/ui/connection/helper';
 
+chai.use(require('chai-jquery'));
 require('/client/plugins/colorpicker/js/bootstrap-colorpicker.min');
 
 describe('Connection', () => {
@@ -923,6 +924,45 @@ describe('Connection', () => {
       expect(Notification.success.callCount).to.equal(1);
       expect(Notification.success.calledWithExactly(message, null, messageTranslateOptions)).to.equal(true);
       expect(ErrorHandler.showMeteorFuncError.callCount).to.equal(0);
+    });
+  });
+
+  describe('addServerField tests', () => {
+    const divHtml = '<div id="firstOne" class="form-group divHostField" style="display: none">'
+      + '<label class="col-lg-2 control-label">Host/Port</label>'
+      + '<div class="col-lg-8"><div data-placement="top" data-toggle="tooltip" class="input-group"><input type="text" placeholder="Hostname" class="form-control txtHostName"></div></div>'
+      + '<div data-placement="top" data-toggle="tooltip" class="col-lg-2"><input value="27017" data-required="true" min="1" type="number" placeholder="Port" class="form-control txtPort"></div></div>';
+
+    beforeEach(() => {
+      const body = $('body');
+      const cloned = $(divHtml).clone();
+      cloned.attr('id', 'secondOne');
+      cloned.show();
+
+      body.append(divHtml);
+      body.append(cloned);
+    });
+
+    afterEach(() => {
+      while (document.body.firstChild) {
+        document.body.removeChild(document.body.firstChild);
+      }
+    });
+
+    it('addServerField', () => {
+      // prepare
+      const host = 'localhost';
+      const port = '123123';
+
+      // execute
+      Connection.addServerField(host, port);
+
+      // verify
+      const last = $('.divHostField:last');
+      expect($('.divHostField').length).to.equal(3);
+      expect(last.find('.txtHostName').val()).to.equal(host);
+      expect(last.find('.txtPort').val()).to.equal(port);
+      expect(last).to.have.css('display', 'block');
     });
   });
 });
