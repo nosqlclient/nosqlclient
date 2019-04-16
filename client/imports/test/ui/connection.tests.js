@@ -4,10 +4,11 @@ import sinon from 'sinon';
 import { expect } from 'chai';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Connection } from '/client/imports/ui';
-import { ErrorHandler, SessionManager, Notification } from '/client/imports/modules';
+import { ErrorHandler, SessionManager, Notification, UIComponents } from '/client/imports/modules';
 import { Communicator, ReactivityProvider } from '/client/imports/facades';
 import $ from 'jquery';
 import Helper from '/client/imports/helpers/helper';
+import ConnectionHelper from '/client/imports/ui/connection/helper';
 
 require('/client/plugins/colorpicker/js/bootstrap-colorpicker.min');
 
@@ -361,6 +362,449 @@ describe('Connection', () => {
       expect(Connection.populateConnectionsTable.calledWithExactly()).to.equal(true);
       expect(Notification.success.callCount).to.equal(1);
       expect(Notification.success.calledWithExactly('saved-successfully')).to.equal(true);
+    });
+  });
+
+  describe('switchDatabase tests', () => {
+    const connection = { x: 1, y: 2, databaseName: 'sercan' };
+    const connectionId = '123123';
+
+    beforeEach(() => {
+      sinon.stub(SessionManager, 'get').returns({ _id: connectionId });
+      sinon.stub(ReactivityProvider, 'findOne').withArgs(ReactivityProvider.types.Connections, { _id: connectionId }).returns(connection);
+      sinon.stub(Notification, 'error');
+      sinon.stub(Notification, 'start');
+      sinon.stub(ErrorHandler, 'showMeteorFuncError');
+      sinon.stub(Connection, 'connect');
+    });
+
+    afterEach(() => {
+      $.prototype.val.restore();
+      SessionManager.get.restore();
+      ReactivityProvider.findOne.restore();
+      Communicator.call.restore();
+      Notification.error.restore();
+      Notification.start.restore();
+      ErrorHandler.showMeteorFuncError.restore();
+      Connection.connect.restore();
+    });
+
+    it('switchDatabase no database', () => {
+      // prepare
+      sinon.stub($.prototype, 'val');
+      sinon.stub(Communicator, 'call');
+
+      // execute
+      Connection.switchDatabase();
+
+      // verify
+      expect(Communicator.call.callCount).to.equal(0);
+      expect(ReactivityProvider.findOne.callCount).to.equal(0);
+      expect(Notification.error.callCount).to.equal(1);
+      expect(Notification.error.calledWithExactly('enter_or_choose_database')).to.equal(true);
+      expect(Notification.start.callCount).to.equal(0);
+      expect(Connection.connect.callCount).to.equal(0);
+    });
+
+    it('switchDatabase communicator yields to error', () => {
+      // prepare
+      const error = { error: '1233' };
+      const databaseName = 'tugce';
+
+      sinon.stub($.prototype, 'val').returns(databaseName);
+      sinon.stub(Communicator, 'call').yieldsTo('callback', error, null);
+
+      // execute
+      Connection.switchDatabase();
+
+      // verify
+      const newConnection = { ...connection };
+      newConnection.databaseName = databaseName;
+
+      expect(Notification.start.callCount).to.equal(1);
+      expect(Notification.start.calledWithExactly('#btnConnectSwitchedDatabase')).to.equal(true);
+      expect(Communicator.call.callCount).to.equal(1);
+      expect(Communicator.call.calledWithMatch({
+        methodName: 'saveConnection',
+        args: { connection: newConnection },
+        callback: sinon.match.func
+      })).to.equal(true);
+      expect(ReactivityProvider.findOne.callCount).to.equal(1);
+      expect(ReactivityProvider.findOne.calledWithExactly(ReactivityProvider.types.Connections, { _id: connectionId })).to.equal(true);
+      expect(Notification.error.callCount).to.equal(0);
+      expect(ErrorHandler.showMeteorFuncError.callCount).to.equal(1);
+      expect(ErrorHandler.showMeteorFuncError.calledWithExactly(error, null)).to.equal(true);
+      expect(Connection.connect.callCount).to.equal(0);
+    });
+
+    it('switchDatabase communicator yields to success', () => {
+      // prepare
+      const databaseName = 'tugce';
+
+      sinon.stub($.prototype, 'val').returns(databaseName);
+      sinon.stub(Communicator, 'call').yieldsTo('callback');
+
+      // execute
+      Connection.switchDatabase();
+
+      // verify
+      const newConnection = { ...connection };
+      newConnection.databaseName = databaseName;
+
+      expect(Notification.start.callCount).to.equal(1);
+      expect(Notification.start.calledWithExactly('#btnConnectSwitchedDatabase')).to.equal(true);
+      expect(Communicator.call.callCount).to.equal(1);
+      expect(Communicator.call.calledWithMatch({
+        methodName: 'saveConnection',
+        args: { connection: newConnection },
+        callback: sinon.match.func
+      })).to.equal(true);
+      expect(ReactivityProvider.findOne.callCount).to.equal(1);
+      expect(ReactivityProvider.findOne.calledWithExactly(ReactivityProvider.types.Connections, { _id: connectionId })).to.equal(true);
+      expect(Notification.error.callCount).to.equal(0);
+      expect(ErrorHandler.showMeteorFuncError.callCount).to.equal(0);
+      expect(Connection.connect.callCount).to.equal(1);
+      expect(Connection.connect.calledWithExactly(false)).to.equal(true);
+    });
+  });
+
+  describe('showSwitchDatabaseModal tests', () => {
+    let findStub;
+
+    beforeEach(() => {
+      findStub = {
+        on: sinon.stub().yields(null)
+      };
+
+      sinon.stub($.prototype, 'modal');
+      sinon.stub($.prototype, 'find').returns(findStub);
+      sinon.stub(Notification, 'stop');
+      sinon.stub(Notification, 'start');
+      sinon.stub(ErrorHandler, 'showMeteorFuncError');
+      sinon.stub(Connection, 'switchDatabase');
+      sinon.stub(UIComponents.DataTable, 'setupDatatable');
+    });
+
+    afterEach(() => {
+      $.prototype.modal.restore();
+      $.prototype.find.restore();
+      Communicator.call.restore();
+      Notification.stop.restore();
+      Notification.start.restore();
+      ErrorHandler.showMeteorFuncError.restore();
+      Connection.switchDatabase.restore();
+      UIComponents.DataTable.setupDatatable.restore();
+    });
+
+    it('showSwitchDatabaseModal communicator yields to error', () => {
+      // prepare
+      const error = { error: '1233' };
+
+      sinon.stub(Communicator, 'call').yieldsTo('callback', error, null);
+
+      // execute
+      Connection.showSwitchDatabaseModal();
+
+      // verify
+      expect($.prototype.modal.callCount).to.equal(1);
+      expect($.prototype.modal.calledWithExactly('show')).to.equal(true);
+      expect($.prototype.modal.getCall(0).thisValue.selector).to.equal('#switchDatabaseModal');
+      expect(Notification.start.callCount).to.equal(1);
+      expect(Notification.start.calledWithExactly('#btnConnectSwitchedDatabase')).to.equal(true);
+      expect(Communicator.call.callCount).to.equal(1);
+      expect(Communicator.call.calledWithMatch({
+        methodName: 'listDatabases',
+        callback: sinon.match.func
+      })).to.equal(true);
+      expect(ErrorHandler.showMeteorFuncError.callCount).to.equal(1);
+      expect(ErrorHandler.showMeteorFuncError.calledWithExactly(error, null)).to.equal(true);
+      expect(Connection.switchDatabase.callCount).to.equal(0);
+      expect(UIComponents.DataTable.setupDatatable.callCount).to.equal(0);
+      expect($.prototype.find.callCount).to.equal(0);
+      expect(findStub.on.callCount).to.equal(0);
+    });
+
+    it('switchDatabase communicator yields to success', () => {
+      // prepare
+      const result = { result: { databases: [{ name: 'a' }, { name: 'c' }, { name: 'b' }] } };
+
+      sinon.stub(Communicator, 'call').yieldsTo('callback', null, result);
+
+      // execute
+      Connection.showSwitchDatabaseModal();
+
+      // verify
+      expect($.prototype.modal.callCount).to.equal(1);
+      expect($.prototype.modal.calledWithExactly('show')).to.equal(true);
+      expect($.prototype.modal.getCall(0).thisValue.selector).to.equal('#switchDatabaseModal');
+      expect(Notification.start.callCount).to.equal(1);
+      expect(Notification.start.calledWithExactly('#btnConnectSwitchedDatabase')).to.equal(true);
+      expect(Notification.stop.callCount).to.equal(1);
+      expect(Notification.stop.calledWithExactly()).to.equal(true);
+      expect(Communicator.call.callCount).to.equal(1);
+      expect(Communicator.call.calledWithMatch({
+        methodName: 'listDatabases',
+        callback: sinon.match.func
+      })).to.equal(true);
+      expect(ErrorHandler.showMeteorFuncError.callCount).to.equal(0);
+      expect(Connection.switchDatabase.callCount).to.equal(1);
+      expect(Connection.switchDatabase.calledWithExactly()).to.equal(true);
+      expect(UIComponents.DataTable.setupDatatable.callCount).to.equal(1);
+      expect(UIComponents.DataTable.setupDatatable.calledWithMatch({
+        selectorString: '#tblSwitchDatabases',
+        columns: [{ data: 'name' }],
+        data: result.result.databases.sort((a, b) => {
+          if (a.name < b.name) { return -1; } if (a.name > b.name) { return 1; }
+          return 0;
+        })
+      })).to.equal(true);
+      expect($.prototype.find.callCount).to.equal(1);
+      expect($.prototype.find.calledWithExactly('tbody')).to.equal(true);
+      expect($.prototype.find.getCall(0).thisValue.selector).to.equal('#tblSwitchDatabases');
+      expect(findStub.on.callCount).to.equal(1);
+      expect(findStub.on.calledWithExactly('dblclick', 'tr', sinon.match.func)).to.equal(true);
+    });
+  });
+
+  describe('setupFormForUri tests', () => {
+    let clock;
+
+    beforeEach(() => {
+      clock = sinon.useFakeTimers();
+
+      sinon.stub(ErrorHandler, 'showMeteorFuncError');
+      sinon.stub(ConnectionHelper, 'prepareFormForUrlParse');
+      sinon.stub(ConnectionHelper, 'disableFormsForUri');
+      sinon.stub(ConnectionHelper, 'enableFormsForUri');
+    });
+
+    afterEach(() => {
+      clock.restore();
+
+      $.prototype.val.restore();
+      Communicator.call.restore();
+      ErrorHandler.showMeteorFuncError.restore();
+      ConnectionHelper.prepareFormForUrlParse.restore();
+      ConnectionHelper.disableFormsForUri.restore();
+      ConnectionHelper.enableFormsForUri.restore();
+    });
+
+    it('setupFormForUri no url', () => {
+      // prepare
+      sinon.stub(Communicator, 'call');
+      sinon.stub($.prototype, 'val');
+
+      // execute
+      Connection.setupFormForUri();
+
+      // verify
+      expect(ConnectionHelper.enableFormsForUri.callCount).to.equal(1);
+      expect(ConnectionHelper.enableFormsForUri.calledWithExactly()).to.equal(true);
+      expect(Communicator.call.callCount).to.equal(0);
+      expect(ErrorHandler.showMeteorFuncError.callCount).to.equal(0);
+      expect(ConnectionHelper.prepareFormForUrlParse.callCount).to.equal(0);
+      expect(ConnectionHelper.disableFormsForUri.callCount).to.equal(0);
+    });
+
+    it('setupFormForUri & communicator yields to error', () => {
+      // prepare
+      const error = { error: '1232131' };
+      const url = 'sercanURL';
+      sinon.stub(Communicator, 'call').yieldsTo('callback', error, null);
+      sinon.stub($.prototype, 'val').returns(url);
+
+      // execute
+      Connection.setupFormForUri();
+
+      // verify
+      expect(ConnectionHelper.enableFormsForUri.callCount).to.equal(0);
+      expect(Communicator.call.callCount).to.equal(1);
+      expect(Communicator.call.calledWithMatch({
+        methodName: 'parseUrl',
+        args: { connection: { url } },
+        callback: sinon.match.func
+      })).to.equal(true);
+      expect(ErrorHandler.showMeteorFuncError.callCount).to.equal(1);
+      expect(ErrorHandler.showMeteorFuncError.calledWithExactly(error, null)).to.equal(true);
+      expect(ConnectionHelper.prepareFormForUrlParse.callCount).to.equal(0);
+      expect(ConnectionHelper.disableFormsForUri.callCount).to.equal(0);
+    });
+
+    it('setupFormForUri & communicator yields to success & no clock tick', () => {
+      // prepare
+      const result = { x: 1, y: 'z' };
+      const url = 'sercanURL';
+      sinon.stub(Communicator, 'call').yieldsTo('callback', null, result);
+      sinon.stub($.prototype, 'val').returns(url);
+
+      // execute
+      Connection.setupFormForUri();
+
+      // verify
+      expect(ConnectionHelper.enableFormsForUri.callCount).to.equal(0);
+      expect(Communicator.call.callCount).to.equal(1);
+      expect(Communicator.call.calledWithMatch({
+        methodName: 'parseUrl',
+        args: { connection: { url } },
+        callback: sinon.match.func
+      })).to.equal(true);
+      expect(ErrorHandler.showMeteorFuncError.callCount).to.equal(0);
+      expect(ConnectionHelper.prepareFormForUrlParse.callCount).to.equal(1);
+      expect(ConnectionHelper.prepareFormForUrlParse.calledWithExactly(result, Connection.addServerField)).to.equal(true);
+      expect(ConnectionHelper.disableFormsForUri.callCount).to.equal(0);
+    });
+
+    it('setupFormForUri & communicator yields to success & clock tick', () => {
+      // prepare
+      const result = { x: 1, y: 'z' };
+      const url = 'sercanURL';
+      sinon.stub(Communicator, 'call').yieldsTo('callback', null, result);
+      sinon.stub($.prototype, 'val').returns(url);
+
+      // execute
+      Connection.setupFormForUri();
+      clock.tick(150);
+
+      // verify
+      expect(ConnectionHelper.enableFormsForUri.callCount).to.equal(0);
+      expect(Communicator.call.callCount).to.equal(1);
+      expect(Communicator.call.calledWithMatch({
+        methodName: 'parseUrl',
+        args: { connection: { url } },
+        callback: sinon.match.func
+      })).to.equal(true);
+      expect(ErrorHandler.showMeteorFuncError.callCount).to.equal(0);
+      expect(ConnectionHelper.prepareFormForUrlParse.callCount).to.equal(1);
+      expect(ConnectionHelper.prepareFormForUrlParse.calledWithExactly(result, Connection.addServerField)).to.equal(true);
+      expect(ConnectionHelper.disableFormsForUri.callCount).to.equal(1);
+      expect(ConnectionHelper.disableFormsForUri.calledWithExactly()).to.equal(true);
+    });
+  });
+
+  describe('populateConnectionsTable tests', () => {
+    const connectionsData = { testing: 123 };
+
+    beforeEach(() => {
+      sinon.stub(ReactivityProvider, 'find').withArgs(ReactivityProvider.types.Connections).returns(connectionsData);
+      sinon.stub(UIComponents.DataTable, 'setupDatatable');
+    });
+
+    afterEach(() => {
+      ReactivityProvider.find.restore();
+      UIComponents.DataTable.setupDatatable.restore();
+    });
+
+    it('populateConnectionsTable', () => {
+      // prepare
+
+      // execute
+      Connection.populateConnectionsTable();
+
+      // verify
+      expect(UIComponents.DataTable.setupDatatable.callCount).to.equal(1);
+      expect(UIComponents.DataTable.setupDatatable.calledWithMatch({
+        selectorString: '#tblConnection',
+        extraOptions: {
+          createdRow: sinon.match.func
+        },
+        data: connectionsData,
+        columns: [
+          { data: '_id', sClass: 'hide_column' },
+          { data: 'connectionName' },
+          { data: 'servers' },
+        ],
+        columnDefs: sinon.match.array
+      }
+      )).to.equal(true);
+    });
+  });
+
+  describe('connect tests', () => {
+    const connection = { x: 1, y: 2, databaseName: 'sercan', authenticationType: 'scram_sha_1', scram_sha_1: { username: 'sercanUSER' } };
+    const connectionId = '123123';
+
+    beforeEach(() => {
+      sinon.stub($.prototype, 'modal');
+      sinon.stub($.prototype, 'data');
+      sinon.stub(ReactivityProvider, 'findOne').withArgs(ReactivityProvider.types.Connections, { _id: connectionId }).returns(connection);
+      sinon.stub(Connection, 'proceedConnecting');
+      sinon.stub(Notification, 'warning');
+    });
+
+    afterEach(() => {
+      $.prototype.modal.restore();
+      $.prototype.data.restore();
+      SessionManager.get.restore();
+      ReactivityProvider.findOne.restore();
+      Connection.proceedConnecting.restore();
+      Notification.warning.restore();
+      ConnectionHelper.isCredentialPromptNeeded.restore();
+    });
+
+    it('connect no connection', () => {
+      // prepare
+      sinon.stub(SessionManager, 'get');
+      sinon.stub(ConnectionHelper, 'isCredentialPromptNeeded');
+
+      // execute
+      Connection.connect();
+
+      // verify
+      expect($.prototype.modal.callCount).to.equal(0);
+      expect($.prototype.data.callCount).to.equal(0);
+      expect(ReactivityProvider.findOne.callCount).to.equal(0);
+      expect(Connection.proceedConnecting.callCount).to.equal(0);
+      expect(ConnectionHelper.isCredentialPromptNeeded.callCount).to.equal(0);
+      expect(Notification.warning.callCount).to.equal(1);
+      expect(Notification.warning.calledWithExactly('select-connection')).to.equal(true);
+    });
+
+    it('connect isCredentialPromptNeeded false', () => {
+      // prepare
+      sinon.stub(SessionManager, 'get').returns({ _id: connectionId });
+      sinon.stub(ConnectionHelper, 'isCredentialPromptNeeded').returns(false);
+
+      const isRefresh = false;
+      const message = 'SERCAN';
+      const messageTranslateOptions = { name: 'x' };
+
+      // execute
+      Connection.connect(isRefresh, message, messageTranslateOptions);
+
+      // verify
+      expect($.prototype.modal.callCount).to.equal(0);
+      expect($.prototype.data.callCount).to.equal(0);
+      expect(ReactivityProvider.findOne.callCount).to.equal(1);
+      expect(ReactivityProvider.findOne.calledWithExactly(ReactivityProvider.types.Connections, { _id: connectionId })).to.equal(true);
+      expect(Connection.proceedConnecting.callCount).to.equal(1);
+      expect(Connection.proceedConnecting.calledWithExactly({ isRefresh, message, messageTranslateOptions, connection })).to.equal(true);
+      expect(ConnectionHelper.isCredentialPromptNeeded.callCount).to.equal(1);
+      expect(ConnectionHelper.isCredentialPromptNeeded.calledWithExactly(connection)).to.equal(true);
+      expect(Notification.warning.callCount).to.equal(0);
+    });
+
+    it('connect isCredentialPromptNeeded true', () => {
+      // prepare
+      sinon.stub(SessionManager, 'get').returns({ _id: connectionId });
+      sinon.stub(ConnectionHelper, 'isCredentialPromptNeeded').returns(true);
+
+      // execute
+      Connection.connect();
+
+      // verify
+      expect($.prototype.modal.callCount).to.equal(1);
+      expect($.prototype.modal.calledWithExactly('show')).to.equal(true);
+      expect($.prototype.modal.getCall(0).thisValue.selector).to.equal('#promptUsernamePasswordModal');
+      expect($.prototype.data.callCount).to.equal(3);
+      expect($.prototype.data.calledWithExactly('username', 'sercanUSER')).to.equal(true);
+      expect($.prototype.data.calledWithExactly('password', undefined)).to.equal(true);
+      expect($.prototype.data.calledWithExactly('connection', connection)).to.equal(true);
+      expect(ReactivityProvider.findOne.callCount).to.equal(1);
+      expect(ReactivityProvider.findOne.calledWithExactly(ReactivityProvider.types.Connections, { _id: connectionId })).to.equal(true);
+      expect(Connection.proceedConnecting.callCount).to.equal(0);
+      expect(ConnectionHelper.isCredentialPromptNeeded.callCount).to.equal(1);
+      expect(ConnectionHelper.isCredentialPromptNeeded.calledWithExactly(connection)).to.equal(true);
+      expect(Notification.warning.callCount).to.equal(0);
     });
   });
 });

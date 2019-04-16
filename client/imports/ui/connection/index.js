@@ -118,15 +118,15 @@ Connection.prototype = {
   },
 
   switchDatabase() {
-    const selector = $('#inputDatabaseNameToSwitch');
-    if (!selector.val()) {
+    const databaseName = $('#inputDatabaseNameToSwitch').val();
+    if (!databaseName) {
       Notification.error('enter_or_choose_database');
       return;
     }
 
     Notification.start('#btnConnectSwitchedDatabase');
     const connection = ReactivityProvider.findOne(ReactivityProvider.types.Connections, { _id: SessionManager.get(SessionManager.strSessionConnection)._id });
-    connection.databaseName = selector.val();
+    connection.databaseName = databaseName;
 
     Communicator.call({
       methodName: 'saveConnection',
@@ -146,7 +146,7 @@ Connection.prototype = {
     Communicator.call({
       methodName: 'listDatabases',
       callback: (err, result) => {
-        if (err || result.error) ErrorHandler.showMeteorFuncError(err, result);
+        if (err || result.error || !result.result || !result.result.databases) ErrorHandler.showMeteorFuncError(err, result);
         else {
           sortArrayByName(result.result.databases);
 
@@ -173,8 +173,8 @@ Connection.prototype = {
         methodName: 'parseUrl',
         args: { connection: { url } },
         callback: (err, res) => {
-          if (!err) ConnectionHelper.prepareFormForUrlParse(res, this.addServerField);
-          else ErrorHandler.showMeteorFuncError(err, res);
+          if (err || res.error) ErrorHandler.showMeteorFuncError(err, res);
+          else ConnectionHelper.prepareFormForUrlParse(res, this.addServerField);
 
           // let blaze initialize
           setTimeout(() => { ConnectionHelper.disableFormsForUri(); }, 150);
@@ -254,8 +254,8 @@ Connection.prototype = {
     // prompt for username && password
     if (ConnectionHelper.isCredentialPromptNeeded(connection)) {
       const modal = $('#promptUsernamePasswordModal');
-      modal.data('username', connection[connection.authenticationType].username);
-      modal.data('password', connection[connection.authenticationType].password);
+      modal.data('username', connection[connection.authenticationType] ? connection[connection.authenticationType].username : '');
+      modal.data('password', connection[connection.authenticationType] ? connection[connection.authenticationType].password : '');
       modal.data('connection', connection);
       modal.modal('show');
     } else this.proceedConnecting({ isRefresh, message, messageTranslateOptions, connection });
