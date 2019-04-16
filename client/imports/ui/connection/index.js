@@ -367,13 +367,13 @@ Connection.prototype = {
     let currentConnection = {};
     if (oldCollectionId) currentConnection = ReactivityProvider.findOne(ReactivityProvider.types.Connections, { _id: oldCollectionId });
     ConnectionHelper.populateConnection(currentConnection, (connection) => {
-      if (modal.data('edit')) connection._id = currentConnection._id;
+      if (modal.data('edit')) connection._id = currentConnection._id; // keep _id if only it's an edit.
 
       Communicator.call({
         methodName: 'checkAndSaveConnection',
         args: { connection },
         callback: (err) => {
-          if (err) ErrorHandler.showMeteorFuncError(err, null);
+          if (err) ErrorHandler.showMeteorFuncError(err);
           else {
             Notification.success('saved-successfully');
             this.populateConnectionsTable();

@@ -965,4 +965,460 @@ describe('Connection', () => {
       expect(last).to.have.css('display', 'block');
     });
   });
+
+  describe('initializeSSLTemplate tests', () => {
+    const username = 'sercannnn';
+    const password = '1231AXD:^%%)(%8';
+
+    beforeEach(() => {
+      sinon.stub(UIComponents.Checkbox, 'init');
+      sinon.stub($.prototype, 'filestyle');
+      sinon.stub($.prototype, 'val');
+      sinon.stub(Notification, 'stop');
+      sinon.stub($.prototype, 'data').withArgs('username').returns(username).withArgs('password')
+        .returns(password);
+    });
+
+    afterEach(() => {
+      UIComponents.Checkbox.init.restore();
+      $.prototype.filestyle.restore();
+      $.prototype.val.restore();
+      Notification.stop.restore();
+      $.prototype.data.restore();
+      $.prototype.on.restore();
+    });
+
+    it('initializeSSLTemplate shown modal callback', () => {
+      // prepare
+      sinon.stub($.prototype, 'on').withArgs('shown.bs.modal').yields(null);
+
+      // execute
+      Connection.initializeSSLTemplate();
+
+      // verify
+      expect($.prototype.filestyle.callCount).to.equal(1);
+      expect($.prototype.filestyle.calledWithExactly({})).to.equal(true);
+      expect($.prototype.filestyle.getCall(0).thisValue.selector).to.equal('.filestyle');
+      expect(UIComponents.Checkbox.init.callCount).to.equal(1);
+      expect(UIComponents.Checkbox.init.calledWithExactly($('#inputDisableHostnameVerification'))).to.equal(true);
+      expect($.prototype.on.callCount).to.equal(2);
+      expect($.prototype.on.calledWithMatch('shown.bs.modal', sinon.match.func)).to.equal(true);
+      expect($.prototype.on.calledWithMatch('hidden.bs.modal', sinon.match.func)).to.equal(true);
+      expect($.prototype.on.getCall(0).thisValue.selector).to.equal('#promptUsernamePasswordModal');
+      expect($.prototype.on.getCall(1).thisValue.selector).to.equal('#promptUsernamePasswordModal');
+      expect($.prototype.val.callCount).to.equal(2);
+      expect($.prototype.val.calledWithExactly(username)).to.equal(true);
+      expect($.prototype.val.calledWithExactly(password)).to.equal(true);
+      expect($.prototype.val.getCall(0).thisValue.selector).to.equal('#inputPromptedUsername');
+      expect($.prototype.val.getCall(1).thisValue.selector).to.equal('#inputPromptedPassword');
+      expect(Notification.stop.callCount).to.equal(0);
+    });
+
+    it('initializeSSLTemplate hidden modal callback', () => {
+      // prepare
+      sinon.stub($.prototype, 'on').withArgs('hidden.bs.modal').yields(null);
+
+      // execute
+      Connection.initializeSSLTemplate();
+
+      // verify
+      expect($.prototype.filestyle.callCount).to.equal(1);
+      expect($.prototype.filestyle.calledWithExactly({})).to.equal(true);
+      expect($.prototype.filestyle.getCall(0).thisValue.selector).to.equal('.filestyle');
+      expect(UIComponents.Checkbox.init.callCount).to.equal(1);
+      expect(UIComponents.Checkbox.init.calledWithExactly($('#inputDisableHostnameVerification'))).to.equal(true);
+      expect($.prototype.on.callCount).to.equal(2);
+      expect($.prototype.on.calledWithMatch('shown.bs.modal', sinon.match.func)).to.equal(true);
+      expect($.prototype.on.calledWithMatch('hidden.bs.modal', sinon.match.func)).to.equal(true);
+      expect($.prototype.on.getCall(0).thisValue.selector).to.equal('#promptUsernamePasswordModal');
+      expect($.prototype.on.getCall(1).thisValue.selector).to.equal('#promptUsernamePasswordModal');
+      expect($.prototype.val.callCount).to.equal(0);
+      expect(Notification.stop.callCount).to.equal(1);
+      expect(Notification.stop.calledWithExactly()).to.equal(true);
+    });
+  });
+
+  describe('initializeConnectionTemplate tests', () => {
+    let findStub;
+
+    beforeEach(() => {
+      findStub = {
+        on: sinon.stub().yields(null)
+      };
+      sinon.stub($.prototype, 'find').withArgs('tbody').returns(findStub);
+      sinon.stub($.prototype, 'on').yields(null);
+      sinon.stub(UIComponents.DataTable, 'initiateDatatable');
+      sinon.stub(Notification, 'start');
+      sinon.stub(Connection, 'connect');
+      sinon.stub(ConnectionHelper, 'initializeUI');
+      sinon.stub(ConnectionHelper, 'resetForm');
+      sinon.stub(ConnectionHelper, 'prepareFormForEdit');
+      sinon.stub(Connection, 'addServerField');
+    });
+
+    afterEach(() => {
+      $.prototype.find.restore();
+      $.prototype.data.restore();
+      $.prototype.on.restore();
+      UIComponents.DataTable.initiateDatatable.restore();
+      Notification.start.restore();
+      Connection.connect.restore();
+      ConnectionHelper.initializeUI.restore();
+      ConnectionHelper.resetForm.restore();
+      ConnectionHelper.prepareFormForEdit.restore();
+      Connection.addServerField.restore();
+    });
+
+    it('initializeConnectionTemplate & no edit/clone', () => {
+      // prepare
+      sinon.stub($.prototype, 'data');
+
+      // execute
+      Connection.initializeConnectionTemplate();
+
+      // verify
+      expect(UIComponents.DataTable.initiateDatatable.callCount).to.equal(1);
+      expect(UIComponents.DataTable.initiateDatatable.calledWithMatch({
+        selector: $('#tblConnection'),
+        sessionKey: SessionManager.strSessionConnection,
+        clickCallback: sinon.match.func,
+        noDeleteEvent: true
+      })).to.equal(true);
+      expect($.prototype.find.callCount).to.equal(1);
+      expect($.prototype.find.calledWithExactly('tbody')).to.equal(true);
+      expect($.prototype.find.getCall(0).thisValue.selector).to.equal('#tblConnection');
+      expect(findStub.on.callCount).to.equal(1);
+      expect(findStub.on.calledWithMatch('dblclick', 'tr', sinon.match.func)).to.equal(true);
+      expect(Notification.start.callCount).to.equal(1);
+      expect(Notification.start.calledWithExactly('#btnConnect')).to.equal(true);
+      expect(Connection.connect.callCount).to.equal(1);
+      expect(Connection.connect.calledWithExactly(false)).to.equal(true);
+      expect(ConnectionHelper.initializeUI.callCount).to.equal(1);
+      expect(ConnectionHelper.initializeUI.calledWithExactly()).to.equal(true);
+      expect(ConnectionHelper.resetForm.callCount).to.equal(1);
+      expect(ConnectionHelper.resetForm.calledWithExactly()).to.equal(true);
+      expect(ConnectionHelper.prepareFormForEdit.callCount).to.equal(0);
+      expect($.prototype.data.callCount).to.equal(2);
+      expect($.prototype.data.calledWithExactly('edit')).to.equal(true);
+      expect($.prototype.data.calledWithExactly('clone')).to.equal(true);
+      expect(Connection.addServerField.callCount).to.equal(1);
+      expect(Connection.addServerField.calledWithExactly('', '27017')).to.equal(true);
+    });
+
+    it('initializeConnectionTemplate & edit', () => {
+      // prepare
+      sinon.stub($.prototype, 'data').withArgs('edit').returns('something');
+
+      // execute
+      Connection.initializeConnectionTemplate();
+
+      // verify
+      expect(UIComponents.DataTable.initiateDatatable.callCount).to.equal(1);
+      expect(UIComponents.DataTable.initiateDatatable.calledWithMatch({
+        selector: $('#tblConnection'),
+        sessionKey: SessionManager.strSessionConnection,
+        clickCallback: sinon.match.func,
+        noDeleteEvent: true
+      })).to.equal(true);
+      expect($.prototype.find.callCount).to.equal(1);
+      expect($.prototype.find.calledWithExactly('tbody')).to.equal(true);
+      expect($.prototype.find.getCall(0).thisValue.selector).to.equal('#tblConnection');
+      expect(findStub.on.callCount).to.equal(1);
+      expect(findStub.on.calledWithMatch('dblclick', 'tr', sinon.match.func)).to.equal(true);
+      expect(Notification.start.callCount).to.equal(1);
+      expect(Notification.start.calledWithExactly('#btnConnect')).to.equal(true);
+      expect(Connection.connect.callCount).to.equal(1);
+      expect(Connection.connect.calledWithExactly(false)).to.equal(true);
+      expect(ConnectionHelper.initializeUI.callCount).to.equal(1);
+      expect(ConnectionHelper.initializeUI.calledWithExactly()).to.equal(true);
+      expect(ConnectionHelper.resetForm.callCount).to.equal(1);
+      expect(ConnectionHelper.resetForm.calledWithExactly()).to.equal(true);
+      expect(ConnectionHelper.prepareFormForEdit.callCount).to.equal(1);
+      expect(ConnectionHelper.prepareFormForEdit.calledWithExactly(Connection.addServerField)).to.equal(true);
+      expect($.prototype.data.callCount).to.equal(1);
+      expect($.prototype.data.calledWithExactly('edit')).to.equal(true);
+      expect(Connection.addServerField.callCount).to.equal(0);
+    });
+
+    it('initializeConnectionTemplate & clone', () => {
+      // prepare
+      sinon.stub($.prototype, 'data').withArgs('clone').returns('something');
+
+      // execute
+      Connection.initializeConnectionTemplate();
+
+      // verify
+      expect(UIComponents.DataTable.initiateDatatable.callCount).to.equal(1);
+      expect(UIComponents.DataTable.initiateDatatable.calledWithMatch({
+        selector: $('#tblConnection'),
+        sessionKey: SessionManager.strSessionConnection,
+        clickCallback: sinon.match.func,
+        noDeleteEvent: true
+      })).to.equal(true);
+      expect($.prototype.find.callCount).to.equal(1);
+      expect($.prototype.find.calledWithExactly('tbody')).to.equal(true);
+      expect($.prototype.find.getCall(0).thisValue.selector).to.equal('#tblConnection');
+      expect(findStub.on.callCount).to.equal(1);
+      expect(findStub.on.calledWithMatch('dblclick', 'tr', sinon.match.func)).to.equal(true);
+      expect(Notification.start.callCount).to.equal(1);
+      expect(Notification.start.calledWithExactly('#btnConnect')).to.equal(true);
+      expect(Connection.connect.callCount).to.equal(1);
+      expect(Connection.connect.calledWithExactly(false)).to.equal(true);
+      expect(ConnectionHelper.initializeUI.callCount).to.equal(1);
+      expect(ConnectionHelper.initializeUI.calledWithExactly()).to.equal(true);
+      expect(ConnectionHelper.resetForm.callCount).to.equal(1);
+      expect(ConnectionHelper.resetForm.calledWithExactly()).to.equal(true);
+      expect(ConnectionHelper.prepareFormForEdit.callCount).to.equal(1);
+      expect(ConnectionHelper.prepareFormForEdit.calledWithExactly(Connection.addServerField)).to.equal(true);
+      expect($.prototype.data.callCount).to.equal(2);
+      expect($.prototype.data.calledWithExactly('edit')).to.equal(true);
+      expect($.prototype.data.calledWithExactly('clone')).to.equal(true);
+      expect(Connection.addServerField.callCount).to.equal(0);
+    });
+  });
+
+  describe('removeConnection tests', () => {
+    let dataTableStub;
+    const connectionId = '123123213123';
+
+    beforeEach(() => {
+      dataTableStub = {
+        $: sinon.stub().returnsThis(),
+        removeClass: sinon.stub()
+      };
+      sinon.stub($.prototype, 'DataTable').returns(dataTableStub);
+      sinon.stub(SessionManager, 'get').withArgs(SessionManager.strSessionConnection).returns({ _id: connectionId });
+      sinon.stub(ErrorHandler, 'showMeteorFuncError');
+      sinon.stub(SessionManager, 'clear');
+      sinon.stub(Notification, 'start');
+      sinon.stub(Notification, 'stop');
+      sinon.stub(Connection, 'populateConnectionsTable');
+    });
+
+    afterEach(() => {
+      $.prototype.DataTable.restore();
+      Communicator.call.restore();
+      SessionManager.get.restore();
+      ErrorHandler.showMeteorFuncError.restore();
+      SessionManager.clear.restore();
+      Notification.start.restore();
+      Notification.stop.restore();
+      Connection.populateConnectionsTable.restore();
+    });
+
+    it('removeConnection & communicator yields to error', () => {
+      // prepare
+      const error = { error: '123123' };
+      sinon.stub(Communicator, 'call').yieldsTo('callback', error);
+
+      // execute
+      Connection.removeConnection();
+
+      // verify
+      expect(Notification.start.callCount).to.equal(1);
+      expect(Notification.start.calledWithExactly('#btnConnect')).to.equal(true);
+      expect($.prototype.DataTable.callCount).to.equal(1);
+      expect($.prototype.DataTable.calledWithExactly()).to.equal(true);
+      expect($.prototype.DataTable.getCall(0).thisValue.selector).to.equal('#tblConnection');
+      expect(dataTableStub.$.callCount).to.equal(1);
+      expect(dataTableStub.$.calledWithExactly('tr.selected')).to.equal(true);
+      expect(dataTableStub.removeClass.callCount).to.equal(1);
+      expect(dataTableStub.removeClass.calledWithExactly('selected')).to.equal(true);
+      expect(Communicator.call.callCount).to.equal(1);
+      expect(Communicator.call.calledWithMatch({
+        methodName: 'removeConnection',
+        args: { connectionId },
+        callback: sinon.match.func
+      })).to.equal(true);
+      expect(SessionManager.clear.callCount).to.equal(0);
+      expect(Connection.populateConnectionsTable.callCount).to.equal(0);
+      expect(Notification.stop.callCount).to.equal(0);
+      expect(ErrorHandler.showMeteorFuncError.callCount).to.equal(1);
+      expect(ErrorHandler.showMeteorFuncError.calledWithExactly(error)).to.equal(true);
+    });
+
+    it('removeConnection & communicator yields to success', () => {
+      // prepare
+      sinon.stub(Communicator, 'call').yieldsTo('callback');
+
+      // execute
+      Connection.removeConnection();
+
+      // verify
+      expect(Notification.start.callCount).to.equal(1);
+      expect(Notification.start.calledWithExactly('#btnConnect')).to.equal(true);
+      expect($.prototype.DataTable.callCount).to.equal(1);
+      expect($.prototype.DataTable.calledWithExactly()).to.equal(true);
+      expect($.prototype.DataTable.getCall(0).thisValue.selector).to.equal('#tblConnection');
+      expect(dataTableStub.$.callCount).to.equal(1);
+      expect(dataTableStub.$.calledWithExactly('tr.selected')).to.equal(true);
+      expect(dataTableStub.removeClass.callCount).to.equal(1);
+      expect(dataTableStub.removeClass.calledWithExactly('selected')).to.equal(true);
+      expect(Communicator.call.callCount).to.equal(1);
+      expect(Communicator.call.calledWithMatch({
+        methodName: 'removeConnection',
+        args: { connectionId },
+        callback: sinon.match.func
+      })).to.equal(true);
+      expect(SessionManager.clear.callCount).to.equal(1);
+      expect(SessionManager.clear.calledWithExactly()).to.equal(true);
+      expect(Connection.populateConnectionsTable.callCount).to.equal(1);
+      expect(Connection.populateConnectionsTable.calledWithExactly()).to.equal(true);
+      expect(Notification.stop.callCount).to.equal(1);
+      expect(Notification.stop.calledWithExactly()).to.equal(true);
+      expect(ErrorHandler.showMeteorFuncError.callCount).to.equal(0);
+    });
+  });
+
+  describe('saveConnection tests', () => {
+    const connection = { x: 1, y: true, z: 'sercan' };
+    const oldConnection = { cc: 'tt' };
+    const connectionId = '123fvf4';
+
+    beforeEach(() => {
+      sinon.stub(Notification, 'start');
+      // sinon.stub($.prototype, 'data');
+      // sinon.stub(ReactivityProvider, 'findOne');
+      // sinon.stub(Communicator, 'call');
+      sinon.stub(ConnectionHelper, 'populateConnection').yields(connection);
+      sinon.stub(ErrorHandler, 'showMeteorFuncError');
+      sinon.stub(Notification, 'success');
+      sinon.stub(Connection, 'populateConnectionsTable');
+      sinon.stub($.prototype, 'modal');
+    });
+
+    afterEach(() => {
+      Notification.start.restore();
+      $.prototype.data.restore();
+      ReactivityProvider.findOne.restore();
+      ConnectionHelper.populateConnection.restore();
+      Communicator.call.restore();
+      ErrorHandler.showMeteorFuncError.restore();
+      Notification.success.restore();
+      Connection.populateConnectionsTable.restore();
+      $.prototype.modal.restore();
+    });
+
+    it('saveConnection insert mode & communicator success', () => {
+      // prepare
+      sinon.stub(Communicator, 'call').yieldsTo('callback');
+      sinon.stub($.prototype, 'data').returns(undefined);
+      sinon.stub(ReactivityProvider, 'findOne').returns();
+
+      // execute
+      Connection.saveConnection();
+
+      // verify
+      expect(Notification.start.callCount).to.equal(1);
+      expect(Notification.start.calledWithExactly('#btnSaveConnection')).to.equal(true);
+      expect(ReactivityProvider.findOne.callCount).to.equal(0);
+      expect(ConnectionHelper.populateConnection.callCount).to.equal(1);
+      expect(ConnectionHelper.populateConnection.calledWithMatch({}, sinon.match.func)).to.equal(true);
+      expect(Communicator.call.callCount).to.equal(1);
+      expect(Communicator.call.calledWithMatch({
+        methodName: 'checkAndSaveConnection',
+        args: { connection },
+        callback: sinon.match.func
+      })).to.equal(true);
+      expect(Notification.success.callCount).to.equal(1);
+      expect(Notification.success.calledWithExactly('saved-successfully')).to.equal(true);
+      expect(Connection.populateConnectionsTable.callCount).to.equal(1);
+      expect(Connection.populateConnectionsTable.calledWithExactly()).to.equal(true);
+      expect($.prototype.modal.callCount).to.equal(1);
+      expect($.prototype.modal.calledWithExactly('hide')).to.equal(true);
+      expect(ErrorHandler.showMeteorFuncError.callCount).to.equal(0);
+    });
+
+    it('saveConnection edit mode & communicator success', () => {
+      // prepare
+      sinon.stub(Communicator, 'call').yieldsTo('callback');
+      sinon.stub($.prototype, 'data').withArgs('edit').returns(connectionId);
+      sinon.stub(ReactivityProvider, 'findOne').withArgs(ReactivityProvider.types.Connections, { _id: connectionId }).returns(oldConnection);
+
+      // execute
+      Connection.saveConnection();
+
+      // verify
+      expect(Notification.start.callCount).to.equal(1);
+      expect(Notification.start.calledWithExactly('#btnSaveConnection')).to.equal(true);
+      expect(ReactivityProvider.findOne.callCount).to.equal(1);
+      expect(ReactivityProvider.findOne.calledWithExactly(ReactivityProvider.types.Connections, { _id: connectionId })).to.equal(true);
+      expect(ConnectionHelper.populateConnection.callCount).to.equal(1);
+      expect(ConnectionHelper.populateConnection.calledWithMatch(oldConnection, sinon.match.func)).to.equal(true);
+      expect(Communicator.call.callCount).to.equal(1);
+      expect(Communicator.call.calledWithMatch({
+        methodName: 'checkAndSaveConnection',
+        args: { connection: { _id: connectionId, ...connection } },
+        callback: sinon.match.func
+      })).to.equal(true);
+      expect(Notification.success.callCount).to.equal(1);
+      expect(Notification.success.calledWithExactly('saved-successfully')).to.equal(true);
+      expect(Connection.populateConnectionsTable.callCount).to.equal(1);
+      expect(Connection.populateConnectionsTable.calledWithExactly()).to.equal(true);
+      expect($.prototype.modal.callCount).to.equal(1);
+      expect($.prototype.modal.calledWithExactly('hide')).to.equal(true);
+      expect(ErrorHandler.showMeteorFuncError.callCount).to.equal(0);
+    });
+
+    it('saveConnection clone mode & communicator success', () => {
+      // prepare
+      sinon.stub(Communicator, 'call').yieldsTo('callback');
+      sinon.stub($.prototype, 'data').withArgs('clone').returns(connectionId);
+      sinon.stub(ReactivityProvider, 'findOne').withArgs(ReactivityProvider.types.Connections, { _id: connectionId }).returns(oldConnection);
+
+      // execute
+      Connection.saveConnection();
+
+      // verify
+      expect(Notification.start.callCount).to.equal(1);
+      expect(Notification.start.calledWithExactly('#btnSaveConnection')).to.equal(true);
+      expect(ReactivityProvider.findOne.callCount).to.equal(1);
+      expect(ReactivityProvider.findOne.calledWithExactly(ReactivityProvider.types.Connections, { _id: connectionId })).to.equal(true);
+      expect(ConnectionHelper.populateConnection.callCount).to.equal(1);
+      expect(ConnectionHelper.populateConnection.calledWithMatch(oldConnection, sinon.match.func)).to.equal(true);
+      expect(Communicator.call.callCount).to.equal(1);
+      expect(Communicator.call.calledWithMatch({
+        methodName: 'checkAndSaveConnection',
+        args: { connection },
+        callback: sinon.match.func
+      })).to.equal(true);
+      expect(Notification.success.callCount).to.equal(1);
+      expect(Notification.success.calledWithExactly('saved-successfully')).to.equal(true);
+      expect(Connection.populateConnectionsTable.callCount).to.equal(1);
+      expect(Connection.populateConnectionsTable.calledWithExactly()).to.equal(true);
+      expect($.prototype.modal.callCount).to.equal(1);
+      expect($.prototype.modal.calledWithExactly('hide')).to.equal(true);
+      expect(ErrorHandler.showMeteorFuncError.callCount).to.equal(0);
+    });
+
+    it('saveConnection communicator fail', () => {
+      // prepare
+      const error = { error: '123123' };
+      sinon.stub(Communicator, 'call').yieldsTo('callback', error);
+      sinon.stub($.prototype, 'data').withArgs('clone').returns(connectionId);
+      sinon.stub(ReactivityProvider, 'findOne').withArgs(ReactivityProvider.types.Connections, { _id: connectionId }).returns(oldConnection);
+
+      // execute
+      Connection.saveConnection();
+
+      // verify
+      expect(Notification.start.callCount).to.equal(1);
+      expect(Notification.start.calledWithExactly('#btnSaveConnection')).to.equal(true);
+      expect(ReactivityProvider.findOne.callCount).to.equal(1);
+      expect(ReactivityProvider.findOne.calledWithExactly(ReactivityProvider.types.Connections, { _id: connectionId })).to.equal(true);
+      expect(ConnectionHelper.populateConnection.callCount).to.equal(1);
+      expect(ConnectionHelper.populateConnection.calledWithMatch(oldConnection, sinon.match.func)).to.equal(true);
+      expect(Communicator.call.callCount).to.equal(1);
+      expect(Communicator.call.calledWithMatch({
+        methodName: 'checkAndSaveConnection',
+        args: { connection },
+        callback: sinon.match.func
+      })).to.equal(true);
+      expect(Notification.success.callCount).to.equal(0);
+      expect(Connection.populateConnectionsTable.callCount).to.equal(0);
+      expect($.prototype.modal.callCount).to.equal(0);
+      expect(ErrorHandler.showMeteorFuncError.callCount).to.equal(1);
+      expect(ErrorHandler.showMeteorFuncError.calledWithExactly(error)).to.equal(true);
+    });
+  });
 });
