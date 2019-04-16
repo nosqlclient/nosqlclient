@@ -807,4 +807,122 @@ describe('Connection', () => {
       expect(Notification.warning.callCount).to.equal(0);
     });
   });
+
+  describe('proceedConnecting tests', () => {
+    const connection = { _id: 123123, x: 1 };
+    const username = 'sercan';
+    const password = '13123123';
+
+    beforeEach(() => {
+      sinon.stub(SessionManager, 'set');
+      sinon.stub(ErrorHandler, 'showMeteorFuncError');
+      sinon.stub($.prototype, 'modal');
+      sinon.stub(FlowRouter, 'go');
+      sinon.stub(Notification, 'success');
+      sinon.stub(Notification, 'stop');
+    });
+
+    afterEach(() => {
+      Communicator.call.restore();
+      SessionManager.set.restore();
+      ErrorHandler.showMeteorFuncError.restore();
+      $.prototype.modal.restore();
+      FlowRouter.go.restore();
+      Notification.success.restore();
+      Notification.stop.restore();
+    });
+
+    it('proceedConnecting communicator yields to error', () => {
+      // prepare
+      const error = { error: '12323' };
+      sinon.stub(Communicator, 'call').yieldsTo('callback', error, null);
+
+      // execute
+      Connection.proceedConnecting({ isRefresh: false, connection, username, password });
+
+      // verify
+      expect($.prototype.modal.callCount).to.equal(0);
+      expect(SessionManager.set.callCount).to.equal(0);
+      expect(FlowRouter.go.callCount).to.equal(0);
+      expect(Notification.stop.callCount).to.equal(0);
+      expect(Notification.success.callCount).to.equal(0);
+      expect(ErrorHandler.showMeteorFuncError.callCount).to.equal(1);
+      expect(ErrorHandler.showMeteorFuncError.calledWithExactly(error, null)).to.equal(true);
+    });
+
+    it('proceedConnecting communicator yields to success & isRefresh false', () => {
+      // prepare
+      const result = { result: [{ name: 'b' }] };
+      sinon.stub(Communicator, 'call').yieldsTo('callback', null, result);
+
+      // execute
+      Connection.proceedConnecting({ isRefresh: false, connection, username, password });
+
+      // verify
+      expect(SessionManager.set.callCount).to.equal(6);
+      expect(SessionManager.set.calledWithExactly(SessionManager.strSessionCollectionNames, result.result)).to.equal(true);
+      expect(SessionManager.set.calledWithExactly(SessionManager.strSessionSelectedQuery, null)).to.equal(true);
+      expect(SessionManager.set.calledWithExactly(SessionManager.strSessionSelectedCollection, null)).to.equal(true);
+      expect(SessionManager.set.calledWithExactly(SessionManager.strSessionSelectedOptions, null)).to.equal(true);
+      expect(SessionManager.set.calledWithExactly(SessionManager.strSessionPromptedUsername, username)).to.equal(true);
+      expect(SessionManager.set.calledWithExactly(SessionManager.strSessionPromptedPassword, password)).to.equal(true);
+      expect($.prototype.modal.callCount).to.equal(3);
+      expect($.prototype.modal.alwaysCalledWithExactly('hide')).to.equal(true);
+      expect($.prototype.modal.getCall(0).thisValue.selector).to.equal('#connectionModal');
+      expect($.prototype.modal.getCall(1).thisValue.selector).to.equal('#switchDatabaseModal');
+      expect($.prototype.modal.getCall(2).thisValue.selector).to.equal('#promptUsernamePasswordModal');
+      expect(FlowRouter.go.callCount).to.equal(1);
+      expect(FlowRouter.go.calledWithExactly('/databaseStats')).to.equal(true);
+      expect(Notification.stop.callCount).to.equal(1);
+      expect(Notification.stop.calledWithExactly()).to.equal(true);
+      expect(Notification.success.callCount).to.equal(0);
+      expect(ErrorHandler.showMeteorFuncError.callCount).to.equal(0);
+    });
+
+    it('proceedConnecting communicator yields to success & isRefresh true', () => {
+      // prepare
+      const result = { result: [{ name: 'b' }] };
+      sinon.stub(Communicator, 'call').yieldsTo('callback', null, result);
+
+      // execute
+      Connection.proceedConnecting({ isRefresh: true, connection, username, password });
+
+      // verify
+      expect(SessionManager.set.callCount).to.equal(3);
+      expect(SessionManager.set.calledWithExactly(SessionManager.strSessionCollectionNames, result.result)).to.equal(true);
+      expect(SessionManager.set.calledWithExactly(SessionManager.strSessionPromptedUsername, username)).to.equal(true);
+      expect(SessionManager.set.calledWithExactly(SessionManager.strSessionPromptedPassword, password)).to.equal(true);
+      expect($.prototype.modal.callCount).to.equal(0);
+      expect(FlowRouter.go.callCount).to.equal(0);
+      expect(Notification.stop.callCount).to.equal(1);
+      expect(Notification.stop.calledWithExactly()).to.equal(true);
+      expect(Notification.success.callCount).to.equal(1);
+      expect(Notification.success.calledWithExactly('refreshed-successfully')).to.equal(true);
+      expect(ErrorHandler.showMeteorFuncError.callCount).to.equal(0);
+    });
+
+    it('proceedConnecting communicator yields to success & isRefresh true & message filled', () => {
+      // prepare
+      const result = { result: [{ name: 'b' }] };
+      const message = 'sercan';
+      const messageTranslateOptions = { i_dont_know_what_to_put: 'sercan' };
+      sinon.stub(Communicator, 'call').yieldsTo('callback', null, result);
+
+      // execute
+      Connection.proceedConnecting({ isRefresh: true, connection, username, password, message, messageTranslateOptions });
+
+      // verify
+      expect(SessionManager.set.callCount).to.equal(3);
+      expect(SessionManager.set.calledWithExactly(SessionManager.strSessionCollectionNames, result.result)).to.equal(true);
+      expect(SessionManager.set.calledWithExactly(SessionManager.strSessionPromptedUsername, username)).to.equal(true);
+      expect(SessionManager.set.calledWithExactly(SessionManager.strSessionPromptedPassword, password)).to.equal(true);
+      expect($.prototype.modal.callCount).to.equal(0);
+      expect(FlowRouter.go.callCount).to.equal(0);
+      expect(Notification.stop.callCount).to.equal(1);
+      expect(Notification.stop.calledWithExactly()).to.equal(true);
+      expect(Notification.success.callCount).to.equal(1);
+      expect(Notification.success.calledWithExactly(message, null, messageTranslateOptions)).to.equal(true);
+      expect(ErrorHandler.showMeteorFuncError.callCount).to.equal(0);
+    });
+  });
 });
