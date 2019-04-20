@@ -652,5 +652,6 @@
   "sortAscending": ": yükselen şekilde sıralamayı aktive et",
   "sortDescending": ": alçalan şekilde sıralamayı aktive et",
 
-  "view_on": "Bağlı Collection"
+  "view_on": "Bağlı Collection",
+  "not_valid_field": "Alan JSON değil: __error__"
 }

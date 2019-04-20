@@ -651,5 +651,6 @@
   "sortAscending": ": activate to sort column ascending",
   "sortDescending": ": activate to sort column descending",
 
-  "view_on": "View On"
+  "view_on": "View On",
+  "not_valid_field": "Not a valid json field: __error__"
 }

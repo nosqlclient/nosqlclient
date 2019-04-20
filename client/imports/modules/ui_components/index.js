@@ -1,8 +1,9 @@
-import { SessionManager } from '/client/imports/modules';
+import { ExtendedJSON, SessionManager } from '/client/imports/modules';
 import { ReactivityProvider } from '/client/imports/facades';
 import $ from 'jquery';
 import Helper from '/client/imports/helpers/helper';
-import { QueryRender } from '../../ui/querying';
+import { QueryRender } from '/client/imports/ui/querying';
+import { _ } from 'meteor/underscore';
 
 const CodeMirror = require('codemirror');
 const JSONEditor = require('jsoneditor');
@@ -52,29 +53,24 @@ const quoteAttr = function (s) {
 
 const convertObjectToGridRow = function (obj, allKeys) {
   let html = '<tr>';
+
   allKeys.forEach((key) => {
     let val = obj[key];
     if (typeof val === 'undefined') val = '';
-    if (val !== null && typeof val === 'object') {
-      const valKeys = Object.keys(val);
-      if (valKeys.length === 1 && valKeys[0] === '$date') {
-        val = val.$date;
-      } else {
-        val = JSON.stringify(val);
-      }
-    }
-    val = `${val}`;
-    if (val.length > 50) {
-      html += `<td title="${quoteAttr(val)}">${val.substr(0, 47)}...</td>`;
-    } else {
-      html += `<td>${val}</td>`;
-    }
+    if (val !== null && typeof val === 'object') val = JSON.stringify(val);
+    val = `${_.escape(val)}`;
+    if (val.length > 100) html += `<td title="${quoteAttr(val)}">${val.substr(0, 97)}...</td>`;
+    else html += `<td>${val}</td>`;
   });
+
   html += '</tr>';
   return html;
 };
 
 const displayJsonEditorModal = function (sData) {
+  let dataToSet = ExtendedJSON.convertAndCheckJSON(_.unescape(sData));
+  dataToSet = dataToSet.ERROR ? _.unescape(sData) : dataToSet;
+
   let modal = $('#json-editor-modal');
   if (modal.length === 0) {
     modal = $('<div class="modal fade" id="json-editor-modal" tabindex="-1" role="dialog">'
@@ -100,7 +96,7 @@ const displayJsonEditorModal = function (sData) {
     });
   }
   modal.modal();
-  $('#json-editor-modal-data').data('jsoneditor').set(JSON.parse(sData));
+  $('#json-editor-modal-data').data('jsoneditor').set(dataToSet);
 };
 
 const doCodeMirrorResizable = function (codeMirror) {
