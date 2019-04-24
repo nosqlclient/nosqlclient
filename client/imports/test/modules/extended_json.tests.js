@@ -38,6 +38,17 @@ describe('ExtendedJSON', () => {
       expect(convertedJson).to.eql({ a: true, b: 123, c: { $regex: '^/d', $options: 'xmi' } });
     });
 
+    it('no regex & http', () => {
+      // prepare
+      const str = '{"a":true,"b":123,"c":"[{\\"test\\":\\"http://google.com//\\"}]"}';
+
+      // execute
+      const convertedJson = ExtendedJSON.convertAndCheckJSON(str);
+
+      // verify
+      expect(convertedJson).to.eql({ a: true, b: 123, c: '[{"test":"http://google.com//"}]' });
+    });
+
     it('simple regex with $regex without string & $options', () => {
       // prepare
       const str = '{a: true, b: 123, c: {$regex:/asd^!,=}/, $options: "xmi"}}';

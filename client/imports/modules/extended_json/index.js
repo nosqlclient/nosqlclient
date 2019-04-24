@@ -35,7 +35,7 @@ const replaceShellStuff = function (str, regex, extendedJsonVersion) {
 };
 
 const replaceRegex = function (str) {
-  const regex = /:\/.*?([^\\]\/.*?(,|}|]))+/gim;
+  const regex = /:\/[^\/].*?([^\\]\/.*?(,|}|]))+/gim;
 
   const matches = str.match(regex);
   if (matches) {
