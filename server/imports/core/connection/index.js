@@ -2,7 +2,7 @@ import { Database, Logger, Error } from '/server/imports/modules';
 import ConnectionHelper from './helper';
 
 const fs = require('fs');
-const mongodbUrlParser = require('parse-mongo-url');
+const mongodbUrlParser = require('mongodb-url');
 const jsonParser = require('json5');
 
 const Connection = function () {
@@ -162,6 +162,8 @@ Connection.prototype = {
       connection.ssl = connection.ssl || {};
       connection.databaseName = parsedUrl.dbName || 'admin';
       connection.servers = parsedUrl.servers;
+
+      Logger.info({ message: 'parsed-url', metadataToLog: { parsedUrl } });
 
       setOptionsToConnectionFromParsedUrl(connection, parsedUrl);
       setAuthToConnectionFromParsedUrl(connection, parsedUrl);

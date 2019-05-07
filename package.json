@@ -42,7 +42,7 @@
     "meteor-node-stubs": "^0.4.1",
     "moment": "^2.22.1",
     "mongodb": "^3.2.3",
-    "parse-mongo-url": "^1.1.1",
+    "mongodb-url": "^3.0.2",
     "sinon": "^7.2.7",
     "spin.js": "^4.0.0",
     "sweetalert": "1.0.1",
