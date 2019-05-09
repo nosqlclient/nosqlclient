@@ -632,16 +632,17 @@ describe('Communicator', () => {
     it('uploadFile', () => {
       // prepare
       const methodName = 'uploadFile';
+      const blob = new Uint8Array([22, 33]);
 
       // execute
-      Communicator.call({ methodName, args: { blob: [{ some_byte_array: 123 }], fileName: 'sercan', contentType: 'application/json', name: 'sercan' }, callback() {} });
+      Communicator.call({ methodName, args: { blob, fileName: 'sercan', contentType: 'application/json', name: 'sercan' }, callback() {} });
 
       // verify
       assertExecution(methodName);
       expect(Meteor.call.getCall(0).args[1]).to.eql({
         sessionId: Meteor.default_connection._lastSessionId,
         bucketName: 'fs',
-        blob: [{ some_byte_array: 123 }],
+        blob,
         fileName: 'sercan',
         contentType: 'application/json',
         metaData: {},
