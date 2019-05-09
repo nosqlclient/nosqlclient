@@ -125,7 +125,7 @@ MongoDBGridFS.prototype = {
   },
 
   uploadFile({ bucketName, blob, fileName, contentType, metaData, aliases, sessionId }) {
-    const metadataToLog = { bucketName, fileName, contentType, metaData, aliases, sessionId };
+    const metadataToLog = { bucketName, fileName, contentType, metaData, aliases, sessionId, blobLength: blob.length };
 
     if (metaData) metaData = ExtendedJSON.convertJSONtoBSON(metaData);
 

@@ -1,5 +1,6 @@
 import { UIComponents, ExtendedJSON, Notification, ErrorHandler, SessionManager } from '/client/imports/modules';
 import { Communicator } from '/client/imports/facades';
+import FileManagementHelper from './helper';
 
 const FileManagement = function () {};
 
@@ -20,47 +21,7 @@ FileManagement.prototype = {
     });
 
     $('#fileInfoModal').modal('hide');
-    this.proceedUploading(blob, contentType, metaData, aliases);
-  },
-
-  proceedUploading(blob, contentType, metaData, aliases) {
-    Notification.start('#btnUpload');
-
-    const fileReader = new FileReader();
-    fileReader.onload = (file) => {
-      Communicator.call({
-        methodName: 'uploadFile',
-        args: { bucketName: $('#txtBucketName').val(), blob: new Uint8Array(file.target.result), fileName: blob.name, contentType, metaData, aliases },
-        callback: (err, result) => {
-          if (err || result.error) ErrorHandler.showMeteorFuncError(err, result);
-          else {
-            Notification.success('saved-successfully');
-            this.initFilesInformation();
-          }
-        }
-      });
-    };
-    fileReader.readAsArrayBuffer(blob);
-  },
-
-  proceedShowingMetadata(id, jsonEditor) {
-    Communicator.call({
-      methodName: 'getFile',
-      args: { bucketName: $('#txtBucketName').val(), fileId: id },
-      callback: (err, result) => {
-        if (err || result.error) ErrorHandler.showMeteorFuncError(err, result);
-        else jsonEditor.set(result.result);
-
-        Notification.stop();
-      }
-    });
-  },
-
-  convertObjectIdAndDateToString(arr) {
-    for (let i = 0; i < arr.length; i += 1) {
-      if (arr[i]._id) arr[i]._id = arr[i]._id.$oid;
-      if (arr[i].uploadDate) arr[i].uploadDate = arr[i].uploadDate.$date;
-    }
+    FileManagementHelper.proceedUploading(blob, contentType, metaData, aliases, this.initFilesInformation);
   },
 
   initFilesInformation() {
@@ -81,7 +42,7 @@ FileManagement.prototype = {
           ErrorHandler.showMeteorFuncError(err, result);
           return;
         }
-        this.convertObjectIdAndDateToString(result.result);
+        FileManagementHelper.convertObjectIdAndDateToString(result.result);
         UIComponents.DataTable.setupDatatable({
           selectorString: '#tblFiles',
           data: result.result,
@@ -202,7 +163,7 @@ FileManagement.prototype = {
               if (err) ErrorHandler.showMeteorFuncError(err);
               else {
                 Notification.success('saved-successfully');
-                this.proceedShowingMetadata(SessionManager.get(SessionManager.strSessionSelectedFile)._id, jsonEditor);
+                FileManagementHelper.proceedShowingMetadata(SessionManager.get(SessionManager.strSessionSelectedFile)._id, jsonEditor);
               }
             }
           });
@@ -218,7 +179,7 @@ FileManagement.prototype = {
     if (fileRow) {
       const jsonEditor = UIComponents.Editor.initializeJSONEditor({ selector: 'jsonEditorOfMetadata' });
       $('#metaDataModal').modal('show');
-      this.proceedShowingMetadata(fileRow._id, jsonEditor);
+      FileManagementHelper.proceedShowingMetadata(fileRow._id, jsonEditor);
     }
   },
 

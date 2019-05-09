@@ -40,7 +40,7 @@ const Communicator = function () {
     getFilesInfo: { bucketName: 'fs', selector: {}, limit: 50 },
     deleteFiles: { bucketName: 'fs', selector: {} },
     deleteFile: { bucketName: 'fs', fileId: '' },
-    uploadFile: { bucketName: 'fs', blob: [], fileName: '', contentType: '', metaData: {}, aliases: [] },
+    uploadFile: { bucketName: 'fs', blob: new Uint8Array(), fileName: '', contentType: '', metaData: {}, aliases: [] },
     indexInformation: { selectedCollection: '', isFull: false },
     dropIndex: { selectedCollection: '', indexName: '' },
     executeShellCommand: { command: '', connectionId: '', username: '', password: '' },
