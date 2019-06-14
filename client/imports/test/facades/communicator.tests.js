@@ -444,7 +444,7 @@ describe('Communicator', () => {
       assertExecution(methodName);
       expect(Meteor.call.getCall(0).args[1]).to.eql({
         sessionId: Meteor.default_connection._lastSessionId,
-        args: {}
+        args: []
       });
     });
 
@@ -453,13 +453,13 @@ describe('Communicator', () => {
       const methodName = 'mongorestore';
 
       // execute
-      Communicator.call({ methodName, args: { args: { asd: true, out: 'sercan' } }, callback() {} });
+      Communicator.call({ methodName, args: { args: ['--db', 'test'] }, callback() {} });
 
       // verify
       assertExecution(methodName);
       expect(Meteor.call.getCall(0).args[1]).to.eql({
         sessionId: Meteor.default_connection._lastSessionId,
-        args: { asd: true, out: 'sercan' }
+        args: ['--db', 'test']
       });
     });
 
@@ -468,13 +468,13 @@ describe('Communicator', () => {
       const methodName = 'mongoexport';
 
       // execute
-      Communicator.call({ methodName, args: { args: { asd: true, out: 'sercan' } }, callback() {} });
+      Communicator.call({ methodName, args: { args: ['--db', 'test'] }, callback() {} });
 
       // verify
       assertExecution(methodName);
       expect(Meteor.call.getCall(0).args[1]).to.eql({
         sessionId: Meteor.default_connection._lastSessionId,
-        args: { asd: true, out: 'sercan' }
+        args: ['--db', 'test']
       });
     });
 
@@ -483,13 +483,13 @@ describe('Communicator', () => {
       const methodName = 'mongoimport';
 
       // execute
-      Communicator.call({ methodName, args: { args: { asd: true, out: 'sercan' }, x: false, y: true }, callback() {} });
+      Communicator.call({ methodName, args: { args: ['--db', 'test'], x: false, y: true }, callback() {} });
 
       // verify
       assertExecution(methodName);
       expect(Meteor.call.getCall(0).args[1]).to.eql({
         sessionId: Meteor.default_connection._lastSessionId,
-        args: { asd: true, out: 'sercan' }
+        args: ['--db', 'test']
       });
     });
 
