@@ -7,7 +7,7 @@ ENV GOSU_VERSION 1.10
 
 # default values for Meteor environment variables
 ENV ROOT_URL http://localhost
-ENV MONGO_URL ''
+
 ENV PORT 3000
 ENV INSTALL_MONGO true
 ENV MONGOCLIENT_DEFAULT_CONNECTION_URL ''
