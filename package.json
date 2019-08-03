@@ -3,7 +3,7 @@
   "name": "mongoclient",
   "version": "2.2.0",
   "devDependencies": {
-    "chromedriver": "^2.41.0",
+    "chromedriver": "2.40.0",
     "cross-env": "^5.2.0",
     "eslint": "^5.9.0",
     "eslint-config-airbnb": "^17.1.0",
