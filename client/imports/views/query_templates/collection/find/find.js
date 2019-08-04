@@ -8,8 +8,8 @@ import './find.html';
 Template.find.onRendered(() => {
   Querying.initOptions(Enums.CURSOR_OPTIONS);
 
-  $('#cmbFindCursorOptions').val('LIMIT').trigger('chosen:updated');
-  SessionManager.set(SessionManager.strSessionSelectedOptions, ['LIMIT']);
+  $('#cmbFindCursorOptions').val(['LIMIT', 'SORT']).trigger('chosen:updated');
+  SessionManager.set(SessionManager.strSessionSelectedOptions, ['LIMIT', 'SORT']);
 });
 
 Template.find.executeQuery = Querying.Collection.Find.execute.bind(Querying.Collection.Find);
