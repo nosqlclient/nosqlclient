@@ -45,27 +45,27 @@ URL=
 if [ "${MONGO_URL}" == "" ]
 then
     URL=${MONGO_SCHEME}://
-    if [ ! -z ${MONGO_USERNAME+x} ]
+    if [ ! -z ${MONGO_USERNAME} ]
     then
         URL=${URL}${MONGO_USERNAME}
-        if [ ! -z ${MONGO_PASSWORD+x} ]
+        if [ ! -z ${MONGO_PASSWORD} ]
     	then
     	    URL=${URL}:${MONGO_PASSWORD}
     	fi
         URL=${URL}@
     fi
     URL=${URL}${MONGO_ADDRESSES}/${MONGO_DATABASE}
-	if [ -z ${MONGO_TLS+x} ]
-	then
-    	URL="${URL}?ssl=false"
-	else
-	    URL="${URL}?ssl=${MONGO_TLS}"
-	fi
-    if [ ! -z ${MONGO_OPT_PARAMS+x} ]
-	then  
-	    URL="${URL}&${MONGO_OPT_PARAMS}"
-	fi
-	MONGO_URL=${URL}
+    if [ -z ${MONGO_TLS} ]
+    then
+        URL="${URL}?ssl=false"
+    else
+        URL="${URL}?ssl=${MONGO_TLS}"
+    fi
+    if [ ! -z ${MONGO_OPT_PARAMS} ]
+    then
+        URL="${URL}&${MONGO_OPT_PARAMS}"
+    fi
+    MONGO_URL=${URL}
 fi
 
 file_env 'MONGOCLIENT_DEFAULT_CONNECTION_URL'
