@@ -1,6 +1,8 @@
 ## Nosqlclient (Formerly Mongoclient), MongoDB Management Tool
 
 Cross-platform and self hosted, easy to use, MongoDB 4.0+ support and more features!
+
+> Currently only DOCKER builds are supported, desktop distributions will be removed in the next version.
   
 
 [![Build Status](https://travis-ci.org/nosqlclient/nosqlclient.svg?branch=master)](https://travis-ci.org/nosqlclient/nosqlclient)
