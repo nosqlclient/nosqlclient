@@ -30,7 +30,7 @@ All documentation can be found in https://www.nosqlclient.com/docs
 
 To install latest stable release:
 
-```docker pull mongoclient/mongoclient:2.2.0```
+```docker pull mongoclient/mongoclient:4.0.0```
 
 Then you can run it as a daemon:
 
@@ -41,14 +41,6 @@ To set an external mongodb which is required for meteor to work, you can set ```
 To persist your connections and settings simply bind ```/data/db``` directory to your local machine as below.
 
 ```docker run -d -p 3000:3000 -v <your_path>:/data/db mongoclient/mongoclient```
-
-
-## Distributions
-
-* [Linux x64](https://github.com/nosqlclient/nosqlclient/releases/download/2.2.0/linux-portable-x64.zip)
-* [Windows x64](https://github.com/nosqlclient/nosqlclient/releases/download/2.2.0/windows-portable-x64.zip)
-* [OSx](https://github.com/nosqlclient/nosqlclient/releases/download/2.2.0/osx-portable.zip)
-* [More](https://nosqlclient.com/docs/start.html)
 
 
 ## History
