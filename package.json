@@ -1,7 +1,7 @@
 {
   "private": true,
   "name": "mongoclient",
-  "version": "4.0.1",
+  "version": "4.0.0",
   "devDependencies": {
     "chromedriver": "2.40.0",
     "cross-env": "^5.2.0",
