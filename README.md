@@ -1,13 +1,14 @@
 ## Nosqlclient (Formerly Mongoclient), MongoDB Management Tool
 
 Cross-platform and self hosted, easy to use, MongoDB 4.0+ support and more features!
+
+> Currently only DOCKER builds are supported, desktop distributions will be removed in the next version.
   
 
 [![Build Status](https://travis-ci.org/nosqlclient/nosqlclient.svg?branch=master)](https://travis-ci.org/nosqlclient/nosqlclient)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/6a75fc4e1d3f480f811b5339202400b5)](https://www.codacy.com/app/ozdemirsercan27/mongoclient?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=mongoclient/mongoclient&amp;utm_campaign=Badge_Grade)
 [![Code Coverage](https://api.codacy.com/project/badge/Coverage/6a75fc4e1d3f480f811b5339202400b5)](https://www.codacy.com/app/ozdemirsercan27/mongoclient?utm_source=github.com&utm_medium=referral&utm_content=mongoclient/mongoclient&utm_campaign=Badge_Coverage)
 [![GitHub release](https://img.shields.io/github/release/nosqlclient/nosqlclient.svg)](https://github.com/nosqlclient/nosqlclient)
-[![Github All Releases](https://img.shields.io/github/downloads/nosqlclient/nosqlclient/total.svg)](https://github.com/nosqlclient/nosqlclient)
 [![Docker Pulls](https://img.shields.io/docker/pulls/mongoclient/mongoclient.svg)](https://hub.docker.com/r/mongoclient/mongoclient/)
 [![AGPLv3 License](https://img.shields.io/github/license/nosqlclient/nosqlclient.svg)](https://github.com/nosqlclient/nosqlclient/blob/master/LICENSE)
 
@@ -28,7 +29,7 @@ All documentation can be found in https://www.nosqlclient.com/docs
 
 To install latest stable release:
 
-```docker pull mongoclient/mongoclient:2.2.0```
+```docker pull mongoclient/mongoclient:4.0.0```
 
 Then you can run it as a daemon:
 
@@ -39,14 +40,6 @@ To set an external mongodb which is required for meteor to work, you can set ```
 To persist your connections and settings simply bind ```/data/db``` directory to your local machine as below.
 
 ```docker run -d -p 3000:3000 -v <your_path>:/data/db mongoclient/mongoclient```
-
-
-## Distributions
-
-* [Linux x64](https://github.com/nosqlclient/nosqlclient/releases/download/2.2.0/linux-portable-x64.zip)
-* [Windows x64](https://github.com/nosqlclient/nosqlclient/releases/download/2.2.0/windows-portable-x64.zip)
-* [OSx](https://github.com/nosqlclient/nosqlclient/releases/download/2.2.0/osx-portable.zip)
-* [More](https://nosqlclient.com/docs/start.html)
 
 
 ## History
