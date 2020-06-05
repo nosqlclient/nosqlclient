@@ -362,7 +362,7 @@ Connection.prototype = {
   },
 
   getConnectionOptions(connection) {
-    const result = { useNewUrlParser: true };
+    const result = { useNewUrlParser: true, useUnifiedTopology: true };
     if (connection.authenticationType === 'mongodb_x509') addSSLOptions(connection.mongodb_x509, result);
     if (connection.ssl && connection.ssl.enabled) addSSLOptions(connection.ssl, result);
     if (connection.options && connection.options.connectWithNoPrimary) result.connectWithNoPrimary = true;

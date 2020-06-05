@@ -426,6 +426,8 @@
   "stats_info":"İstatistikleri görmek istiyorsanız, <i>veritabanı istatistiklerini göster</i> ayarını ayarlardan açabilirsin",
   "connect_info":"Bağlanmak için <b>Bağlan</b> butonunu kullan",
   "subscribe_info":"Abone olmak için e-mail adresini gir, ve <b>Abone Ol</b> butonunu kullan",
+  "use_our_github": "Github projemizi kullanarak <b>bug raporlayabilir, yeni bir özellik isteyebilirsiniz</b>",
+  "github_link": "https://github.com/nosqlclient/nosqlclient",
   "email_we_hate_spam":"E-mail, merak etme SPAM'i kimse sevmez !",
   "subscribe":"Abone Ol",
   "dont_show_again":"Süper, tekrar gösterme",

@@ -424,6 +424,8 @@
   "stats_disabled":"Statistics are disabled",
   "stats_info":" To see the statistics of your database, simply <strong>enable</strong> <i>show database statistics</i> setting",
   "connect_info":"Connect to your database, by clicking <b>Connect</b> button",
+  "use_our_github": "Use our github project for <b>bug reports, feature requests</b>",
+  "github_link": "https://github.com/nosqlclient/nosqlclient",
   "subscribe_info":"Subscribe to Nosqlclient Newsletter by filling your e-mail address to below input,  and pressing <b>Subscribe</b>",
   "email_we_hate_spam":"E-mail, don't worry we hate spam !",
   "subscribe":"Subscribe",

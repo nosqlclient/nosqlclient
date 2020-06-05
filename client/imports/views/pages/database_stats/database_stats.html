@@ -199,17 +199,17 @@
                 </div>
             {{/if}}
         {{else}}
-        <div class="wrapper wrapper-content animated fadeInRight">
-            <div class="row">
-                <div class="col-lg-12">
-                    <div class="text-center m-t-lg">
-                        <h1>
-                            <img width="300" height="200" src="logo/new/image_with_text2.png"/>
-                        </h1>
+            <div class="wrapper wrapper-content animated fadeInRight">
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="text-center m-t-lg">
+                            <h1>
+                                <img width="300" height="200" src="logo/new/image_with_text2.png"/>
+                            </h1>
+                        </div>
                     </div>
                 </div>
-            </div>
-            <div class="row">
+                <!--<div class="row">
                 <div class="col-lg-6 col-lg-offset-3">
                     <div class="text-center m-t-lg">
                         <div class="panel panel-primary">
@@ -228,39 +228,18 @@
                         </div>
                     </div>
                 </div>
-            </div>
-            <div class="row">
-                <div class="col-lg-12">
-                    <div class="text-center m-t-lg">
-                        {{#if isSubscribed}}
+            </div>-->
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="text-center m-t-lg">
                             <small>
-                                {{{_ "connect_info"}}}
+                                {{{_ "use_our_github"}}}<br/>
+                                {{{_ "github_link"}}}
                             </small>
-                            <br/>
-                            <br/>
-                            <button type="button" class="btn btn-primary ladda-button" disabled
-                                    data-style="contract">{{_ "thanks-for-subscription"}}
-                            </button>
-                        {{else}}
-                            <small>
-                                {{{_ "subscribe_info"}}}
-                            </small>
-                            <div class="row">
-                                <div class="col-lg-offset-4 col-lg-4">
-                                    <input id="txtEmailToSubscribe" type="email"
-                                           placeholder="{{_ "email_we_hate_spam"}}"
-                                           class="form-control required"/>
-                                </div>
-                            </div>
-                            <br/>
-                            <button id="btnSubscribe" type="button" class="btn btn-primary ladda-button"
-                                    data-style="contract">{{_ "subscribe"}}
-                            </button>
-                        {{/if}}
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
         {{/if}}
     {{/if}}
 
