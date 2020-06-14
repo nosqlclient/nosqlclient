@@ -40,6 +40,19 @@ MongoDBHelper.prototype = {
     }
   },
 
+  removeClusterTimeResult(obj){
+    if (obj.result && (typeof obj.result === 'object')) {
+      if ('$clusterTime' in obj.result) {
+        delete obj.result.$clusterTime;
+      }
+      if(obj.result.result && (typeof obj.result.result === 'object')){
+        if ('$clusterTime' in obj.result.result) {
+          delete obj.result.result.$clusterTime;
+        }
+      }
+    }
+  },
+
   clearConnectionOptionsForLog(connectionOptions) {
     const result = Object.assign({}, connectionOptions);
     delete result.sslCert;
@@ -109,6 +122,7 @@ MongoDBHelper.prototype = {
 
     if (removeCollectionTopology) this.removeCollectionTopologyFromResult(result);
     this.removeConnectionTopologyFromResult(result);
+    this.removeClusterTimeResult(result);
     result = ExtendedJSON.convertBSONtoJSON(result);
     result.executionTime = new Date() - start;
 
