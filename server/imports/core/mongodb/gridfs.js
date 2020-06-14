@@ -1,9 +1,9 @@
 /* global Async */
 import { Logger, Error } from '/server/imports/modules';
 import MongoDB from './index';
-import ExtendedJSON from './extended_json';
 
 const mongodbApi = require('mongodb');
+const { EJSON } = require('bson');
 
 const MongoDBGridFS = function () {
 };
@@ -38,7 +38,7 @@ MongoDBGridFS.prototype = {
     const metadataToLog = { bucketName, selector, sessionId };
     Logger.info({ message: 'delete-files', metadataToLog });
 
-    selector = ExtendedJSON.convertJSONtoBSON(selector);
+    selector = EJSON.deserialize(selector);
 
     const result = Async.runSync((done) => {
       try {
@@ -76,7 +76,7 @@ MongoDBGridFS.prototype = {
       }
     });
 
-    return ExtendedJSON.convertBSONtoJSON(result);
+    return EJSON.serialize(result);
   },
 
   deleteFile({ bucketName, fileId, sessionId }) {
@@ -96,7 +96,7 @@ MongoDBGridFS.prototype = {
       }
     });
 
-    return ExtendedJSON.convertBSONtoJSON(result);
+    return EJSON.serialize(result);
   },
 
   getFilesInfo({ bucketName, selector, limit, sessionId }) {
@@ -104,7 +104,7 @@ MongoDBGridFS.prototype = {
     selector = selector || {};
 
     const metadataToLog = { bucketName, selector, limit, sessionId };
-    selector = ExtendedJSON.convertJSONtoBSON(selector);
+    selector = EJSON.deserialize(selector);
 
     Logger.info({ message: 'get-files-info', metadataToLog });
 
@@ -121,13 +121,13 @@ MongoDBGridFS.prototype = {
       }
     });
 
-    return ExtendedJSON.convertBSONtoJSON(result);
+    return EJSON.serialize(result);
   },
 
   uploadFile({ bucketName, blob, fileName, contentType, metaData, aliases, sessionId }) {
     const metadataToLog = { bucketName, fileName, contentType, metaData, aliases, sessionId, blobLength: blob.length };
 
-    if (metaData) metaData = ExtendedJSON.convertJSONtoBSON(metaData);
+    if (metaData) metaData = EJSON.deserialize(metaData);
 
     blob = Buffer.from(blob);
 
@@ -167,7 +167,7 @@ MongoDBGridFS.prototype = {
       }
     });
 
-    return ExtendedJSON.convertBSONtoJSON(result);
+    return EJSON.serialize(result);
   },
 
   download({ req, res }) {

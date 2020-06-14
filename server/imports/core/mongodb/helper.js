@@ -1,8 +1,8 @@
 /* global Async */
 import { Meteor } from 'meteor/meteor';
 import { Logger, Database, Error } from '/server/imports/modules';
-import ExtendedJSON from './extended_json';
 
+const { EJSON } = require('bson');
 const os = require('os');
 const fs = require('fs');
 
@@ -65,7 +65,7 @@ MongoDBHelper.prototype = {
   },
 
   proceedMapReduceExecution({ execution, map, reduce, options, metadataToLog }) {
-    options = ExtendedJSON.convertJSONtoBSON(options);
+    options = EJSON.deserialize(options);
 
     const result = Async.runSync((done) => {
       try {
@@ -89,7 +89,7 @@ MongoDBHelper.prototype = {
       }
     });
 
-    return ExtendedJSON.convertBSONtoJSON(result);
+    return EJSON.serialize(result);
   },
 
   proceedExecutingQuery({ methodArray, execution, removeCollectionTopology, metadataToLog }) {
@@ -98,7 +98,7 @@ MongoDBHelper.prototype = {
       try {
         for (let i = 0; i < methodArray.length; i += 1) {
           const last = (i === (methodArray.length - 1));
-          const entry = ExtendedJSON.convertJSONtoBSON(methodArray[i]);
+          const entry = EJSON.deserialize(methodArray[i]);
 
           execution = this.proceedExecutionStepByStep(entry, last, done, execution, metadataToLog);
         }
@@ -109,7 +109,7 @@ MongoDBHelper.prototype = {
 
     if (removeCollectionTopology) this.removeCollectionTopologyFromResult(result);
     this.removeConnectionTopologyFromResult(result);
-    result = ExtendedJSON.convertBSONtoJSON(result);
+    result = EJSON.serialize(result);
     result.executionTime = new Date() - start;
 
     return result;
