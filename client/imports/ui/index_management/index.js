@@ -238,7 +238,7 @@ IndexManagement.prototype = {
     if (twodExists) this.setOptionsForTwoDIndex(index);
     if (twodSphereExists) this.setOptionsForTwoDSphereIndex(index);
     if (geoHaystackExists) this.setOptionsForGeohaystackIndex(index);
-    this.setOtherOptionsForIndex(index, ttl, partialFilterExpression, indexName, collation);
+    this.setOtherOptionsForIndex(index, parseInt(ttl, 10), partialFilterExpression, indexName, collation);
 
     return index;
   },
