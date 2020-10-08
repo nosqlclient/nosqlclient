@@ -1,4 +1,8 @@
 # History
+## 4.0.0, 1 May 2020
+- This release has been postponed so long due to work load, it comes with some breaking changes into nosqlclient. 
+These changes mostly doesn't affect end user.
+
 ## 2.2.0, 23 Aug 2017
 - Added clone collection
 - Added zoom in/out to charts
