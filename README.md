@@ -11,9 +11,6 @@ Cross-platform and self hosted, easy to use, MongoDB 4.0+ support and more featu
 [![AGPLv3 License](https://img.shields.io/github/license/nosqlclient/nosqlclient.svg)](https://github.com/nosqlclient/nosqlclient/blob/master/LICENSE)
 
 
-## Chat
-[Join us on Slack](https://communityinviter.com/apps/nosqlclient/nosqlclient), feel free to request to join our private `#development` channel if you're planning to contribute. 
-
 ## Demo
 [Try Demo Application](https://www.nosqlclient.com/demo/)
 
