@@ -1,5 +1,5 @@
 import { ReactivityProvider, Communicator } from '/client/imports/facades';
-import { SessionManager, ErrorHandler, Notification } from '/client/imports/modules';
+import { SessionManager, ErrorHandler } from '/client/imports/modules';
 
 const Querying = function () {};
 
@@ -17,7 +17,6 @@ const findKeysOfObject = function (resultArray) {
 Querying.prototype = {
   getDistinctKeysForAutoComplete(selectedCollection) {
     if (!selectedCollection || selectedCollection.endsWith('.chunks')) {
-      Notification.stop();
       SessionManager.set(SessionManager.strSessionDistinctFields, []);
       // ignore chunks
       return;
@@ -26,32 +25,25 @@ Querying.prototype = {
     const settings = ReactivityProvider.findOne(ReactivityProvider.types.Settings);
     const countToTake = Number.isNaN(parseInt(settings.autoCompleteSamplesCount, 10)) ? 50 : parseInt(settings.autoCompleteSamplesCount, 10);
     if (countToTake <= 0) {
-      Notification.stop();
       SessionManager.set(SessionManager.strSessionDistinctFields, []);
       // ignore chunks
       return;
     }
 
+    // $sample picks random documents without counting or skipping through the collection,
+    // so its cost doesn't grow with collection size (count + random skip were full scans).
     Communicator.call({
-      methodName: 'count',
-      args: { selectedCollection },
-      callback: (countError, result) => {
-        if (countError || result.error) ErrorHandler.showMeteorFuncError(countError, result);
-        else {
-          Communicator.call({
-            methodName: 'find',
-            args: { selectedCollection, cursorOptions: { limit: countToTake, skip: Math.round(Math.random() * result.result) } },
-            callback: (err, samples) => {
-              if (err || samples.error) ErrorHandler.showMeteorFuncError(err, samples);
-              else {
-                const keys = findKeysOfObject(samples.result);
-                SessionManager.set(SessionManager.strSessionDistinctFields, keys);
-              }
-            }
-          });
-        }
+      methodName: 'aggregate',
+      args: { selectedCollection, pipeline: [{ $sample: { size: countToTake } }] },
+      callback: (err, samples) => {
+        // aggregate is unblocked on the server, so samples for a previously selected collection can arrive late
+        if (SessionManager.get(SessionManager.strSessionSelectedCollection) !== selectedCollection) return;
 
-        Notification.stop();
+        if (err || samples.error) ErrorHandler.showMeteorFuncError(err, samples);
+        else {
+          const keys = findKeysOfObject(samples.result);
+          SessionManager.set(SessionManager.strSessionDistinctFields, keys);
+        }
       }
     });
   }

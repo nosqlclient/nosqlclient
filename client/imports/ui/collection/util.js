@@ -320,6 +320,13 @@ CollectionUtil.prototype = {
     };
   },
 
+  // Keeps the "execution time" row that render.js appends to the panel; with Execute no longer blocked
+  // while stats load, a query can finish before stats arrive and would otherwise be wiped.
+  setCollectionInfoHtml(html) {
+    const executionTime = $('#divCollectionInfo #executionTime');
+    $('#divCollectionInfo').html(executionTime.length ? html + executionTime.prop('outerHTML') : html);
+  },
+
   getCollectionInformation() {
     const settings = ReactivityProvider.findOne(ReactivityProvider.types.Settings);
 
@@ -329,7 +336,10 @@ CollectionUtil.prototype = {
       const selectedCollection = SessionManager.get(SessionManager.strSessionSelectedCollection);
       if (!selectedCollection) return;
 
-      Notification.start('#btnExecuteQuery');
+      // Loading indicator goes to the info panel, not the Execute button: a ladda spinner there disables
+      // the button until stats/samples arrive, and Notification.stop() would also stop a running query's spinner.
+      $('#divCollectionInfo').html('<i class="fa fa-spinner fa-spin"></i>');
+
       // get distinct field keys for auto complete on every collection change.
       Querying.getDistinctKeysForAutoComplete(selectedCollection);
 
@@ -337,11 +347,13 @@ CollectionUtil.prototype = {
         methodName: 'stats',
         args: { selectedCollection },
         callback: (err, result) => {
+          // stats is unblocked on the server, so a slow answer for a previously selected collection can arrive late
+          if (SessionManager.get(SessionManager.strSessionSelectedCollection) !== selectedCollection) return;
+
           if (err || result.error) {
             const errorMessage = Helper.translate({ key: 'fetch_stats_error' });
-            $('#divCollectionInfo').html(`<div class="row"><div class="col-lg-7"><b>${errorMessage}</b></div><div class="col-lg-5">${ErrorHandler.getErrorMessage(err, result)}</div></div>`);
+            this.setCollectionInfoHtml(`<div class="row"><div class="col-lg-7"><b>${errorMessage}</b></div><div class="col-lg-5">${ErrorHandler.getErrorMessage(err, result)}</div></div>`);
           } else this.populateCollectionInfo(result.result, settings);
-          Notification.stop();
         }
       });
     }, 150);
@@ -366,7 +378,7 @@ CollectionUtil.prototype = {
     resultString += `<div class="row"><div class="col-lg-7"><b>${Helper.translate({ key: 'avg_obj_size' })}:</b></div><div class="col-lg-5">${avgObjSize} ${text}</div></div>`;
     resultString += `<div class="row"><div class="col-lg-7"><b>${Helper.translate({ key: 'is_capped' })}:</b></div><div class="col-lg-5">${statsResult.capped}</div></div>`;
 
-    $('#divCollectionInfo').html(resultString);
+    this.setCollectionInfoHtml(resultString);
   },
 
   prepareContextMenuModals() {

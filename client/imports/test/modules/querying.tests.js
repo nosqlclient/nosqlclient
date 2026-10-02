@@ -12,33 +12,25 @@ describe('Querying', () => {
   const error = { error: '1009', reason: 'failed' };
 
   describe('getDistinctKeysForAutoComplete selectedCollection valid tests', () => {
-    const collectionCountError = 'collection-1';
-    const collectionCountError2 = 'collection-2';
-    const collectionFindError = 'collection-3';
-    const collectionFindError2 = 'collection-4';
-    const collectionSuccess = 'collection-5';
+    const collectionSampleError = 'collection-1';
+    const collectionSampleError2 = 'collection-2';
+    const collectionSuccess = 'collection-3';
+    const samplePipeline = [{ $sample: { size: 50 } }];
+    let selectedCollection;
 
     beforeEach(() => {
+      selectedCollection = null;
+      sinon.stub(SessionManager, 'get').withArgs(SessionManager.strSessionSelectedCollection).callsFake(() => selectedCollection);
       sinon.stub(ReactivityProvider, 'findOne').returns({
         autoCompleteSamplesCount: 50
       });
 
       sinon.stub(Communicator, 'call')
-        .withArgs(sinon.match({ methodName: 'count', args: { selectedCollection: collectionCountError } }))
+        .withArgs(sinon.match({ methodName: 'aggregate', args: { selectedCollection: collectionSampleError } }))
         .yieldsTo('callback', error)
-        .withArgs(sinon.match({ methodName: 'count', args: { selectedCollection: collectionCountError2 } }))
+        .withArgs(sinon.match({ methodName: 'aggregate', args: { selectedCollection: collectionSampleError2 } }))
         .yieldsTo('callback', null, error)
-        .withArgs(sinon.match({ methodName: 'count', args: { selectedCollection: collectionFindError } }))
-        .yieldsTo('callback', null, { result: 10 })
-        .withArgs(sinon.match({ methodName: 'count', args: { selectedCollection: collectionFindError2 } }))
-        .yieldsTo('callback', null, { result: 10 })
-        .withArgs(sinon.match({ methodName: 'count', args: { selectedCollection: collectionSuccess } }))
-        .yieldsTo('callback', null, { result: 10 })
-        .withArgs(sinon.match({ methodName: 'find', args: { selectedCollection: collectionFindError } }))
-        .yieldsTo('callback', error)
-        .withArgs(sinon.match({ methodName: 'find', args: { selectedCollection: collectionFindError2 } }))
-        .yieldsTo('callback', null, error)
-        .withArgs(sinon.match({ methodName: 'find', args: { selectedCollection: collectionSuccess } }))
+        .withArgs(sinon.match({ methodName: 'aggregate', args: { selectedCollection: collectionSuccess } }))
         .yieldsTo('callback', null, { result: [{ a: 123, b: true, c: 'sercan' }, { a: 21, b: false }, { d: 33 }] });
       sinon.spy(SessionManager, 'set');
       sinon.spy(ErrorHandler, 'showMeteorFuncError');
@@ -46,6 +38,7 @@ describe('Querying', () => {
     });
 
     afterEach(() => {
+      SessionManager.get.restore();
       ReactivityProvider.findOne.restore();
       SessionManager.set.restore();
       ErrorHandler.showMeteorFuncError.restore();
@@ -53,96 +46,51 @@ describe('Querying', () => {
       Communicator.call.restore();
     });
 
-    it('count method fails with error (first callback arg)', () => {
+    it('sample aggregation fails with error (first callback arg)', () => {
       // prepare
+      selectedCollection = collectionSampleError;
 
       // execute
-      Querying.getDistinctKeysForAutoComplete(collectionCountError);
+      Querying.getDistinctKeysForAutoComplete(collectionSampleError);
 
       // verify
       expect(ReactivityProvider.findOne.callCount).to.equal(1);
       expect(ReactivityProvider.findOne.calledWithExactly(ReactivityProvider.types.Settings)).to.equal(true);
       expect(Communicator.call.callCount).to.equal(1);
       expect(Communicator.call.calledWithMatch({
-        methodName: 'count',
-        args: { selectedCollection: collectionCountError }
+        methodName: 'aggregate',
+        args: { selectedCollection: collectionSampleError, pipeline: samplePipeline }
       })).to.equal(true);
       expect(SessionManager.set.callCount).to.equal(0);
-      expect(Notification.stop.callCount).to.equal(1);
+      expect(Notification.stop.callCount).to.equal(0);
       expect(ErrorHandler.showMeteorFuncError.callCount).to.equal(1);
       expect(ErrorHandler.showMeteorFuncError.calledWithMatch(error)).to.equal(true);
     });
 
-    it('count method fails with error (second callback arg)', () => {
+    it('sample aggregation fails with error (second callback arg)', () => {
       // prepare
+      selectedCollection = collectionSampleError2;
 
       // execute
-      Querying.getDistinctKeysForAutoComplete(collectionCountError2);
+      Querying.getDistinctKeysForAutoComplete(collectionSampleError2);
 
       // verify
       expect(ReactivityProvider.findOne.callCount).to.equal(1);
       expect(ReactivityProvider.findOne.calledWithExactly(ReactivityProvider.types.Settings)).to.equal(true);
       expect(Communicator.call.callCount).to.equal(1);
       expect(Communicator.call.calledWithMatch({
-        methodName: 'count',
-        args: { selectedCollection: collectionCountError2 }
+        methodName: 'aggregate',
+        args: { selectedCollection: collectionSampleError2, pipeline: samplePipeline }
       })).to.equal(true);
       expect(SessionManager.set.callCount).to.equal(0);
-      expect(Notification.stop.callCount).to.equal(1);
-      expect(ErrorHandler.showMeteorFuncError.callCount).to.equal(1);
-      expect(ErrorHandler.showMeteorFuncError.calledWithMatch(null, error)).to.equal(true);
-    });
-
-    it('find method fails with error (first callback arg)', () => {
-      // prepare
-
-      // execute
-      Querying.getDistinctKeysForAutoComplete(collectionFindError);
-
-      // verify
-      expect(ReactivityProvider.findOne.callCount).to.equal(1);
-      expect(ReactivityProvider.findOne.calledWithExactly(ReactivityProvider.types.Settings)).to.equal(true);
-      expect(Communicator.call.callCount).to.equal(2);
-      expect(Communicator.call.getCall(0).calledWithMatch({
-        methodName: 'count',
-        args: { selectedCollection: collectionFindError }
-      })).to.equal(true);
-      expect(Communicator.call.getCall(1).calledWithMatch({
-        methodName: 'find',
-        args: { selectedCollection: collectionFindError }
-      })).to.equal(true);
-      expect(SessionManager.set.callCount).to.equal(0);
-      expect(Notification.stop.callCount).to.equal(1);
-      expect(ErrorHandler.showMeteorFuncError.callCount).to.equal(1);
-      expect(ErrorHandler.showMeteorFuncError.calledWithMatch(error)).to.equal(true);
-    });
-
-    it('find method fails with error (second callback arg)', () => {
-      // prepare
-
-      // execute
-      Querying.getDistinctKeysForAutoComplete(collectionFindError2);
-
-      // verify
-      expect(ReactivityProvider.findOne.callCount).to.equal(1);
-      expect(ReactivityProvider.findOne.calledWithExactly(ReactivityProvider.types.Settings)).to.equal(true);
-      expect(Communicator.call.callCount).to.equal(2);
-      expect(Communicator.call.getCall(0).calledWithMatch({
-        methodName: 'count',
-        args: { selectedCollection: collectionFindError2 }
-      })).to.equal(true);
-      expect(Communicator.call.getCall(1).calledWithMatch({
-        methodName: 'find',
-        args: { selectedCollection: collectionFindError2 }
-      })).to.equal(true);
-      expect(SessionManager.set.callCount).to.equal(0);
-      expect(Notification.stop.callCount).to.equal(1);
+      expect(Notification.stop.callCount).to.equal(0);
       expect(ErrorHandler.showMeteorFuncError.callCount).to.equal(1);
       expect(ErrorHandler.showMeteorFuncError.calledWithMatch(null, error)).to.equal(true);
     });
 
     it('normal behaviour', () => {
       // prepare
+      selectedCollection = collectionSuccess;
 
       // execute
       Querying.getDistinctKeysForAutoComplete(collectionSuccess);
@@ -150,25 +98,35 @@ describe('Querying', () => {
       // verify
       expect(ReactivityProvider.findOne.callCount).to.equal(1);
       expect(ReactivityProvider.findOne.calledWithExactly(ReactivityProvider.types.Settings)).to.equal(true);
-      expect(Communicator.call.callCount).to.equal(2);
-      expect(Communicator.call.getCall(0).calledWithMatch(sinon.match({
-        methodName: 'count',
-        args: { selectedCollection: collectionSuccess }
+      expect(Communicator.call.callCount).to.equal(1);
+      expect(Communicator.call.calledWithMatch(sinon.match({
+        methodName: 'aggregate',
+        args: { selectedCollection: collectionSuccess, pipeline: samplePipeline }
       }))).to.equal(true);
-      expect(Communicator.call.getCall(1).calledWithMatch(sinon.match({
-        methodName: 'find',
-        args: { selectedCollection: collectionSuccess }
-      }))).to.equal(true);
+      expect(Communicator.call.calledWithMatch(sinon.match({ methodName: 'count' }))).to.equal(false);
       expect(SessionManager.set.callCount).to.equal(1);
       expect(SessionManager.set.calledWithExactly(SessionManager.strSessionDistinctFields, ['a', 'b', 'c', 'd'])).to.equal(true);
-      expect(Notification.stop.callCount).to.equal(1);
-      expect(Notification.stop.callCount).to.equal(1);
+      expect(Notification.stop.callCount).to.equal(0);
+      expect(ErrorHandler.showMeteorFuncError.callCount).to.equal(0);
+    });
+
+    it('ignores samples that arrive after the user selected another collection', () => {
+      // prepare
+      selectedCollection = 'another-collection';
+
+      // execute
+      Querying.getDistinctKeysForAutoComplete(collectionSuccess);
+
+      // verify
+      expect(Communicator.call.callCount).to.equal(1);
+      expect(SessionManager.set.callCount).to.equal(0);
       expect(ErrorHandler.showMeteorFuncError.callCount).to.equal(0);
     });
   });
 
   describe('getDistinctKeysForAutoComplete selectedCollection not valid & settings empty tests', () => {
     beforeEach(() => {
+      sinon.stub(SessionManager, 'get').withArgs(SessionManager.strSessionSelectedCollection).returns('goodCollection');
       sinon.stub(Communicator, 'call').yieldsTo('callback', error);
       sinon.stub(ReactivityProvider, 'findOne').returns({});
       sinon.spy(SessionManager, 'set');
@@ -177,6 +135,7 @@ describe('Querying', () => {
     });
 
     afterEach(() => {
+      SessionManager.get.restore();
       ReactivityProvider.findOne.restore();
       SessionManager.set.restore();
       ErrorHandler.showMeteorFuncError.restore();
@@ -195,7 +154,7 @@ describe('Querying', () => {
       expect(Communicator.call.callCount).to.equal(0);
       expect(SessionManager.set.callCount).to.equal(1);
       expect(SessionManager.set.calledWithExactly(SessionManager.strSessionDistinctFields, [])).to.equal(true);
-      expect(Notification.stop.callCount).to.equal(1);
+      expect(Notification.stop.callCount).to.equal(0);
       expect(ErrorHandler.showMeteorFuncError.callCount).to.equal(0);
     });
 
@@ -210,7 +169,7 @@ describe('Querying', () => {
       expect(Communicator.call.callCount).to.equal(0);
       expect(SessionManager.set.callCount).to.equal(1);
       expect(SessionManager.set.calledWithExactly(SessionManager.strSessionDistinctFields, [])).to.equal(true);
-      expect(Notification.stop.callCount).to.equal(1);
+      expect(Notification.stop.callCount).to.equal(0);
       expect(ErrorHandler.showMeteorFuncError.callCount).to.equal(0);
     });
 
@@ -225,11 +184,11 @@ describe('Querying', () => {
       expect(ReactivityProvider.findOne.calledWithExactly(ReactivityProvider.types.Settings)).to.equal(true);
       expect(Communicator.call.callCount).to.equal(1);
       expect(Communicator.call.calledWithMatch(sinon.match({
-        methodName: 'count',
-        args: { selectedCollection: 'goodCollection' }
+        methodName: 'aggregate',
+        args: { selectedCollection: 'goodCollection', pipeline: [{ $sample: { size: 50 } }] }
       }))).to.equal(true);
       expect(SessionManager.set.callCount).to.equal(0);
-      expect(Notification.stop.callCount).to.equal(1);
+      expect(Notification.stop.callCount).to.equal(0);
       expect(ErrorHandler.showMeteorFuncError.callCount).to.equal(1);
       expect(ErrorHandler.showMeteorFuncError.calledWithMatch(sinon.match(error))).to.equal(true);
     });

@@ -1397,19 +1397,18 @@ describe('CollectionUtil', () => {
       // verify
       expect(ReactivityProvider.findOne.callCount).to.equal(1);
       expect(ReactivityProvider.findOne.calledWithExactly(ReactivityProvider.types.Settings)).to.equal(true);
-      expect(SessionManager.get.callCount).to.equal(1);
-      expect(SessionManager.get.calledWithExactly(SessionManager.strSessionSelectedCollection)).to.equal(true);
+      expect(SessionManager.get.callCount).to.equal(2); // selection + stale-response check
+      expect(SessionManager.get.alwaysCalledWithExactly(SessionManager.strSessionSelectedCollection)).to.equal(true);
       expect(Querying.getDistinctKeysForAutoComplete.callCount).to.equal(1);
       expect(Querying.getDistinctKeysForAutoComplete.calledWithExactly(selectedCollection)).to.equal(true);
       expect(Communicator.call.callCount).to.equal(1);
       expect(Communicator.call.calledWithMatch({ methodName: 'stats', args: { selectedCollection }, callback: sinon.match.func })).to.equal(true);
-      expect($.prototype.html.callCount).to.equal(1);
-      expect($.prototype.html.calledWithExactly(`<div class="row"><div class="col-lg-7"><b>${errorMessage}</b></div><div class="col-lg-5">${errorDetails}</div></div>`)).to.equal(true);
+      expect($.prototype.html.callCount).to.equal(2);
+      expect($.prototype.html.getCall(0).calledWithExactly('<i class="fa fa-spinner fa-spin"></i>')).to.equal(true);
+      expect($.prototype.html.getCall(1).calledWithExactly(`<div class="row"><div class="col-lg-7"><b>${errorMessage}</b></div><div class="col-lg-5">${errorDetails}</div></div>`)).to.equal(true);
       expect(CollectionUtil.populateCollectionInfo.callCount).to.equal(0);
-      expect(Notification.start.callCount).to.equal(1);
-      expect(Notification.start.calledWithExactly('#btnExecuteQuery')).to.equal(true);
-      expect(Notification.stop.callCount).to.equal(1);
-      expect(Notification.stop.calledWithExactly()).to.equal(true);
+      expect(Notification.start.callCount).to.equal(0);
+      expect(Notification.stop.callCount).to.equal(0);
       expect(ErrorHandler.getErrorMessage.callCount).to.equal(1);
       expect(ErrorHandler.getErrorMessage.calledWithExactly(error, null)).to.equal(true);
     });
@@ -1431,20 +1430,39 @@ describe('CollectionUtil', () => {
       // verify
       expect(ReactivityProvider.findOne.callCount).to.equal(1);
       expect(ReactivityProvider.findOne.calledWithExactly(ReactivityProvider.types.Settings)).to.equal(true);
-      expect(SessionManager.get.callCount).to.equal(1);
-      expect(SessionManager.get.calledWithExactly(SessionManager.strSessionSelectedCollection)).to.equal(true);
+      expect(SessionManager.get.callCount).to.equal(2); // selection + stale-response check
+      expect(SessionManager.get.alwaysCalledWithExactly(SessionManager.strSessionSelectedCollection)).to.equal(true);
       expect(Querying.getDistinctKeysForAutoComplete.callCount).to.equal(1);
       expect(Querying.getDistinctKeysForAutoComplete.calledWithExactly(selectedCollection)).to.equal(true);
       expect(Communicator.call.callCount).to.equal(1);
       expect(Communicator.call.calledWithMatch({ methodName: 'stats', args: { selectedCollection }, callback: sinon.match.func })).to.equal(true);
-      expect($.prototype.html.callCount).to.equal(0);
+      expect($.prototype.html.callCount).to.equal(1);
+      expect($.prototype.html.calledWithExactly('<i class="fa fa-spinner fa-spin"></i>')).to.equal(true);
       expect(CollectionUtil.populateCollectionInfo.callCount).to.equal(1);
       expect(CollectionUtil.populateCollectionInfo.calledWithExactly(result.result, settings)).to.equal(true);
-      expect(Notification.start.callCount).to.equal(1);
-      expect(Notification.start.calledWithExactly('#btnExecuteQuery')).to.equal(true);
-      expect(Notification.stop.callCount).to.equal(1);
-      expect(Notification.stop.calledWithExactly()).to.equal(true);
+      expect(Notification.start.callCount).to.equal(0);
+      expect(Notification.stop.callCount).to.equal(0);
       expect(ErrorHandler.getErrorMessage.callCount).to.equal(0);
+    });
+
+    it('getCollectionInformation ignores stats arriving after another collection was selected', () => {
+      // prepare
+      const settings = { a: 1, b: 2, c: true };
+      sinon.stub(document, 'querySelector').returns('something');
+      sinon.stub(ReactivityProvider, 'findOne').returns(settings);
+      const sessionGet = sinon.stub(SessionManager, 'get');
+      sessionGet.returns('collectionB'); // user picked another collection before stats arrived
+      sessionGet.onFirstCall().returns('collectionA');
+      sinon.stub(Communicator, 'call').yieldsTo('callback', null, { result: '123' });
+
+      // execute
+      CollectionUtil.getCollectionInformation();
+      clock.tick(150);
+
+      // verify
+      expect(Communicator.call.calledWithMatch({ methodName: 'stats', args: { selectedCollection: 'collectionA' } })).to.equal(true);
+      expect(CollectionUtil.populateCollectionInfo.callCount).to.equal(0);
+      expect($.prototype.html.callCount).to.equal(1); // only the loading spinner
     });
   });
 

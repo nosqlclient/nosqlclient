@@ -1,6 +1,10 @@
 import { Meteor } from 'meteor/meteor';
 import { MongoDB } from '/server/imports/core';
 
+// Read-only methods call this.unblock() so a slow read doesn't queue this client's later calls behind it;
+// write methods stay blocking, so a read issued after a write still sees it. dbStats/serverStatus/top are polled
+// on an interval by the DB stats page and stay blocking: the queue is their backpressure on a slow server.
+// A blocking call issued after a read (e.g. disconnect) may run while that read is still in flight.
 Meteor.methods({
   top({ sessionId }) {
     const methodArray = [
@@ -41,6 +45,7 @@ Meteor.methods({
   },
 
   serverInfo({ sessionId }) {
+    this.unblock();
     const methodArray = [
       {
         serverInfo: [],
@@ -69,6 +74,7 @@ Meteor.methods({
   },
 
   ping({ sessionId }) {
+    this.unblock();
     const methodArray = [
       {
         ping: []
@@ -78,6 +84,7 @@ Meteor.methods({
   },
 
   listDatabases({ sessionId }) {
+    this.unblock();
     const methodArray = [
       {
         listDatabases: []
@@ -105,6 +112,7 @@ Meteor.methods({
   },
 
   buildInfo({ sessionId }) {
+    this.unblock();
     const methodArray = [
       {
         buildInfo: []

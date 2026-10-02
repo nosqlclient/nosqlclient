@@ -11,6 +11,7 @@ Settings.prototype = {
     const settings = {};
     settings.updates = UIComponents.Checkbox.getState($('#inputToggleUpdates'));
     settings.autoCompleteSamplesCount = $('#inputAutoCompleteSamplesCount').val();
+    settings.defaultFindLimit = $('#inputDefaultFindLimit').val();
     settings.autoCompleteShortcut = $('#inputAutocompleteShortcut').val();
     settings.scale = $('#cmbScale').val();
     settings.defaultResultView = $('#cmbResultView').val();
@@ -53,6 +54,7 @@ Settings.prototype = {
     $('#inputConnectionTimeout').val(settings.connectionTimeoutInSeconds || 0);
     $('#inputDBStatsScheduler').val(settings.dbStatsScheduler || 3000);
     $('#inputAutoCompleteSamplesCount').val(settings.autoCompleteSamplesCount || 50);
+    $('#inputDefaultFindLimit').val(settings.defaultFindLimit === undefined ? 50 : settings.defaultFindLimit);
     UIComponents.Checkbox.toggleState($('#inputUseSingleTab'), settings.singleTabResultSets ? 'check' : 'uncheck');
     UIComponents.Checkbox.toggleState($('#inputShowDBStats'), settings.showDBStats ? 'check' : 'uncheck');
     UIComponents.Checkbox.toggleState($('#inputToggleUpdates'), (settings.updates === undefined || settings.updates === true) ? 'check' : 'uncheck');

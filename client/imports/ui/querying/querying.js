@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Enums, Notification, ExtendedJSON, UIComponents, SessionManager } from '/client/imports/modules';
 import { Connection, QueryRender, QueryingOptions } from '/client/imports/ui';
-import { Communicator } from '/client/imports/facades';
+import { Communicator, ReactivityProvider } from '/client/imports/facades';
 import { _ } from 'meteor/underscore';
 import $ from 'jquery';
 import QueryingHelper from './helper';
@@ -191,6 +191,23 @@ const getFindModifyFinalObject = function (queryStr) {
   };
 };
 
+const DEFAULT_FIND_LIMIT = 50;
+
+// A FIND without a limit would fetch the whole collection into the browser. When LIMIT is missing or empty,
+// returns a copy with the defaultFindLimit setting applied; an explicit number is respected (limit 0 = deliberately
+// no limit). The caller keeps the original options for query history, so replays follow the current setting.
+const withDefaultFindLimit = function (cursorOptions) {
+  if (cursorOptions.limit !== undefined && cursorOptions.limit !== '') return cursorOptions;
+
+  const settings = ReactivityProvider.findOne(ReactivityProvider.types.Settings) || {};
+  const configured = parseInt(settings.defaultFindLimit, 10);
+  const limit = Number.isNaN(configured) ? DEFAULT_FIND_LIMIT : configured;
+  if (limit <= 0) return cursorOptions;
+
+  Notification.info('find-limit-applied', null, { limit });
+  return Object.assign({}, cursorOptions, { limit });
+};
+
 const getFindFinalObject = function (queryStr, cmbOptionsId) {
   return {
     execute(historyParams, exportFormat) {
@@ -212,6 +229,8 @@ const getFindFinalObject = function (queryStr, cmbOptionsId) {
           const executeExplain = UIComponents.Checkbox.getState($('#inputExplain'));
           args.executeExplain = executeExplain;
           queryParams.executeExplain = executeExplain;
+          // explain returns a plan, not documents, so it runs on the query exactly as written
+          if (!executeExplain) args.cursorOptions = withDefaultFindLimit(cursorOptions);
         }
         proceedQueryExecution({
           methodName: queryStr,

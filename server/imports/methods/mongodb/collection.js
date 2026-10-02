@@ -1,8 +1,12 @@
 import { Meteor } from 'meteor/meteor';
 import { MongoDB } from '/server/imports/core';
 
+// Read-only methods call this.unblock() so a slow read doesn't queue this client's later calls behind it;
+// write methods stay blocking, so a read issued after a write still sees it. A blocking call issued after a read
+// (e.g. disconnect) may run while that read is still in flight; the read then fails with a connection error.
 Meteor.methods({
   profilingInfo({ sessionId }) {
+    this.unblock();
     const methodArray = [
       {
         profilingInfo: [],
@@ -21,6 +25,7 @@ Meteor.methods({
   },
 
   isCapped({ selectedCollection, sessionId }) {
+    this.unblock();
     const methodArray = [
       {
         isCapped: [],
@@ -39,6 +44,7 @@ Meteor.methods({
   },
 
   indexInformation({ selectedCollection, isFull, sessionId }) {
+    this.unblock();
     const methodArray = [
       {
         indexInformation: [{ full: isFull }],
@@ -67,6 +73,7 @@ Meteor.methods({
   },
 
   distinct({ selectedCollection, selector, fieldName, options, sessionId }) {
+    this.unblock();
     const methodArray = [
       {
         distinct: [fieldName, selector, options],
@@ -97,6 +104,7 @@ Meteor.methods({
   },
 
   findOne({ selectedCollection, selector, cursorOptions, sessionId }) {
+    this.unblock();
     const methodArray = [
       {
         find: [selector],
@@ -115,6 +123,7 @@ Meteor.methods({
   },
 
   find({ selectedCollection, selector, cursorOptions, executeExplain, sessionId }) {
+    this.unblock();
     const methodArray = [
       {
         find: [selector],
@@ -162,6 +171,8 @@ Meteor.methods({
   },
 
   aggregate({ selectedCollection, pipeline, options = {}, sessionId }) {
+    // $out/$merge write, so such pipelines keep blocking like other writes
+    if (Array.isArray(pipeline) && !pipeline.some(stage => stage && typeof stage === 'object' && ('$out' in stage || '$merge' in stage))) this.unblock();
     const methodArray = [
       {
         aggregate: [pipeline, options]
@@ -172,6 +183,7 @@ Meteor.methods({
   },
 
   count({ selectedCollection, selector, options, sessionId }) {
+    this.unblock();
     const methodArray = [
       {
         countDocuments: [selector, options],
@@ -233,6 +245,7 @@ Meteor.methods({
   },
 
   stats({ selectedCollection, options, sessionId }) {
+    this.unblock();
     const methodArray = [
       {
         stats: [options],
@@ -261,6 +274,7 @@ Meteor.methods({
   },
 
   options({ selectedCollection, sessionId }) {
+    this.unblock();
     const methodArray = [
       {
         options: [],

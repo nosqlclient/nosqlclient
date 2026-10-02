@@ -57,6 +57,7 @@ Settings.prototype = {
           mongoBinaryPath: '/opt/mongodb/bin/',
           maxAllowedFetchSize: 3,
           autoCompleteSamplesCount: 50,
+          defaultFindLimit: 50,
           socketTimeoutInSeconds: 5,
           connectionTimeoutInSeconds: 3,
           dbStatsScheduler: 3000,
