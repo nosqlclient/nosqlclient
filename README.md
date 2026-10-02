@@ -1,5 +1,7 @@
 ## Nosqlclient (Formerly Mongoclient), MongoDB Management Tool
 
+> **Fork:** local development setup and scripts — see [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md).
+
 Cross-platform and self hosted, easy to use, MongoDB 4.0+ support and more features!
 
 > NOSQLCLIENT IS NO LONGER BEING ACTIVELY DEVELOPED. I BELIEVE YOU CAN STILL USE DOCKER BUILDS AND FEEL FREE TO MAIL FOR INQUIRIES: ozdemirsercan27@gmail.com
